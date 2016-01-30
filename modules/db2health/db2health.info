@@ -1,0 +1,14 @@
+name = SIMS and SHMS Sync
+description = Allows sync students data between SIMS IBM DB2 Server and SHMS Microsoft SQL Server.
+package = School Information Management System
+dependencies[] = simsauth
+configure = admin/config/people/db2health
+files[] = db2health.install
+files[] = db2health.module
+files[] = mssql.api.php
+
+version = "7.x-1.1"
+core = "7.x"
+project = "db2health"
+datestamp = "1360609258"
+

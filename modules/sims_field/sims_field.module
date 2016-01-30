@@ -1,0 +1,1399 @@
+<?php
+
+/**
+ * @file
+ * Defines list field types that can be used with the Options module.
+ */
+
+/**
+ * Implements hook_help().
+ */
+function sims_field_help($path, $arg) {
+  switch ($path) {
+    case 'admin/help#sims_field':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('The sims field module defines various fields for storing a list of sims data records, for use with the Field module. Usually these items are entered through a select list, checkboxes, or radio buttons. See the <a href="@field-help">Field module help page</a> for more information about fields.', array('@field-help' => url('admin/help/field'))) . '</p>';
+      return $output;
+  }
+}
+
+/**
+ * Implements hook_update_projects_alter().
+ */
+function sims_field_update_projects_alter(&$projects) {
+  unset($projects['sims_field']);
+}
+
+/**
+ * Implements hook_field_info().
+ */
+function sims_field_field_info() {
+  return array(
+    'sims_field_syear' => array(
+      'label' => t('School Year & Semester'),
+      'description' => t("This field choise school year and/or semester depend on IBM DB2 Database."),
+      'settings' => array('allowed_values_function' => 'sims_field_options_list', 'include_semester' => ''),
+      'instance_settings' => array('syear_range' => '0:+1', 'inline_columns' => 2),
+      'default_widget' => 'options_select',
+      'default_formatter' => 'sims_default',
+      'cardinality' => 0,
+    ),
+    'sims_field_classes' => array(
+      'label' => t('List (classes)'),
+      'description' => t("This field stores CLASSID data from IBM DB2 BASCLS table."),
+      'settings' => array('allowed_values_function' => 'sims_field_options_list'),
+      'instance_settings' => array('filter_by_current_semester' => 1, 'filter_by_current_user' => 0, 'inline_columns' => 10),
+      'default_widget' => 'options_select',
+      'default_formatter' => 'sims_default',
+    ),
+    'sims_field_department' => array(
+      'label' => t('List (departments)'),
+      'description' => t("This field stores DEPT_ID data from IBM DB2 SCHDEPT table."),
+      'settings' => array('allowed_values_function' => 'sims_field_options_list'),
+      'instance_settings' => array('inline_columns' => 5),
+      'default_widget' => 'options_select',
+      'default_formatter' => 'sims_default',
+    ),
+    'sims_field_domain' => array(
+      'label' => t('List (domains)'),
+      'description' => t("This field stores POS_ID data from IBM DB2 SCHPOSITION table."),
+      'settings' => array('allowed_values_function' => 'sims_field_options_list', 'specific_department' => ''),
+      'instance_settings' => array('inline_columns' => 5),
+      'default_widget' => 'options_select',
+      'default_formatter' => 'sims_default',
+    ),
+    'sims_field_students' => array(
+      'label' => t('List (students)'),
+      'description' => t("This field stores specific column data from IBM DB2 STUDENT table."),
+      'settings' => array('allowed_values_function' => 'sims_field_options_list', 'specific_column' => ''),
+      'instance_settings' => array('filter_by_current_semester' => 1, 'filter_by_class_field' => 1, 'specific_class' => '', 'inline_columns' => ''),
+      'default_widget' => 'options_buttons',
+      'default_formatter' => 'sims_default',
+    ),
+    'sims_field_teachers' => array(
+      'label' => t('List (teachers)'),
+      'description' => t("This field stores specific column data from IBM DB2 TEABAS table."),
+      'settings' => array('allowed_values_function' => 'sims_field_options_list', 'specific_column' => ''),
+      'instance_settings' => array('filter_by_current_semester' => 1, 'filter_by_class_field' => 1, 'filter_by_department_field' => 1, 'filter_by_domain_field' => 1, 'specific_class' => '', 'specific_department' => '', 'specific_domain' => '', 'inline_columns' => 5),
+      'default_widget' => 'options_buttons',
+      'default_formatter' => 'sims_default',
+    ),
+  );
+}
+
+/**
+ * Implements hook_field_settings_form().
+ */
+function sims_field_field_settings_form($field, $instance) {
+  global $db2_conn;
+  if (!$db2_conn) {
+    $conn_string = variable_get('simsauth_connect_string');
+    $db2_conn = db2_pconnect($conn_string, '', '');
+  }
+  $settings = $field['settings'];
+
+  switch ($field['type']) {
+    case 'sims_field_syear':
+      $form['include_semester'] = array(
+        '#type' => 'checkbox',
+        '#title' => t('include_semester'),
+        '#default_value' => empty($settings['include_semester']) ? '' : $settings['include_semester'],
+        '#description' => t('If your content need to group by semester, you should check this box. otherwise, the content will group by school year default.'),
+      );
+      break;
+    case 'sims_field_domain':
+      $values = array();
+      $sql="SELECT DEPT_ID,DEPT_NAME from SCHDEPT WHERE STATUS=1 ORDER BY DEPT_NAME";
+      $rs=db2_query($sql);
+      while ($row = db2_fetch_array($rs)) {
+        $values[$row[0]] = $row[1];
+      }
+      $form['specific_department'] = array(
+        '#type' => 'select',
+        '#title' => t('Specfic Department'),
+        '#description' => t('Show the domain/jobtitle of this department.<br><em>To use this field, You must add domain as jobtitle to SIMS database under the subject teachers department.</em>'),
+        '#default_value' => empty($settings['specific_department']) ? '' : $settings['specific_department'],
+        '#options' => $values,
+        '#required' => TRUE,
+      );
+      break;
+    case 'sims_field_students':
+      $students_columns = array();
+      $stmt=db2_columns($db2_conn, '', variable_get('simsauth_server_schema'), 'STUDENT', '%');
+      while(db2_fetch_row($stmt)) {
+        $column_name = db2_result($stmt, 3);
+        $students_columns[$column_name] = $column_name . ':' . db2_result($stmt, 11);
+      }
+      $form['specific_column'] = array(
+        '#type' => 'select',
+        '#title' => t('Specific Column'),
+        '#options' => $students_columns,
+        '#default_value' => empty($settings['specific_column']) ? '' : $settings['specific_column'],
+        '#required' => TRUE,
+        '#description' => t('Which column value from STUDENT table you want to store?'),
+      );
+      break;
+    case 'sims_field_teachers':
+      $teachers_columns = array();
+      $stmt=db2_columns($db2_conn, '', variable_get('simsauth_server_schema'), 'TEABAS', '%');
+      while(db2_fetch_row($stmt)) {
+        $column_name = db2_result($stmt, 3);
+        $teachers_columns[$column_name] = $column_name . ':' . db2_result($stmt, 11);
+      }
+      $form['specific_column'] = array(
+        '#type' => 'select',
+        '#title' => t('Specific Column'),
+        '#options' => $teachers_columns,
+        '#default_value' => empty($settings['specific_column']) ? '' : $settings['specific_column'],
+        '#required' => TRUE,
+        '#description' => t('Which column value from TEABAS table you want to store?'),
+      );
+      break;
+  }
+
+  return $form;
+}
+
+/**
+ * Implements hook_field_instance_settings_form().
+ */
+function sims_field_field_instance_settings_form($field, $instance) {
+  $depand = array();
+  $settings = $instance['settings'];
+  $fields_info = field_info_instances($instance['entity_type'], $instance['bundle']);
+  foreach ($fields_info as $field_name => $value) {
+    $field_info = field_info_field($field_name);
+    $field_type = $field_info['type'];
+    if (substr($field_type, 0, 11) == 'sims_field_') {
+      $depand[$field_type] = TRUE;
+    }
+  }
+  
+  switch ($field['type']) {
+    case 'sims_field_syear':
+      $form['syear_range'] = array(
+        '#type' => 'textfield',
+        '#title' => t('School Year Range'),
+        '#description' => t('You can specify start and end Year, for example: 102:104. Or use the relative number indicates the range, 0 for this year, -1 means last year, + 1 means next year.'),
+        '#default_value' => $settings['syear_range'],
+      );
+      break;
+    case 'sims_field_classes':
+      if (isset($depand['sims_field_syear'])) {
+        $form['filter_by_current_semester'] = array(
+          '#type' => 'checkbox',
+          '#title' => t('filter by current semester'),
+          '#description' => t('Show the current semester classes data. If uncheck this box, try to get semester from above field!'),
+          '#default_value' => $settings['filter_by_current_semester'],
+        );
+      }
+      else {
+        $form['filter_by_current_semester'] = array(
+          '#type' => 'checkbox',
+          '#title' => t('filter by current semester'),
+          '#description' => t('Show the current semester classes data. If uncheck this box, try to get semester from above field!'),
+          '#default_value' => 1,
+          '#attributes' => array('disabled' => 'disabled'),
+        );
+      }
+      $form['filter_by_current_user'] = array(
+        '#type' => 'checkbox',
+        '#title' => t('filter by current user'),
+        '#description' => t('Show the current user related classes only.'),
+        '#default_value' => $settings['filter_by_current_user'],
+      );
+      $form['inline_columns'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Inline Columns'),
+        '#description' => t('When You using checkboxes/radios to show the options, You can specify the columns display inline.'),
+        '#default_value' => $settings['inline_columns'],
+      );
+      break;
+    case 'sims_field_department':
+      $form['inline_columns'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Inline Columns'),
+        '#description' => t('When You using checkboxes/radios to show the options, You can specify the columns display inline.'),
+        '#default_value' => $settings['inline_columns'],
+      );
+      break;
+    case 'sims_field_domain':
+      $form['inline_columns'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Inline Columns'),
+        '#description' => t('When You using checkboxes/radios to show the options, You can specify the columns display inline.'),
+        '#default_value' => $settings['inline_columns'],
+      );
+      break;
+    case 'sims_field_students':
+      if (isset($depand['sims_field_syear'])) {
+        $form['filter_by_current_semester'] = array(
+          '#type' => 'checkbox',
+          '#title' => t('filter by current semester'),
+          '#description' => t('Show the current semester students data. If uncheck this box, try to get semester from above field!'),
+          '#default_value' => $settings['filter_by_current_semester'],
+        );
+      }
+      else {
+        $form['filter_by_current_semester'] = array(
+          '#type' => 'checkbox',
+          '#title' => t('filter by current semester'),
+          '#description' => t('Show the current semester students data. If uncheck this box, try to get semester from above field!'),
+          '#default_value' => 1,
+          '#attributes' => array('disabled' => 'disabled'),
+        );
+      }
+      if (isset($depand['sims_field_classes'])) {
+        $form['filter_by_class_field'] = array(
+          '#type' => 'checkbox',
+          '#title' => t('filter by classes field'),
+          '#description' => t('Show the students of the selected class from classes field.'),
+          '#default_value' => $settings['filter_by_class_field'],
+        );
+      }
+      else {
+        $form['filter_by_class_field'] = array(
+          '#type' => 'checkbox',
+          '#title' => t('filter by classes field'),
+          '#description' => t('Show the students of the selected class from classes field.'),
+          '#default_value' => 0,
+          '#attributes' => array('disabled' => 'disabled'),
+        );
+      }
+      $form['specific_class'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Specfic Class'),
+        '#description' => t('Show the students of this class.'),
+        '#default_value' => $settings['specific_class'],
+      );
+      $form['inline_columns'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Inline Columns'),
+        '#description' => t('When You using checkboxes/radios to show the options, You can specify the columns display inline.'),
+        '#default_value' => $settings['inline_columns'],
+      );
+      break;
+    case 'sims_field_teachers':
+      if (isset($depand['sims_field_syear'])) {
+        $form['filter_by_current_semester'] = array(
+          '#type' => 'checkbox',
+          '#title' => t('filter by current semester'),
+          '#description' => t('Show the current semester teachers data. If uncheck this box, try to get semester from above field!'),
+          '#default_value' => $settings['filter_by_current_semester'],
+        );
+      }
+      else {
+        $form['filter_by_current_semester'] = array(
+          '#type' => 'checkbox',
+          '#title' => t('filter by current semester'),
+          '#description' => t('Show the current semester teachers data. If uncheck this box, try to get semester from above field!'),
+          '#default_value' => 1,
+          '#attributes' => array('disabled' => 'disabled'),
+        );
+      }
+      if (isset($depand['sims_field_classes'])) {
+        $form['filter_by_class_field'] = array(
+          '#type' => 'checkbox',
+          '#title' => t('filter by classes field'),
+          '#description' => t('Show the teachers of the selected class from classes field.'),
+          '#default_value' => $settings['filter_by_class_field'],
+        );
+      }
+      else {
+        $form['filter_by_class_field'] = array(
+          '#type' => 'checkbox',
+          '#title' => t('filter by classes field'),
+          '#description' => t('Show the teachers of the selected class from classes field.'),
+          '#default_value' => 0,
+          '#attributes' => array('disabled' => 'disabled'),
+        );
+      }
+      $form['specific_class'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Specfic Class'),
+        '#description' => t('Show the teachers of this class.'),
+        '#default_value' => $settings['specific_class'],
+      );
+      if (isset($depand['sims_field_department'])) {
+        $form['filter_by_department_field'] = array(
+          '#type' => 'checkbox',
+          '#title' => t('filter by department field'),
+          '#description' => t('Show the teachers of the selected department from department field.'),
+          '#default_value' => $settings['filter_by_department_field'],
+        );
+      }
+      else {
+        $form['filter_by_department_field'] = array(
+          '#type' => 'checkbox',
+          '#title' => t('filter by department field'),
+          '#description' => t('Show the teachers of the selected department from department field.'),
+          '#default_value' => 0,
+          '#attributes' => array('disabled' => 'disabled'),
+        );
+      }
+      $values = array();
+      $values[] = t('- None -');
+      $sql="SELECT DEPT_ID,DEPT_NAME from SCHDEPT WHERE STATUS=1 ORDER BY DEPT_NAME";
+      $rs=db2_query($sql);
+      while ($row = db2_fetch_array($rs)) {
+        $values[$row[0]] = $row[1];
+      }
+      $form['specific_department'] = array(
+        '#type' => 'select',
+        '#title' => t('Specfic Department'),
+        '#description' => t('Show the teachers of this department.'),
+        '#default_value' => $settings['specific_department'],
+        '#options' => $values,
+      );
+      if (isset($depand['sims_field_domain'])) {
+        $form['filter_by_domain_field'] = array(
+          '#type' => 'checkbox',
+          '#title' => t('filter by domain field'),
+          '#description' => t('Show the teachers of the selected domain from domain field.'),
+          '#default_value' => $settings['filter_by_domain_field'],
+        );
+      }
+      else {
+        $form['filter_by_domain_field'] = array(
+          '#type' => 'checkbox',
+          '#title' => t('filter by domain field'),
+          '#description' => t('Show the teachers of the selected domain from domain field.'),
+          '#default_value' => 0,
+          '#attributes' => array('disabled' => 'disabled'),
+        );
+      }
+      $values = array();
+      $values[] = t('- None -');
+      $sql="SELECT POS_ID,POS_NAME from SCHPOSITION a left join SCHDEPT b ON a.DEPT_ID=b.DEPT_ID WHERE a.STATUS=1 and b.STATUS=1 ORDER BY POS_NAME";
+      $rs=db2_query($sql);
+      while ($row = db2_fetch_array($rs)) {
+        $values[$row[0]] = $row[1];
+      }
+      $form['specific_domain'] = array(
+        '#type' => 'select',
+        '#title' => t('Specfic Domain'),
+        '#description' => t('Show the teachers of this domain.'),
+        '#default_value' => $settings['specific_domain'],
+        '#options' => $values,
+      );
+      $form['inline_columns'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Inline Columns'),
+        '#description' => t('When You using checkboxes/radios to show the options, You can specify the columns display inline.'),
+        '#default_value' => $settings['inline_columns'],
+      );
+      break;
+  }
+
+  return $form;
+}
+
+/**
+ * Implements hook_form_field_ui_field_edit_form_alter()
+ */
+function sims_field_form_field_ui_field_edit_form_alter(&$form, &$form_state) {
+   if ($form['#field']['type'] == 'sims_field_syear') {
+    $form['field']['cardinality']['#access'] = FALSE;
+  }
+}
+
+/**
+ * Implements hook_field_widget_info_alter()
+ */
+function sims_field_field_widget_info_alter(&$info) {
+  $widgets = array(
+    'options_select' => array('sims_field_syear', 'sims_field_classes', 'sims_field_department', 'sims_field_domain', 'sims_field_students', 'sims_field_teachers'),
+    'options_buttons' => array('sims_field_syear', 'sims_field_classes', 'sims_field_department', 'sims_field_domain', 'sims_field_students', 'sims_field_teachers'),
+  );
+
+  foreach ($widgets as $widget => $field_types) {
+    $info[$widget]['field types'] = array_merge($info[$widget]['field types'], $field_types);
+  }
+}
+
+/**
+ * Implements hook_field_widget_WIDGET_TYPE_form_alter()
+ */
+function sims_field_field_widget_options_select_form_alter(&$element, &$form_state, $context) {
+  if ($context['field']['type'] == 'sims_field_syear' && $context['field']['settings']['include_semester']) {
+    $element += array(
+      '#ajax' => array(
+        'callback' => 'reload_syear_ajax_callback',
+      ),
+    );
+  }
+  elseif ($context['field']['type'] == 'sims_field_classes' && $context['field']['cardinality'] == 1){
+    $element += array(
+      '#ajax' => array(
+        'callback' => 'reload_class_ajax_callback',
+      ),
+    );
+  }
+  elseif ($context['field']['type'] == 'sims_field_department' && $context['field']['cardinality'] == 1){
+    $element += array(
+      '#ajax' => array(
+        'callback' => 'reload_department_ajax_callback',
+      ),
+    );
+  }
+  elseif ($context['field']['type'] == 'sims_field_domain' && $context['field']['cardinality'] == 1){
+    $element += array(
+      '#ajax' => array(
+        'callback' => 'reload_domain_ajax_callback',
+      ),
+    );
+  }
+}
+
+/**
+ * Implements hook_field_widget_WIDGET_TYPE_form_alter()
+ */
+function sims_field_field_widget_options_buttons_form_alter(&$element, &$form_state, $context) {
+  if ($context['field']['type'] == 'sims_field_syear') {
+    $element += array(
+      '#inline' => $context['instance']['settings']['inline_columns'],
+      '#suffix' => '<br style="clear:both;"/>',
+    );
+    if ($context['field']['settings']['include_semester']) {
+      $element += array(
+        '#ajax' => array(
+          'callback' => 'reload_syear_ajax_callback',
+        ),
+      );
+    }
+  }
+  elseif ($context['field']['type'] == 'sims_field_classes') {
+    $element += array(
+      '#inline' => $context['instance']['settings']['inline_columns'],
+      '#suffix' => '<br style="clear:both;"/>',
+    );
+    if ($context['field']['cardinality'] == 1) {
+      $element += array(
+        '#ajax' => array(
+          'callback' => 'reload_class_ajax_callback',
+        ),
+      );
+    }
+  }
+  elseif ($context['field']['type'] == 'sims_field_department') {
+    $element += array(
+      '#inline' => $context['instance']['settings']['inline_columns'],
+      '#suffix' => '<br style="clear:both;"/>',
+    );
+    if ($context['field']['cardinality'] == 1) {
+      $element += array(
+        '#ajax' => array(
+          'callback' => 'reload_department_ajax_callback',
+        ),
+      );
+    }
+  }
+  elseif ($context['field']['type'] == 'sims_field_domain') {
+    $element += array(
+      '#inline' => $context['instance']['settings']['inline_columns'],
+      '#suffix' => '<br style="clear:both;"/>',
+    );
+    if ($context['field']['cardinality'] == 1) {
+      $element += array(
+        '#ajax' => array(
+          'callback' => 'reload_domain_ajax_callback',
+        ),
+      );
+    }
+  }
+  elseif ($context['field']['type'] == 'sims_field_students' || $context['field']['type'] == 'sims_field_teachers'){
+    $element += array(
+      '#inline' => $context['instance']['settings']['inline_columns'],
+      '#suffix' => '<br style="clear:both;"/>',
+    );
+  }
+}
+
+/**
+ * Implements hook_options_list()
+ */
+function sims_field_options_list($field, $instance, $entity_type, $entity, $syear=NULL, $seme=NULL, $class=NULL, $department=NULL, $domain=NULL) {
+  $values = array();
+  $mydate = get_current_seme();
+
+  if ($field['type'] == 'sims_field_syear') {
+    $semester = $field['settings']['include_semester'];
+    $range = $instance['settings']['syear_range'];
+    list($start, $end) = explode(':', $range);
+    if ($start == '0') {
+      $start = $mydate['year'];
+    }
+    elseif (substr($start, 0, 1) == '+' || substr($start, 0, 1) == '-') {
+      eval('$start = ' . $mydate['year'] . $start . ';');
+    }
+    else {
+      $start = (int)$start;
+    }
+    if ($end == '0') {
+      $end = $mydate['syear'];
+    }
+    elseif (substr($end, 0, 1) == '+' || substr($end, 0, 1) == '-') {
+      eval('$end = ' . $mydate['year'] . $end . ';');
+    }
+    else {
+      $end = (int)$end;
+    }
+    if ($start>$end) {
+      $temp = $start;
+      $start = $end;
+      $end = $temp;
+    }
+    for ($i=$start;$i<=$end;$i++) {
+      if ($semester) {
+        $values[$i . '1'] = t('school_year:@syear,semester:@seme', array('@syear' => $i, '@seme' => 1));
+        $values[$i . '2'] = t('school_year:@syear,semester:@seme', array('@syear' => $i, '@seme' => 2));
+      }
+      else {
+        $values[$i . '0'] = t('school_year:@syear', array('@syear' => $i));
+      }
+    }
+  }
+  elseif ($field['type'] == 'sims_field_classes'){
+    $filter = $instance['settings']['filter_by_current_user'];
+    $current = $instance['settings']['filter_by_current_semester'];
+    if ($syear==NULL && $seme==NULL) {
+      if ($current || !isset($entity)) {
+        $syear = $mydate['year'];
+        $seme = $mydate['seme'];
+      }
+      else {
+        foreach ($entity as $my_field_name => $parent_field) {
+          if (substr($my_field_name, 0, 6) == 'field_') {
+            $my_field = field_info_field($my_field_name);
+            if ($my_field['type'] == 'sims_field_syear' && $my_field['settings']['include_semester']) {
+              $my_field_items = field_get_items($entity_type, $entity, $my_field_name);
+              if ($my_field_items) {
+                $my_field_first_item = reset($my_field_items);
+                $syear_value = $my_field_first_item['value'];
+              }
+            }
+          }
+        }
+        if (empty($syear_value)) {
+          $syear = $mydate['year'];
+          $seme = $mydate['seme'];
+        }
+        else {
+          $syear = substr($syear_value, 0, -1);
+          $seme = substr($syear_value, -1);
+        }
+      }
+    }
+    if ($filter) {
+      $account = user_uid_optional_load();
+      if ($account->userclass == 'teacher') {
+        $sql="SELECT DISTINCT A.CLSNO,B.CLASSNAME from TEASUB A left join BASCLS B on A.CLSNO=B.CLASSID WHERE A.SEYEAR=? AND A.SESEM=? AND A.TEAID=? ORDER BY CLSNO";
+        $rs=db2_query($sql, array($syear, $seme, $account->empid));
+      }
+      else {
+        $sql="SELECT CLASSID,CLASSNAME from BASCLS WHERE SEYEAR=? AND SESEM=? AND CLASSID=?";
+        $rs=db2_query($sql, array($syear, $seme, $account->depid));
+      }
+    }
+    else {
+      $sql="SELECT CLASSID,CLASSNAME from BASCLS WHERE SEYEAR=? AND SESEM=? ORDER BY CLASSID";
+      $rs=db2_query($sql, array($syear, $seme));
+    }
+    while ($row = db2_fetch_array($rs)) {
+      $values[$row[0]] = $row[1];
+    }
+  }
+  elseif ($field['type'] == 'sims_field_department'){
+    $sql="SELECT DEPT_ID,DEPT_NAME from SCHDEPT WHERE STATUS=1 ORDER BY DEPT_NAME";
+    $rs=db2_query($sql);
+    while ($row = db2_fetch_array($rs)) {
+      $values[$row[0]] = $row[1];
+    }
+  }
+  elseif ($field['type'] == 'sims_field_domain'){
+    $dept_id = $field['settings']['specific_department'];
+    $sql="SELECT POS_ID,POS_NAME from SCHPOSITION WHERE STATUS=1 AND DEPT_ID=? ORDER BY POS_NAME";
+    $rs=db2_query($sql, array($dept_id));
+    while ($row = db2_fetch_array($rs)) {
+      $values[$row[0]] = $row[1];
+    }
+  }
+  elseif ($field['type'] == 'sims_field_students'){
+    $db2_field = $field['settings']['specific_column'];
+    $filter = $instance['settings']['filter_by_class_field'];
+    $current = $instance['settings']['filter_by_current_semester'];
+    if ($syear == NULL && $seme == NULL) {
+      if ($current || !isset($entity)) {
+        $syear = $mydate['year'];
+        $seme = $mydate['seme'];
+      }
+      else {
+        foreach ($entity as $my_field_name => $parent_field) {
+          if (substr($my_field_name, 0, 6) == 'field_') {
+            $my_field = field_info_field($my_field_name);
+            if ($my_field['type'] == 'sims_field_syear' && $my_field['settings']['include_semester']) {
+              $my_field_items = field_get_items($entity_type, $entity, $my_field_name);
+              if ($my_field_items) {
+                $my_field_first_item = reset($my_field_items);
+                $syear_value = $my_field_first_item['value'];
+              }
+            }
+          }
+        }
+        if (empty($syear_value)) {
+          $syear = $mydate['year'];
+          $seme = $mydate['seme'];
+        }
+        else {
+          $syear = substr($syear_value, 0, -1);
+          $seme = substr($syear_value, -1);
+        }
+      }
+    }
+    if ($class == NULL) {
+      if (!$filter || !isset($entity)) {
+        $class = $instance['settings']['specific_class'];
+      }
+      else {
+        foreach ($entity as $my_field_name => $parent_field) {
+          if (substr($my_field_name, 0, 6) == 'field_') {
+            $my_field = field_info_field($my_field_name);
+            if ($my_field['type'] == 'sims_field_classes' && $my_field['cardinality'] == 1) {
+              $my_field_items = field_get_items($entity_type, $entity, $my_field_name);
+              if ($my_field_items) {
+                $my_field_first_item = reset($my_field_items);
+                $class_value = $my_field_first_item['value'];
+              }
+            }
+          }
+        }
+        if (empty($class_value)) {
+          $class = $instance['settings']['specific_class'];
+        }
+        else {
+          $class = $class_value;
+        }
+      }
+    }
+    $grade = substr($class, 0, 1);
+    $classno = substr($class, 1, 2);
+    if ($mydate['year'] == $syear && $mydate['seme'] == $seme) {
+      if ($db2_field == 'ID' || $db2_field == 'NAME') {
+        $sql="SELECT ID,NAME,NO from STUDENT WHERE STATUS=0 and YEAR=? and CLASSNO=? order by NO";
+        $rs=db2_query($sql, array($grade, $classno));
+      }
+      else {
+        $sql="SELECT ID,$db2_field,NAME,NO from STUDENT WHERE STATUS=0 and YEAR=? and CLASSNO=? order by NO";
+        $rs=db2_query($sql, array($grade, $classno));
+      }
+    }
+    else {
+      $seyear = (int)$syear - $grade + 1;
+      if (strlen($seyear) == 2) {
+        $seyear = '0' . $seyear;
+      }
+      $year_field = 'YEAR' . $grade . $seme;
+      if ($db2_field == 'ID' || $db2_field == 'NAME') {
+        $sql="SELECT a.ID,a.NAME,RIGHT(b.$year_field,2) from STUDENT a left join STDITEM b on a.ID=b.STDID WHERE a.STATUS=0 AND a.SEYEAR=? AND LEFT(b.$year_field,2)=? order by RIGHT(b.$year_field,2)";
+        $rs=db2_query($sql, array($seyear, $classno));
+      }
+      else {
+        $sql="SELECT a.ID,a.$db2_field,a.NAME,RIGHT(b.$year_field,2) from STUDENT a left join STDITEM b on a.ID=b.STDID WHERE a.STATUS=0 AND a.SEYEAR=? AND LEFT(b.$year_field,2)=? order by RIGHT(b.$year_field,2)";
+        $rs=db2_query($sql, array($seyear, $classno));
+      }
+    }
+    while ($row = db2_fetch_array($rs)) {
+      if ($db2_field == 'ID') {
+        $values[$row[0]] = $row[0] . '(' . $row[2] . ':' . $row[1] . ')';
+      }
+      elseif ($db2_field == 'NAME') {
+        $values[$row[0]] = $row[1] . '(' . $row[2] . ')';
+      }
+      else {
+        $values[$row[0]] = $row[1] . '(' . $row[3] . ':' . $row[2] . ')';
+      }
+    }
+  }
+  elseif ($field['type'] == 'sims_field_teachers'){
+    $db2_field = $field['settings']['specific_column'];
+    $filter1 = $instance['settings']['filter_by_class_field'];
+    $filter2 = $instance['settings']['filter_by_department_field'];
+    $filter3 = $instance['settings']['filter_by_domain_field'];
+    $current = $instance['settings']['filter_by_current_semester'];
+    if ($syear == NULL && $seme == NULL) {
+      if ($current || !isset($entity)) {
+        $syear = $mydate['year'];
+        $seme = $mydate['seme'];
+      }
+      else {
+        foreach ($entity as $my_field_name => $parent_field) {
+          if (substr($my_field_name, 0, 6) == 'field_') {
+            $my_field = field_info_field($my_field_name);
+            if ($my_field['type'] == 'sims_field_syear' && $my_field['settings']['include_semester']) {
+              $my_field_items = field_get_items($entity_type, $entity, $my_field_name);
+              if ($my_field_items) {
+                $my_field_first_item = reset($my_field_items);
+                $syear_value = $my_field_first_item['value'];
+              }
+            }
+          }
+        }
+        if (empty($syear_value)) {
+          $syear = $mydate['year'];
+          $seme = $mydate['seme'];
+        }
+        else {
+          $syear = substr($syear_value, 0, -1);
+          $seme = substr($syear_value, -1);
+        }
+      }
+    }
+    if ($class == NULL) {
+      if (!$filter1 || !isset($entity)) {
+        $class = $instance['settings']['specific_class'];
+      }
+      else {
+        foreach ($entity as $my_field_name => $parent_field) {
+          if (substr($my_field_name, 0, 6) == 'field_') {
+            $my_field = field_info_field($my_field_name);
+            if ($my_field['type'] == 'sims_field_classes' && $my_field['cardinality'] == 1) {
+              $my_field_items = field_get_items($entity_type, $entity, $my_field_name);
+              if ($my_field_items) {
+                $my_field_first_item = reset($my_field_items);
+                $class_value = $my_field_first_item['value'];
+              }
+            }
+          }
+        }
+        if (empty($class_value)) {
+          $class = $instance['settings']['specific_class'];
+        }
+        else {
+          $class = $class_value;
+        }
+      }
+    }
+    if ($department == NULL) {
+      if (!$filter2 || !isset($entity)) {
+        $department = $instance['settings']['specific_department'];
+      }
+      else {
+        foreach ($entity as $my_field_name => $parent_field) {
+          if (substr($my_field_name, 0, 6) == 'field_') {
+            $my_field = field_info_field($my_field_name);
+            if ($my_field['type'] == 'sims_field_department' && $my_field['cardinality'] == 1) {
+              $my_field_items = field_get_items($entity_type, $entity, $my_field_name);
+              if ($my_field_items) {
+                $my_field_first_item = reset($my_field_items);
+                $department_value = $my_field_first_item['value'];
+              }
+            }
+          }
+        }
+        if (empty($department_value)) {
+          $department = $instance['settings']['specific_department'];
+        }
+        else {
+          $department = $department_value;
+        }
+      }
+    }
+    if ($domain == NULL) {
+      if (!$filter3 || !isset($entity)) {
+        $domain = $instance['settings']['specific_domain'];
+      }
+      else {
+        foreach ($entity as $my_field_name => $parent_field) {
+          if (substr($my_field_name, 0, 6) == 'field_') {
+            $my_field = field_info_field($my_field_name);
+            if ($my_field['type'] == 'sims_field_domain' && $my_field['cardinality'] == 1) {
+              $my_field_items = field_get_items($entity_type, $entity, $my_field_name);
+              if ($my_field_items) {
+                $my_field_first_item = reset($my_field_items);
+                $domain_value = $my_field_first_item['value'];
+              }
+            }
+          }
+        }
+        if (empty($domain_value)) {
+          $domain = $instance['settings']['specific_domain'];
+        }
+        else {
+          $domain = $domain_value;
+        }
+      }
+    }
+    if ($filter1 && !empty($class)) {
+      if ($db2_field == 'TEAID' || $db2_field == 'TEANAME') {
+        $sql="SELECT DISTINCT a.TEAID,a.TEANAME,c.LCNAME from TEABAS a left join TEASUB b on a.TEAID=b.TEAID left join SUBDAT c on b.SUBNO=c.SUBNO WHERE a.ATSCHOOL=1 AND b.SEYEAR=? AND b.SESEM=? AND b.CLSNO=? ORDER BY a.TEANAME";
+        $rs=db2_query($sql, array($syear, $seme, $class));
+      }
+      else {
+        $sql="SELECT DISTINCT a.TEAID,a.$db2_field,a.TEANAME,c.LCNAME from TEABAS left join TEASUB b on a.TEAID=b.TEAID left join SUBDAT c on b.SUBNO=c.SUBNO WHERE a.ATSCHOOL=1 AND b.SEYEAR=? AND b.SESEM=? AND b.CLSNO=? ORDER BY a.TEANAME";
+        $rs=db2_query($sql, array($syear, $seme, $class));
+      }
+      $sql="SELECT TEAID from TEASRV WHERE SEYEAR=? AND SESEM=? AND PROCLASS=?";
+      $rs1=db2_query($sql, array($syear, $seme, $class));
+      $tutor = db2_fetch_array($rs1)[0];
+    }
+    elseif ($filter2 && !empty($department)) {
+      if ($db2_field == 'TEAID' || $db2_field == 'TEANAME') {
+        $sql="SELECT a.TEAID,a.TEANAME,c.POS_NAME from TEABAS a left join TEASRV b on a.TEAID=b.TEAID left join SCHPOSITION c on b.POS_ID=c.POS_ID WHERE a.ATSCHOOL=1 AND b.SEYEAR=? and b.SESEM=? and c.DEPT_ID=?";
+        $rs=db2_query($sql, array($syear, $seme, $department));
+      }
+      else {
+        $sql="SELECT a.TEAID,a.$db2_field,a.TEANAME,c.POS_NAME from TEABAS a left join TEASRV b on a.TEAID=b.TEAID left join SCHPOSITION c on b.POS_ID=c.POS_ID WHERE a.ATSCHOOL=1 AND b.SEYEAR=? and b.SESEM=? and c.DEPT_ID=?";
+        $rs=db2_query($sql, array($syear, $seme, $department));
+      }
+      $tutor = 0;
+    }
+    elseif ($filter3 && !empty($domain)) {
+      if ($db2_field == 'TEAID' || $db2_field == 'TEANAME') {
+        $sql="SELECT a.TEAID,a.TEANAME,c.POS_NAME from TEABAS a left join TEASRV b on a.TEAID=b.TEAID left join SCHPOSITION c on b.POS_ID=c.POS_ID WHERE a.ATSCHOOL=1 AND b.SEYEAR=? and b.SESEM=? and c.POS_ID=?";
+        $rs=db2_query($sql, array($syear, $seme, $domain));
+      }
+      else {
+        $sql="SELECT a.TEAID,a.$db2_field,a.TEANAME,c.POS_NAME from TEABAS a left join TEASRV b on a.TEAID=b.TEAID left join SCHPOSITION c on b.POS_ID=c.POS_ID WHERE a.ATSCHOOL=1 AND b.SEYEAR=? and b.SESEM=? and c.POS_ID=?";
+        $rs=db2_query($sql, array($syear, $seme, $domain));
+      }
+      $tutor = 0;
+    }
+    elseif (!empty($class)) {
+      if ($db2_field == 'TEAID' || $db2_field == 'TEANAME') {
+        $sql="SELECT DISTINCT a.TEAID,a.TEANAME,c.LCNAME from TEABAS a left join TEASUB b on a.TEAID=b.TEAID left join SUBDAT c on b.SUBNO=c.SUBNO WHERE a.ATSCHOOL=1 AND b.SEYEAR=? AND b.SESEM=? AND b.CLSNO=? ORDER BY a.TEANAME";
+        $rs=db2_query($sql, array($syear, $seme, $class));
+      }
+      else {
+        $sql="SELECT DISTINCT a.TEAID,a.$db2_field,a.TEANAME,c.LCNAME from TEABAS left join TEASUB b on a.TEAID=b.TEAID left join SUBDAT c on b.SUBNO=c.SUBNO WHERE a.ATSCHOOL=1 AND b.SEYEAR=? AND b.SESEM=? AND b.CLSNO=? ORDER BY a.TEANAME";
+        $rs=db2_query($sql, array($syear, $seme, $class));
+      }
+      $sql="SELECT TEAID from TEASRV WHERE SEYEAR=? AND SESEM=? AND PROCLASS=?";
+      $rs1=db2_query($sql, array($syear, $seme, $class));
+      $tutor = db2_fetch_array($rs1)[0];
+    }
+    elseif (!empty($department)) {
+      if ($db2_field == 'TEAID' || $db2_field == 'TEANAME') {
+        $sql="SELECT a.TEAID,a.TEANAME,c.POS_NAME from TEABAS a left join TEASRV b on a.TEAID=b.TEAID left join SCHPOSITION c on b.POS_ID=c.POS_ID WHERE a.ATSCHOOL=1 AND b.SEYEAR=? and b.SESEM=? and c.DEPT_ID=?";
+        $rs=db2_query($sql, array($syear, $seme, $department));
+      }
+      else {
+        $sql="SELECT a.TEAID,a.$db2_field,a.TEANAME,c.POS_NAME from TEABAS a left join TEASRV b on a.TEAID=b.TEAID left join SCHPOSITION c on b.POS_ID=c.POS_ID WHERE a.ATSCHOOL=1 AND b.SEYEAR=? and b.SESEM=? and c.DEPT_ID=?";
+        $rs=db2_query($sql, array($syear, $seme, $department));
+      }
+      $tutor = 0;
+    }
+    elseif (!empty($domain)) {
+      if ($db2_field == 'TEAID' || $db2_field == 'TEANAME') {
+        $sql="SELECT a.TEAID,a.TEANAME,c.POS_NAME from TEABAS a left join TEASRV b on a.TEAID=b.TEAID left join SCHPOSITION c on b.POS_ID=c.POS_ID WHERE a.ATSCHOOL=1 AND b.SEYEAR=? and b.SESEM=? and c.POS_ID=?";
+        $rs=db2_query($sql, array($syear, $seme, $domain));
+      }
+      else {
+        $sql="SELECT a.TEAID,a.$db2_field,a.TEANAME,c.POS_NAME from TEABAS a left join TEASRV b on a.TEAID=b.TEAID left join SCHPOSITION c on b.POS_ID=c.POS_ID WHERE a.ATSCHOOL=1 AND b.SEYEAR=? and b.SESEM=? and c.POS_ID=?";
+        $rs=db2_query($sql, array($syear, $seme, $domain));
+      }
+      $tutor = 0;
+    }
+    if (isset($rs)) {
+      while ($row = db2_fetch_array($rs)) {
+        if ($db2_field == 'TEAID' || $db2_field == 'TEANAME') {
+          if ($tutor == $row[0]) {
+            $values[$row[0]] = $row[1] . '(' . t('Tutor') . ')';
+          }
+          else {
+            $values[$row[0]] = $row[1] . '(' . $row[2] . ')';
+          }
+        }
+        else {
+          if ($tutor == $row[0]) {
+            $values[$row[0]] = $row[1] . '(' . t('Tutor') . ':' . $row[2] . ')';
+          }
+          else {
+            $values[$row[0]] = $row[1] . '(' . $row[3] . ':' . $row[2] . ')';
+          }
+        }
+      }
+    }
+  }
+
+  return $values;
+}
+
+/**
+ * ajax callback for Widget Form to reload by sims field syear's value.
+ */
+function reload_syear_ajax_callback($form, $form_state) {
+  $commands = array();
+  $element = $form_state['triggering_element'];
+  $field_name = $element['#field_name'];
+  $langcode = $element['#language'];
+  $delta = $element['#delta'];
+  $syear_value = $element['#value'];
+  $syear = substr($syear_value, 0, -1);
+  $seme = substr($syear_value, -1);
+  foreach ($form_state['field'] as $my_field_name => $parent_field) {
+    $my_field = $parent_field[$langcode]['field'];
+    if ($my_field['type'] == 'sims_field_classes') {
+      $class = $form_state['values'][$my_field_name][$langcode][0]['value'];
+    }
+    if ($my_field['type'] == 'sims_field_department') {
+      $department = $form_state['values'][$my_field_name][$langcode][0]['value'];
+    }
+    if ($my_field['type'] == 'sims_field_students') {
+      $students = $form_state['values'][$my_field_name][$langcode];
+    }
+    if ($my_field['type'] == 'sims_field_teachers') {
+      $teachers = $form_state['values'][$my_field_name][$langcode];
+    }
+  }
+  foreach ($form_state['field'] as $my_field_name => $parent_field) {
+    $my_field = $parent_field[$langcode]['field'];
+    $my_instance = $parent_field[$langcode]['instance'];
+    if ($my_field['type'] == 'sims_field_classes' || $my_field['type'] == 'sims_field_students' || $my_field['type'] == 'sims_field_teachers') {
+      $current = $my_instance['settings']['filter_by_current_semester'];
+      if (!$current) {
+        $my_field_name = $my_field['field_name'];
+        $my_element = $form[$my_field_name][$langcode];
+        foreach ($my_element['#options'] as $key => $value) {
+          unset($my_element[$key]);
+        }
+        $options = sims_field_options_list($my_field, $my_instance, $my_element['#entity_type'], $my_element['#entity'], $syear, $seme, $class);
+        if ($my_element['#properties']['empty_option']) {
+          $label = theme('options_none', array('instance' => $my_instance, 'option' => $my_element['#properties']['empty_option']));
+          $options = array('_none' => $label) + $options;
+        }
+        $my_element['#options'] = $options;
+        if ($my_element['#type'] == 'radios') {
+          $my_element = form_process_radios($my_element);
+          foreach ($my_element['#options'] as $key => $value) {
+            if ($key == $my_element['#value']) {
+              $my_element[$key]['#value'] = TRUE;
+            }
+            else {
+              $my_element[$key]['#value'] = FALSE;
+            }
+          }
+          $my_element = display_inline($my_element);
+        }
+        elseif ($my_element['#type'] == 'checkboxes') {
+          $my_element = form_process_checkboxes($my_element);
+          foreach ($my_element['#options'] as $key => $value) {
+            foreach (array_values((array) $my_element['#value']) as $default_value) {
+              if ($key == $default_value) {
+                $my_element[$key]['#value'] = $key;
+                $my_element[$key] = form_process_checkbox($my_element[$key], $form_state);
+              }
+              else {
+                $my_element[$key]['#value'] = FALSE;
+                $my_element[$key] = form_process_checkbox($my_element[$key], $form_state);
+              }
+            }
+          }
+          $my_element = display_inline($my_element);
+        }
+        $element_id = 'edit-' . str_replace('_', '-', $my_field_name);
+        $commands[] = ajax_command_replace("#$element_id div", drupal_render($my_element));
+      }
+    }
+  }
+  return array('#type' => 'ajax', '#commands' => $commands);
+}
+
+/**
+ * ajax callback for Widget Form to reload by sims field classes's value.
+ */
+function reload_class_ajax_callback($form, $form_state) {
+  $commands = array();
+  $syear = NULL;
+  $seme = NULL;
+  $element = $form_state['triggering_element'];
+  $field_name = $element['#field_name'];
+  $langcode = $element['#language'];
+  $delta = $element['#delta'];
+  $class = $element['#value'];
+  foreach ($form_state['field'] as $my_field_name => $parent_field) {
+    $my_field = $parent_field[$langcode]['field'];
+    if ($my_field['type'] == 'sims_field_syear') {
+      $syear_value = $form_state['values'][$my_field_name][$langcode][0]['value'];
+      $syear = substr($syear_value, 0, -1);
+      $seme = substr($syear_value, -1);
+    }
+    if ($my_field['type'] == 'sims_field_students') {
+      $students = $form_state['values'][$my_field_name][$langcode];
+    }
+    if ($my_field['type'] == 'sims_field_teachers') {
+      $teachers = $form_state['values'][$my_field_name][$langcode];
+    }
+  }
+  foreach ($form_state['field'] as $my_field_name => $parent_field) {
+    $my_field = $parent_field[$langcode]['field'];
+    $my_instance = $parent_field[$langcode]['instance'];
+    if ($my_field['type'] == 'sims_field_students' || $my_field['type'] == 'sims_field_teachers') {
+      $filter = $my_instance['settings']['filter_by_class_field'];
+      if ($filter) {
+        $my_field_name = $my_field['field_name'];
+        $my_element = $form[$my_field_name][$langcode];
+        foreach ($my_element['#options'] as $key => $value) {
+          unset($my_element[$key]);
+        }
+        $options = sims_field_options_list($my_field, $my_instance, $my_element['#entity_type'], $my_element['#entity'], $syear, $seme, $class);
+        if ($my_element['#properties']['empty_option']) {
+          $label = theme('options_none', array('instance' => $my_instance, 'option' => $my_element['#properties']['empty_option']));
+          $options = array('_none' => $label) + $options;
+        }
+        $my_element['#options'] = $options;
+        if ($my_element['#type'] == 'radios') {
+          $my_element = form_process_radios($my_element);
+          foreach ($my_element['#options'] as $key => $value) {
+            if ($key == $my_element['#value']) {
+              $my_element[$key]['#value'] = TRUE;
+            }
+            else {
+              $my_element[$key]['#value'] = FALSE;
+            }
+          }
+          $my_element = display_inline($my_element);
+        }
+        elseif ($my_element['#type'] == 'checkboxes') {
+          $my_element = form_process_checkboxes($my_element);
+          foreach ($my_element['#options'] as $key => $value) {
+            foreach (array_values((array) $my_element['#value']) as $default_value) {
+              if ($key == $default_value) {
+                $my_element[$key]['#value'] = $key;
+                $my_element[$key] = form_process_checkbox($my_element[$key], $form_state);
+              }
+              else {
+                $my_element[$key]['#value'] = FALSE;
+                $my_element[$key] = form_process_checkbox($my_element[$key], $form_state);
+              }
+            }
+          }
+          $my_element = display_inline($my_element);
+        }
+        $element_id = 'edit-' . str_replace('_', '-', $my_field_name);
+        $commands[] = ajax_command_replace("#$element_id div", drupal_render($my_element));
+      }
+    }
+  }
+
+  return array('#type' => 'ajax', '#commands' => $commands);
+}
+
+/**
+ * ajax callback for Widget Form to reload by sims field department's value.
+ */
+function reload_department_ajax_callback($form, $form_state) {
+  $commands = array();
+  $syear = NULL;
+  $seme = NULL;
+  $element = $form_state['triggering_element'];
+  $field_name = $element['#field_name'];
+  $langcode = $element['#language'];
+  $delta = $element['#delta'];
+  $department = $element['#value'];
+  foreach ($form_state['field'] as $my_field_name => $parent_field) {
+    $my_field = $parent_field[$langcode]['field'];
+    if ($my_field['type'] == 'sims_field_syear') {
+      $syear_value = $form_state['values'][$my_field_name][$langcode][0]['value'];
+      $syear = substr($syear_value, 0, -1);
+      $seme = substr($syear_value, -1);
+    }
+    if ($my_field['type'] == 'sims_field_teachers') {
+      $teachers = $form_state['values'][$my_field_name][$langcode];
+    }
+  }
+  foreach ($form_state['field'] as $my_field_name => $parent_field) {
+    $my_field = $parent_field[$langcode]['field'];
+    $my_instance = $parent_field[$langcode]['instance'];
+    if ($my_field['type'] == 'sims_field_teachers') {
+      $filter = $my_instance['settings']['filter_by_department_field'];
+      if ($filter) {
+        $my_field_name = $my_field['field_name'];
+        $my_element = $form[$my_field_name][$langcode];
+        foreach ($my_element['#options'] as $key => $value) {
+          unset($my_element[$key]);
+        }
+        $options = sims_field_options_list($my_field, $my_instance, $my_element['#entity_type'], $my_element['#entity'], $syear, $seme, NULL, $department);
+        if ($my_element['#properties']['empty_option']) {
+          $label = theme('options_none', array('instance' => $my_instance, 'option' => $my_element['#properties']['empty_option']));
+          $options = array('_none' => $label) + $options;
+        }
+        $my_element['#options'] = $options;
+        if ($my_element['#type'] == 'radios') {
+          $my_element = form_process_radios($my_element);
+          foreach ($my_element['#options'] as $key => $value) {
+            if ($key == $my_element['#value']) {
+              $my_element[$key]['#value'] = TRUE;
+            }
+            else {
+              $my_element[$key]['#value'] = FALSE;
+            }
+          }
+          $my_element = display_inline($my_element);
+        }
+        elseif ($my_element['#type'] == 'checkboxes') {
+          $my_element = form_process_checkboxes($my_element);
+          foreach ($my_element['#options'] as $key => $value) {
+            foreach (array_values((array) $my_element['#value']) as $default_value) {
+              if ($key == $default_value) {
+                $my_element[$key]['#value'] = $key;
+                $my_element[$key] = form_process_checkbox($my_element[$key], $form_state);
+              }
+              else {
+                $my_element[$key]['#value'] = FALSE;
+                $my_element[$key] = form_process_checkbox($my_element[$key], $form_state);
+              }
+            }
+          }
+          $my_element = display_inline($my_element);
+        }
+        $element_id = 'edit-' . str_replace('_', '-', $my_field_name);
+        $commands[] = ajax_command_replace("#$element_id div", drupal_render($my_element));
+      }
+    }
+  }
+
+  return array('#type' => 'ajax', '#commands' => $commands);
+}
+
+/**
+ * ajax callback for Widget Form to reload by sims field domain's value.
+ */
+function reload_domain_ajax_callback($form, $form_state) {
+  $commands = array();
+  $syear = NULL;
+  $seme = NULL;
+  $element = $form_state['triggering_element'];
+  $field_name = $element['#field_name'];
+  $langcode = $element['#language'];
+  $delta = $element['#delta'];
+  $domain = $element['#value'];
+  foreach ($form_state['field'] as $my_field_name => $parent_field) {
+    $my_field = $parent_field[$langcode]['field'];
+    if ($my_field['type'] == 'sims_field_syear') {
+      $syear_value = $form_state['values'][$my_field_name][$langcode][0]['value'];
+      $syear = substr($syear_value, 0, -1);
+      $seme = substr($syear_value, -1);
+    }
+    if ($my_field['type'] == 'sims_field_teachers') {
+      $teachers = $form_state['values'][$my_field_name][$langcode];
+    }
+  }
+  foreach ($form_state['field'] as $my_field_name => $parent_field) {
+    $my_field = $parent_field[$langcode]['field'];
+    $my_instance = $parent_field[$langcode]['instance'];
+    if ($my_field['type'] == 'sims_field_teachers') {
+      $filter = $my_instance['settings']['filter_by_domain_field'];
+      if ($filter) {
+        $my_field_name = $my_field['field_name'];
+        $my_element = $form[$my_field_name][$langcode];
+        foreach ($my_element['#options'] as $key => $value) {
+          unset($my_element[$key]);
+        }
+        $options = sims_field_options_list($my_field, $my_instance, $my_element['#entity_type'], $my_element['#entity'], $syear, $seme, NULL, NULL, $domain);
+        if ($my_element['#properties']['empty_option']) {
+          $label = theme('options_none', array('instance' => $my_instance, 'option' => $my_element['#properties']['empty_option']));
+          $options = array('_none' => $label) + $options;
+        }
+        $my_element['#options'] = $options;
+        if ($my_element['#type'] == 'radios') {
+          $my_element = form_process_radios($my_element);
+          foreach ($my_element['#options'] as $key => $value) {
+            if ($key == $my_element['#value']) {
+              $my_element[$key]['#value'] = TRUE;
+            }
+            else {
+              $my_element[$key]['#value'] = FALSE;
+            }
+          }
+          $my_element = display_inline($my_element);
+        }
+        elseif ($my_element['#type'] == 'checkboxes') {
+          $my_element = form_process_checkboxes($my_element);
+          foreach ($my_element['#options'] as $key => $value) {
+            foreach (array_values((array) $my_element['#value']) as $default_value) {
+              if ($key == $default_value) {
+                $my_element[$key]['#value'] = $key;
+                $my_element[$key] = form_process_checkbox($my_element[$key], $form_state);
+              }
+              else {
+                $my_element[$key]['#value'] = FALSE;
+                $my_element[$key] = form_process_checkbox($my_element[$key], $form_state);
+              }
+            }
+          }
+          $my_element = display_inline($my_element);
+        }
+        $element_id = 'edit-' . str_replace('_', '-', $my_field_name);
+        $commands[] = ajax_command_replace("#$element_id div", drupal_render($my_element));
+      }
+    }
+  }
+
+  return array('#type' => 'ajax', '#commands' => $commands);
+}
+
+/**
+ * Implements hook_field_is_empty().
+ */
+function sims_field_field_is_empty($item, $field) {
+  if (empty($item['value']) && (string) $item['value'] !== '0') {
+    return TRUE;
+  }
+  return FALSE;
+}
+
+/**
+ * Implements hook_field_formatter_info().
+ */
+function sims_field_field_formatter_info() {
+  return array(
+    'sims_default' => array(
+      'label' => t('Default'),
+      'field types' => array('sims_field_syear', 'sims_field_classes', 'sims_field_department', 'sims_field_domain', 'sims_field_students', 'sims_field_teachers'),
+    ),
+    'sims_key' => array(
+      'label' => t('Key'),
+      'field types' => array('sims_field_syear', 'sims_field_classes', 'sims_field_department', 'sims_field_domain', 'sims_field_students', 'sims_field_teachers'),
+    ),
+  );
+}
+
+/**
+ * Implements hook_field_formatter_view().
+ */
+function sims_field_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
+  $element = array();
+
+  switch ($display['type']) {
+    case 'sims_default':
+      foreach ($items as $delta => $item) {
+        $display_value = sims_field_get_value($field, $item['value']);
+        if (!empty($display_value)) {
+          $output = field_filter_xss($display_value);
+        }
+        else {
+          $output = field_filter_xss($item['value']);
+        }
+        $element[$delta] = array('#markup' => $output);
+      }
+      break;
+
+    case 'sims_key':
+      foreach ($items as $delta => $item) {
+        $element[$delta] = array('#markup' => field_filter_xss($item['value']));
+      }
+      break;
+  }
+
+  return $element;
+}
+
+/**
+ * helper function sims_field_get_value()
+ */
+function sims_field_get_value($field, $key_value) {
+  $value = NULL;
+  if ($field['type'] == 'sims_field_syear') {
+    $syear = substr($key_value, 0, -1);
+    $seme = substr($key_value, -1);
+    if ($seme == '0') {
+        $value = t('school_year:@syear', array('@syear' => $syear));
+    }
+    else {
+        $value = t('school_year:@syear,semester:@seme', array('@syear' => $syear, '@seme' => $seme));
+    }
+  }
+  elseif ($field['type'] == 'sims_field_classes'){
+    $sql="SELECT CLASSNAME from BASCLS WHERE CLASSID=?";
+    $rs=db2_query($sql, array($key_value));
+    if ($row = db2_fetch_array($rs)) {
+      $value = $row[0];
+    }
+  }
+  elseif ($field['type'] == 'sims_field_department'){
+    $sql="SELECT DEPT_NAME from SCHDEPT WHERE STATUS=1 and DEPT_ID=?";
+    $rs=db2_query($sql, array($key_value));
+    if ($row = db2_fetch_array($rs)) {
+      $value = $row[0];
+    }
+  }
+  elseif ($field['type'] == 'sims_field_domain'){
+    $sql="SELECT POS_NAME from SCHPOSITION WHERE STATUS=1 AND POS_ID=?";
+    $rs=db2_query($sql, array($key_value));
+    if ($row = db2_fetch_array($rs)) {
+      $value = $row[0];
+    }
+  }
+  elseif ($field['type'] == 'sims_field_students'){
+    $db2_field = $field['settings']['specific_column'];
+    $sql="SELECT $db2_field from STUDENT WHERE ID=?";
+    $rs=db2_query($sql, array($key_value));
+    if ($row = db2_fetch_array($rs)) {
+      $value = $row[0];
+    }
+  }
+  elseif ($field['type'] == 'sims_field_teachers'){
+    $db2_field = $field['settings']['specific_column'];
+    $sql="SELECT $db2_field from TEABAS WHERE ATSCHOOL=1 AND TEAID=?";
+    $rs=db2_query($sql, array($key_value));
+    if ($row = db2_fetch_array($rs)) {
+      $value = $row[0];
+    }
+  }
+
+  return $value;
+}
+
+/**
+ * Implements hook_element_info_alter().
+ */
+function sims_field_element_info_alter(&$type) {
+  $type['radios']['#process'][] = 'display_inline';
+  $type['checkboxes']['#process'][] = 'display_inline';
+}
+
+/**
+ * process checkboxes for display inline.
+ */
+function display_inline($element) {
+  if (!isset($element['#inline']) || $element['#inline']<2) return $element;
+  if (count($element ['#options']) > 0) {
+    drupal_add_css(drupal_get_path('module', 'sims_field') . '/options.css');
+    $column = 0;
+    foreach ($element ['#options'] as $key => $choice) {
+      if ($key === 0) {
+        $key = '0';
+      }
+      $class = ($column % $element['#inline']) ? 'button-columns' : 'button-columns-clear';
+      if (isset($element[$key])) {
+        $element[$key]['#prefix'] = '<div class="' . $class . '">';
+        $element[$key]['#suffix'] = '</div>';
+      }
+      $column++;
+    }
+  }
+  return $element;
+}
+
+/**
+ * Implements hook_field_views_data().
+ */
+function sims_field_field_views_data($field) {
+  $data = field_views_field_default_views_data($field);
+  foreach ($data as $table_name => $table_data) {
+    foreach ($table_data as $field_name => $field_data) {
+      if (isset($field_data['filter']) && $field_name != 'delta') {
+        if ($field['type'] == 'sims_field_syear' || $field['type'] == 'sims_field_department' || $field['type'] == 'sims_field_domain') {
+          $data[$table_name][$field_name]['filter']['handler'] = 'views_handler_filter_field_list';
+        }
+      }
+      if (isset($field_data['argument']) && $field_name != 'delta') {
+        if ($field['type'] == 'sims_field_syear' || $field['type'] == 'sims_field_department' || $field['type'] == 'sims_field_domain') {
+          $data[$table_name][$field_name]['argument']['handler'] = 'views_handler_argument_field_list_string';
+        }
+      }
+    }
+  }
+  return $data;
+}

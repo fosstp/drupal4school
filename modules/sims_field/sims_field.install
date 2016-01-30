@@ -1,0 +1,35 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the simsauth module.
+ */
+
+/**
+ * Implements hook_field_schema().
+ */
+function sims_field_field_schema($field) {
+  switch ($field['type']) {
+    case 'sims_field_syear':
+    case 'sims_field_classes':
+    case 'sims_field_department':
+    case 'sims_field_domain':
+    case 'sims_field_students':
+    case 'sims_field_teachers':
+      $columns = array(
+        'value' => array(
+          'type' => 'varchar',
+          'length' => 255,
+          'not null' => FALSE,
+        ),
+      );
+      break;
+  }
+
+  return array(
+    'columns' => $columns,
+    'indexes' => array(
+      'value' => array('value'),
+    ),
+  );
+}

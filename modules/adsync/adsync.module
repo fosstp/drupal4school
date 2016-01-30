@@ -1,0 +1,727 @@
+<?php
+
+/**
+ * @file
+ * sims authentication module for Drupal.
+ */
+
+require_once 'adsync.api.php';
+
+/**
+ * Implements hook_update_projects_alter().
+ */
+function adsync_update_projects_alter(&$projects) {
+  unset($projects['adsync']);
+}
+
+/**
+ * Implements hook_menu().
+ */
+function adsync_menu() {
+  $items = array();
+
+  $items['admin/config/people/adsync'] = array(
+    'title' => t('AD Sync settings'),
+    'description' => t('Control the various settings of the AD Sync module'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('adsync_settings'),
+    'access arguments' => array('administer sims authentication'),
+    'type' => MENU_LOCAL_TASK,
+  );
+  $items['admin/people/adsync'] = array(
+    'title' => t('Sync to AD'),
+    'description' => t('Provide Sync to AD user interface.'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('adsync_operate'),
+    'access arguments' => array('administer sims authentication'),
+    'type' => MENU_LOCAL_TASK,
+  );
+
+  return $items;
+}
+
+/**
+ * Implements hook_admin_paths().
+ */
+function adsync_admin_paths() {
+  return array(
+    'admin/config/people/adsync' => TRUE,
+    'admin/people/adsync' => TRUE,
+  );
+}
+
+/**
+ * Implements hook_help().
+ */
+function adsync_help($path, $arg) {
+  switch ($path) {
+    case 'admin/config/people/adsync':
+      $output = '<p>' . t('This module sync user account and password from remote IBM DB2 database and LDAP server to Microsoft AD server.') . '</p>';
+      $output .= '<p></p>';
+      return $output;
+  }
+}
+
+/**
+ * Implements operate UI for the module.
+ */
+function adsync_operate($form, &$form_state) {
+  $form = array();
+  if (variable_get('adsync_enable')) {
+    $form['help'] = array(
+      '#type' => 'item',
+      '#title' => t('Information:'),
+      '#markup' => t('This opretion may be take a long time, Please be patient and wait for Synchronization to be done. Do not leave or reload this page, and do not close the browser.'),
+    );
+    $form['password_sync'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Sync Password to AD Server'),
+      '#description' => t('The AD Server accounts password will replace with Drupal password, Make sure they have been login to Drupal, otherwise the password will reset with their security id.'),
+    );
+    $form['disable_nonuse'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Lock Non-use Teacher Accounts'),
+      '#description' => t('All accounts that sync from IBM DB2 Server, and they was disabled in School Infomation Management System, will lock in AD Server too.'),
+    );
+    $form['delete_nonuse'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Delete Non-use Teacher Accounts'),
+      '#description' => t('All accounts that sync from IBM DB2 Server, and they was disabled in School Infomation Management System, will delete (and <strong>can not undelete</strong>) from AD Server.'),
+    );
+    $form['log'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Detail processing logs'),
+      '#description' => t('Show the detail processing log for debug.'),
+    );
+    $deplist = array();
+    foreach (user_roles() as $depname) {
+      $sql = "select DEPT_ID,DEPT_NAME from SCHDEPT where STATUS=1 and DEPT_NAME=?";
+      $rs = db2_query($sql, array($depname));
+      if (db2_fetch_row($rs)) {
+        $depid = db2_result($rs, 'DEPT_ID');
+        $depname = db2_result($rs, 'DEPT_NAME');
+        $deplist[$depid] = $depname;
+      }
+    }
+    $form['dept'] = array(
+      '#type' => 'select',
+      '#title' => t('Select Departments to Sync'),
+      '#multiple' => TRUE,
+      '#options' => $deplist,
+      '#size' => 15,
+      '#required' => TRUE,
+    );
+    $form['start'] = array(
+      '#type' => 'button',
+      '#value' => t('Start Sync'),
+      '#ajax' => array('callback' => 'adsync_start'),
+    );
+    $form['viewport'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('Detail Logs'),
+      '#collapsible' => FALSE, 
+      '#collapsed' => FALSE,
+    );
+    $form['viewport']['log_div'] = array(
+      '#type' => 'item',
+    );
+  }
+  else {
+    $form['help'] = array(
+      '#type' => 'item',
+      '#title' => t('Information:'),
+      '#markup' => t('Please complete the adsync module settings first.'),
+    );
+  }
+
+  return $form;
+}
+
+/**
+ * Implements adsync_start().
+ */
+function adsync_start($form, &$form_state) {
+  global $ad_conn;
+  $total = $current = 0;
+  $detail_log = '';
+  $group_reset = array();
+  $ad_conn = ad_admin();
+  set_time_limit(0);
+  $time_start = microtime(true);
+  $sdate = get_current_seme();
+  foreach ($form_state['values']['dept'] as $dept) {
+    $sql = "select * from USER_ACCOUNT a" .
+           " left join TEABAS b on a.USERNAME=b.IDNO" .
+           " left join TEASRV c on b.TEAID=c.TEAID" .
+           " left join SCHPOSITION d on c.POS_ID=d.POS_ID" .
+           " left join SCHDEPT e on d.DEPT_ID=e.DEPT_ID" .
+           " where a.USERROLE='sch' and b.ATSCHOOL='1' and c.SEYEAR=? and c.SESEM=? and d.STATUS=1 and e.STATUS=1 and e.DEPT_ID=?";
+    $rs = db2_query($sql, array($sdate['year'], $sdate['seme'], $dept));
+    $total += db2_num_rows($rs);
+  }
+  variable_set('adsync_total', $total);
+  foreach ($form_state['values']['dept'] as $dept) {
+    $sql = "select a.USERNAME,a.ACCOUNT_NAME,a.PASSWORD," . 
+           "b.TEAID,b.TEANAME,b.TEAPHONE,b.TEAMAIL,b.ATSCHOOL," . 
+           "c.PROCLASS,c.POS_ID,c.PROCLASS," .
+           "d.POS_NAME,d.POS_DUTY,d.DEPT_ID," .
+           "e.DEPT_NAME,e.DEPT_DUTY from USER_ACCOUNT a" .
+           " left join TEABAS b on a.USERNAME=b.IDNO" .
+           " left join TEASRV c on b.TEAID=c.TEAID" .
+           " left join SCHPOSITION d on c.POS_ID=d.POS_ID" .
+           " left join SCHDEPT e on d.DEPT_ID=e.DEPT_ID" .
+           " where a.USERROLE='sch' and c.SEYEAR=? and c.SESEM=? and d.STATUS=1 and e.STATUS=1 and e.DEPT_ID=?";
+    $rs = db2_query($sql, array($sdate['year'], $sdate['seme'], $dept));
+    while (db2_fetch_row($rs)) {
+      $current ++;
+      variable_set('adsync_current', $current);
+      $teaid = db2_result($rs, "TEAID");
+      $idno = strtoupper(trim(db2_result($rs, "USERNAME")));
+      $account = trim(db2_result($rs, "ACCOUNT_NAME"));
+      $passwd = db2_result($rs, "PASSWORD");
+      if (empty($passwd)) {
+        $passwd = $idno;
+      }
+      $empname = trim(db2_result($rs, "TEANAME"));
+      $empsn = mb_substr($empname, 0, 1);
+      $empgn = mb_substr($empname, 1);
+      $mail = trim(db2_result($rs, "TEAMAIL"));
+      $telphone = trim(db2_result($rs, "TEAPHONE"));
+      $atschool = trim(db2_result($rs, "ATSCHOOL"));
+      $pclass = trim(db2_result($rs, "PROCLASS"));
+      $posid = trim(db2_result($rs, "POS_ID"));
+      $title = trim(db2_result($rs, "POS_NAME"));
+      $depid = trim(db2_result($rs, "DEPT_ID"));
+      $department = trim(db2_result($rs, "DEPT_NAME"));
+      if (empty($account)) {
+        $detail_log .= '<p>' . t('please set custom account in School Information Management System for user:') . " $department $empname $title " . t(', Then sync to AD next time.') . '</p>';
+      }
+      else {
+        if ($form_state['values']['log']) {
+          $detail_log .= '<p>' . t('processing') . " $department $empname $title ($account)......<br />";
+        }
+        $dn = variable_get('adsync_server_ad_domain_dn');
+        $filter = "(sAMAccountName=$account)";
+        $result = ldap_search($ad_conn, $dn, $filter);
+        $infos = ldap_get_entries($ad_conn, $result);
+        if ($infos['count'] > 0) {
+          $userDn = $infos[0]['distinguishedname'][0];
+          if ($atschool == '1') {
+            if ($form_state['values']['log']) {
+              $detail_log .= t('This domain user has been found in AD server, modify user information now....<br />');
+            }
+            $userinfo = array();
+            if ($empgn) {
+              $userinfo['givenName'] = $empgn;
+            }
+            if ($empsn) {
+              $userinfo['sn'] = $empsn;
+            }
+            if ($empname) {
+              $userinfo['displayName'] = $empname;
+            }
+            if ($idno) {
+              $userinfo['description'] = $idno;
+            }
+            if ($department) {
+              $userinfo['department'] = $department;
+            }
+            if ($title) {
+              $userinfo['title'] = $title;
+            }
+            if ($mail) {
+              $userinfo['mail'] = $mail;
+              $userinfo['userPrincipalName'] = $mail;
+            }
+            if ($telphone) {
+              $userinfo['telephoneNumber'] = $telphone;
+            }
+            if ($form_state['values']['password_sync']) {
+              $userinfo['userPassword'] = $passwd;
+              $userinfo["unicodePwd"] = pwd_encryption($passwd);
+            }
+            $result = ldap_mod_replace($ad_conn, $userDn, $userinfo);
+            if (!$result) {
+              $detail_log .= ldap_error($ad_conn);
+            }
+            elseif ($form_state['values']['log']) {
+              $detail_log .= t('Modify Done!');
+            }
+          }
+          elseif ($form_state['values']['disable_nonuse']) {
+            if ($form_state['values']['log']) {
+              $detail_log .= t('This domain user has been found in AD server, Now <strong>LOCK</strong> this account....<br />');
+            }
+            $userinfo = array();
+            $userinfo['userAccountControl'] = '0x10222';
+            $result = ldap_mod_replace($ad_conn, $userDn, $userinfo);
+            if (!$result) {
+              $detail_log .= ldap_error($ad_conn);
+            }
+            elseif ($form_state['values']['log']) {
+              $detail_log .= t('Locked Successful!');
+            }
+          }
+          elseif ($form_state['values']['delete_nonuse']) {
+            if ($form_state['values']['log']) {
+              $detail_log .= t('This domain user has been found in AD server, Now <strong>DELETE</strong> this account....<br />');
+            }
+            $result = ldap_delete($ad_conn, $userDn);
+            if (!$result) {
+              $detail_log .= ldap_error($ad_conn);
+            }
+            elseif ($form_state['values']['log']) {
+              $detail_log .= t('Deleted Successful!');
+            }
+          }
+        }
+        elseif ($atschool == '1') {
+          if ($form_state['values']['log']) {
+            $detail_log .= t('Can not find this domain user from AD, createing the account now....<br />');
+          }
+          $userinfo = array();
+          $userDn = "CN=$account," . $dn;
+          $userinfo['objectClass'][0] = "top";
+          $userinfo['objectClass'][1] = "person";
+          $userinfo['objectClass'][2] = "organizationalPerson";
+          $userinfo['objectClass'][3] = "user";
+          $userinfo['cn'] = $account;
+          $userinfo['sAMAccountName'] = $account;
+          $userinfo['accountExpires'] = 0;
+          $userinfo['userAccountControl'] = 66080;
+          if ($empgn) {
+            $userinfo['givenName'] = $empgn;
+          }
+          if ($empsn) {
+            $userinfo['sn'] = $empsn;
+          }
+          if ($empname) {
+            $userinfo['displayName'] = $empname;
+          }
+          if ($idno) {
+            $userinfo['description'] = $idno;
+          }
+          if ($department) {
+            $userinfo['department'] = $department;
+          }
+          if ($title) {
+            $userinfo['title'] = $title;
+          }
+          if ($mail) {
+            $userinfo['mail'] = $mail;
+            $userinfo['userPrincipalName'] = $mail;
+          }
+          if ($telphone) {
+            $userinfo['telephoneNumber'] = $telphone;
+          }
+          $userinfo['userPassword'] = $passwd;
+          $userinfo['unicodePwd'] = pwd_encryption($passwd);
+          $result = ldap_add($ad_conn, $userDn, $userinfo);
+          if (!$result) {
+            $detail_log .= ldap_error($ad_conn);
+          }
+          elseif ($form_state['values']['log']) {
+            $detail_log .= t('Create successful!');
+          }
+        }
+
+        if ($atschool == '1') {
+          if ($form_state['values']['log']) {
+            $detail_log .= '<p>' . t('processing') . " $department ......<br />";
+          }
+          $filter = "(&(objectClass=group)(description=$department))";
+          $result = ldap_search($ad_conn, $dn, $filter);
+          $infos = ldap_get_entries($ad_conn, $result);
+          if ($infos['count'] > 0) {
+            $groupDn = $infos[0]['distinguishedname'][0];
+            $depgroup = $infos[0]['cn'][0];
+            if ($form_state['values']['log']) {
+              $detail_log .= "$depgroup =>" . t('This user group has been found in AD server, modify group information now....<br />');
+            }
+            $groupinfo = array();
+            $groupinfo['displayName'] = $department;
+            $result = ldap_mod_replace($ad_conn, $groupDn, $groupinfo);
+            if (!$result) {
+              $detail_log .= ldap_error($ad_conn);
+            }
+            elseif ($form_state['values']['log']) {
+              $detail_log .= t('Modify Done!');
+            }
+            if (!in_array($depgroup, $group_reset)) {
+              $members['member'] = $infos[0]['member'];
+              unset($members['member']['count']);
+              $result = ldap_mod_del($ad_conn, $groupDn, $members);
+              if (!$result) {
+                $detail_log .= ldap_error($ad_conn);
+              }
+              elseif ($form_state['values']['log']) {
+                $detail_log .= t('Remove all members Done!');
+              }
+	          $group_reset[] = $depgroup;
+  	        }
+          }
+          else {
+            if ($form_state['values']['log']) {
+              $detail_log .= t('Can not find this user group from AD, createing the group now....<br />');
+            }
+            $depgroup = 'group-A' . $depid;
+            $groupDn = "CN=$depgroup," . $dn;
+            $groupinfo = array();
+            $groupinfo['objectClass'] = 'group';
+            $groupinfo['sAMAccountName'] = $depgroup;
+            $groupinfo['displayName'] = $department;
+            $groupinfo['description'] = $department;
+            $result = ldap_add($ad_conn, $groupDn, $groupinfo);
+            if (!$result) {
+              $detail_log .= ldap_error($ad_conn);
+            }
+            elseif ($form_state['values']['log']) {
+              $detail_log .= t('Create successful!');
+            }
+          }
+          if ($form_state['values']['log']) {
+            $detail_log .= t('add current user:') . "$account " . t('to this user group....<br />');
+          }
+          $result = ldap_mod_add($ad_conn, $groupDn, array('member' => $userDn));
+          if (!$result) {
+            $detail_log .= ldap_error($ad_conn);
+          }
+          elseif ($form_state['values']['log']) {
+            $detail_log .= t('Join the group successful!');
+          }
+
+          if ($form_state['values']['log']) {
+            $detail_log .= '<p>' . t('processing') . " $title ......<br />";
+          }
+          $filter = "(&(objectClass=group)(description=$title))";
+          $result = ldap_search($ad_conn, $dn, $filter);
+          $infos = ldap_get_entries($ad_conn, $result);
+          if ($infos['count'] > 0) {
+            $groupDn = $infos[0]['distinguishedname'][0];
+            $posgroup = $infos[0]['cn'][0];
+            if ($form_state['values']['log']) {
+              $detail_log .= "$posgroup =>" . t('This user group has been found in AD server, modify group information now....<br />');
+            }
+            $groupinfo = array();
+            $groupinfo['displayName'] = $title;
+            $result = ldap_mod_replace($ad_conn, $groupDn, $groupinfo);
+            if (!$result) {
+              $detail_log .= ldap_error($ad_conn);
+            }
+            elseif ($form_state['values']['log']) {
+              $detail_log .= t('Modify Done!');
+            }
+            if (!in_array($posgroup, $group_reset)) {
+              $members['member'] = $infos[0]['member'];
+              unset($members['member']['count']);
+              $result = ldap_mod_del($ad_conn, $groupDn, $members);
+              if (!$result) {
+                $detail_log .= ldap_error($ad_conn);
+              }
+              elseif ($form_state['values']['log']) {
+                $detail_log .= t('Remove all members Done!');
+              }
+              $group_reset[] = $posgroup;
+            }
+          }
+          else {
+            if ($form_state['values']['log']) {
+              $detail_log .= t('Can not find this user group from AD, createing the group now....<br />');
+            }
+            $posgroup = 'group-B' . $posid;
+            $groupDn = "CN=$posgroup," . $dn;
+            $groupinfo = array();
+            $groupinfo['objectClass'] = 'group';
+            $groupinfo['sAMAccountName'] = $posgroup;
+            $groupinfo['displayName'] = $title;
+            $groupinfo['description'] = $title;
+            $result = ldap_add($ad_conn, $groupDn, $groupinfo);
+            if (!$result) {
+              $detail_log .= ldap_error($ad_conn);
+            }
+            elseif ($form_state['values']['log']) {
+              $detail_log .= t('Create successful!');
+            }
+          }
+          if ($form_state['values']['log']) {
+            $detail_log .= t('add current user:') . "$account " . t('to this user group....<br />');
+          }
+          $result = ldap_mod_add($ad_conn, $groupDn, array('member' => $userDn));
+          if (!$result) {
+            $detail_log .= ldap_error($ad_conn);
+          }
+          elseif ($form_state['values']['log']) {
+            $detail_log .= t('Join the group successful!');
+          }
+
+          if (!empty($pclass)) {
+            if ($form_state['values']['log']) {
+              $detail_log .= '<p>' . t('processing') . " substr($pclass, 0, 1)" . t('grade') . " ......<br />";
+            }
+            switch (substr($pclass, 0, 1)) {
+              case '1':
+                $clsgroup = "group-Ca";
+                break;
+
+              case '2':
+                $clsgroup = "group-Cb";
+                break;
+
+              case '3':
+                $clsgroup = "group-Cc";
+                break;
+
+              case '4':
+                $clsgroup = "group-Cd";
+                break;
+
+              case '5':
+                $clsgroup = "group-Ce";
+                break;
+
+              case '6':
+                $clsgroup = "group-Cf";
+                break;
+            }
+            $filter = "(&(objectClass=group)(cn=$clsgroup))";
+            $result = ldap_search($ad_conn, $dn, $filter);
+            $infos = ldap_get_entries($ad_conn, $result);
+            if ($infos["count"] > 0) {
+              $groupDn = $infos[0]["distinguishedname"][0];
+              if ($form_state['values']['log']) {
+                $detail_log .= "$clsgroup =>" . t('This user group has been found in AD server, modify group information now....<br />');
+              }
+              $groupinfo = array();
+              $groupinfo['displayName'] = substr($pclass, 0, 1) . t('grade');
+              $groupinfo['description'] = substr($pclass, 0, 1) . t('grade');
+              $result = ldap_mod_replace($ad_conn, $groupDn, $groupinfo);
+              if (!$result) {
+                $detail_log .= ldap_error($ad_conn);
+              }
+              elseif ($form_state['values']['log']) {
+                $detail_log .= t('Modify Done!');
+              }
+              if (!in_array($clsgroup, $group_reset)) {
+                $members['member'] = $infos[0]['member'];
+                unset($members['member']['count']);
+                $result = ldap_mod_del($ad_conn, $groupDn, $members);
+                if (!$result) {
+                  $detail_log .= ldap_error($ad_conn);
+                }
+                elseif ($form_state['values']['log']) {
+                  $detail_log .= t('Remove all members Done!');
+                }
+                $group_reset[] = $clsgroup;
+              }
+            }
+            else {
+              if ($form_state['values']['log']) {
+                $detail_log .= t('Can not find this user group from AD, createing the group now....<br />');
+              }
+              $groupDn = "CN=$clsgroup," . $dn;
+              $groupinfo = array();
+              $groupinfo['objectClass'] = 'group';
+              $groupinfo['sAMAccountName'] = $clsgroup;
+              $groupinfo['displayName'] = substr($pclass, 0, 1) . t('grade');
+              $groupinfo['description'] = substr($pclass, 0, 1) . t('grade');
+              $result = ldap_add($ad_conn, $groupDn, $groupinfo);
+              if (!$result) {
+                $detail_log .= ldap_error($ad_conn);
+              }
+              elseif ($form_state['values']['log']) {
+                $detail_log .= t('Create successful!');
+              }
+            }
+            if ($form_state['values']['log']) {
+              $detail_log .= t('add current user:') . "$account " . t('to this user group....<br />');
+            }
+            $result = ldap_mod_add($ad_conn, $groupDn, array('member' => $userDn));
+            if (!$result) {
+              $detail_log .= ldap_error($ad_conn);
+            }
+            elseif ($form_state['values']['log']) {
+              $detail_log .= t('Join the group successful!');
+            }
+          }
+        }
+      }
+    }
+  }
+  $time_end = microtime(true);
+  $time_spend = $time_end - $time_start;
+  $detail_log .= '<br>' . t('It takes') . ' ' . $time_spend . ' ' . t('seconds.');
+  variable_del('adsync_total');
+  variable_del('adsync_current');
+  $commands = array();
+  $commands[] = ajax_command_html('#edit-log-div', $detail_log);
+
+  return array(
+    '#type' => 'ajax',
+    '#commands' => $commands,
+  );
+}
+
+/**
+ * Implements settings for the module.
+ */
+function adsync_settings() {
+  $form['adsync_basic'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('AD Server'),
+    '#collapsible' => TRUE,
+  );
+  $form['adsync_basic']['info'] = array(
+    '#type' => 'item',
+    '#markup' => t('Microsoft AD Server allowd to change password, add user and delete user only through a LDAPS connection. But it is not enabled by default. To enable this function, you must install CA Services to AD, and set the install mode to <em>Enterprice</em>. When you done this, then you must download the AD controller certificate file to your Drupal site, store it in /etc/openldap/certs. Modify /etc/openldap/ldap.conf settings, just add <em>TLS_REQCERT never</em> to the top of the config file. If everything is done, then you may full controll the AD server remotely from Drupal.'),
+  );
+  $form['adsync_basic']['adsync_server_ad'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Domain Controller'),
+    '#default_value' => variable_get('adsync_server_ad', ''),
+    '#description' => t('The Microsoft network domain controller`s DNS record. Do not input server`s IP.'),
+  );
+  $form['adsync_basic']['adsync_server_ad_domain'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Domain Name'),
+    '#default_value' => variable_get('adsync_server_ad_domain', ''),
+    '#description' => t('The Microsoft network domain name. Example: foo.com'),
+  );
+  $form['adsync_basic']['adsync_server_ad_domain_dn'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Users Base DN'),
+    '#default_value' => variable_get('adsync_server_ad_domain_dn', ''),
+    '#description' => t('The base DN that containing user entries. Example: CN=Users,DC=foo,DC=com'),
+  );
+  $form['adsync_basic']['adsync_server_ad_admin'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Domain Administrator'),
+    '#default_value' => variable_get('adsync_server_ad_admin', ''),
+    '#description' => t('The Microsoft network domain administrator`s account name.'),
+  );
+  $form['adsync_basic']['adsync_server_ad_pass'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Password of the Administrator'),
+    '#default_value' => variable_get('adsync_server_ad_pass', ''),
+    '#description' => t('The Microsoft network domain administrator`s password.'),
+  );
+  if (variable_get('simsauth_sso_ldap_uid')) {
+    $form['adsync_sso_uid'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Sync Account Name to AD Server.'),
+      '#default_value' => variable_get('adsync_sso_uid', FALSE),
+      '#description' => t('Check this box if you want to let people set account name back to AD Server.'),
+    );
+  }
+  else {
+    variable_set('adsync_sso_uid', FALSE);
+    $form['adsync_sso_uid'] = array(
+      '#type' => 'item',
+      '#title' => t('Sync Account Name to AD Server.'),
+      '#markup' => t('This function base on sims authencation module, You must enable <em>Allow Sync Account Name to LDAP Server</em> first.'),
+    );
+  }
+  if (variable_get('simsauth_sso_ldap')) {
+    $form['adsync_sso'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Sync Password to AD Server.'),
+      '#default_value' => variable_get('adsync_sso', FALSE),
+      '#description' => t('Check this box if you want to let people set passwords back to AD Server.'),
+    );
+  }
+  else {
+    variable_set('adsync_sso', FALSE);
+    $form['adsync_sso'] = array(
+      '#type' => 'item',
+      '#title' => t('Sync Password to AD Server.'),
+      '#markup' => t('This function base on sims authencation module, You must enable <em>Allow Sync Password to LDAP Server</em> first.'),
+    );
+  }
+  $form['actions']['#type'] = 'actions';
+  $form['actions']['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Save sims configuration'),
+  );
+  $form['#submit'] = array('adsync_server_test');
+  if (!isset($form['#theme'])) {
+    $form['#theme'] = 'system_settings_form';
+  }
+
+  return $form;
+}
+
+/**
+ * Implements adsync_server_test().
+ */
+function adsync_server_test($form, &$form_state) {
+  $error = '';
+  form_state_values_clean($form_state);
+  foreach ($form_state['values'] as $key => $value) {
+    if (is_array($value) && isset($form_state['values']['array_filter'])) {
+      $value = array_keys(array_filter($value));
+    }
+    variable_set($key, trim($value));
+  }
+
+  $ad_domain = variable_get('adsync_server_ad_domain');
+  $ad_admin = variable_get('adsync_server_ad_admin');
+  if (!empty($ad_domain) && !empty($ad_admin) && !strpos($ad_admin, '@')) {
+    variable_set('adsync_server_ad_admin', $ad_admin . '@' . $ad_domain);
+  }
+  $ret = ad_test();
+  if ($ret == 3) {
+    $error .= t('Connect to AD server LDAPS(636) port failed. Please install CA server on your AD to enable it. Then setting up /etc/openldap/ldap.conf to fit AD connection.');
+  }
+  if ($ret == 2) {
+    $error .= t('AD server connected but can not login.');
+  }
+  if ($ret == 1) {
+    $error .= t('AD server connecting failed.');
+  }
+
+  if ($error != '') {
+    drupal_set_message($error . t('The configuration options have been saved, but you should check again!'), 'error');
+    variable_set('adsync_enable', FALSE);
+  }
+  else {
+    drupal_set_message(t('The Server configure was setting perfectly. The configuration options have been saved.'));
+    variable_set('adsync_enable', TRUE);
+  }
+}
+
+/**
+ * Hooks provided by the simsauth module.
+ */
+function adsync_simsauth_teacher_resetpw($teachers, $result) {
+  if (variable_get('adsync_enable')) {
+    foreach ($teachers as $teacher) {
+      if (isset($result->success[$teacher->uid]) && $result->success[$teacher->uid]) {
+        if (ad_change_pass($teacher->name, $teacher->org_pass)) {
+          $result->success[$teacher->uid] = TRUE;
+        }
+        else {
+          $result->success[$teacher->uid] = FALSE;
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Hooks provided by the simsauth module.
+ */
+function adsync_simsauth_sync_username($account, $new_account) {
+  if (variable_get('adsync_enable') && variable_get('simsauth_sso_ldap_uid') && variable_get('adsync_sso_uid')) {
+    $ret = ad_change_uid($account->name, $new_account);
+    return array('adsync' => $ret);
+  }
+}
+
+/**
+ * Hooks provided by the simsauth module.
+ */
+function adsync_simsauth_sync_password($account, $new_pass) {
+  if (variable_get('adsync_enable') && variable_get('simsauth_sso_ldap') && variable_get('adsync_sso')) {
+    $ret = ad_change_pass($account->name, $new_pass);
+    return array('adsync' => $ret);
+  }
+}

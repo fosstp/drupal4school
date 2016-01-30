@@ -1,0 +1,14 @@
+name = SIMS Authentication
+description = Allows users to authenticate by remote IBM DB2 Server and LDAP Server.
+package = School Information Management System
+dependencies[] = user
+configure = admin/config/people/simsauth
+files[] = simsauth.install
+files[] = simsauth.module
+files[] = sims.api.php
+files[] = simsauth.tokens.inc
+
+version = "7.x-1.3"
+core = "7.x"
+project = "simsauth"
+datestamp = "1430094341"

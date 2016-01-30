@@ -1,0 +1,13 @@
+name = OpenID for Taiwan MOE
+description = Provides user information to meet the Taiwan MOE need.
+core = 7.x
+package = School Information Management System
+dependencies[] = simsauth
+dependencies[] = openid_provider
+files[] = openid_moe.module
+
+version = "7.x-1.0"
+core = "7.x"
+project = "openid_moe"
+datestamp = "1404468552"
+

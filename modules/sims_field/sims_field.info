@@ -1,0 +1,16 @@
+name = SIMS Field
+description = Defines SIMS field types, widgets and formatters.
+package = Core
+version = VERSION
+core = 7.x
+package = School Information Management System
+dependencies[] = simsauth
+dependencies[] = field_ui
+files[] = sims_field.install
+files[] = sims_field.module
+
+version = "7.x-1.1"
+core = "7.x"
+project = "sims_field"
+datestamp = "1427943826"
+

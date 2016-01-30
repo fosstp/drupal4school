@@ -1,0 +1,241 @@
+<?php
+
+/**
+ * @file
+ * the install file for the thumbnail_link module
+ */
+
+/**
+ * Implements hook_install().
+ */
+function thumbnail_link_install() {
+  require_once DRUPAL_ROOT . '/includes/install.core.inc';
+  $zh = FALSE;
+  $locales = install_find_locales('standard');
+  foreach ($locales as $locale) {
+    if (isset($locale->langcode)) {
+      if ($locale->langcode == 'zh-hant') {
+        $zh = TRUE;
+      }
+    }
+  }
+
+  if ($zh) {
+    require_once DRUPAL_ROOT . '/includes/locale.inc';
+    $po_file = new stdClass();
+    $po_file->uri = drupal_get_path('module', 'thumbnail_link') . '/thumbnail_link.zh-hant.po';
+    $po_file->filename = 'thumbnail_link.zh-hant.po';
+    $po_file->name = pathinfo($po_file->filename, PATHINFO_FILENAME);
+    _locale_import_read_po('mem-store', $po_file);
+    $zh_t = _locale_import_one_string('mem-report')[''];
+  }
+  $st = function ($mystr, &$zh_t) {
+    if (isset($zh_t[$mystr])) {
+      return $zh_t[$mystr];
+    }
+    else {
+      return $mystr;
+    }
+  };
+  $vocabularies = taxonomy_vocabulary_load_multiple(array(), array('machine_name' => 'websites'));
+  $vocabulary = reset($vocabularies);
+  if (!$vocabulary) {
+    $vocabulary = new stdClass();
+    $vocabulary->name         = $st('Related Websites Category', $zh_t);
+    $vocabulary->machine_name = 'websites';
+    $vocabulary->description  = $st('Used by Thumbnail Link Module.', $zh_t);
+    $vocabulary->weight       = '0';
+    $vocabulary->hierarchy    = '0';
+    $vocabulary->module       = 'thumbnail_link';
+  }
+  taxonomy_vocabulary_save($vocabulary);
+  variable_set('thumbnail_link_category_vid', $vocabulary->vid);
+
+  $tree = taxonomy_get_tree($vocabulary->vid);
+  if (count($tree) == 0) {
+    $term = new stdClass();
+    $term->name = $st('Education Administrative', $zh_t);
+    $term->description = $st('Education authorities related Links.', $zh_t);
+    $term->vid = $vocabulary->vid;
+    taxonomy_term_save($term);
+
+    $term = new stdClass();
+    $term->name = $st('Instruction Resources', $zh_t);
+    $term->description = $st('Recommend to teacher use in classroom.', $zh_t);
+    $term->vid = $vocabulary->vid;
+    taxonomy_term_save($term);
+
+    $term = new stdClass();
+    $term->name = $st('Students Area', $zh_t);
+    $term->description = $st('Recommend to students for digital learning.', $zh_t);
+    $term->vid = $vocabulary->vid;
+    taxonomy_term_save($term);
+
+    $term = new stdClass();
+    $term->name = $st('Other Websites', $zh_t);
+    $term->description = $st('Not classified Websites.', $zh_t);
+    $term->vid = $vocabulary->vid;
+    taxonomy_term_save($term);
+  }
+
+  $type = node_type_get_type('thumblink');
+  if (!$type) {
+    $type = node_type_set_defaults(array(
+      'type' => 'thumblink',
+      'name' => $st('Thumbnail Link', $zh_t),
+      'base' => 'node_content',
+      'description' => $st('Links to related sites, enter the site name, URL and upload thumbnail.', $zh_t),
+      'locked' => 0,
+      'custom' => 1,
+      'modified' => 1,
+      'has_title' => TRUE,
+      'title_label' => $st('Related Website Title', $zh_t),
+      ));
+    node_type_save($type);
+  }
+  $field_name = 'field_thumblink_term';
+  $field = field_info_field($field_name);
+  $instance = field_info_instance('node', $field_name, $type->type);
+  if (!$field) {
+    $field = array(
+      'label' => $st('Related Websites Category', $zh_t),
+      'field_name' => $field_name,
+      'type' => 'taxonomy_term_reference',
+      'cardinality' => 1,
+      'translatable' => TRUE,
+      'settings' => array(
+        'allowed_values' => array(
+          array(
+            'parent' => 0,
+            'vocabulary' => 'websites',
+          ),
+        ),
+      ),
+    );
+    $field = field_create_field($field);
+  }
+  if (!$instance) {
+    $instance = array(
+      'label' => $st('Related Websites Category', $zh_t),
+      'field_name' => $field_name,
+      'bundle' => $type->type,
+      'entity_type' => 'node',
+      'required' => TRUE,
+      'widget' => array(
+        'type' => 'options_select',
+      ),
+      'display' => array(
+        'default' => array(
+          'label' => 'hidden',
+          'type' => 'taxonomy_term_reference_link',
+        ),
+      ),
+    );
+    field_create_instance($instance);
+  }
+
+  $field_name = 'field_thumblink_link';
+  $field = field_info_field($field_name);
+  $instance = field_info_instance('node', $field_name, $type->type);
+  if (!$field) {
+    $field = array(
+      'label' => $st('Related Website URL', $zh_t),
+      'field_name' => $field_name,
+      'type' => 'text',
+    );
+    $field = field_create_field($field);
+  }
+  if (!$instance) {
+    $instance = array(
+      'label' => $st('Related Website URL', $zh_t),
+      'field_name' => $field_name,
+      'bundle' => $type->type,
+      'entity_type' => 'node',
+      'required' => TRUE,
+      'widget' => array(
+        'type' => 'text_textfield',
+      ),
+      'display' => array(
+        'default' => array(
+          'label' => $st('Related Website URL', $zh_t),
+          'type' => 'text',
+        ),
+      ),
+    );
+    field_create_instance($instance);
+  }
+
+  $field_name = 'field_thumblink_image';
+  $field = field_info_field($field_name);
+  $instance = field_info_instance('node', $field_name, $type->type);
+  if (!$field) {
+    $field = array(
+      'label' => $st('Related Website Thumbnail', $zh_t),
+      'field_name' => $field_name,
+      'type' => 'image',
+    );
+    $field = field_create_field($field);
+  }
+  if (!$instance) {
+    $instance = array(
+      'label' => $st('Related Website Thumbnail', $zh_t),
+      'field_name' => $field_name,
+      'bundle' => $type->type,
+      'entity_type' => 'node',
+      'required' => TRUE,
+      'widget' => array(
+        'type' => 'image_image',
+      ),
+      'display' => array(
+        'default' => array(
+          'label' => $st('Related Website Thumbnail', $zh_t),
+          'type' => 'image',
+        ),
+      ),
+    );
+    field_create_instance($instance);
+  }
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function thumbnail_link_uninstall() {
+  $type = node_type_get_type('thumblink');
+  $result = db_query('SELECT nid FROM {node} n WHERE n.type = :type', array(':type' => $type->type));
+  $nodeids = array();
+  foreach ($result as $row) {
+    $nodeids[] = $row->nid;
+  }
+  $empty_flag = TRUE;
+  if (count($nodeids) > 0) {
+    $empty_flag = FALSE;
+  }
+  if ($empty_flag) {
+    node_delete_multiple($nodeids);
+    $field_name = 'field_thumblink_link';
+    $field = field_info_field($field_name);
+    field_delete_field($field);
+    $instance = field_info_instance('node', $field_name, $type->type);
+    field_delete_instance($instance);
+    $field_name = 'field_thumblink_image';
+    $field = field_info_field($field_name);
+    field_delete_field($field);
+    $instance = field_info_instance('node', $field_name, $type->type);
+    field_delete_instance($instance);
+    node_type_delete($type->type);
+    field_purge_batch(500);
+    $vid = variable_get('thumbnail_link_category_vid');
+    if ($vid) {
+      taxonomy_vocabulary_delete($vid);
+    }
+  }
+  variable_del('thumbnail_link_category_vid');
+  variable_del('thumbnail_link_block_per_row');
+  variable_del('thumbnail_link_block_rows');
+  variable_del('thumbnail_link_block_order');
+  variable_del('thumbnail_link_page_per_row');
+  variable_del('thumbnail_link_page_order');
+  variable_del('thumbnail_link_thumbnail_width');
+  variable_del('thumbnail_link_thumbnail_height');
+}

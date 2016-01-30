@@ -1,0 +1,34 @@
+<?php
+
+/**
+ * @file
+ * the install file for the simsauth module
+ */
+
+/**
+ * Implements hook_uninstall().
+ */
+function adsync_uninstall() {
+  variable_del('adsync_enable');
+  variable_del('adsync_sso_uid');
+  variable_del('adsync_sso');
+  variable_del('adsync_server_ad');
+  variable_del('adsync_server_ad_domain');
+  variable_del('adsync_server_ad_domain_dn');
+  variable_del('adsync_server_ad_admin');
+  variable_del('adsync_server_ad_pass');
+}
+
+/**
+ * Implements hook_enable().
+ */
+function adsync_enable() {
+  variable_set('adsync_enable', FALSE);
+}
+
+/**
+ * Implements hook_disable().
+ */
+function adsync_disable() {
+  variable_set('adsync_enable', FALSE);
+}

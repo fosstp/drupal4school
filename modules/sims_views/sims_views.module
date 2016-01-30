@@ -1,0 +1,23 @@
+<?php
+
+/**
+ * @file
+ * sims views field module for Drupal.
+ */
+
+/**
+ * Implements hook_update_projects_alter().
+ */
+function sims_views_update_projects_alter(&$projects) {
+  unset($projects['sims_views']);
+}
+
+/**
+ * Implements hook_views_api().
+ */
+function sims_views_views_api() {
+  return array(
+    'api' => 3,
+    'path' => drupal_get_path('module', 'sims_views'),
+  );
+}

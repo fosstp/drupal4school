@@ -1,0 +1,30 @@
+<?php
+
+/**
+ * @file
+ * the install file for the simsauth module
+ */
+
+/**
+ * Implements hook_uninstall().
+ */
+function db2health_uninstall() {
+  variable_del('db2health_enable');
+  variable_del('db2health_server');
+  variable_del('db2health_server_sa');
+  variable_del('db2health_server_pass');
+}
+
+/**
+ * Implements hook_enable().
+ */
+function db2health_enable() {
+  variable_set('db2health_enable', FALSE);
+}
+
+/**
+ * Implements hook_disable().
+ */
+function db2health_disable() {
+  variable_set('db2health_enable', FALSE);
+}

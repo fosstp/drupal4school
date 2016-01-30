@@ -1,0 +1,1409 @@
+<?php
+/**
+ * @file
+ * sims authentication module for Drupal.
+ */
+
+require_once 'gapps.api.php';
+
+/**
+ * Implements hook_update_projects_alter().
+ */
+function gapps_update_projects_alter(&$projects) {
+  unset($projects['gapps']);
+}
+
+/**
+ * Implements hook_init().
+ */
+function gapps_init() {
+  $path = libraries_get_path('google-api-php-client');
+  if ($path) {
+    set_include_path($path . "/src/Google" . PATH_SEPARATOR . get_include_path());
+  }
+}
+
+/**
+ * Implements hook_libraries_info().
+ */
+function gapps_libraries_info() {
+  $libraries['google-api-php-client'] = array(
+    'name' => 'Google Api Client Library',
+    'vendor url' => 'https://developers.google.com/api-client-library/php/',
+    'download url' => 'https://github.com/google/google-api-php-client/archive/master.zip',
+    'version arguments' => array(
+      'file' => 'src/Google/Client.php',
+      'pattern' => '/LIBVER = "([0-9\.a-z]+)/',
+      'lines' => 28,
+    ),
+    'versions' => array(
+      '1.1.3' => array(),
+    ),
+    'files' => array(
+      'php' => array(
+        'src/Google/autoload.php',
+      ),
+    ),
+  );
+
+  return $libraries;
+}
+
+/**
+ * Implements hook_menu().
+ */
+function gapps_menu() {
+  $items = array();
+
+  $items['admin/config/people/gapps'] = array(
+    'title' => t('Google Apps Sync settings'),
+    'description' => t('Control the various settings of the Google Apps Sync module'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('gapps_settings'),
+    'access arguments' => array('administer sims authentication'),
+    'type' => MENU_LOCAL_TASK,
+  );
+  $items['admin/people/gapps'] = array(
+    'title' => t('Sync to Google Apps'),
+    'description' => t('Provide Sync to Google Apps user interface.'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('gapps_operate'),
+    'access arguments' => array('administer sims authentication'),
+    'type' => MENU_LOCAL_TASK,
+  );
+  $items['gapps/google_login/%/%'] = array(
+    'title' => 'Google Account Login handler',
+    'description' => 'Process Google Account login.',
+    'page callback' => 'gapps_google_login',
+    'page arguments' => array(2,3),
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK,
+  );
+
+  return $items;
+}
+
+/**
+ * Implements hook_admin_paths().
+ */
+function gapps_admin_paths() {
+  return array(
+    'admin/config/people/gapps' => TRUE,
+    'admin/people/gapps' => TRUE,
+  );
+}
+
+/**
+ * Implements hook_help().
+ */
+function gapps_help($path, $arg) {
+  switch ($path) {
+    case 'admin/config/people/gapps':
+      $output = '<p>' . t('This module sync user account and password from remote IBM DB2 database and LDAP server to Google Apps Domain.') . '</p>';
+      $output .= '<p></p>';
+      return $output;
+  }
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function gapps_form_user_login_alter(&$form, $form_state) {
+  global $base_url;
+  if (variable_get('gapps_enable') && variable_get('gapps_login')) {
+    gapps_sso();
+    $form['submit_google'] = array(
+      '#markup' => '<img src="' . file_create_url(drupal_get_path('module', 'gapps') . '/sign-in-with-google.png') .
+                   '" style="cursor: pointer; border:none; width:280px;" title="' . t('Login with Google Apps') .
+                   '" onclick="AuthClick()">',
+    );
+  }
+}
+
+/**
+ * Implements hook_form_FORM_alter().
+ */
+function gapps_form_user_login_block_alter(&$form, $form_state) {
+  return gapps_form_user_login_alter($form, $form_state);
+}
+
+/**
+ * Function to handle authentication and response from google.
+ */
+function gapps_google_login($guser = NULL, $mytoken = NULL) {
+  global $user;
+  if ($guser && $mytoken) {
+    variable_set('gapps_logout', TRUE);
+    $sdate = get_current_seme();
+    $found = 0;
+    $db2_query = "select * from USER_ACCOUNT as a left join TEABAS as b on a.USERNAME=b.IDNO where b.ATSCHOOL=1 and a.ACCOUNT_NAME=?";
+    $rs = db2_query($db2_query, array($guser));
+    if (db2_fetch_row($rs)) {
+      $email = db2_result($rs, 'TEAMAIL');
+      $empid = db2_result($rs, 'TEAID');
+      $old_pass = db2_result($rs, 'PASSWORD');
+      $found = 1;
+      db2_free_stmt($rs);
+    }
+
+    if ($found == 0) {
+      $std_ac = variable_get('simsauth_student_account');
+      $std_ma = variable_get('simsauth_student_mail_account');
+      if (!empty($std_ma)) {
+          $db2_query = "select MAIL,$std_ma as MAIL_AC from STUDENT where STATUS=0 and $std_ac=? and SEYEAR>=?";
+      }
+      else {
+          $db2_query = "select MAIL from STUDENT where STATUS=0 and $std_ac=? and SEYEAR>=?";
+      }
+      $rs = db2_query($db2_query, array($guser, $sdate['seyear']));
+      if (db2_fetch_row($rs)) {
+        $email = db2_result($rs, 'MAIL');
+        $std_md = variable_get('simsauth_student_mail_address');
+        if (!empty($std_ma) && !empty($std_md)) {
+          $email = db2_result($rs, 'MAIL_AC') . '@' . $std_md;
+        }
+        $found = 2;
+        db2_free_stmt($rs);
+      }
+    }
+
+    switch ($found) {
+      case 1:
+        $user = user_external_load($guser);
+        if (!$user) {
+          $userinfo = array(
+            'name' => $guser,
+            'mail' => $email,
+            'init' => ($email) ? $email : $guser,
+            'status' => 1,
+            'access' => REQUEST_TIME,
+          );
+        }
+        else {
+          $userinfo = array(
+            'mail' => $email,
+          );
+        }
+        if (variable_get('simsauth_role_evaleverytime')) {
+          $all_roles = user_roles(TRUE);
+          $admin_role = user_roles(TRUE, 'access administration pages');
+          if (!$user) {
+            $newroles = array();
+          }
+          else {
+            if (in_array(current($admin_role), array_values($user->roles))) {
+              $newroles[key($admin_role)] = current($admin_role);
+            }
+            else {
+              $newroles = array();
+            }
+          }
+          $db2_query = "select c.DEPT_NAME from TEASRV a left join SCHPOSITION b on a.POS_ID=b.POS_ID left join SCHDEPT c on b.DEPT_ID=c.DEPT_ID where a.TEAID=? and a.SEYEAR=? and a.SESEM=?";
+          $rs2 = db2_query($db2_query, array(
+            $empid,
+            $sdate['year'],
+            $sdate['seme'],
+          ));
+          while (db2_fetch_row($rs2)) {
+            $depname = db2_result($rs2, 'DEPT_NAME');
+            if (!in_array($depname, $all_roles)) {
+              $role = new stdClass();
+              $role->name = $depname;
+              user_role_save($role);
+              $all_roles = user_roles(TRUE);
+            }
+            if ($rid = array_search($depname, $all_roles)) {
+              $newroles[$rid] = $all_roles[$rid];
+            }
+          }
+          db2_free_stmt($rs2);
+          $userinfo['roles'] = $newroles;
+        }
+        if (!$user) {
+          $user = user_save(drupal_anonymous_user(), $userinfo);
+          user_set_authmaps($user, array('authname_simsauth' => $username));
+        }
+        else {
+          $user = user_save($user, $userinfo);
+          $user = user_load($user->uid);
+        }
+        $edit = array();
+        $edit['uid'] = $user->uid;
+        $edit['redirect'] = (variable_get('simsauth_logingotourl')) ? variable_get('simsauth_logingotourl') : '<front>';
+        user_login_finalize($edit);
+        drupal_goto($edit['redirect']);
+        break;
+
+      case 2:
+        $user = user_external_load($guser);
+        if (!$user) {
+          $userinfo = array(
+            'name' => $guser,
+            'mail' => $email,
+            'init' => ($email) ? $email : $guser,
+            'status' => 1,
+            'access' => REQUEST_TIME,
+          );
+        }
+        else {
+          $userinfo = array(
+            'mail' => $email,
+          );
+        }
+        if (variable_get('simsauth_role_evaleverytime')) {
+          $all_roles = user_roles(TRUE);
+          if ($rid = array_search(t('Student'), $all_roles)) {
+            $newroles = array($rid => $all_roles[$rid]);
+            $userinfo['roles'] = $newroles;
+          }
+        }
+        if (!$user) {
+          $user = user_save(drupal_anonymous_user(), $userinfo);
+          user_set_authmaps($user, array('authname_simsauth' => $username));
+        }
+        else {
+          user_save($user, $userinfo);
+          $user = user_load($use->uid);
+        }
+        $edit = array();
+        $edit['uid'] = $user->uid;
+        $edit['redirect'] = (variable_get('simsauth_logingotourl')) ? variable_get('simsauth_logingotourl') : '<front>';
+        user_login_finalize($edit);
+        drupal_goto($edit['redirect']);
+        break;
+
+      default:
+        drupal_goto('user/login');
+    }
+  }
+}
+
+/**
+ * Implements operate UI for the module.
+ */
+function gapps_operate($form, &$form_state) {
+  $form = array();
+  if (variable_get('gapps_enable')) {
+    $form['help'] = array(
+      '#type' => 'item',
+      '#title' => t('Information:'),
+      '#markup' => t('It may be take a long time when sync account to Google Apps, Please be patient and wait for Synchronization to be done. Do not leave or reload this page, and do not close the browser.'),
+    );
+    $form['password_sync'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Sync Password to Google Apps'),
+      '#description' => t('The Gmail account`s passwords in the Google Apps Domain will replace with Drupal password, Make sure they have been login to Drupal, otherwise the password will reset with their security id.'),
+    );
+    $form['disable_nonuse'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Suspend Non-use Accounts'),
+      '#description' => t('All accounts that sync from IBM DB2 Server, and they was disabled in School Infomation Management System, will suspend in Google Apps too.'),
+    );
+    $form['delete_nonuse'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Delete Non-use Accounts'),
+      '#description' => t('All accounts that sync from IBM DB2 Server, and they was disabled in School Infomation Management System, will delete from Google Apps. You can undelete these accounts from Google Admin Console.'),
+    );
+    $form['log'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Detail processing logs'),
+      '#description' => t('Show the detail processing log for debug.'),
+    );
+    $form['domain'] = array(
+    '#type' => 'radios',
+    '#title' => t('Choose synchronize user class'),
+    '#default_value' => 0,
+    '#options' => array(0 => t('teacher'), 1 => t('student')),
+    );
+    $deplist = array();
+    foreach (user_roles() as $depname) {
+      $sql = "select DEPT_ID,DEPT_NAME from SCHDEPT where STATUS=1 and DEPT_NAME=?";
+      $rs = db2_query($sql, array($depname));
+      if (db2_fetch_row($rs)) {
+        $depid = db2_result($rs, 'DEPT_ID');
+        $depname = db2_result($rs, 'DEPT_NAME');
+        $deplist[$depid] = $depname;
+      }
+    }
+    $form['dept'] = array(
+      '#type' => 'select',
+      '#title' => t('Select Departments to Sync'),
+      '#multiple' => TRUE,
+      '#options' => $deplist,
+      '#size' => 15,
+      '#states' => array(
+        'visible' => array(
+          ':input[name="domain"]' => array('value' => 0),
+        ),
+      ),
+    );
+    $deplist = array();
+    $deplist['Z'] = t('Graduate');
+    $deplist[1] = t('Grade 1');
+    $deplist[2] = t('Grade 2');
+    $deplist[3] = t('Grade 3');
+    $deplist[4] = t('Grade 4');
+    $deplist[5] = t('Grade 5');
+    $deplist[6] = t('Grade 6');
+    $form['grade'] = array(
+      '#type' => 'select',
+      '#title' => t('select Grade to Sync'),
+      '#multiple' => FALSE,
+      '#options' => $deplist,
+      '#size' => 1,
+      '#states' => array(
+        'visible' => array(
+          ':input[name="domain"]' => array('value' => 1),
+        ),
+      ),
+    );
+    $sdate = get_current_seme();
+    $gradez = array();
+    for ($i=$sdate['year']-1; $i>=94; $i--) {
+      $gradez[$i] = $i;
+    }
+    $form['gradez'] = array(
+      '#type' => 'select',
+      '#title' => t('select Graduate Year to Sync'),
+      '#multiple' => FALSE,
+      '#options' => $gradez,
+      '#size' => 1,
+      '#states' => array(
+        'visible' => array(
+          ':input[name="domain"]' => array('value' => 1),
+          ':input[name="grade"]' => array('value' => 'Z'),
+        ),
+      ),
+    );
+    $grade = array();
+    for ($i=1; $i<=6; $i++) {
+      $sql = "select * from BASCLS where SEYEAR=? and SESEM=? and left(CLASSID,1)=? order by CLASSID";
+      $rs = db2_query($sql, array($sdate['year'], $sdate['seme'], $i));
+      while (db2_fetch_row($rs)) {
+        $depid = db2_result($rs, 'CLASSID');
+        $depname = db2_result($rs, 'CLASSNAME');
+        $grade[$i][$depid] = $depname;
+      }
+      $form['grade' . $i] = array(
+        '#type' => 'select',
+        '#title' => t('select CLASS to Sync'),
+        '#multiple' => FALSE,
+        '#options' => $grade[$i],
+        '#size' => 1,
+        '#states' => array(
+          'visible' => array(
+            ':input[name="domain"]' => array('value' => 1),
+            ':input[name="grade"]' => array('value' => $i),
+          ),
+        ),
+      );
+    }
+    $form['start'] = array(
+      '#type' => 'button',
+      '#value' => t('Start Sync'),
+      '#ajax' => array('callback' => 'gapps_start'),
+    );
+    $form['viewport'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('Detail Logs'),
+      '#collapsible' => FALSE,
+      '#collapsed' => FALSE,
+    );
+    $form['viewport']['log_div'] = array(
+      '#type' => 'item',
+    );
+  }
+  else {
+    $form['help'] = array(
+      '#type' => 'item',
+      '#title' => t('Information:'),
+      '#markup' => t('Please complete gapps module settings first.'),
+    );
+  }
+
+  return $form;
+}
+
+/**
+ * Implements adsync_start().
+ */
+function gapps_start($form, &$form_state) {
+  $detail_log = '';
+  $group_reset = array();
+  set_time_limit(0);
+  $time_start = microtime(true);
+  $sdate = get_current_seme();
+  $domain = $form_state['values']['domain'];
+  if ($domain == 0) {
+    $directory = gapps_service('teacher');
+    foreach ($form_state['values']['dept'] as $dept) {
+      $sql = "select distinct a.USERNAME,a.ACCOUNT_NAME,a.PASSWORD," . 
+             "b.TEAID,b.TEANAME,b.TEAPHONE,b.TEAMAIL,b.ATSCHOOL," . 
+             "c.PROCLASS,c.POS_ID,c.PROCLASS," .
+             "d.POS_NAME,d.POS_DUTY,d.DEPT_ID," .
+             "e.DEPT_NAME,e.DEPT_DUTY from USER_ACCOUNT a" .
+             " left join TEABAS b on a.USERNAME=b.IDNO" .
+             " left join TEASRV c on b.TEAID=c.TEAID" .
+             " left join SCHPOSITION d on c.POS_ID=d.POS_ID" .
+             " left join SCHDEPT e on d.DEPT_ID=e.DEPT_ID" .
+             " where a.USERROLE='sch' and c.SEYEAR=? and c.SESEM=? and d.STATUS=1 and e.STATUS=1 and e.DEPT_ID=?";
+      $rs = db2_query($sql, array($sdate['year'], $sdate['seme'], $dept));
+      while (db2_fetch_row($rs)) {
+        $teaid = db2_result($rs, "TEAID");
+        $idno = strtoupper(trim(db2_result($rs, "USERNAME")));
+        $account = trim(db2_result($rs, "ACCOUNT_NAME"));
+        $passwd = db2_result($rs, "PASSWORD");
+        if (empty($passwd)) {
+          $passwd = $idno;
+        }
+        $empname = trim(db2_result($rs, "TEANAME"));
+        $empsn = mb_substr($empname, 0, 1);
+        $empgn = mb_substr($empname, 1);
+        $mail = trim(db2_result($rs, "TEAMAIL"));
+        $telphone = trim(db2_result($rs, "TEAPHONE"));
+        if (db2_result($rs, "ATSCHOOL") == '1') {
+          $atschool = TRUE;
+        }
+        else {
+          $atschool = FALSE;
+        }  
+        $pclass = trim(db2_result($rs, "PROCLASS"));
+        $posid = trim(db2_result($rs, "POS_ID"));
+        $title = trim(db2_result($rs, "POS_NAME"));
+        $depid = trim(db2_result($rs, "DEPT_ID"));
+        $department = trim(db2_result($rs, "DEPT_NAME"));
+        $found = FALSE;
+        if (empty($account)) {
+          $detail_log .= '<p>' . t('please set custom account in School Information Management System for user:') . " $department $empname $title " . t(', Then sync to Google Apps next time.') . '</p>';
+        }
+        else {
+          if ($form_state['values']['log']) {
+            $detail_log .= '<p>' . t('processing') . " $department $empname $title ($account)......<br />";
+          }
+          $user_key = $account . "@" . variable_get('gapps_teacher_domain');
+          try {
+            $user = $directory->users->get($user_key);
+            $found = TRUE;
+          } catch (Exception $e) {
+            $found = FALSE;
+          }
+          if ($found) {
+            if ($atschool) {
+              if ($form_state['values']['log']) {
+                $detail_log .= t('This domain user has been found in Google Apps, modify user information now....<br />');
+              }
+              $myname = $user->getName();
+              if ($empgn) {
+                $myname->setGivenName($empgn);
+              }
+              if ($empsn) {
+                $myname->setFamilyName($empsn);
+              }
+              if ($empname) {
+                $myname->setFullName($empname);
+              }
+              if ($department && $title) {
+                $myorg = $user->getOrganizations();
+                $neworg = new Google_Service_Directory_UserOrganization();
+                $neworg->setDepartment($department);
+                $neworg->setTitle($title);
+                $neworg->setPrimary(TRUE);
+                if (is_array($myorg)) {
+                  if (!in_array($neworg, $myorg)) {
+                    $myorg = array_unshift($myorg, $neworg);
+                  }
+                }
+                else {
+                  $myorg = $neworg;
+                }
+              }
+              if ($mail && $mail!=$user_key) {
+                $myemails = $user->getEmails();
+                $newmail = new Google_Service_Directory_UserEmail();
+                $newmail->setAddress($mail);
+                $newmail->setPrimary(FALSE);
+                if (!in_array($newmail, $myemails)) {
+                  $myemails = array_unshift($myemails, $newmail);
+                }
+              }
+              if ($telphone) {
+                $myphones = $user->getPhones();
+                $newphone = new Google_Service_Directory_UserPhone(); 
+                $newphone->setValue($telphone);
+                $newphone->setPrimary(TRUE);
+                if (!in_array($newphone, $myphones)) {
+                  foreach ($myphones as $oldphone) {
+                    $oldphone->setPrimary(FALSE);
+                  }
+                  $myphones = array_unshift($myphones, $newphone);
+                }
+              }
+              if (variable_get('gapps_teacher_orgunit') && variable_get('gapps_teacher_orgunit') != '/') {
+                $user->setOrgunitPath(variable_get('gapps_teacher_orgunit'));
+              }
+              if ($form_state['values']['password_sync']) {
+                $user->setHashFunction('SHA-1');
+                $user->setPassword(sha1($password));
+              }
+              try {
+                $result = $directory->users->update($user_key, $user);
+                if ($form_state['values']['log']) {
+                  $detail_log .= t('Modify Done!');
+                }
+              } catch (Exception $e) {
+                $detail_log .= $e->getMessage();
+              }
+            }
+            elseif ($form_state['values']['disable_nonuse']) {
+              if ($form_state['values']['log']) {
+                $detail_log .= t('This domain user has been found in Google Apps, Now <strong>SUSPEND</strong> this account....<br />');
+              }
+              try {
+                $user->setSuspended(TRUE);
+                $result = $directory->users->update($user_key, $user);
+                if ($form_state['values']['log']) {
+                  $detail_log .= t('Suspended Successful!');
+                }
+              } catch (Exception $e) {
+                $detail_log .= $e->getMessage();
+              }
+            }
+            elseif ($form_state['values']['delete_nonuse']) {
+              if ($form_state['values']['log']) {
+                $detail_log .= t('This domain user has been found in Google Apps, Now <strong>DELETE</strong> this account....<br />');
+              }
+              try {
+                $result = $directory->users->delete($user_key);
+                if ($form_state['values']['log']) {
+                  $detail_log .= t('Deleted Successful!');
+                }
+              } catch (Exception $e) {
+                $detail_log .= $e->getMessage();
+              }
+            }
+          }
+          elseif ($atschool) {
+            if ($form_state['values']['log']) {
+              $detail_log .= t('Can not find this account from Google Apps, createing the account now....<br />');
+            }
+            $user = new Google_Service_Directory_User();
+            $user->setPrimaryEmail($user_key);
+            $myname = new Google_Service_Directory_UserName();
+            if ($empgn) {
+              $myname->setGivenName($empgn);
+            }
+            if ($empsn) {
+              $myname->setFamilyName($empsn);
+            }
+            if ($empname) {
+              $myname->setFullName($empname);
+            }
+            $user->setName($myname);
+            if ($department && $title) {
+              $myorg = new Google_Service_Directory_UserOrganization();
+              $myorg->setDepartment($department);
+              $myorg->setTitle($title);
+              $myorg->setPrimary(TRUE);
+              $user->setOrganzations(array($myorg));
+            }
+            if ($mail && $mail!=$user_key) {
+              $mymail = array();
+              $mymail[0] = new Google_Service_Directory_UserEmail();
+              $mymail[0]->setAddress($user_key);
+              $mymail[0]->setPrimary(TRUE);
+              $mymail[1] = new Google_Service_Directory_UserEmail();
+              $mymail[1]->setAddress($mail);
+              $mymail[1]->setPrimary(FALSE);
+              $user->setEmails($mymail);
+            }
+            if ($telphone) {
+              $myphone = new Google_Service_Directory_UserPhone(); 
+              $myphone->setValue($telphone);
+              $myphone->setPrimary(TRUE);
+              $user->setPhones(array($myphone));
+            }
+            if (variable_get('gapps_teacher_orgunit') && variable_get('gapps_teacher_orgunit') != '/') {
+              $user->setOrgunitPath(variable_get('gapps_teacher_orgunit'));
+            }
+            $user->setHashFunction('SHA-1');
+            $user->setPassword(sha1($password));
+            try {
+              $result = $directory->users->insert($user_key, $user);
+              if ($form_state['values']['log']) {
+                $detail_log .= t('Create Successful!');
+              }
+            } catch (Exception $e) {
+              $detail_log .= $e->getMessage();
+            }
+          }
+
+          if ($atschool) {
+            if ($form_state['values']['log']) {
+              $detail_log .= '<p>' . t('processing') . " $department ......<br />";
+            }
+            $found = FALSE;
+            $groups = $directory->groups->listGroups(array('domain' => variable_get('gapps_teacher_domain')));
+            foreach ($groups as $group) {
+              if ($group->getDescription() == $department) {
+                $found = TRUE;
+                break;
+              }
+            }
+            if ($found) {
+              $group_key = $group->getEmail();
+              $depgroup = split('@', $group_key)[0];
+              if ($form_state['values']['log']) {
+                $detail_log .= "$depgroup =>" . t('This user group has been found in Google Apps....<br />');
+              }
+              if (!in_array($depgroup, $group_reset)) {
+                try {
+                  $members = $directory->members->listMembers($group_key);
+                  foreach ($members as $member) {
+                    $directory->members->delete($group_key, $member->getEmail());
+                  }
+                  if ($form_state['values']['log']) {
+                    $detail_log .= t('Remove all members Done!');
+                  }
+                } catch (Exception $e) {
+                  $detail_log .= $e->getMessage();
+                }
+                $group_reset[] = $depgroup;
+              }
+            }
+            else {
+              if ($form_state['values']['log']) {
+                $detail_log .= t('Can not find this user group from Google Apps, createing the group now....<br />');
+              }
+              $depgroup = 'group-A' . $depid;
+              $group_key = $depgroup . '@' . variable_get('gapps_teacher_domain');
+              $group = new Google_Service_Directory_Group();
+              $group->setEmail($group_key);
+              $group->setDescription($department);
+              $group->setName($department);
+              try {
+                $directory->groups->insert($group_key, $group);
+                if ($form_state['values']['log']) {
+                  $detail_log .= t('Create successful!');
+                }
+              } catch (Exception $e) {
+                $detail_log .= $e->getMessage();
+              }
+            }
+            if ($form_state['values']['log']) {
+              $detail_log .= t('add current user:') . "$account " . t('to this user group....<br />');
+            }
+            try {
+              $member = new Google_Service_Directory_Member();
+              $member->setEmail($user_key);
+              $directory->members->insert($group_key, $member);
+              if ($form_state['values']['log']) {
+                $detail_log .= t('Join the group successful!');
+              }
+            } catch (Exception $e) {
+              $detail_log .= $e->getMessage();
+            }
+
+            if ($form_state['values']['log']) {
+              $detail_log .= '<p>' . t('processing') . " $title ......<br />";
+            }
+            $found = FALSE;
+            foreach ($groups as $group) {
+              if ($group->getDescription() == $title) {
+                $found = TRUE;
+                break;
+              }
+            }
+            if ($found) {
+              $group_key = $group->getEmail();
+              $posgroup = split('@', $group_key)[0];
+              if ($form_state['values']['log']) {
+                $detail_log .= "$depgroup =>" . t('This user group has been found in Google Apps....<br />');
+              }
+              if (!in_array($posgroup, $group_reset)) {
+                try {
+                  $members = $directory->members->listMembers($group_key);
+                  foreach ($members as $member) {
+                    $directory->members->delete($group_key, $member->getEmail());
+                  }
+                  if ($form_state['values']['log']) {
+                    $detail_log .= t('Remove all members Done!');
+                  }
+                } catch (Exception $e) {
+                  $detail_log .= $e->getMessage();
+                }
+                $group_reset[] = $posgroup;
+              }
+            }
+            else {
+              if ($form_state['values']['log']) {
+                $detail_log .= t('Can not find this user group from Google Apps, createing the group now....<br />');
+              }
+              $posgroup = 'group-B' . $posid;
+              $group_key = $posgroup . '@' . variable_get('gapps_teacher_domain');
+              $group = new Google_Service_Directory_Group();
+              $group->setEmail($group_key);
+              $group->setDescription($title);
+              $group->setName($title);
+              try {
+                $directory->groups->insert($group);
+                if ($form_state['values']['log']) {
+                  $detail_log .= t('Create successful!');
+                }
+              } catch (Exception $e) {
+                $detail_log .= $e->getMessage();
+              }
+            }
+            if ($form_state['values']['log']) {
+              $detail_log .= t('add current user:') . "$account " . t('to this user group....<br />');
+            }
+            try {
+              $member = new Google_Service_Directory_Member();
+              $member->setEmail($user_key);
+              $directory->members->insert($group_key, $member);
+              if ($form_state['values']['log']) {
+                $detail_log .= t('Join the group successful!');
+              }
+            } catch (Exception $e) {
+              $detail_log .= $e->getMessage();
+            }
+
+            if (!empty($pclass)) {
+              if ($form_state['values']['log']) {
+                $detail_log .= '<p>' . t('processing') . " substr($pclass, 0, 1)" . t('grade') . " ......<br />";
+              }
+              switch (substr($pclass, 0, 1)) {
+                case '1':
+                  $clsgroup = "group-Ca";
+                  break;
+
+                case '2':
+                  $clsgroup = "group-Cb";
+                  break;
+
+                case '3':
+                  $clsgroup = "group-Cc";
+                  break;
+
+                case '4':
+                  $clsgroup = "group-Cd";
+                  break;
+
+                case '5':
+                  $clsgroup = "group-Ce";
+                  break;
+
+                case '6':
+                  $clsgroup = "group-Cf";
+                  break;
+              }
+              $group_key = $clsgroup . '@' . variable_get('gapps_teacher_domain');
+              $found = FALSE;
+              foreach ($groups as $group) {
+                if ($group->getMail() == $group_key) {
+                  $found = TRUE;
+                  break;
+                }
+              }
+              if ($found) {
+                if ($form_state['values']['log']) {
+                  $detail_log .= "$depgroup =>" . t('This user group has been found in Google Apps....<br />');
+                }
+                if (!in_array($posgroup, $group_reset)) {
+                  try {
+                    $members = $directory->members->listMembers($group_key);
+                    foreach ($members as $member) {
+                      $directory->members->delete($group_key, $member->getEmail());
+                    }
+                    if ($form_state['values']['log']) {
+                      $detail_log .= t('Remove all members Done!');
+                    }
+                  } catch (Exception $e) {
+                    $detail_log .= $e->getMessage();
+                  }
+                  $group_reset[] = $posgroup;
+                }
+              }
+              else {
+                if ($form_state['values']['log']) {
+                  $detail_log .= t('Can not find this user group from Google Apps, createing the group now....<br />');
+                }
+                $group = new Google_Service_Directory_Group();
+                $group->setEmail($group_key);
+                $group->setDescription($title);
+                $group->setName($title);
+                try {
+                  $directory->groups->insert($group_key, $group);
+                  if ($form_state['values']['log']) {
+                    $detail_log .= t('Create successful!');
+                  }
+                } catch (Exception $e) {
+                  $detail_log .= $e->getMessage();
+                }
+              }
+              if ($form_state['values']['log']) {
+                $detail_log .= t('add current user:') . "$account " . t('to this user group....<br />');
+              }
+              try {
+                $member = new Google_Service_Directory_Member();
+                $member->setEmail($user_key);
+                $directory->members->insert($group_key, $member);
+                if ($form_state['values']['log']) {
+                  $detail_log .= t('Join the group successful!');
+                }
+              } catch (Exception $e) {
+                $detail_log .= $e->getMessage();
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  else {
+    $directory = gapps_service('student');
+    $std_ac = variable_get('simsauth_student_account');
+    $std_pw = variable_get('simsauth_student_password');
+    $std_ma = variable_get('simsauth_student_mail_account');
+    $grade = $form_state['values']['grade'];
+    if ($grade == 'Z') {
+      $seyear = $form_state['values']['gradez'] - 5;
+      if (strlen($seyear) == 2) {
+        $seyear = '0' . $seyear;
+      }
+      if (!empty($std_ma)) {
+        $sql = "select $std_ac as ACCOUNT,$std_pw as PASSWORD,MAIL,$std_ma as MAIL_AC,NAME,NO,STATUS from STUDENT where SEYEAR=?";
+      }
+      else {
+        $sql = "select $std_ac as ACCOUNT,$std_pw as PASSWORD,MAIL,NAME,NO,STATUS from STUDENT where SEYEAR=?";
+      }
+      $rs = db2_query($sql, array($seyear));
+    }
+    else {
+      $class = $form_state['values']['grade' . $grade];
+      if (!empty($std_ma)) {
+        $sql = "select $std_ac as ACCOUNT,$std_pw as PASSWORD,MAIL,$std_ma as MAIL_AC,NAME,NO,STATUS from STUDENT where YEAR=? and CLASSNO=? and SEYEAR>=?";
+      }
+      else {
+        $sql = "select $std_ac as ACCOUNT,$std_pw as PASSWORD,MAIL,NAME,NO,STATUS from STUDENT where YEAR=? and CLASSNO=? and SEYEAR>=?";
+      }
+      $rs = db2_query($sql, array($grade, $class, $sdate['seyear']));
+    }
+    $detail_log .= $sql . $seyear;
+    $total = db2_num_rows($rs);
+    variable_set('gapps_total', $total);
+    while (db2_fetch_row($rs)) {
+      $current++;
+      variable_set('gapps_current', $current);
+      $account = trim(db2_result($rs, 'ACCOUNT'));
+      $user_key =  "$account@" . variable_get('gapps_student_domain');
+      $password = db2_result($rs, 'PASSWORD');
+      $email = db2_result($rs, 'MAIL');
+      $std_md = variable_get('simsauth_student_mail_address');
+      if (!empty($std_ma) && !empty($std_md)) {
+        $email = db2_result($rs, 'MAIL_AC') . '@' . $std_md;
+      }
+      $stdname = trim(db2_result($rs, "NAME"));
+      $stdsn = mb_substr($stdname, 0, 1);
+      $stdgn = mb_substr($stdname, 1);
+      $seat = db2_result($rs, "NO");
+      if (db2_result($rs, "STATUS") == '0') {
+        $atschool = TRUE;
+      }
+      else {
+        $atschool = FALSE;
+      }
+      if ($grade == 'Z') {
+        $classname = trim($seyear+5 . ' ' . t('grade year graduate'));
+        if ($form_state['values']['log']) {
+          $detail_log .= '<p>' . t('processing') . " $classname $stdname ($account)......<br />";
+        }
+      }
+      else {
+        $sql = "select CLASSNAME from BASCLS where SEYEAR=? and SESEM=? and CLASSID=?";
+        $rs2 = db2_query($sql, array($sdate['year'], $sdate['seme'], $class));
+        $classname = trim(db2_result($rs, 'CLASSNAME'));
+        if ($form_state['values']['log']) {
+          $detail_log .= '<p>' . t('processing') . " $classname ($seat) $stdname ($account)......<br />";
+        }
+      }
+      try {
+        $user = $directory->users->get($user_key);
+        $found = TRUE;
+      } catch (Exception $e) {
+        $found = FALSE;
+      }
+      if ($found) {
+        if ($atschool) {
+          if ($form_state['values']['log']) {
+            $detail_log .= t('This domain user has been found in Google Apps, modify user information now....<br />');
+          }
+          $myname = $user->getName();
+          if ($stdgn) {
+            $myname->setGivenName($stdgn);
+          }
+          if ($stdsn) {
+            $myname->setFamilyName($stdsn);
+          }
+          if ($stdname) {
+            $myname->setFullName($stdname);
+          }
+          if ($classname) {
+            $neworg = new Google_Service_Directory_UserOrganization();
+            $neworg->setDepartment($classname);
+            $neworg->setTitle($seat);
+            $neworg->setPrimary(TRUE);
+            $myorg = $user->setOrganizations(array($neworg));
+          }
+          if ($mail && $mail!=$user_key) {
+            $myemails = $user->getEmails();
+            $newmail = new Google_Service_Directory_UserEmail();
+            $newmail->setAddress($mail);
+            $newmail->setPrimary(FALSE);
+            if (!in_array($newmail, $myemails)) {
+              $myemails = array_unshift($myemails, $newmail);
+            }
+          }
+          if (variable_get('gapps_student_orgunit') && variable_get('gapps_student_orgunit') != '/') {
+            $user->setOrgunitPath(variable_get('gapps_teacher_orgunit'));
+          }
+          if ($form_state['values']['password_sync']) {
+            $user->setHashFunction('SHA-1');
+            $user->setPassword(sha1($password));
+          }
+          try {
+            $result = $directory->users->update($user_key, $user);
+            if ($form_state['values']['log']) {
+              $detail_log .= t('Modify Done!');
+            }
+          } catch (Exception $e) {
+            $detail_log .= $e->getMessage();
+          }
+        }
+        elseif ($form_state['values']['disable_nonuse']) {
+          if ($form_state['values']['log']) {
+            $detail_log .= t('This domain user has been found in Google Apps, Now <strong>SUSPEND</strong> this account....<br />');
+          }
+          try {
+            $user->setSuspended(TRUE);
+            $result = $directory->users->update($user_key, $user);
+            if ($form_state['values']['log']) {
+              $detail_log .= t('Suspended Successful!');
+            }
+          } catch (Exception $e) {
+            $detail_log .= $e->getMessage();
+          }
+        }
+        elseif ($form_state['values']['delete_nonuse']) {
+          if ($form_state['values']['log']) {
+            $detail_log .= t('This domain user has been found in Google Apps, Now <strong>DELETE</strong> this account....<br />');
+          }
+          try {
+            $result = $directory->users->delete($user_key);
+            if ($form_state['values']['log']) {
+              $detail_log .= t('Deleted Successful!');
+            }
+          } catch (Exception $e) {
+            $detail_log .= $e->getMessage();
+          }
+        }
+      }
+      elseif ($atschool) {
+        if ($form_state['values']['log']) {
+          $detail_log .= t('Can not find this account from Google Apps, createing the account now....<br />');
+        }
+        $user = new Google_Service_Directory_User();
+        $user->setPrimaryEmail($user_key);
+        $myname = new Google_Service_Directory_UserName();
+        if ($stdgn) {
+          $myname->setGivenName($stdgn);
+        }
+        if ($stdsn) {
+          $myname->setFamilyName($stdsn);
+        }
+        if ($stdname) {
+          $myname->setFullName($stdname);
+        }
+        $user->setName($myname);
+        if ($classname) {
+          $myorg = new Google_Service_Directory_UserOrganization();
+          $myorg->setDepartment($classname);
+          $myorg->setTitle($seat);
+          $myorg->setPrimary(TRUE);
+          $user->setOrganizations(array($myorg));
+        }
+        if ($mail && $mail!=$user_key) {
+          $mymail = array();
+          $mymail[0] = new Google_Service_Directory_UserEmail();
+          $mymail[0]->setAddress($user_key);
+          $mymail[0]->setPrimary(TRUE);
+          $mymail[1] = new Google_Service_Directory_UserEmail();
+          $mymail[1]->setAddress($mail);
+          $mymail[1]->setPrimary(FALSE);
+          $user->setEmails($mymail);
+        }
+        if (variable_get('gapps_student_orgunit') && variable_get('gapps_student_orgunit') != '/') {
+          $user->setOrgunitPath(variable_get('gapps_teacher_orgunit'));
+        }
+        $user->setHashFunction('SHA-1');
+        $user->setPassword(sha1($password));
+        try {
+          $result = $directory->users->insert($user_key, $user);
+          if ($form_state['values']['log']) {
+            $detail_log .= t('Create Successful!');
+          }
+        } catch (Exception $e) {
+          $detail_log .= $e->getMessage();
+        }
+      }
+      
+      if ($atschool) {
+        if ($form_state['values']['log']) {
+          $detail_log .= '<p>' . t('processing') . " $classname ......<br />";
+        }
+        $found = FALSE;
+        $groups = $directory->groups->listGroups(array('domain' => variable_get('gapps_student_domain')));
+        foreach ($groups as $group) {
+          if ($group->getDescription() == $classname) {
+            $found = TRUE;
+            break;
+          }
+        }
+        if ($found) {
+          $group_key = $group->getEmail();
+          $depgroup = split('@', $group_key)[0];
+          if ($form_state['values']['log']) {
+            $detail_log .= "$depgroup =>" . t('This user group has been found in Google Apps....<br />');
+          }
+          if (!in_array($depgroup, $group_reset)) {
+            try {
+              $members = $directory->members->listMembers($group_key);
+              foreach ($members as $member) {
+                $directory->members->delete($group_key, $member->getEmail());
+              }
+              if ($form_state['values']['log']) {
+                $detail_log .= t('Remove all members Done!');
+              }
+            } catch (Exception $e) {
+              $detail_log .= $e->getMessage();
+            }
+            $group_reset[] = $depgroup;
+          }
+        }
+        else {
+          if ($form_state['values']['log']) {
+            $detail_log .= t('Can not find this user group from Google Apps, createing the group now....<br />');
+          }
+          $stdgroup = 'class-' . $class;
+          $group_key = $stdgroup . '@' . variable_get('gapps_student_domain');
+          $group = new Google_Service_Directory_Group();
+          $group->setEmail($group_key);
+          $group->setDescription($classname);
+          $group->setName($classname);
+          try {
+            $directory->groups->insert($group_key, $group);
+            if ($form_state['values']['log']) {
+              $detail_log .= t('Create successful!');
+            }
+          } catch (Exception $e) {
+            $detail_log .= $e->getMessage();
+          }
+        }
+        if ($form_state['values']['log']) {
+          $detail_log .= t('add current user:') . "$account " . t('to this user group....<br />');
+        }
+        try {
+          $member = new Google_Service_Directory_Member();
+          $member->setEmail($user_key);
+          $directory->members->insert($group_key, $member);
+          if ($form_state['values']['log']) {
+            $detail_log .= t('Join the group successful!');
+          }
+        } catch (Exception $e) {
+          $detail_log .= $e->getMessage();
+        }
+      }
+    }
+  }
+  $time_end = microtime(true);
+  $time_spend = $time_end - $time_start;
+  $detail_log .= '<br>' . t('It takes') . ' ' . $time_spend . ' ' . t('seconds.');
+  $commands = array();
+  $commands[] = ajax_command_html('#edit-log-div', $detail_log);
+
+  return array(
+    '#type' => 'ajax',
+    '#commands' => $commands,
+  );
+}
+
+/**
+ * Implements settings for the module.
+ */
+function gapps_settings() {
+  global $base_url;
+  $info = libraries_load('google-api-php-client');
+  if (!$info['loaded']) {
+    drupal_set_message(t('Can`t authenticate with google as library is missing check Status report or Readme for requirements, download from') . ' ' . l('https://github.com/google/google-api-php-client/archive/master.zip', 'https://github.com/google/google-api-php-client/archive/master.zip'), 'error');
+  }
+
+  $form['gapps_web'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Google Web Application'),
+    '#collapsible' => TRUE,
+  );
+  $form['gapps_web']['info'] = array(
+    '#type' => 'item',
+    '#markup' => t('To login with google apps account you must have <em>Web Application Credentials</em> in your google code project, please follow the guide') . ' ' . l('https://developers.google.com/api-client-library/php/auth/web-app', 'https://developers.google.com/api-client-library/php/auth/web-app') . ' ' . t('to create one.'),
+  );
+  $form['gapps_web']['gapps_web_client_id'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Web Server Client ID'),
+    '#default_value' => variable_get('gapps_web_client_id', ''),
+    '#description' => t('The project`s web application client id.'),
+    '#maxlength' => 255,
+  );
+  $form['gapps_web']['gapps_web_client_email'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Web Server Client Email'),
+    '#default_value' => variable_get('gapps_web_client_email', ''),
+    '#description' => t('The project`s web application client email.'),
+    '#maxlength' => 255,
+  );
+  $form['gapps_web']['gapps_web_client_secret'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Web Server Client Secret'),
+    '#default_value' => variable_get('gapps_web_client_secret', ''),
+    '#description' => t('The project`s web application client password.'),
+  );
+  $form['gapps_web']['uri_info'] = array(
+    '#type' => 'item',
+    '#markup' => t('Redirect URIs are the URIs to your application`s auth endpoints, which handle responses from the OAuth 2.0 server. You must add') . ' ' . $base_url . '/gapps/google_login ' . t('as Redirect URIs to your project, before you can use OAuth 2.0.'),
+  );
+  $form['gapps_web']['gapps_web_api_key'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Browser Application Public Api Key'),
+    '#default_value' => variable_get('gapps_web_api_key', ''),
+    '#description' => t('The project`s browser application public api key.'),
+  );
+  $form['gapps_service'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Google Service Account'),
+    '#collapsible' => TRUE,
+  );
+  $form['gapps_service']['info'] = array(
+    '#type' => 'item',
+    '#markup' => t('To manage google apps domain you must have <em>Service Account</em> in your google code project, please follow the guide') . ' ' . l('https://developers.google.com/api-client-library/php/auth/service-accounts', 'https://developers.google.com/api-client-library/php/auth/service-accounts') . ' ' . t('to create one.'),
+  );
+  $form['gapps_service']['gapps_service_client_id'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Service Account Client ID'),
+    '#default_value' => variable_get('gapps_service_client_id', ''),
+    '#description' => t('The project`s service account client id.'),
+    '#maxlength' => 255,
+  );
+  $form['gapps_service']['gapps_service_client_email'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Service Account Client Email'),
+    '#default_value' => variable_get('gapps_service_client_email', ''),
+    '#description' => t('The project`s service account client email.'),
+    '#maxlength' => 255,
+  );
+  $form['gapps_service']['gapps_service_fingerprints'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Service Account Public Key Fingerprints'),
+    '#default_value' => variable_get('gapps_service_fingerprints', ''),
+    '#description' => t('The project`s service account public key fingerprints.'),
+  );
+  $form['gapps_service']['gapps_service_private_key'] = array(
+    '#type' => 'file',
+    '#title' => t('Service Account Private Key(*.p12)'),
+    '#description' => t('The project`s service account private key. Leave it blank, if you don`t want to replace the exists key file.'),
+  );
+  $form['gapps_teacher_domain'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Google Apps Teacher Domain'),
+    '#default_value' => variable_get('gapps_teacher_domain', ''),
+    '#description' => t('Please input the Google Apps main domain for teacher accounts.'),
+  );
+  $form['gapps_teacher_admin'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Google Apps Teacher Domain Administer'),
+    '#default_value' => variable_get('gapps_teacher_admin', ''),
+    '#description' => t('Please input the Google Apps main domain administer account for teacher accounts.'),
+  );
+  $form['gapps_teacher_orgunit'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Google Apps Teacher Organization Unit'),
+    '#default_value' => variable_get('gapps_teacher_orgunit', '/'),
+    '#description' => t('Please input the Google Apps teacher organization unit path. The top level unit is <strong>/</strong>, if you input <strong>/school/teacher</strong>, then all teacher accounts will map to the third level unit that organization unit name is <em>teacher</em>.'),
+  );
+  $form['gapps_student_domain'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Google Apps Student Domain'),
+    '#default_value' => variable_get('gapps_student_domain', ''),
+    '#description' => t('Please input the Google Apps main domain for student accounts. May be same as teacher accounts.'),
+  );
+  $form['gapps_student_admin'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Google Apps Student Domain Administer'),
+    '#default_value' => variable_get('gapps_student_admin', ''),
+    '#description' => t('Please input the Google Apps main domain administer account for student accounts.'),
+  );
+  $form['gapps_student_orgunit'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Google Apps Student Organization Unit'),
+    '#default_value' => variable_get('gapps_student_orgunit', '/'),
+    '#description' => t('Please input the Google Apps student organization unit path. The top level unit is <strong>/</strong>, if you input <strong>/school/student</strong>, then all student accounts will map to the third level unit that organization unit name is <em>student</em>.'),
+  );
+  $form['gapps_login'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Allow Login with Google Apps Account'),
+    '#default_value' => variable_get('gapps_login', FALSE),
+    '#description' => t('Check this box if you want to let people use their Google Apps account to login Drupal.'),
+  );
+  if (variable_get('simsauth_sso_ldap_uid')) {
+    $form['gapps_sso_uid'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Sync Account Name to Google Apps'),
+      '#default_value' => variable_get('gapps_sso_uid', FALSE),
+      '#description' => t('Check this box if you want to let people set account name back to Google Apps.'),
+    );
+  }
+  else {
+    variable_set('gapps_sso_uid', FALSE);
+    $form['gapps_sso_uid'] = array(
+      '#type' => 'item',
+      '#title' => t('Sync Account Name to Google Apps'),
+      '#markup' => t('This function base on sims authencation module, You must enable <em>Allow Sync Account Name to LDAP Server</em> first.'),
+    );
+  }
+  if (variable_get('simsauth_sso_ldap')) {
+    $form['gapps_sso'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Sync Password to Google Apps'),
+      '#default_value' => variable_get('gapps_sso', FALSE),
+      '#description' => t('Check this box if you want to let people set passwords back to Google Apps.'),
+    );
+  }
+  else {
+    variable_set('gapps_sso', FALSE);
+    $form['gapps_sso'] = array(
+      '#type' => 'item',
+      '#title' => t('Sync Password to Google Apps'),
+      '#markup' => t('This function base on sims authencation module, You must enable <em>Allow Sync Password to LDAP Server</em> first.'),
+    );
+  }
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Save settings'),
+  );
+  $form['#submit'] = array('gapps_server_test');
+  if (!isset($form['#theme'])) {
+    $form['#theme'] = 'system_settings_form';
+  }
+
+  return $form;
+}
+
+/**
+ * Implements gapps_server_test().
+ */
+function gapps_server_test($form, &$form_state) {
+  $error = '';
+  $file = file_save_upload('gapps_service_private_key', array(
+    'file_validate_extensions' => array('p12'),
+  ), 'private://', FILE_EXISTS_REPLACE);
+  if ($file) {
+    $file->status = 1;
+    file_save($file);
+    variable_set('gapps_service_private_key', $file->fid);
+    $message = t('The private key file was updated.');
+  }
+  unset($form_state['values']['gapps_service_private_key']);
+
+  form_state_values_clean($form_state);
+  foreach ($form_state['values'] as $key => $value) {
+    if (is_array($value) && isset($form_state['values']['array_filter'])) {
+      $value = array_keys(array_filter($value));
+    }
+    variable_set($key, trim($value));
+  }
+
+  $domain = variable_get('gapps_teacher_domain');
+  $admin = variable_get('gapps_teacher_admin');
+  if (!empty($domain) && !empty($admin) && !strpos($admin, '@')) {
+    variable_set('gapps_teacher_admin', $admin . '@' . $domain);
+  }
+
+  $domain = variable_get('gapps_student_domain');
+  $admin = variable_get('gapps_student_admin');
+  if (!empty($domain) && !empty($admin) && !strpos($admin, '@')) {
+    variable_set('gapps_student_admin', $admin . '@' . $domain);
+  }
+
+  if (gapps_test()) {
+    variable_set('gapps_enable', TRUE);
+    $message .= t('All setting looks great!');
+  }
+  else {
+    variable_set('gapps_enable', FALSE);
+    $message .= t('Something wrong, Please check your settings again!');
+  }
+  drupal_set_message($message . t('The configuration options have been saved.'));
+}
+
+/**
+ * Hooks provided by the simsauth module.
+ */
+function gapps_simsauth_teacher_resetpw($teachers, $result) {
+  if (variable_get('gapps_enable')) {
+    foreach ($teachers as $teacher) {
+      if (isset($result->success[$teacher->uid]) && $result->success[$teacher->uid]) {
+        if (gapps_change_pass('teacher', $teacher->name, $teacher->org_pass)) {
+          $result->success[$teacher->uid] = TRUE;
+        }
+        else {
+          $result->success[$teacher->uid] = FALSE;
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Hooks provided by the simsauth module.
+ */
+function gapps_simsauth_student_resetpw($students, $result) {
+  if (variable_get('gapps_enable')) {
+    foreach ($students as $student) {
+      if (isset($result->success[$student->uid]) && $result->success[$student->uid]) {
+        if (gapps_change_pass('student', $student->name, $student->org_pass)) {
+          $result->success[$student->uid] = TRUE;
+        }
+        else {
+          $result->success[$student->uid] = FALSE;
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Hooks provided by the simsauth module.
+ */
+function gapps_simsauth_sync_username($account, $new_account) {
+  if (variable_get('gapps_enable') && variable_get('simsauth_sso_ldap_uid') && variable_get('gapps_sso_uid')) {
+    $ret = gapps_change_uid($account->userclass, $account->name, $new_account);
+    return array('gapps' => $ret);
+  }
+}
+
+/**
+ * Hooks provided by the simsauth module.
+ */
+function gapps_simsauth_sync_password($account, $new_pass) {
+  if (variable_get('gapps_enable') && variable_get('simsauth_sso_ldap') && variable_get('gapps_sso')) {
+    $ret = gapps_change_pass($account->userclass, $account->name, $new_pass);
+    return array('gapps' => $ret);
+  }
+}

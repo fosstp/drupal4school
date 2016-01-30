@@ -1,0 +1,46 @@
+<?php
+
+/**
+ * @file
+ * the install file for the simsauth module
+ */
+
+/**
+ * Implements hook_uninstall().
+ */
+function gapps_uninstall() {
+  variable_del('gapps_enable');
+  variable_del('gapps_web_client_id');
+  variable_del('gapps_web_client_email');
+  variable_del('gapps_web_client_secret');
+  variable_del('gapps_web_api_key');
+  variable_del('gapps_service_client_id');
+  variable_del('gapps_service_client_email');
+  variable_del('gapps_service_fingerprints');
+  $file = file_load(variable_get('gapps_service_private_key'));
+  file_delete($file);
+  variable_del('gapps_service_private_key');
+  variable_del('gapps_teacher_domain');
+  variable_del('gapps_teacher_admin');
+  variable_del('gapps_teacher_orgunit');
+  variable_del('gapps_student_domain');
+  variable_del('gapps_student_admin');
+  variable_del('gapps_student_orgunit');
+  variable_del('gapps_login');
+  variable_del('gapps_sso_uid');
+  variable_del('gapps_sso');
+}
+
+/**
+ * Implements hook_enable().
+ */
+function gapps_enable() {
+  variable_set('gapps_enable', FALSE);
+}
+
+/**
+ * Implements hook_disable().
+ */
+function gapps_disable() {
+  variable_set('gapps_enable', FALSE);
+}

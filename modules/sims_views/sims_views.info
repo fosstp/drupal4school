@@ -1,0 +1,17 @@
+name = SIMS Views Fields
+description = Add several fields for views module from SIMS IBM DB2 Database.
+package = School Information Management System
+dependencies[] = simsauth
+dependencies[] = views
+files[] = sims_views.module
+files[] = sims_views.views.inc
+files[] = sims_views_handler_field_user_realname.inc
+files[] = sims_views_handler_field_user_userclass.inc
+files[] = sims_views_handler_field_user_depname.inc
+files[] = sims_views_handler_field_user_titlename.inc
+files[] = sims_views_handler_field_user_birthdate.inc
+
+version = "7.x-1.2"
+core = "7.x"
+project = "sims_views"
+datestamp = "1430094341"

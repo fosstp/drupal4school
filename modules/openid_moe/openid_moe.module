@@ -1,0 +1,448 @@
+<?php
+module_load_include('inc', 'openid');
+
+/**
+ * @file
+ * Module providing openid content profile fields permissions capability for Drupal
+ */
+
+/**
+ * Implements hook_update_projects_alter().
+ */
+function openid_moe_update_projects_alter(&$projects) {
+  unset($projects['openid_moe']);
+}
+
+/**
+ * Implements hook_xrds().
+ * Return a XRDS for Attribute Exchange service discovery
+ */
+function openid_moe_xrds($account = NULL) {
+  $types = array(OPENID_NS_AX);
+  if ($account) {
+    $types[] = OPENID_NS_2_0 .'/signon';
+  }
+  else {
+    $types[] = OPENID_NS_2_0 .'/server';
+  }
+
+  $data = array(
+    'Type' => $types,
+    'URI' => array(openid_provider_url('openid/provider')),
+  );
+  if (isset($account->uid)) {
+    $data['LocalID'] = array(openid_provider_url(openid_provider_user_path($account->uid)));
+  }
+
+  $xrds['openid_moe'] = array(
+    'services' => array(
+      array(
+        'priority' => 5,
+        'data' => $data,
+      ),
+    ),
+  );
+
+  return $xrds;
+}
+
+/**
+ * Implements hook_openid_provider().
+ */
+function openid_moe_openid_provider($op = 'response', $response = NULL, $request = NULL) {
+  switch ($op) {
+    case 'response':
+      if (is_null($request) || !is_array($request)) {
+        return FALSE;
+      }
+      return openid_moe_response_process($response, $request);
+      break;
+    case 'update':
+      module_load_include('inc', 'openid_provider', 'openid_provider');
+
+      $uid = array_pop($args);
+
+      //TODO: refactor into own function
+      $results = db_select('openid_moe', 'opa')
+                ->fields('opa')
+                ->condition('uid', $uid)
+                ->execute()
+                ->fetchAll();
+      $relying_parties = array();
+      foreach ($results as $result) {
+        $relying_party = array();
+        $relying_party['request'] = unserialize($result->request);
+        $relying_party['response'] = unserialize($result->response);
+        $relying_parties[] = $relying_party;
+      }
+
+      foreach ($relying_parties as $rp) {
+        $update_url = $rp['request']['openid.ax.update_url'];
+        // unset($rp['request']['openid.ax.update_url']); Can this line being deleted?
+        $response = openid_moe_response_process($rp['response'], $rp['request'], $uid);
+        $response['openid.response_nonce'] = _openid_provider_nonce();
+        $response['openid.return_to'] = $update_url;
+        $response = array_merge($rp['response'], $response);
+
+        if (!openid_provider_unsolicited_assertion($update_url, $response)) {
+          // We got a 404 and need to remove the update_url
+          // TODO: Implement some kind of threshold (e.g. 5 times 404, then remove)
+          db_delete('openid_moe')
+            ->condition('update_url', $update_url)
+            ->execute();
+        }
+      }
+      break;
+    case 'signed':
+      $signed = array();
+      foreach ($response as $key => $value) {
+        if ($key != 'openid.e1.mode' && $key != 'openid.ax.mode' && $key != 'openid.sreg.email' && $key != 'openid.sreg.nickname' && (substr($key, 0, 9) == 'openid.e1' || substr($key, 0, 11) == 'openid.sreg' || substr($key, 0, 9) == 'openid.ax'))
+        $signed[] = str_replace('openid.', '', $key);
+      }
+      return $signed;
+  }
+}
+
+/*
+ * Function processes the openid request that came in and will return the pertinent information
+ *
+ * @param $response
+ *      Keyed array holding the response that will be sent back
+ * @param $request
+ *      Keyed array holding the request that was received
+ */
+function openid_moe_response_process($response = array(), $request = array()) {
+  global $user;
+  $account = user_load($user->uid);
+  // OPENID Attribute Exchange was requested hence get the alias per
+  // OPENID specification and then determine the type of request it was
+  $attributes = array();
+  $sreg_alias = openid_moe_alias(OPENID_NS_SREG, $request, FALSE);
+  $sreg_alias_key = openid_moe_alias(OPENID_NS_SREG, $request, TRUE);
+  if (!is_null($sreg_alias_key)) {
+    $attributes = array_merge($attributes, openid_moe_parse_request($request, $sreg_alias));
+  }
+  $ax_alias = openid_moe_alias(OPENID_NS_AX, $request, FALSE);
+  $ax_alias_key = openid_moe_alias(OPENID_NS_AX, $request, TRUE);
+  if (!is_null($ax_alias_key)) {
+    $request_type = $request['openid.' . $ax_alias . '.mode'];
+    $attributes = array_merge($attributes, openid_moe_parse_request($request, $ax_alias));
+  }
+  $_SESSION['openid_moe']['attributes'] = $attributes;
+  switch ($request_type) {
+    case 'fetch_request':
+      $processed = array();
+      foreach ($attributes as $type => $short_names) {
+        foreach ($short_names as $short_name => $full_url) {
+          $processed = array_merge($processed, module_invoke_all('openid_provider_fetch', $type, $short_name, $full_url, $account));
+        }
+      }
+      if (!is_null($sreg_alias_key)) {
+        $processed = array_merge($processed, array($sreg_alias_key => OPENID_NS_SREG));
+      }
+      if (!is_null($ax_alias_key)) {
+        $processed = array_merge($processed, array($ax_alias_key => OPENID_NS_AX, 'openid.' . $ax_alias . '.mode' => 'fetch_response'));
+      }
+      // Relying Party asks for updates.
+      if (isset($request['openid.' . $ax_alias . '.update_url']) && valid_url($request['openid.' . $ax_alias . '.update_url'])) {
+        // Verify realm with update_url
+        $realm_verified = ($request['openid.realm'] == substr($request['openid.' . $ax_alias . '.update_url'], 0, strlen($request['openid.realm']))) ? TRUE : FALSE;
+
+        if ($realm_verified) {
+          $claimed_id = $request['openid.claimed_id'];
+          $update_url = $request['openid.' . $ax_alias . '.update_url'];
+
+          $processed = array_merge($processed, array('openid.' . $ax_alias . '.update_url' => $update_url));
+          $update = array();
+          if (db_query("SELECT COUNT(uid) FROM {openid_moe} WHERE update_url = :update_url AND uid = :uid", array(':update_url' => $update_url, ':uid' => $account->uid))->fetchField()) {
+            $update = array('update_url', 'uid');
+          }
+          $record = new stdClass();
+          $record->uid = $user->uid;
+          $record->claimed_id = $claimed_id;
+          $record->request = serialize($request);
+          $record->response = serialize($response);
+          $record->update_url = $update_url;
+          drupal_write_record('openid_moe', $record, $update);
+        }
+      }
+      return $processed;
+      break;
+    case 'store_request':
+      // Determine the realm (openid.trust_root in 1.x)
+      $realm = (empty($request['openid.realm'])) ? $request['openid.trust_root'] : $request['openid.realm'];
+      $rp = _openid_provider_rp_load($account->uid, $realm);
+      if ($rp->auto_release) {
+        $response = array();
+        foreach ($attributes as $type => $short_names) {
+          foreach ($short_names as $short_name => $full_url) {
+            $response = array_merge($response, module_invoke_all('openid_provider_store', $type, $short_name, $full_url, $account));
+          }
+        }
+        $response = array_merge($response, array($ax_alias_key => OPENID_NS_AX, 'openid.' . $ax_alias . '.mode' => 'store_response_success'));
+        return $response;
+      }
+      else {
+        // Wait for openid_provider_form_submit() to execute
+        $_SESSION['openid_moe']['request'] = $request;
+      }
+      break;
+  }
+}
+
+/**
+ * Function takes in the request and retrieves the alias per spec being utilized.
+ *
+ * @param $request
+ *      Array holding the request that was received
+ * @param $key
+ *      Boolean, if TRUE will return the key else just the alias
+ */
+function openid_moe_alias($type = OPENID_NS_SREG, $request, $key = FALSE) {
+  $alias_key = NULL;
+  // Retrieve the Key in the request that the user is utilizing
+  foreach ($request as $k => $v) {
+    if ($v == $type) {
+      $alias_key = $k;
+      break;
+    }
+  }
+  // Return the full key to the calling function if asked for
+  if ($key === TRUE) {
+    return $alias_key;
+  }
+  // Return just the alias to the calling function
+  if (!is_null($alias_key)) {
+    return substr(strrchr($alias_key, '.'), 1);
+  }
+  return NULL;
+}
+
+/**
+ * Separate the AX requests from the rest of $request
+ *
+ * @param $request
+ *      Associative array of requests send to the OP
+ * @param $alias
+ *      Alias being utilized by this openid ax request
+ *
+ * @return
+ *      Associative array with only requests containing openid.ns.axalias
+ */
+function openid_moe_parse_request($request, $alias) {
+  $attributes = array();
+  $short_names = explode(',', $request['openid.' . $alias . '.required']);
+  if (isset($request['openid.' . $alias . '.if_available'])) {
+    $short_names = array_merge($short_names, explode(',', $request['openid.' . $alias . '.if_available']));
+  }
+  foreach ($short_names as $short_name) {
+    if ($alias == 'sreg') {
+      $attributes['sreg'][$short_name] = $short_name;
+    }
+    else {
+      $attributes[$alias][$short_name] = urldecode($request['openid.' . $alias . '.type.' . $short_name]);
+    }
+  }
+
+  return $attributes;
+}
+
+/**
+ * Implements hook_openid_provider_fetch().
+ */
+function openid_moe_openid_provider_fetch($type, $short_name, $full_url, $account) {
+  $response = array();
+  if ($type == 'sreg') {
+    switch($short_name) {
+      case 'nickname':
+        $value = $account->name;
+        $response['openid.ax.type.nickname'] = 'http://openid.net/schema/namePerson/friendly';
+        $response['openid.ax.value.nickname'] = $value;
+        break;
+      case 'email':
+        $value = $account->email;
+        $response['openid.ax.type.email'] = 'http://openid.net/schema/contact/internet/email';
+        $response['openid.ax.value.email'] = $value;
+        break;
+      case 'fullname':
+        $value = $account->realname;
+        $response['openid.ax.type.namePerson'] = 'http://openid.net/schema/namePerson';
+        $response['openid.ax.value.namePerson'] = $value;
+        break;
+      case 'dob':
+        $value = $account->birthyear . '-' . $account->birthmonth . '-' . $account->birthday;
+        $response['openid.ax.type.birthYear'] = 'http://openid.net/schema/birthDate/birthYear';
+        $response['openid.ax.value.birthYear'] = $account->birthyear;
+        $response['openid.ax.type.birthMonth'] = 'http://openid.net/schema/birthDate/birthMonth';
+        $response['openid.ax.value.birthMonth'] = $account->birthmonth;
+        $response['openid.ax.type.birthday'] = 'http://openid.net/schema/birthDate/birthday';
+        $response['openid.ax.value.birthday'] = $account->birthday;
+        break;
+      case 'gender':
+        if ($account->gender == t('male')) {
+          $value = 'M';
+        }
+        else {
+          $value = 'F';
+        }
+        $response['openid.ax.type.gender'] = 'http://openid.net/schema/gender';
+        $response['openid.ax.value.gender'] = $value;
+        break;
+    }
+    if (!empty($value)) {
+      $response['openid.sreg.' . $short_name] = $value;
+    }
+  }
+  else {
+    switch($full_url) {
+      case 'http://openid.edu.tw/axschema/school/id':
+        $response['openid.' . $type . '.type.' . $short_name] = $full_url;
+        $response['openid.' . $type . '.value.' . $short_name] = variable_get('openid_moe_school_id');
+        break;
+      case 'http://openid.edu.tw/axschema/person/guid':
+        $response['openid.' . $type . '.type.' . $short_name] = $full_url;
+        $value = hash('sha256', $account->idno, FALSE);
+        $response['openid.' . $type . '.value.' . $short_name] = $value;
+        break;
+      case 'http://openid.edu.tw/axschema/school/titleStr':
+        $response['openid.' . $type . '.type.' . $short_name] = $full_url;
+        $value = '{"id":' . variable_get('openid_moe_school_id') . ',"title":[';
+        if ($account->userclass == 'teacher') {
+          $sdate = get_current_seme();
+          $sql = "select a.POS_ID,b.POS_NAME from TEASRV a left join SCHPOSITION b on a.POS_ID=b.POS_ID where a.TEAID=? and a.SEYEAR=? and a.SESEM=?";
+          $rs = db2_query($sql, array(
+            $account->empid,
+            $sdate['year'],
+            $sdate['seme'],
+          ));
+          while (db2_fetch_row($rs)) {
+            $value .= '"' . db2_result($rs, 'POS_NAME') . '",';
+          }
+          $value = substr($value, 0, -1) . ']}';
+        }
+        else {
+          $value .= '"' . t('student') . '"]}';
+        }
+        $response['openid.' . $type . '.value.' . $short_name] = $value;
+        break;
+      default:
+        $response['openid.' . $type . '.type.' . $short_name] = $full_url;
+        $response['openid.' . $type . '.count.' . $short_name] = 0;
+    }
+  }
+  return $response;
+}
+
+/**
+ * Implements hook_openid_provider_list().
+ */
+function openid_moe_openid_provider_list($type, $short_name, $full_url) {
+  if ($type == 'sreg') {
+    switch($short_name) {
+      case 'nickname':
+        $item = t('your account name.');
+        break;
+      case 'email':
+        $item = t('your email address.');
+        break;
+      case 'fullname':
+        $item = t('your real name.');
+        break;
+      case 'dob':
+        $item = t('your birthday.');
+        break;
+      case 'gender':
+        $item = t('your gender.');
+        break;
+    }
+  }
+  else {
+    switch($full_url) {
+      case 'http://openid.edu.tw/axschema/school/id':
+        $item = t('your taught or attending school.');
+        break;
+      case 'http://openid.edu.tw/axschema/person/guid':
+        $item = t('your number of identity card.');
+        break;
+      case 'http://openid.edu.tw/axschema/school/titleStr':
+        $item = t('your job titles.');
+        break;
+    }
+  }
+  return array( $item );
+}
+
+/**
+ * @todo Please document this function.
+ * @see http://drupal.org/node/1354
+ */
+function openid_moe_form_openid_provider_form_alter(&$form, &$form_state) {
+  global $user;
+  $attributes = $_SESSION['openid_moe']['attributes'];
+  unset($_SESSION['openid_moe']['attributes']);
+  $items = array();
+  foreach ($attributes as $type => $short_names) {
+    foreach ($short_names as $short_name => $full_url) {
+      $items = array_merge($items, module_invoke_all('openid_provider_list', $type, $short_name, $full_url));
+    }
+  }
+  $data = array(
+    'items' => $items,
+    'title' => t('fields in the list below:'),
+    'type' => 'ul',
+    'attributes' => array(),
+  ); 
+  if (!isset($_SESSION['openid_moe']['request'])) {
+    drupal_set_title(t('OpenID fetch'));
+    $form['intro']['#markup'] = '<p>' . t('You are being logged into %site, The site asks for permission to fetch your personal data, would you like to continue?',
+      array('%site' => $form_state['storage']['realm'])) . '</p><p>' . theme_item_list($data) . '</p>';
+ }
+  else {
+    drupal_set_title(t('OpenID store'));
+    $request = $form_state['storage']['request'] = $_SESSION['openid_moe']['request'];
+    unset($_SESSION['openid_moe']['request']);
+
+    $default_submits = $form['#submit'];
+    $form['#submit'] = array('openid_moe_openid_provider_form_submit');
+    foreach ($default_submits as $submit) {
+      $form['#submit'][] = $submit;
+    }
+    $always_submits = $form['submit_always']['#submit'];
+    $form['submit_always']['#submit'] = array('openid_moe_openid_provider_form_submit');
+    foreach ($always_submits as $submit) {
+      $form['submit_always']['#submit'][] = $submit;
+    }
+    //TODO: Display the data that will be stored.
+    $form['intro']['#markup'] = '<p>' . t('The Relying Party @relying asks for permission to store data into your profile, would you like to continue?',
+      array('@relying' => $form_state['storage']['realm'])) . '</p><p>' . theme_item_list($data) . '</p>';
+  }
+}
+
+/**
+ * @todo Please document this function.
+ * @see http://drupal.org/node/1354
+ */
+function openid_moe_openid_provider_form_submit($form, &$form_state) {
+  global $user;
+  if ($form_state['values']['op'] == t('Yes; just this once') ||
+      $form_state['values']['op'] == t('Yes; always')) {
+    $request = $form_state['storage']['request'];
+    $sreg_alias = openid_moe_alias(OPENID_NS_SREG, $request, FALSE);
+    $sreg_alias_key = openid_moe_alias(OPENID_NS_SREG, $request, TRUE);
+    $attributes = openid_moe_parse_request($request, $sreg_alias);
+    $ax_alias = openid_moe_alias(OPENID_NS_AX, $request, FALSE);
+    $ax_alias_key = openid_moe_alias(OPENID_NS_AX, $request, TRUE);
+    $request_type = $request['openid.' . $ax_alias . '.mode'];
+    $attributes = array_merge($attributes, openid_moe_parse_request($request, $ax_alias));
+    if ($request_type == 'store_request') {
+      $response = array();
+      foreach ($attributes as $type => $short_names) {
+        foreach ($short_names as $short_name => $full_url) {
+          $response = array_merge($response, module_invoke_all('openid_provider_store', $type, $short_name, $full_url, $user));
+        }
+      }
+      $response = array_merge($response, array($sreg_alias_key => OPENID_NS_SREG, $ax_alias_key => OPENID_NS_AX, 'openid.' . $ax_alias . '.mode' => 'store_response_success'));
+      return $response;
+    }
+  }
+}

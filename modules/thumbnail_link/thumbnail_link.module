@@ -1,0 +1,295 @@
+<?php
+
+/**
+ * @file
+ * thumbnail_link.module.
+ * the thumbnail link module logic function.
+ */
+
+/**
+ * Implements hook_menu().
+ */
+function thumbnail_link_menu() {
+  $items = array();
+  $items['thumbnail_link/handle'] = array(
+    'title' => 'none',
+    'page callback' => 'thumbnail_link_handle',
+    'access callback' => 'user_access',
+    'access arguments' => array('record external click'),
+    'type' => MENU_CALLBACK,
+  );
+  return $items;
+}
+
+/**
+ * Implements hook_update_projects_alter().
+ */
+function thumbnail_link_update_projects_alter(&$projects) {
+  unset($projects['thumbnail_link']);
+}
+
+/**
+ * Implements hook_help().
+ */
+function thumbnail_link_help($path, $arg) {
+  switch ($path) {
+    case 'admin/config/content/thumbnail_link':
+      $output = '<p>' . t('This module create a new content type for websites thumbnail link.') . '</p>';
+      $output .= '<p></p>';
+      return $output;
+  }
+}
+
+/**
+ * Implements hook_permission().
+ */
+function thumbnail_link_permission() {
+  return array(
+    'record external click' => array(
+      'title' => t('Record external clicks'),
+      'description' => t('causes users to have their clicks traced and tallied.'),
+    ),
+  );
+}
+
+/**
+ * Implements thumbnail_link_handle($data). Not hook function.
+ */
+function thumbnail_link_handle($data) {
+  $today = getdate();
+  $nid = $_GET['nid'];
+  $timestamp = db_query('SELECT timestamp FROM {node_counter} WHERE nid = :nid', array(':nid' => $nid))->fetchField();
+  $rday = getdate($timestamp);
+  if ($today['year'] == $rday['year'] && $today['yday'] == $rday['yday']) {
+    $num_updated = db_update('node_counter')
+      ->expression('totalcount', 'totalcount + :weight', array(':weight' => 1))
+      ->expression('daycount', 'daycount + :weight', array(':weight' => 1))
+      ->expression('timestamp', time())
+      ->condition('nid', $nid, '=')
+      ->execute();
+  }
+  else {
+    $num_updated = db_update('node_counter')
+      ->expression('totalcount', 'totalcount + :weight', array(':weight' => 1))
+      ->expression('daycount', 1)
+      ->expression('timestamp', time())
+      ->condition('nid', $nid, '=')
+      ->execute();
+  }
+}
+
+/**
+ * Implements hook_views_api().
+ */
+function thumbnail_link_views_api() {
+  return array(
+    'api' => 3,
+    'path' => drupal_get_path('module', 'thumbnail_link'),
+  );
+}
+/**
+ * Implements hook_views_default_views().
+ */
+function thumbnail_link_views_default_views() {
+  $view = new view();
+  $view->name = 'related_web';
+  $view->description = '';
+  $view->tag = 'default';
+  $view->base_table = 'node';
+  $view->human_name = '相關網站';
+  $view->core = 7;
+  $view->api_version = 3;
+  $view->disabled = FALSE; /* Edit this to true to make a default view disabled initially */
+
+  /* Display: Master */
+  $handler = $view->new_display('default', 'Master', 'default');
+  $handler->display->display_options['use_more_always'] = TRUE;
+  $handler->display->display_options['use_more_text'] = '更多';
+  $handler->display->display_options['access']['type'] = 'perm';
+  $handler->display->display_options['cache']['type'] = 'none';
+  $handler->display->display_options['query']['type'] = 'views_query';
+  $handler->display->display_options['exposed_form']['type'] = 'basic';
+  $handler->display->display_options['exposed_form']['options']['submit_button'] = '套用';
+  $handler->display->display_options['exposed_form']['options']['reset_button_label'] = '重設';
+  $handler->display->display_options['exposed_form']['options']['exposed_sorts_label'] = '排序依據';
+  $handler->display->display_options['exposed_form']['options']['sort_asc_label'] = '遞增';
+  $handler->display->display_options['exposed_form']['options']['sort_desc_label'] = '遞減';
+  $handler->display->display_options['exposed_form']['options']['autosubmit'] = TRUE;
+  $handler->display->display_options['pager']['type'] = 'full';
+  $handler->display->display_options['pager']['options']['items_per_page'] = '20';
+  $handler->display->display_options['pager']['options']['offset'] = '0';
+  $handler->display->display_options['pager']['options']['id'] = '0';
+  $handler->display->display_options['pager']['options']['quantity'] = '9';
+  $handler->display->display_options['pager']['options']['expose']['items_per_page_label'] = '每頁的項目數';
+  $handler->display->display_options['pager']['options']['expose']['items_per_page_options_all_label'] = '- 全部 -';
+  $handler->display->display_options['pager']['options']['expose']['offset_label'] = '位移';
+  $handler->display->display_options['pager']['options']['tags']['first'] = '« 第一頁';
+  $handler->display->display_options['pager']['options']['tags']['previous'] = '‹ 上一頁';
+  $handler->display->display_options['pager']['options']['tags']['next'] = '下一頁 ›';
+  $handler->display->display_options['pager']['options']['tags']['last'] = '最後一頁 »';
+  $handler->display->display_options['style_plugin'] = 'grid';
+  $handler->display->display_options['style_options']['grouping'] = array(
+    0 => array(
+      'field' => 'field_thumblink_term',
+      'rendered' => 0,
+      'rendered_strip' => 1,
+    ),
+  );
+  $handler->display->display_options['style_options']['row_class'] = 'noborder';
+  $handler->display->display_options['style_options']['row_class_special'] = FALSE;
+  $handler->display->display_options['style_options']['columns'] = '5';
+  $handler->display->display_options['row_plugin'] = 'fields';
+  /* 關聯: 內容: 網站縮圖 (field_thumblink_image:fid) */
+  $handler->display->display_options['relationships']['field_thumblink_image_fid']['id'] = 'field_thumblink_image_fid';
+  $handler->display->display_options['relationships']['field_thumblink_image_fid']['table'] = 'field_data_field_thumblink_image';
+  $handler->display->display_options['relationships']['field_thumblink_image_fid']['field'] = 'field_thumblink_image_fid';
+  $handler->display->display_options['relationships']['field_thumblink_image_fid']['required'] = TRUE;
+  /* 欄位: 內容: 網站分類 */
+  $handler->display->display_options['fields']['field_thumblink_term']['id'] = 'field_thumblink_term';
+  $handler->display->display_options['fields']['field_thumblink_term']['table'] = 'field_data_field_thumblink_term';
+  $handler->display->display_options['fields']['field_thumblink_term']['field'] = 'field_thumblink_term';
+  $handler->display->display_options['fields']['field_thumblink_term']['label'] = '';
+  $handler->display->display_options['fields']['field_thumblink_term']['exclude'] = TRUE;
+  $handler->display->display_options['fields']['field_thumblink_term']['element_label_colon'] = FALSE;
+  $handler->display->display_options['fields']['field_thumblink_term']['type'] = 'taxonomy_term_reference_plain';
+  /* 欄位: 內容: 標題 */
+  $handler->display->display_options['fields']['title']['id'] = 'title';
+  $handler->display->display_options['fields']['title']['table'] = 'node';
+  $handler->display->display_options['fields']['title']['field'] = 'title';
+  $handler->display->display_options['fields']['title']['label'] = '';
+  $handler->display->display_options['fields']['title']['exclude'] = TRUE;
+  $handler->display->display_options['fields']['title']['alter']['word_boundary'] = FALSE;
+  $handler->display->display_options['fields']['title']['alter']['ellipsis'] = FALSE;
+  $handler->display->display_options['fields']['title']['element_label_colon'] = FALSE;
+  $handler->display->display_options['fields']['title']['link_to_node'] = FALSE;
+  /* 欄位: 內容: 網站連結 */
+  $handler->display->display_options['fields']['field_thumblink_link']['id'] = 'field_thumblink_link';
+  $handler->display->display_options['fields']['field_thumblink_link']['table'] = 'field_data_field_thumblink_link';
+  $handler->display->display_options['fields']['field_thumblink_link']['field'] = 'field_thumblink_link';
+  $handler->display->display_options['fields']['field_thumblink_link']['label'] = '';
+  $handler->display->display_options['fields']['field_thumblink_link']['exclude'] = TRUE;
+  $handler->display->display_options['fields']['field_thumblink_link']['element_label_colon'] = FALSE;
+  /* 欄位: 檔案: 路徑 */
+  $handler->display->display_options['fields']['uri']['id'] = 'uri';
+  $handler->display->display_options['fields']['uri']['table'] = 'file_managed';
+  $handler->display->display_options['fields']['uri']['field'] = 'uri';
+  $handler->display->display_options['fields']['uri']['relationship'] = 'field_thumblink_image_fid';
+  $handler->display->display_options['fields']['uri']['label'] = '';
+  $handler->display->display_options['fields']['uri']['exclude'] = TRUE;
+  $handler->display->display_options['fields']['uri']['element_label_colon'] = FALSE;
+  $handler->display->display_options['fields']['uri']['file_download_path'] = TRUE;
+  /* 欄位: 全域: 自定文字 */
+  $handler->display->display_options['fields']['nothing']['id'] = 'nothing';
+  $handler->display->display_options['fields']['nothing']['table'] = 'views';
+  $handler->display->display_options['fields']['nothing']['field'] = 'nothing';
+  $handler->display->display_options['fields']['nothing']['label'] = '';
+  $handler->display->display_options['fields']['nothing']['alter']['text'] = '<a class="thumbnail_link" href="[field_thumblink_link]" title="[title]"><img src="[uri]" width="100"></a><br>';
+  $handler->display->display_options['fields']['nothing']['element_label_colon'] = FALSE;
+  /* 排序條件: 內容統計: 瀏覽次數 */
+  $handler->display->display_options['sorts']['totalcount']['id'] = 'totalcount';
+  $handler->display->display_options['sorts']['totalcount']['table'] = 'node_counter';
+  $handler->display->display_options['sorts']['totalcount']['field'] = 'totalcount';
+  $handler->display->display_options['sorts']['totalcount']['order'] = 'DESC';
+  /* 篩選條件: 內容: 已發表 */
+  $handler->display->display_options['filters']['status']['id'] = 'status';
+  $handler->display->display_options['filters']['status']['table'] = 'node';
+  $handler->display->display_options['filters']['status']['field'] = 'status';
+  $handler->display->display_options['filters']['status']['value'] = 1;
+  $handler->display->display_options['filters']['status']['group'] = 1;
+  $handler->display->display_options['filters']['status']['expose']['operator'] = FALSE;
+  /* 篩選條件: 內容: 類型 */
+  $handler->display->display_options['filters']['type']['id'] = 'type';
+  $handler->display->display_options['filters']['type']['table'] = 'node';
+  $handler->display->display_options['filters']['type']['field'] = 'type';
+  $handler->display->display_options['filters']['type']['value'] = array(
+    'thumblink' => 'thumblink',
+  );
+  /* 篩選條件: 內容: 網站分類 (field_thumblink_term) */
+  $handler->display->display_options['filters']['field_thumblink_term_tid']['id'] = 'field_thumblink_term_tid';
+  $handler->display->display_options['filters']['field_thumblink_term_tid']['table'] = 'field_data_field_thumblink_term';
+  $handler->display->display_options['filters']['field_thumblink_term_tid']['field'] = 'field_thumblink_term_tid';
+  $handler->display->display_options['filters']['field_thumblink_term_tid']['exposed'] = TRUE;
+  $handler->display->display_options['filters']['field_thumblink_term_tid']['expose']['operator_id'] = 'field_thumblink_term_tid_op';
+  $handler->display->display_options['filters']['field_thumblink_term_tid']['expose']['label'] = '網站分類';
+  $handler->display->display_options['filters']['field_thumblink_term_tid']['expose']['operator'] = 'field_thumblink_term_tid_op';
+  $handler->display->display_options['filters']['field_thumblink_term_tid']['expose']['identifier'] = 'field_thumblink_term_tid';
+  $handler->display->display_options['filters']['field_thumblink_term_tid']['expose']['remember_roles'] = array(
+    2 => '2',
+    1 => 0,
+    3 => 0,
+  );
+  $handler->display->display_options['filters']['field_thumblink_term_tid']['type'] = 'select';
+  $handler->display->display_options['filters']['field_thumblink_term_tid']['vocabulary'] = 'websites';
+  $handler->display->display_options['filters']['field_thumblink_term_tid']['hierarchy'] = 1;
+
+  /* Display: 相關網站頁面 */
+  $handler = $view->new_display('page', '相關網站頁面', 'page');
+  $handler->display->display_options['path'] = 'related-web';
+ $handler->display->display_options['menu']['type'] = 'normal';
+  $handler->display->display_options['menu']['title'] = '相關網站';
+  $handler->display->display_options['menu']['weight'] = '0';
+  $handler->display->display_options['menu']['name'] = 'main-menu';
+  $handler->display->display_options['menu']['context'] = 0;
+  $handler->display->display_options['menu']['context_only_inline'] = 0;
+
+  /* Display: 相關網站區塊 */
+  $handler = $view->new_display('block', '相關網站區塊', 'block');
+  $handler->display->display_options['defaults']['use_more'] = FALSE;
+  $handler->display->display_options['use_more'] = TRUE;
+  $handler->display->display_options['defaults']['use_more_always'] = FALSE;
+  $handler->display->display_options['defaults']['use_more_always'] = FALSE;
+  $handler->display->display_options['use_more_always'] = FALSE;
+  $handler->display->display_options['defaults']['use_more_text'] = FALSE;
+  $handler->display->display_options['use_more_text'] = '更多';
+  $handler->display->display_options['defaults']['pager'] = FALSE;
+  $handler->display->display_options['pager']['type'] = 'some';
+  $handler->display->display_options['pager']['options']['items_per_page'] = '10';
+  $handler->display->display_options['pager']['options']['offset'] = '0';
+  $handler->display->display_options['defaults']['style_plugin'] = FALSE;
+  $handler->display->display_options['style_plugin'] = 'default';
+  $handler->display->display_options['defaults']['style_options'] = FALSE;
+  $handler->display->display_options['defaults']['row_plugin'] = FALSE;
+  $handler->display->display_options['row_plugin'] = 'fields';
+  $handler->display->display_options['defaults']['row_options'] = FALSE;
+  $handler->display->display_options['defaults']['filter_groups'] = FALSE;
+  $handler->display->display_options['defaults']['filters'] = FALSE;
+  /* 篩選條件: 內容: 已發表 */
+  $handler->display->display_options['filters']['status']['id'] = 'status';
+  $handler->display->display_options['filters']['status']['table'] = 'node';
+  $handler->display->display_options['filters']['status']['field'] = 'status';
+  $handler->display->display_options['filters']['status']['value'] = 1;
+  $handler->display->display_options['filters']['status']['group'] = 1;
+  $handler->display->display_options['filters']['status']['expose']['operator'] = FALSE;
+  /* 篩選條件: 內容: 類型 */
+  $handler->display->display_options['filters']['type']['id'] = 'type';
+  $handler->display->display_options['filters']['type']['table'] = 'node';
+  $handler->display->display_options['filters']['type']['field'] = 'type';
+  $handler->display->display_options['filters']['type']['value'] = array(
+    'thumblink' => 'thumblink',
+  );
+  $handler->display->display_options['block_description'] = '相關網站';
+  $translatables['related_web'] = array(
+    t('Master'),
+    t('更多'),
+    t('套用'),
+    t('重設'),
+    t('排序依據'),
+    t('遞增'),
+    t('遞減'),
+    t('每頁的項目數'),
+    t('- 全部 -'),
+    t('位移'),
+    t('« 第一頁'),
+    t('‹ 上一頁'),
+    t('下一頁 ›'),
+    t('最後一頁 »'),
+    t('image from field_thumblink_image'),
+    t('<a class="thumbnail_link" href="[field_thumblink_link]" title="[title]"><img src="[uri]" width="100"></a><br>'),
+    t('網站分類'),
+    t('相關網站頁面'),
+    t('相關網站區塊'),
+    t('相關網站'),
+  );
+
+  return array($view->name => $view);
+}

@@ -1,0 +1,18 @@
+name = Thumbnail Link
+description = Create a new content-type for related web site.
+package = School Information Management System
+dependencies[] = field_ui
+dependencies[] = image
+dependencies[] = statistics
+dependencies[] = taxonomy
+dependencies[] = views
+configure = /admin/config/content/thumbnail_link
+files[] = thumbnail_link.install
+files[] = thumbnail_link.module
+files[] = hits.js
+files[] = thumbnail_link.zh-hant.po
+
+version = "7.x-1.2"
+core = "7.x"
+project = "thumbnail_link"
+datestamp = "1416442013"
