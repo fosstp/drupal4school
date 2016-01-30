@@ -1,0 +1,225 @@
+# $Id$
+#
+# Chinese, Traditional translation of Drupal (general)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from files:
+#  sims_field.module: n/a
+#  sims_field.info: n/a
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2015-06-22 11:26+0800\n"
+"PO-Revision-Date: 2015-06-22 11:26+0800\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: Chinese, Traditional <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n>1);\n"
+
+#: sims_field.module:15
+msgid "About"
+msgstr "關於"
+
+#: sims_field.module:16
+msgid "The sims field module defines various fields for storing a list of sims data records, for use with the Field module. Usually these items are entered through a select list, checkboxes, or radio buttons. See the <a href=\"@field-help\">Field module help page</a> for more information about fields."
+msgstr ""
+"校務行政欄位模組定義數種欄位給 Drupal "
+"系統使用，以便於儲存校務行政特定欄位資料，通常這些欄位會使用下拉式清單、選擇紐或是核取框進行輸入。有關欄位模組的詳細資訊，請看<a "
+"href=\"@field-help\">欄位模組說明頁面</a>。"
+
+#: sims_field.module:34
+msgid "School Year & Semester"
+msgstr "學年與學期"
+
+#: sims_field.module:35
+msgid "This field choise school year and/or semester depend on IBM DB2 Database."
+msgstr "用來選擇校務行政系統中所定義的學年或學期，以便將內容依照ˇ學年或學期分類。"
+
+#: sims_field.module:43
+msgid "List (classes)"
+msgstr "班級清單"
+
+#: sims_field.module:44
+msgid "This field stores CLASSID data from IBM DB2 BASCLS table."
+msgstr "用來選擇校務行政系統中所定義的班級。"
+
+#: sims_field.module:50
+msgid "List (departments)"
+msgstr "所屬部門"
+
+#: sims_field.module:51
+msgid "This field stores DEPT_ID data from IBM DB2 SCHDEPT table."
+msgstr "用來選擇校務行政系統中所定義的處室或組織單位。"
+
+#: sims_field.module:57
+msgid "List (domains)"
+msgstr "所屬領域"
+
+#: sims_field.module:58
+msgid "This field stores POS_ID data from IBM DB2 SCHPOSITION table."
+msgstr "用來選擇校務行政系統中所定義的領域或職稱。"
+
+#: sims_field.module:65
+msgid "List (students)"
+msgstr "學生清單"
+
+#: sims_field.module:66
+msgid "This field stores specific column data from IBM DB2 STUDENT table."
+msgstr "這個欄位用來選取校務行政系統中的學生資訊，通常會依照學年學期與班級清單欄位進行篩選，可以指定要顯示的欄位資料。"
+
+#: sims_field.module:73
+msgid "List (teachers)"
+msgstr "教師清單"
+
+#: sims_field.module:74
+msgid "This field stores specific column data from IBM DB2 TEABAS table."
+msgstr "這個欄位用來選取校務行政系統中的教師資訊，通常會依照學年學期+班級清單、所屬部門欄位或所屬領域欄位進行篩選，可以指定要顯示的欄位資料。"
+
+#: sims_field.module:98
+msgid "include_semester"
+msgstr "包含學期資訊"
+
+#: sims_field.module:100
+msgid "If your content need to group by semester, you should check this box. otherwise, the content will group by school year default."
+msgstr "如果內容需要根據學期進行分類，請勾選此項功能，如果內容僅需要按學年區分，請不要勾選此項功能。"
+
+#: sims_field.module:112;342
+msgid "Specfic Department"
+msgstr "指定部門"
+
+#: sims_field.module:113
+msgid "Show the domain/jobtitle of this department.<br><em>To use this field, You must add domain as jobtitle to SIMS database under the subject teachers department.</em>"
+msgstr "列出下屬於這個部門的領域或職務。<br><em>要使用這個欄位，您必須先在校務行政系統中選一個恰當的處室或部門(建議您使用科任教師這個部門)，然後把領域名稱輸入作為該處室的職稱，由於校務行政系統允許複數職務的指派，所以請把全校老師都加入到這個部門裡，並預先做好所屬領域的指派。</em>"
+
+#: sims_field.module:128;144
+msgid "Specific Column"
+msgstr "顯示欄位"
+
+#: sims_field.module:132
+msgid "Which column value from STUDENT table you want to store?"
+msgstr "要顯示校務行政系統 STUDENT 資料表中的哪個欄位資料?"
+
+#: sims_field.module:148
+msgid "Which column value from TEABAS table you want to store?"
+msgstr "要顯示校務行政系統 TEABAS 資料表中的哪個欄位資料?"
+
+#: sims_field.module:175
+msgid "School Year Range"
+msgstr "學年清單的範圍"
+
+#: sims_field.module:176
+msgid "You can specify start and end Year, for example: 102:104. Or use the relative number indicates the range, 0 for this year, -1 means last year, + 1 means next year."
+msgstr ""
+"請指定開始與結束的學年，例如：102:104. "
+"或者使用相對數字來定義範圍，0代表目前的學年，-1代表上個學年，+1代表下個學年。"
+
+#: sims_field.module:184;192;231;239;279;287
+msgid "filter by current semester"
+msgstr "依照目前的學期過濾清單"
+
+#: sims_field.module:185;193
+msgid "Show the current semester classes data. If uncheck this box, try to get semester from above field!"
+msgstr "清單中將僅出現這學期的班級資料，如果未勾選此功能，將會根據學年與學期欄位的選擇結果進行過濾！"
+
+#: sims_field.module:200
+msgid "filter by current user"
+msgstr "依照目前的使用者過濾清單"
+
+#: sims_field.module:201
+msgid "Show the current user related classes only."
+msgstr "僅顯示與登入使用者相關的班級，如果登入者是教師會顯示該師任教的所有班級，如果是學生則僅顯示就讀班級。"
+
+#: sims_field.module:206;214;222;270;380
+msgid "Inline Columns"
+msgstr "一行顯示的數量"
+
+#: sims_field.module:207;215;223;271;381
+msgid "When You using checkboxes/radios to show the options, You can specify the columns display inline."
+msgstr "如果是使用選擇紐或核取框輸入介面，將會依照你指定的數量把選項顯示成同一行。"
+
+#: sims_field.module:232;240
+msgid "Show the current semester students data. If uncheck this box, try to get semester from above field!"
+msgstr "清單中將僅出現這學期的學生資料，如果未勾選此功能，將會根據學年與學期欄位的選擇結果進行過濾！"
+
+#: sims_field.module:248;256;296;304
+msgid "filter by classes field"
+msgstr "依照班級欄位過濾清單"
+
+#: sims_field.module:249;257
+msgid "Show the students of the selected class from classes field."
+msgstr "僅顯示班級清單欄位所選中班級的學生，注意：只有當班級清單欄位只允許單一選擇時才有作用！"
+
+#: sims_field.module:264;312
+msgid "Specfic Class"
+msgstr "指定班級"
+
+#: sims_field.module:265
+msgid "Show the students of this class."
+msgstr "僅顯示這個班級的學生。當未勾選【依照班級欄位過濾清單】功能，或是內容類型裡不包含班級清單欄位時使用。"
+
+#: sims_field.module:280;288
+msgid "Show the current semester teachers data. If uncheck this box, try to get semester from above field!"
+msgstr "清單中將僅出現這學期的教師資料，如果未勾選此功能，將會根據學年與學期欄位的選擇結果進行過濾！"
+
+#: sims_field.module:297;305
+msgid "Show the teachers of the selected class from classes field."
+msgstr "僅顯示班級清單欄位所選中班級的教師，注意：只有當班級清單欄位只允許單一選擇時才有作用！"
+
+#: sims_field.module:313
+msgid "Show the teachers of this class."
+msgstr "僅顯示這個班級的任教老師。當未勾選【依照班級欄位過濾清單】功能，或是內容類型裡不包含班級清單欄位且未指定所屬部門與領域時使用。<br><em>當內容類型中同時具有班級清單欄位、所屬部門欄位或所屬領域欄位時，您只能選擇其中之一來進行教師清單的過濾，否則運作方式會不如預期。</em>"
+
+#: sims_field.module:319;327
+msgid "filter by department field"
+msgstr "依照所屬部門過濾清單"
+
+#: sims_field.module:320;328
+msgid "Show the teachers of the selected department from department field."
+msgstr "僅顯示所屬部門欄位所選中處室的教師，注意：只有當所屬部門欄位只允許單一選擇時才有作用！"
+
+#: sims_field.module:343
+msgid "Show the teachers of this department."
+msgstr "僅顯示隸屬於這個部門的教師。當未勾選【依照所屬部門過濾清單】功能，或是內容類型裡不包含所屬部門欄位且未指定班級及所屬領域時使用。"
+
+#: sims_field.module:350;358
+msgid "filter by domain field"
+msgstr "依照所屬領域過濾清單"
+
+#: sims_field.module:351;359
+msgid "Show the teachers of the selected domain from domain field."
+msgstr "僅顯示所屬領域欄位所選中領域的教師，注意：只有當所屬領域欄位只允許單一選擇時才有作用！"
+
+#: sims_field.module:373
+msgid "Specfic Domain"
+msgstr "指定領域"
+
+#: sims_field.module:374
+msgid "Show the teachers of this domain."
+msgstr "僅顯示隸屬於這個領域的教師。當未勾選【依照所屬領域過濾清單】功能，或是內容類型裡不包含所屬領域欄位且未指定班級及所屬部門時使用。"
+
+#: sims_field.module:547;548
+msgid "school_year:@syear,semester:@seme"
+msgstr "@syear學年第@seme學期"
+
+#: sims_field.module:551
+msgid "school_year:@syear"
+msgstr "@syear學年"
+
+#: sims_field.module:898;906
+msgid "Tutor"
+msgstr "導師"
+
+#: sims_field.module:1242
+msgid "Default"
+msgstr "預設"
+
+#: sims_field.module:1246
+msgid "Key"
+msgstr "索引鍵值"
+
+#: sims_field.info:0
+msgid "Defines SIMS field types, widgets and formatters."
+msgstr "定義校務行政欄位型態、輸入介面與顯示格式。"

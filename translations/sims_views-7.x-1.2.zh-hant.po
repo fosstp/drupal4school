@@ -1,0 +1,103 @@
+# $Id$
+#
+# Chinese, Traditional translation of Drupal (general)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from files:
+#  sims_views.info: n/a
+#  views/simsauth_handler_field_user_birthdate.inc: n/a
+#  views/simsauth_handler_field_user_userclass.inc: n/a
+#  views/simsauth.views.inc: n/a
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2015-05-26 09:39+0800\n"
+"PO-Revision-Date: 2015-05-26 09:39+0800\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: Chinese, Traditional <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n>1);\n"
+
+#: sims_views.info:0
+msgid "Add several fields for views module from SIMS IBM DB2 Database."
+msgstr "新增數個欄位給 Views 模組，用於顯示校務行政系統使用者資訊。"
+
+#: sims_views.info:0
+msgid "School Information Management System"
+msgstr "校務行政系統"
+
+#: views/simsauth_handler_field_user_birthdate.inc:38;43;67
+msgid "%time ago"
+msgstr "%time 之前"
+
+#: views/simsauth_handler_field_user_birthdate.inc:57;64
+msgid "%time hence"
+msgstr "%time 以後"
+
+#: views/simsauth_handler_field_user_userclass.inc:24
+msgid "teacher"
+msgstr "教師"
+
+#: views/simsauth_handler_field_user_userclass.inc:27
+msgid "student"
+msgstr "學生"
+
+#: views/simsauth.views.inc:17;28
+msgid "Real name"
+msgstr "真實姓名"
+
+#: views/simsauth.views.inc:18
+msgid "The user or author real name."
+msgstr "使用者或作者的真實姓名"
+
+#: views/simsauth.views.inc:29
+msgid "The user or author real name. This filter does not check if the user exists and allows partial matching. Does not utilize autocomplete."
+msgstr "使用者或作者的真實姓名。作為條件過濾時並不會檢查使用者是否已經存在，因此請勿使用自動完成功能。"
+
+#: views/simsauth.views.inc:36;47
+msgid "User class"
+msgstr "使用者類型"
+
+#: views/simsauth.views.inc:37
+msgid "The user is a teacher or a student, identify by the simsauth module."
+msgstr "使用者是老師或是學生，由 SIMSAUTH 模組辨識提供。"
+
+#: views/simsauth.views.inc:48
+msgid "The user is a teacher or a student, identify by the simsauth module. This filter does not check if the user exists and allows partial matching. Does not utilize autocomplete."
+msgstr "使用者或作者的身分。作為條件過濾時並不會檢查使用者是否已經存在，因此請勿使用自動完成功能。"
+
+#: views/simsauth.views.inc:55;66
+msgid "Department name"
+msgstr "所屬部門"
+
+#: views/simsauth.views.inc:56
+msgid "The department name of the teacher or The class of the student."
+msgstr "老師的所屬部門或學生就讀班級。"
+
+#: views/simsauth.views.inc:67
+msgid "The department name of the teacher or The class of the student. This filter does not check if the user exists and allows partial matching. Does not utilize autocomplete."
+msgstr "老師的所屬部門或學生就讀班級。作為條件過濾時並不會檢查使用者是否已經存在，因此請勿使用自動完成功能。"
+
+#: views/simsauth.views.inc:74;85
+msgid "Job title"
+msgstr "職稱"
+
+#: views/simsauth.views.inc:75
+msgid "The job title of the teacher or the seat number of the student."
+msgstr "老師的職稱或學生的座號。"
+
+#: views/simsauth.views.inc:86
+msgid "The job title of the teacher or the seat number of the student. This filter does not check if the user exists and allows partial matching. Does not utilize autocomplete."
+msgstr "老師的職稱或學生的座號。作為條件過濾時並不會檢查使用者是否已經存在，因此請勿使用自動完成功能。"
+
+#: views/simsauth.views.inc:93
+msgid "Birth Date"
+msgstr "出生日期"
+
+#: views/simsauth.views.inc:94
+msgid "The date the user was borned."
+msgstr "使用者或作者的出生日期。"
+
