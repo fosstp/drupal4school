@@ -1,5 +1,5 @@
 # drupal
-This docker image contains centos 6 + php 5.6 + ibm db2 v10.5 x64 client + apache 2.2 + drupal 8
+This docker image contains centos 6 + php 5.4 + ibm db2 v10.5 x64 client + apache 2.2 + drupal 7
 
 This image not include database manager.
 There has a lot database images can work with Drupal, so pull what you want, like:
