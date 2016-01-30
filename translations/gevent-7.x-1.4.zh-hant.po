@@ -1,0 +1,166 @@
+# $Id$
+#
+# Chinese, Traditional translation of Drupal (general)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from files:
+#  gevent.module: n/a
+#  gevent.info: n/a
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2015-06-22 14:15+0800\n"
+"PO-Revision-Date: 2015-06-22 14:15+0800\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: Chinese, Traditional <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n>1);\n"
+
+#: gevent.module:33
+msgid "Google Calendar Sync settings"
+msgstr "Google行事曆同步設定"
+
+#: gevent.module:34
+msgid "Control the various settings of the Google Calendar Sync module"
+msgstr "修改 Google 行事曆同步模組相關設定"
+
+#: gevent.module:44
+msgid "School Calendar"
+msgstr "學期行事曆"
+
+#: gevent.module:70
+msgid "This module sync your custom content-type to Google Calendar."
+msgstr ""
+"此模組將您自訂用於行事曆事件的內容類型同步到 "
+"Google "
+"行事曆。此同步是即時的，目前不提供批次同步功能！"
+
+#: gevent.module:451
+msgid "The custom node type you want to sync to Google Calendar."
+msgstr "您想同步的內容類型"
+
+#: gevent.module:454
+msgid "Here will list only these node type that contain date module field."
+msgstr "這裡只會列出含有 date 模組欄位的內容類型。"
+
+#: gevent.module:493;666
+msgid "The custom field sync to Google Calendar event title."
+msgstr "哪一個欄位要同步到事件標題？"
+
+#: gevent.module:496;505;513;529;538;669;678;686;702;711
+msgid "Here will list only these fields except date module field."
+msgstr "這裡只會列出該內容類型中的文字欄位。"
+
+#: gevent.module:502;675
+msgid "The custom field sync to Google Calendar event description."
+msgstr "哪一個欄位要同步到事件說明？"
+
+#: gevent.module:510;683
+msgid "The custom field sync to Google Calendar event where."
+msgstr "哪一個欄位要同步到事件地點？"
+
+#: gevent.module:518;691
+msgid "The custom field sync to Google Calendar event attendee."
+msgstr "哪一個欄位要同步到事件參與人員？"
+
+#: gevent.module:521;694
+msgid "Here will list only these fields except sims field: List (teachers)."
+msgstr "這裡只會列出該內容類型中的教師清單欄位。"
+
+#: gevent.module:526;699
+msgid "The custom field to store Google Calendar ID."
+msgstr "哪一個欄位用來儲存 Google 行事曆識別碼？"
+
+#: gevent.module:535;708
+msgid "The custom field to store Google Calendar Event ID."
+msgstr "哪一個欄位用來儲存 Google 事件識別碼？"
+
+#: gevent.module:545
+msgid "Which Google Apps Domain you want to sync?"
+msgstr "要同步到哪一個 Google Apps 網域？"
+
+#: gevent.module:546
+msgid "teacher domain"
+msgstr "教師網域"
+
+#: gevent.module:546
+msgid "student domain"
+msgstr "學生網域"
+
+#: gevent.module:548
+msgid "Please select the Google Apps main domain for Calendar Management."
+msgstr ""
+"這個模組會讀取 Google Apps 同步模組的設定，假如您的 "
+"Google Apps "
+"同步模組尚未啟用或還沒設定完成，那麼程式將無法正常運作！"
+
+#: gevent.module:554
+msgid "Google Calendar Owner"
+msgstr "擁有該 Google 行事曆的帳號"
+
+#: gevent.module:556
+msgid "Please input the Google Calendar Owner account."
+msgstr "這個模組將會以管理員身分讀寫該帳號所擁有的行事曆清單。"
+
+#: gevent.module:570
+msgid "Do you want to sync Google Calendar by taxonomy terms?"
+msgstr ""
+"您要根據內容類型的分類項目來切換 Google "
+"行事曆嗎？"
+
+#: gevent.module:575;601;731;760
+msgid "Which Google Calendar you want to sync?"
+msgstr "您想同步到哪一個行事曆？"
+
+#: gevent.module:587;745
+msgid "Which Google Calendar you want to sync by @term?"
+msgstr "您要將 @term 同步到哪一個行事曆？"
+
+#: gevent.module:610
+msgid "Please submit this form first, then module will test Google Calendar connection, after that you can complete the module settings."
+msgstr ""
+"請先送出表單讓模組幫您測試 Google "
+"行事曆是否已經可以存取，如果測試成功，請繼續完成底下的設定！"
+
+#: gevent.module:616
+msgid "Calendar View Path:"
+msgstr "日曆頁面的路徑："
+
+#: gevent.module:618
+msgid "The traditional calendar view will add to this path as a tab. please do not include the sub view name, example: input <em>calendar</em> not <em>calendar/month</em>."
+msgstr ""
+"如果您已經透過 Calendar "
+"模組產生日曆頁面，只要輸入該頁面的路徑，此模組就會在該頁面新增一個傳統的學期行事曆分頁，請不要在路徑中加入分頁的連結，例如：輸入 "
+"<em>calendar</em> 不要輸入 <em>calendar/month</em>。"
+
+#: gevent.module:623
+msgid "Save settings"
+msgstr "儲存設定"
+
+#: gevent.module:800
+msgid "All setting looks great!"
+msgstr "所有的設定都非常完美！"
+
+#: gevent.module:804
+msgid "Something wrong, Please check your settings again!"
+msgstr "某些設定有問題，請再檢查一遍是否有輸入錯誤！"
+
+#: gevent.module:806
+msgid "The configuration options have been saved."
+msgstr "設定選項已儲存。"
+
+#: gevent.info:0
+msgid "Google Calendar Sync"
+msgstr "Google 行事曆同步"
+
+#: gevent.info:0
+msgid "Allows sync custom content-type to Google Calendar."
+msgstr "允許將您自訂的內容類型即時同步到 Google 行事曆。"
+
+#: gevent.info:0
+msgid "School Information Management System"
+msgstr "校務行政系統"
+

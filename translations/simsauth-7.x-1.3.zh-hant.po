@@ -1,0 +1,655 @@
+# $Id$
+#
+# Chinese, Traditional translation of Drupal (general)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from files:
+#  simsauth.tokens.inc: n/a
+#  views/simsauth.views.inc: n/a
+#  simsauth.module: n/a
+#  simsauth.info: n/a
+#  views/simsauth_handler_field_user_birthdate.inc: n/a
+#  views/simsauth_handler_field_user_userclass.inc: n/a
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2015-05-05 13:39+0800\n"
+"PO-Revision-Date: 2015-05-05 13:39+0800\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: Chinese, Traditional <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n>1);\n"
+
+#: simsauth.tokens.inc:13
+msgid "Account name"
+msgstr "帳號"
+
+#: simsauth.tokens.inc:14
+msgid "The raw login name of the user account, unprocessed by the simsauth module."
+msgstr "使用者登入時輸入的使用者名稱。"
+
+#: simsauth.tokens.inc:17
+msgid "gender"
+msgstr "性別"
+
+#: simsauth.tokens.inc:18
+msgid "The gender of the user."
+msgstr "使用者的性別。"
+
+#: simsauth.tokens.inc:21
+msgid "User class"
+msgstr "使用者類型"
+
+#: simsauth.tokens.inc:22
+msgid "The user is a teacher or a student, identify by the simsauth module."
+msgstr "使用者是老師或是學生，由 SIMSAUTH 模組辨識提供。"
+
+#: simsauth.tokens.inc:25
+msgid "Security id"
+msgstr "身分證字號"
+
+#: simsauth.tokens.inc:26
+msgid "The taiwan security id of the user account."
+msgstr "使用者所持有的台灣身分證字號。"
+
+#: simsauth.tokens.inc:29
+msgid "Year of birth"
+msgstr "出生年"
+
+#: simsauth.tokens.inc:30
+msgid "The year of birth."
+msgstr "生日的西元年分，為四位數字。"
+
+#: simsauth.tokens.inc:33
+msgid "Month of birth"
+msgstr "出生月"
+
+#: simsauth.tokens.inc:34
+msgid "The month of birth."
+msgstr "生日的月份，為兩位數字。"
+
+#: simsauth.tokens.inc:37
+msgid "Month day of birth"
+msgstr "出生日"
+
+#: simsauth.tokens.inc:38
+msgid "The month day of birth."
+msgstr "生日的日期部分，為兩位數字。"
+
+#: simsauth.tokens.inc:41
+msgid "Adoption class"
+msgstr "任教班級"
+
+#: simsauth.tokens.inc:42
+msgid "The adoption class of the teacher."
+msgstr "老師所擔任導師的班級代號，為三位數字。"
+
+#: simsauth.tokens.inc:45
+msgid "Department name"
+msgstr "所屬部門"
+
+#: simsauth.tokens.inc:46
+msgid "The department name of the teacher."
+msgstr "使用者所屬部門。"
+
+#: simsauth.tokens.inc:49
+msgid "Job title"
+msgstr "職稱"
+
+#: simsauth.tokens.inc:50
+msgid "The job title of the teacher."
+msgstr "老師所擔任正式職務的名稱。"
+
+#: simsauth.tokens.inc:53
+msgid "Student id"
+msgstr "學號"
+
+#: simsauth.tokens.inc:54
+msgid "The id of the student."
+msgstr "學生的唯一編號。"
+
+#: simsauth.tokens.inc:57
+msgid "Attending class"
+msgstr "就讀班級"
+
+#: simsauth.tokens.inc:58
+msgid "The class of the student."
+msgstr "學生目前就讀的班級代號，為三位數字。"
+
+#: simsauth.tokens.inc:61
+msgid "Seat number"
+msgstr "座號"
+
+#: simsauth.tokens.inc:62
+msgid "The seat number of the student."
+msgstr "學生目前被安排的座號。"
+
+#: simsauth.tokens.inc:72
+msgid "Display name"
+msgstr "顯示名稱"
+
+#: simsauth.tokens.inc:73
+msgid "The display name of the user account."
+msgstr "在網頁上顯示使用者時所使用的名稱。"
+
+#: simsauth.module:48
+msgid "This module integrates Drupal with external authentication to meet the need of Taipei Primary Schools. They use two services to manage their accounts, an IBM DB2 database service for account management server where the users infomation was stored, and a LDAP service for authentication server where stored users passwords."
+msgstr ""
+"此模組是因應台北市國民小學的需求而開發，目前所使用的校務行政系統由全誼公司開發，使用雙服務的方式來管理帳號，IBM "
+"DB2 "
+"資料庫提供帳號管理功能，用來儲存使用者資訊，LDAP "
+"服務則提供帳號認證服務，用來儲存使用者自訂的密碼。"
+
+#: simsauth.module:60
+msgid "Administer sims authentication"
+msgstr "校務行政系統管理"
+
+#: simsauth.module:61
+msgid "Warning: Give to trusted roles only; this permission has security implications."
+msgstr "警告：請只交給信任的角色；這個權限具有安全性意義。"
+
+#: simsauth.module:104;131
+msgid "male"
+msgstr "男性"
+
+#: simsauth.module:104;131
+msgid "female"
+msgstr "女性"
+
+#: simsauth.module:151;559;1142
+msgid "Student"
+msgstr "學生"
+
+#: simsauth.module:208
+msgid "come from"
+msgstr "來源"
+
+#: simsauth.module:211
+msgid "@m"
+msgstr ""
+
+#: simsauth.module:211
+msgid "local"
+msgstr "本地"
+
+#: simsauth.module:211
+msgid "simsauth"
+msgstr "校務行政"
+
+#: simsauth.module:222
+msgid "Reset passwords of the selected users"
+msgstr "重置校務行政系統密碼"
+
+#: simsauth.module:283
+msgid "these accounts has failed to reset password:"
+msgstr "下列帳號重置密碼失敗："
+
+#: simsauth.module:285;291
+msgid "these accounts has successfully to reset the password:"
+msgstr "下列帳號重置密碼成功："
+
+#: simsauth.module:294
+msgid "Can not find the need to reset the password of the accounts."
+msgstr "找不到需要重置密碼的帳號！"
+
+#: simsauth.module:345
+msgid "I have read and understood <a href=\"@url\">the policy of the website to collect personal data</a>, I agree to the site to collect my personal information."
+msgstr ""
+"我已經閱讀並瞭解貴站<a "
+"href=\"@url\">蒐集個資的政策</a>，本人同意貴站進行個資蒐集。"
+
+#: simsauth.module:451;862
+msgid "change password to LDAP failed!"
+msgstr "同步密碼到校務行政系統時發生錯誤！請聯絡管理員查閱網站日誌修復此問題，然後再變更一次！"
+
+#: simsauth.module:606;644
+msgid "SIMS Infomation"
+msgstr "校務行政系統"
+
+#: simsauth.module:610;648
+msgid "Birthday:"
+msgstr "生日："
+
+#: simsauth.module:615;653
+msgid "Gender:"
+msgstr "性別："
+
+#: simsauth.module:620
+msgid "Department:"
+msgstr "所屬部門："
+
+#: simsauth.module:625
+msgid "Job Title:"
+msgstr "職稱："
+
+#: simsauth.module:631
+msgid "Adoption Class:"
+msgstr "指導班級："
+
+#: simsauth.module:637;673
+msgid "Mail Box:"
+msgstr "郵件信箱："
+
+#: simsauth.module:658
+msgid "Student No:"
+msgstr "學號："
+
+#: simsauth.module:663
+msgid "Attending Class:"
+msgstr "就讀班級："
+
+#: simsauth.module:668
+msgid "Seat No:"
+msgstr "座號："
+
+#: simsauth.module:686
+msgid "The email for this account cannot be changed"
+msgstr "這個帳號由校務行政系統管理，因此無法在此變更電子郵件，如有變更郵件之需求，請連線到校務行政系統！"
+
+#: simsauth.module:689
+msgid "The new username will sync to School Information Management System as custom account name."
+msgstr "只能使用英文字母或數字，您輸入的使用者名稱將會同步到校務行政系統，成為你的自訂帳號，下次登入到校務行政系統時，記得使用這個使用者名稱作為帳號！"
+
+#: simsauth.module:698
+msgid "The new password will sync to School Information Management System."
+msgstr "這裡輸入的密碼將會同步到校務行政系統，下次登入校務行政系統時，請記得使用新密碼。"
+
+#: simsauth.module:708
+msgid "This new password will replace your default password, so you should not forget it."
+msgstr "變更密碼後，你就不能使用預設的密碼登入系統了，所以請牢記自己的新密碼！"
+
+#: simsauth.module:732;762
+msgid "Account name should be more than four characters."
+msgstr "自訂帳號不可以少於五個字元！"
+
+#: simsauth.module:741;768
+msgid "This name has been taken by another user, please try another one!"
+msgstr "這個帳號已經被別人使用了，請重新再想一個！"
+
+#: simsauth.module:802
+msgid "change username to IBM DB2 USER_ACCOUNT table failed!"
+msgstr "變更校務行政系統使用者自定帳號時發生錯誤！請聯絡管理員查閱網站日誌修復此問題，然後再變更一次！"
+
+#: simsauth.module:811
+msgid "change username to LDAP uid failed!"
+msgstr ""
+"修改 LDAP "
+"使用者代碼（uid）時發生錯誤！請聯絡管理員查閱網站日誌修復此問題，然後再變更一次！"
+
+#: simsauth.module:889
+msgid "IBM DB2 client driver(V9.5 above)"
+msgstr "IBM DB2 用戶端驅動程式 V9.5 以上版本"
+
+#: simsauth.module:889
+msgid "if you use linux x64, you can download it here!"
+msgstr "如果您使用 Linux 64位元版本，可以按這裡下載！"
+
+#: simsauth.module:890
+msgid "ibm-db2 module for php(PEAR package)"
+msgstr "IBM DB2 PHP 模組（PEAR 套件）"
+
+#: simsauth.module:893
+msgid "php-ldap or php5-ldap module"
+msgstr "LDAP PHP 模組（php-ldap 或是 php5-ldap）"
+
+#: simsauth.module:896
+msgid "Before enable this drupal project, you must install:"
+msgstr "在啟用這個模組之前，　您必須先安裝下列軟體："
+
+#: simsauth.module:901
+msgid "Account Management Server Setup"
+msgstr "帳號管理伺服器設定"
+
+#: simsauth.module:903
+msgid "How to install ibm_db2 module:<ol><li>Disable selinux:<br>vi /etc/selinux/config<br>SELINUX=disabled</li><li>Install packages:<br>yum install gcc ksh zip php-pear</li><li>Make directory:<br>mkdir /opt/ibm</li><li>Decompress dsdriver at /opt/ibm/:<br>tar -xvf the-package-download-from-ibm-com_dsdriver.tar.gz</li><li>Change permission for the instalation script in /opt/ibm/dsdriver:<br>chmod 755 installDSDriver</li><li>Run the installation script:<br>cd /opt/ibm/dsdriver<br>./installDSDriver</li><li>Download and install the driver using the pecl:<br>pecl install ibm_db2</li><li>Configure the installation directory:<br>DB2 Installation Directory? : /opt/ibm/dsdriver</li><li>Change php.ini add one line:<br>extension = ibm_db2.so</li><li>Reboot the Apache:<br>service httpd restart</li></ol>"
+msgstr ""
+"ibm_db2 模組安裝流程（以 centos 7 為例）：<ol><li>關閉 "
+"selinux：<br>vi "
+"/etc/selinux/config<br>SELINUX=disabled</li><li>安裝相關系統模組：<br>yum "
+"install gcc ksh zip "
+"php-pear</li><li>建立驅動程式資料夾:<br>mkdir "
+"/opt/ibm</li><li>將驅動程式複製到 /opt/ibm/ "
+"並且解壓縮：<br>tar -xvf "
+"從IBM公司網站下載的DB2驅動程式_dsdriver.tar.gz</li><li>修改 "
+"/opt/ibm/dsdriver 目錄中的安裝程序的權限：<br>chmod 755 "
+"installDSDriver</li><li>執行安裝程序：<br>cd "
+"/opt/ibm/dsdriver<br>./installDSDriver</li><li>設定 IBM DB2 "
+"環境變數：<br>vi /etc/rc.d/rc.local<br>export "
+"LC_ALL=zh_TW.utf8</li><li>使用 pecl 指令下載並安裝 php "
+"模組:<br>pecl install ibm_db2</li><li>安裝過程中應指定 IBM "
+"DB2 驅動程式的位置：<br>DB2 Installation Directory? : "
+"/opt/ibm/dsdriver</li><li>修改 php.ini "
+"設定，加入這一行：<br>extension = "
+"ibm_db2.so</li><li>重新啟動網站：<br>service httpd "
+"restart</li></ol>"
+
+#: simsauth.module:907
+msgid "Account Management Server"
+msgstr "帳號管理伺服器"
+
+#: simsauth.module:909
+msgid "Your IBM DB2 server DNS record or NAT IP. Do not input NIC IP, You should not allow the connection pass throught the edge firewall."
+msgstr ""
+"請輸入貴校的 IBM DB2 伺服器的位置，可以使用 DNS "
+"名稱或內部 IP。請不要輸入真實 "
+"IP，同時您也不應該讓資料庫連線穿越通往市網的防火牆。"
+
+#: simsauth.module:914
+msgid "IBM DB2 Server Port"
+msgstr "資料庫連線埠號"
+
+#: simsauth.module:916
+msgid "Which port is the IBM DB2 server connection port?"
+msgstr ""
+"IBM DB2 "
+"伺服器提供給資料查詢用的連線埠號，預設值為 "
+"50000。"
+
+#: simsauth.module:921
+msgid "IBM DB2 Database Name"
+msgstr "校務行政資料庫"
+
+#: simsauth.module:923
+msgid "Which database to bind?"
+msgstr "請輸入校務行政資料庫名稱，預設值為 SCHOOL01。"
+
+#: simsauth.module:928
+msgid "IBM DB2 Database Schema"
+msgstr "資料庫架構"
+
+#: simsauth.module:930
+msgid "Which schema to log in the server?"
+msgstr ""
+"IBM DB2 "
+"允許將多個結構相同的資料庫組織為資料庫集合，以台北市的現況來說，被收回統一管理的學校資料庫都叫做 "
+"SCHOOL01，但實際上資料卻是儲存在不同的資料庫裡，並採用架構名稱來區別學校，通常會使用各校的統計代碼（前面加大寫S，例如：S353604）作為架構代號。還沒有被收回統一管理的學校一樣要輸入此代碼。"
+
+#: simsauth.module:936
+msgid "Authentication Server Setup"
+msgstr "認證伺服器設定"
+
+#: simsauth.module:941
+msgid "Authentication Server"
+msgstr "認證伺服器"
+
+#: simsauth.module:943
+msgid "Your LDAP server DNS record or NAT IP. Usually same as IBM DB2 Server."
+msgstr ""
+"請輸入貴校的 LDAP 伺服器的位置，可以使用 DNS "
+"名稱或 IP，通常是跟 IBM DB2 裝在同一台機器。"
+
+#: simsauth.module:948
+msgid "LDAP Server Port"
+msgstr "LDAP 服務埠號"
+
+#: simsauth.module:950
+msgid "Which port is the LDAP server query port?"
+msgstr ""
+"請輸入 LDAP 伺服器所使用的埠號。預設值是 "
+"389，如果有啟用安全連線的話則是636。"
+
+#: simsauth.module:955
+msgid "LDAP Base DN"
+msgstr "使用者命名空間"
+
+#: simsauth.module:957
+msgid "Please input the Base DN that containing user entries."
+msgstr ""
+"請輸入用來儲存使用者物件的的命名空間，預設是 "
+"ou=school,dc=developer,dc=alle,dc=com。"
+
+#: simsauth.module:963
+msgid "User Info and Syncing"
+msgstr "使用者資訊與同步"
+
+#: simsauth.module:969
+msgid "In IBM DB2 database, the students have no department(table name: SCHDEPT) and job title(table name: SCHPOSITION), so this module will use [Student] as their department, and use their current attending class name as their job title. When you enable role sync function, the department come from DB2 SCHDEPT table will sync to drupal roles immediate, no matter has account in there or not. When user log in they will not automatic assign to the roles, unless you enable [evaluate user roles when they login] function before that. The automatic evaluate function will skip the administer role, so if you assigned someone to be an administer manually, they will always be an administer, until you revoke them manually."
+msgstr ""
+"在 IBM DB2 "
+"資料庫中學生既沒有所屬部門（來自資料表:SCHDEPT）也沒有職稱（來自資料表:SCHPOSITION）所以此模組將使用自訂的 "
+"Drupal "
+"角色（學生）作為學生登入後的所屬部門，然後使用學生目前就讀的班級名稱作為學生的職稱。當您啟用角色同步功能時，模組將會立即讀取 "
+"IBM DB2 SCHDEPT 資料表中的資料並儲存到 Drupal "
+"角色資料表中，如果使用者尚未登入，則這些角色會是空的。您可以手動將使用者加入到這些同步的角色裡，或是啟用登入時自動同步角色的功能，來自動指派角色給使用者。注意：開啟同步後除了管理員角色之外，其餘角色都會被清空並根據使用者的新身分重新指派角色給使用者。因此如果您手動設定某些帳號為管理員，不論如何同步他都會是管理員，直到您手動移除他的管理員角色為止。"
+
+#: simsauth.module:973
+msgid "Display department name in front of the user`s realname."
+msgstr "在真實性名的前面顯示所屬部門名稱"
+
+#: simsauth.module:975
+msgid "Check this box if you want to display department name of user in front of the user`s realname."
+msgstr "如果您想要進一步識別使用者的身分時，可以開啟此選項，所有該使用者發布的文章都會帶入此項資訊。"
+
+#: simsauth.module:979
+msgid "Display job title in front of the user`s realname."
+msgstr "在真實性名的前面顯示職稱"
+
+#: simsauth.module:981
+msgid "Check this box if you want to display job title of user in front of the user`s realname but after the department name."
+msgstr "如果有開啟顯示所屬部門名稱的功能的話，職稱將會顯示在所屬部門名稱和真實姓名之間。"
+
+#: simsauth.module:985
+msgid "Automatic role population from IBM DB2 database"
+msgstr "自動建立角色"
+
+#: simsauth.module:987
+msgid "Automatically created role basis the school department."
+msgstr ""
+"自動讀取校務行政系統中的處室資料表中的處室名稱欄位，並轉存為 "
+"Drupal 角色名稱。"
+
+#: simsauth.module:991
+msgid "Evaluate user roles when they login."
+msgstr "登入時自動指派角色"
+
+#: simsauth.module:993
+msgid "NOTE: This means users could loose any roles (except administer role) that have been assigned manually in Drupal."
+msgstr "自動指派程式會對管理員角色進行特別處理，除了管理員角色外，其餘角色都會被移除，並根據使用者的新身分重新指派適當的角色。如果角色不慎被手動移除，則同步程式也會自動建立該角色。"
+
+#: simsauth.module:997
+msgid "Allow Sync Account Name to LDAP Server."
+msgstr "同步自訂帳號到校務行政系統"
+
+#: simsauth.module:999
+msgid "Check this box if you want to let people set account name back to IBM DB2 database and LDAP Server. Disabling this to prevent change name from the user profile form."
+msgstr ""
+"當開啟此選項時，允許使用者從編輯表單重設 drupal "
+"使用者名稱，該使用者名稱也會同步寫回校務行政系統成為自訂帳號。校務行政系統僅允許設定自訂帳號一次，但在這裡沒有這項限制。"
+
+#: simsauth.module:1003
+msgid "Allow Sync Password to LDAP Server."
+msgstr "同步密碼到校務行政系統"
+
+#: simsauth.module:1005
+msgid "Check this box if you want to let people set passwords back to LDAP Server. Disabling this to prevent change password from the user profile form."
+msgstr ""
+"當開啟此選項時，允許使用者從編輯表單重設 drupal "
+"密碼，該密碼也會同步寫回校務行政系統。如果此功能未開啟，則編輯表單中的密碼欄位將會移除，以避免密碼不一致的問題。"
+
+#: simsauth.module:1010
+msgid "Account Setting for Students"
+msgstr "學生帳號設定"
+
+#: simsauth.module:1016
+msgid "In IBM DB2 database, the students have not their own account record, so this module will use the STDNO as their account, and use the last 6 digitals of their security ID as their password. But You can change them below anyway. The email address take from STUDENT table there has a field named MAIL. If your school provided another email service to students, please input the mail address prefix and suffix below, or just leave them blank to use the data come from MAIL field."
+msgstr ""
+"在 IBM DB2 "
+"資料庫中，學生帳號功能或許並未開啟，因此模組將使用學生的學號當成帳號，並且使用學生身分證字號後六個數字當密碼，這兩項設定可以根據貴校的現況自行修改，如果您允許學生可以自訂密碼，那麼新密碼將儲存於 "
+"Drupal "
+"資料庫中，學生將僅能使用自訂密碼來登入，而無法再使用預設密碼登入，學生第一次登入時，會預先將預設密碼儲存為自訂密碼，以方便學生登入修改自訂密碼。此模組會讀取 "
+"STUDENT 資料表中的 MAIL "
+"欄位作為學生的電子郵件，如果貴校學生並未輸入此項資料，您可以從底下的欄位自訂該電子郵件的樣式，預設會使用學生學號作為郵件信箱的帳號，您也可以自訂郵件帳號的來源。郵件的網域尾碼請自行輸入到設定欄位中，如果您有替學生申請 "
+"Google Apps 服務，請直接輸入 Gmail 的網域尾碼。"
+
+#: simsauth.module:1020
+msgid "Students Default Account Name"
+msgstr "學生預設帳號"
+
+#: simsauth.module:1022
+msgid "The SQL statement of data field to use as account name. Usually input the field name like STDNO, If you want combind multiple field use ||(double pipe) to concat strings, Example: YEAR||CLASSNO||SEAT."
+msgstr ""
+"請輸入要作為學生帳號的資料來源，必須符合 IBM DB2 "
+"SQL 語法，通常是 STUDENT "
+"資料表中的欄位名稱，可以使用||(兩個管道符號)串接多個欄位，例如：YEAR||CLASSNO||SEAT，讀出來將會是學生的名牌號碼，注意：欄位與管道符號的中間不要有分隔字元。另外你也可以使用 "
+"IBM DB2 "
+"的內建函式改寫欄位裡的資料，以符合你想要的樣式。預設值是 "
+"STDNO。"
+
+#: simsauth.module:1027
+msgid "Students Default Password"
+msgstr "學生預設密碼"
+
+#: simsauth.module:1029
+msgid "The SQL statement of data field to use as password. Usually input the field name like STDNO, If you want combind multiple field use ||(double pipe) to concat strings, Example: YEAR||CLASSNO||SEAT."
+msgstr ""
+"請輸入要作為學生密碼的資料來源，必須符合 IBM DB2 "
+"SQL 語法，通常是 STUDENT "
+"資料表中的欄位名稱，可以使用||(兩個管道符號)串接多個欄位，例如：YEAR||CLASSNO||SEAT，讀出來將會是學生的名牌號碼，注意：欄位與管道符號的中間不要有分隔字元。另外你也可以使用 "
+"IBM DB2 "
+"的內建函式改寫欄位裡的資料，以符合你想要的樣式。預設值是 "
+"right(IDNO,6)。"
+
+#: simsauth.module:1034
+msgid "Allow students to custom their own password"
+msgstr "允許學生自訂自己的密碼"
+
+#: simsauth.module:1039
+msgid "Student mail address prefix"
+msgstr "學生信箱帳號"
+
+#: simsauth.module:1041
+msgid "The SQL statement of data field to use as email address part before @.  Usually input the field name, If you want combind multiple field use ||(double pipe) to concat strings, Example: YEAR||CLASSNO||SEAT."
+msgstr ""
+"請輸入要作為學生信箱帳號（ @ "
+"前面的字串）的資料來源，必須符合 IBM DB2 SQL "
+"語法，通常是 STUDENT "
+"資料表中的欄位名稱，可以使用||(兩個管道符號)串接多個欄位，例如：YEAR||CLASSNO||SEAT，讀出來將會是學生的名牌號碼，注意：欄位與管道符號的中間不要有分隔字元。另外你也可以使用 "
+"IBM DB2 "
+"的內建函式改寫欄位裡的資料，以符合你想要的樣式。預設值是 "
+"STDNO。"
+
+#: simsauth.module:1045
+msgid "Student mail address suffix"
+msgstr "學生信箱網址"
+
+#: simsauth.module:1047
+msgid "The student email address part after @. If your school have using Google Apps service, you should input the Google Apps domain name."
+msgstr ""
+"請輸入要作為學生信箱網址（ @ "
+"後面的字串）的資料來源，必須符合 IBM DB2 SQL "
+"語法，通常是 STUDENT "
+"資料表中的欄位名稱，可以使用||(兩個管道符號)串接多個欄位，例如：YEAR||CLASSNO||SEAT，讀出來將會是學生的名牌號碼，注意：欄位與管道符號的中間不要有分隔字元。另外你也可以使用 "
+"IBM DB2 "
+"的內建函式改寫欄位裡的資料，以符合你想要的樣式。沒有預設值。"
+
+#: simsauth.module:1052
+msgid "Drupal Authentication"
+msgstr "Drupal 認證設定"
+
+#: simsauth.module:1058
+msgid "Login Form Name Description"
+msgstr "登入帳號提示訊息"
+
+#: simsauth.module:1060
+msgid "Input the message to let user know they should login with their custom account name of School Information Management System."
+msgstr "在登入表單中顯示上述訊息，以通知使用者使用校務行政系統中的自訂帳號登入。"
+
+#: simsauth.module:1064
+msgid "Login Form Password Description"
+msgstr "登入密碼提示訊息"
+
+#: simsauth.module:1066
+msgid "Input the message to let user know they should login with their School Information Management System password."
+msgstr "在登入表單中顯示上述訊息，以通知使用者使用校務行政系統密碼登入。"
+
+#: simsauth.module:1070;1076
+msgid "Allow authentication with local Drupal accounts"
+msgstr "允許 Drupal 本地帳號登入"
+
+#: simsauth.module:1072;1078
+msgid "Check this box if you want to let people log in with local Drupal accounts (without using simsauth module)."
+msgstr ""
+"允許 Drupal "
+"本地帳號登入，以應付緊急需求，在啟用模組之初，從校務行政系統登入的帳號，並不具備管理員身份，您仍然必須使用預設的 "
+"admin "
+"帳號來管理網站，一旦額外的管理員設定後，您就可以將此功能關閉。當校務行政系統失去網路連線時，將會造成所有帳號無法登入網站，如果您有開啟此項功能，則全校老師仍然可以使用可以使用儲存於 "
+"Drupal "
+"資料庫中的密碼成功登入。如果您確認網路連線障礙可以很快排除，或因為安排在同一臺虛擬機宿主主機裡不會有網路連線問題，建議將此功能關閉，以提高網站效能。"
+
+#: simsauth.module:1082
+msgid "Optionally, specify a URL for users to go to after logging in"
+msgstr "使用者登入成功後，將會自動前往您輸入的網址"
+
+#: simsauth.module:1084;1096
+msgid "Example:"
+msgstr "例如："
+
+#: simsauth.module:1088
+msgid "Show personal data notice link"
+msgstr "顯示個資蒐集通告"
+
+#: simsauth.module:1090
+msgid "Check this box if you want to display personal data notice link to users."
+msgstr "如果想要在使用者登入系統之前顯示個資蒐集通告，請開啟此項功能。"
+
+#: simsauth.module:1094
+msgid "specify a URL link to the personal data notice page when user is logging in."
+msgstr "請指定要顯示的個資通告頁面的連結路徑。"
+
+#: simsauth.module:1107
+msgid "Save sims configuration"
+msgstr "請幫我儲存所有設定，並測試伺服器連線是否正常"
+
+#: simsauth.module:1159
+msgid "IBM DB2 Database connection failed."
+msgstr ""
+"IBM DB2 資料庫無法連線，請檢查 DNS "
+"名稱是否能正常解析，IP 是否能 Ping "
+"通，學校統計代碼輸入是否正確。如果以上資料都正確，但仍無法連線，請檢查伺服器上的防火牆設定，如果系統已經由市網收回，請連絡市網中心開啟相關埠號給學校能夠連通。"
+
+#: simsauth.module:1163
+msgid "LDAP server connected but can not login."
+msgstr ""
+"LDAP "
+"無法登入成功，請洽詢全誼公司取得新的管理帳號及密碼，或是等模組下一次改版，由於破解需要時間，所以下一版本的釋出沒有時間表。"
+
+#: simsauth.module:1166
+msgid "LDAP server connecting failed."
+msgstr ""
+"LDAP 伺服器連線失敗，請檢查 DNS "
+"名稱是否能正常解析，IP 是否能 Ping "
+"通，或伺服器的單機防火牆設定。"
+
+#: simsauth.module:1170
+msgid "The configuration options have been saved, but you should check again!"
+msgstr "雖然設定都已經儲存，但有錯誤發生，建議您再巡視檢查一遍。"
+
+#: simsauth.module:1174
+msgid "The Server configure was setting perfectly. The configuration options have been saved."
+msgstr "恭喜您，伺服器都已經連線成功，設定也已經儲存，祝您使用愉快！"
+
+#: simsauth.module:24
+msgid "SIMS authentication settings"
+msgstr "校務行政認證模組設定"
+
+#: simsauth.module:25
+msgid "Control the various settings of the sims authentication module"
+msgstr "進行校務行政模組相關設定"
+
+#: simsauth.info:0
+msgid "Sims Authentication"
+msgstr "校務行政系統認證"
+
+#: simsauth.info:0
+msgid "Allows users to authenticate by remote IBM DB2 Server and LDAP Server."
+msgstr ""
+"透過 Drupal User "
+"模組的延伸認證功能，讓學校可以直接使用現有伺服器進行認證及管理使用者帳號。"
+
+#: simsauth.info:0
+msgid "School Information Management System"
+msgstr "校務行政系統"
+

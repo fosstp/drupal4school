@@ -1,0 +1,422 @@
+# $Id$
+#
+# LANGUAGE translation of Drupal (general)
+# Copyright leejoneshane <leejoneshane@gmail.com>
+# Generated from files:
+#  comment-wrapper.tpl.php,v 1.10 2010/05/05 06:41:22 webchick
+#  html.tpl.php: n/a
+#  page.tpl.php: n/a
+#  template.php: n/a
+#  theme-settings.php: n/a
+#  Accessibility.info: n/a
+#  color/color.inc: n/a
+#
+msgid ""
+msgstr ""
+
+#: theme-settings.php:14
+msgid "Accessibility Theme Settings"
+msgstr "台灣無障礙版型設置"
+
+#: theme-settings.php:21
+msgid "Breadcrumb"
+msgstr "階層式快捷列"
+
+#: theme-settings.php:28
+msgid "Show breadcrumb"
+msgstr "顯示階層式快捷列"
+
+#: theme-settings.php:29
+msgid "Use the checkbox to enable or disable breadcrumb."
+msgstr "對於使用了兩層以上的主選單結構來說，開啟這項功能可以讓參觀者能夠快速回溯任何上層頁面。"
+
+#: theme-settings.php:35
+msgid "Breadcrumb separator"
+msgstr "超連結的分隔字元"
+
+#: theme-settings.php:43
+msgid "Show home page link in breadcrumb"
+msgstr "在階層式快捷列顯示首頁連結"
+
+#: theme-settings.php:44
+msgid "Use the checkbox to enable or disable the home page link in breadcrumb."
+msgstr "事實上首頁連結已經出現在站台的LOGO上，所以再顯示一次意義不大，除非您的參觀者老是不知道要按LOGO回首頁，那就開啟此項功能吧！"
+
+#: theme-settings.php:50
+msgid "Front Page Slideshow"
+msgstr "首頁幻燈片"
+
+#: theme-settings.php:57
+msgid "Show slideshow"
+msgstr "顯示幻燈片"
+
+#: theme-settings.php:58
+msgid "Slide for major events prompted the message of great help. Using this feature, you must first make a basic page message, layout height allowing only <b> 400 px </b>, as accompanied by beautiful pictures. Then they want carousel page number, enter the <em> slide source page </em> field."
+msgstr "幻燈片對於提示重大活動訊息，有很大的幫助。使用此功能，你必須先把訊息製作成基本頁面，版面高度僅允許 <b>400 px</b>，盡量配上精美的圖片。然後將這些要輪播的頁面編號，輸入到 <em>幻燈片來源頁面</em> 欄位中。"
+
+#: theme-settings.php:64
+msgid "slide source page"
+msgstr "幻燈片來源頁面"
+
+#: theme-settings.php:65
+msgid "Set the pages(node type) to be used as slides, between the page and the page with a comma (,) separated, go to <em> Administer -> Content </em> to see node number, example: if the page link to node/38, the page number is No. 38. Suppose there are three pages to be displayed in the slide, which are node/38, node/40, node/41, please enter the above text box: 38,40,41"
+msgstr "請設定要作為幻燈片來源的頁面，頁面與頁面之間以逗號（,）隔開，頁面編號請到 <em>管理介面->內容</em> 查看，假如頁面連結為 node/38，則編號為38。假設有三個頁面要顯示在幻燈片中，分別是 node/38、node/40、node/41，請在上面的文字框中輸入：38,40,41"
+
+#: theme-settings.php:71
+msgid "Include slideshow javascript code"
+msgstr "使用 Javascript 控制切換特效"
+
+#: theme-settings.php:77
+msgid "Effects"
+msgstr "頁面切換特效"
+
+#: theme-settings.php:78
+msgid "From the drop-down menu, select the slideshow effect you prefer."
+msgstr "請從下拉選單挑選您想使用的頁面切換特效。"
+
+#: theme-settings.php:81
+msgid "blindX"
+msgstr ""
+
+#: theme-settings.php:82
+msgid "blindY"
+msgstr ""
+
+#: theme-settings.php:83
+msgid "blindZ"
+msgstr ""
+
+#: theme-settings.php:84
+msgid "cover"
+msgstr ""
+
+#: theme-settings.php:85
+msgid "curtainX"
+msgstr ""
+
+#: theme-settings.php:86
+msgid "curtainY"
+msgstr ""
+
+#: theme-settings.php:87
+msgid "fade"
+msgstr ""
+
+#: theme-settings.php:88
+msgid "fadeZoom"
+msgstr ""
+
+#: theme-settings.php:89
+msgid "growX"
+msgstr ""
+
+#: theme-settings.php:90
+msgid "growY"
+msgstr ""
+
+#: theme-settings.php:91
+msgid "scrollUp"
+msgstr ""
+
+#: theme-settings.php:92
+msgid "scrollDown"
+msgstr ""
+
+#: theme-settings.php:93
+msgid "scrollLeft"
+msgstr ""
+
+#: theme-settings.php:94
+msgid "scrollRight"
+msgstr ""
+
+#: theme-settings.php:95
+msgid "scrollHorz"
+msgstr ""
+
+#: theme-settings.php:96
+msgid "scrollVert"
+msgstr ""
+
+#: theme-settings.php:97
+msgid "shuffle"
+msgstr ""
+
+#: theme-settings.php:98
+msgid "slideX"
+msgstr ""
+
+#: theme-settings.php:99
+msgid "slideY"
+msgstr ""
+
+#: theme-settings.php:100
+msgid "toss"
+msgstr ""
+
+#: theme-settings.php:101
+msgid "turnUp"
+msgstr ""
+
+#: theme-settings.php:102
+msgid "turnDown"
+msgstr ""
+
+#: theme-settings.php:103
+msgid "turnLeft"
+msgstr ""
+
+#: theme-settings.php:104
+msgid "turnRight"
+msgstr ""
+
+#: theme-settings.php:105
+msgid "uncover"
+msgstr ""
+
+#: theme-settings.php:106
+msgid "wipe"
+msgstr ""
+
+#: theme-settings.php:107
+msgid "zoom"
+msgstr ""
+
+#: theme-settings.php:113
+msgid "Effect duration (sec)"
+msgstr "特效持續時間 (秒)"
+
+#: theme-settings.php:119
+msgid "Randomize slideshow order"
+msgstr "亂數改變幻燈片的顯示順序"
+
+#: theme-settings.php:125
+msgid "Prevent slideshow from wrapping"
+msgstr "防止幻燈片內容自動換行"
+
+#: theme-settings.php:131
+msgid "Pause slideshow on hover"
+msgstr "滑鼠移到幻燈片時，暫停切換頁面"
+
+msgid "Adaptive Menu"
+msgstr "自適應選單"
+
+msgid "Please select the menu to be displayed in the navigation region, this function will automatic switching to the specified menu based on user identity."
+msgstr "請選擇要顯示在導覽列區塊的選單，這個功能將自動根據使用者的身分切換到適當的選單（您必須先安裝校務行政系統登入模組，系統才能取得登入者身分。）"
+
+msgid "Menu for Anonymous"
+msgstr "匿名使用者選單"
+
+msgid "Menu for Teachers"
+msgstr "教職員工選單"
+
+msgid "Menu for Students"
+msgstr "學生與家長選單"
+
+#: theme-settings.php:137
+msgid "Accessibility and support settings"
+msgstr "無障礙與瀏覽器支援"
+
+#: theme-settings.php:144
+msgid "Responsive"
+msgstr "瀏覽器偵測"
+
+#: theme-settings.php:151
+msgid "Add meta tags to support responsive design on mobile devices."
+msgstr "為行動裝置提供比較好的顯示版型"
+
+#: theme-settings.php:157
+msgid "Add Respond.js JavaScript to add basic CSS3 media query support to IE 6-8."
+msgstr "為 IE 6-8　提供 Respon.js 以便讓 CSS3 多媒體樣式能正常運作"
+
+#: theme-settings.php:159
+msgid "IE 6-8 require a JavaScript polyfill solution to add basic support of CSS3 media queries. Note that you should enable <strong>Aggregate and compress CSS files</strong> through <em>/admin/config/development/performance</em>."
+msgstr "IE 6-8 不支援 CSS3 中關於多邊形填滿效果的標記語法，但是透過 Javascript 的協助，可以有最基本的支援而不會出錯。注意，您應該從 <em>管理介面->設定->開發->效能</em> 將 <strong>整合並壓縮 CSS 檔案</strong> 功能開啟。"
+
+#: theme-settings.php:164
+msgid "Guide brick"
+msgstr "導盲磚"
+
+#: theme-settings.php:171
+msgid "Show guide brick"
+msgstr "開啟導盲磚"
+
+#: theme-settings.php:173
+msgid "After enabled guide brick function, you still have to build their own instructions page (<em> Administer -> Content -> Add new content </em>), and then create a link for the page, placed prominently on the home page position (<em> Administer -> Structure -> Menu </em>)!"
+msgstr "開啟導盲磚功能後，您仍然必須自行建立導盲磚的說明頁面( <em>管理介面->內容->新增內容</em> )，然後為該頁面建立連結，擺放在首頁醒目的位置( <em>管理介面->架構->選單</em> )！"
+
+#: theme-settings.php:178
+msgid "Accesskey for Navigation"
+msgstr "導覽區快捷鍵設置"
+
+#: theme-settings.php:180
+msgid "Now that we know has been used by browser as keyboard shortcuts, include: d, e, f. This block using access key Alt+n by default!"
+msgstr "已知被瀏覽器用掉而不能設置的快速鍵有：d、e、f，此區塊快捷鍵預設使用 Alt+n！"
+
+#: theme-settings.php:185
+msgid "Accesskey for Secondary Menu"
+msgstr "第二層選單列快捷鍵設置"
+
+#: theme-settings.php:187
+msgid "This block using access key Alt+m by default!"
+msgstr "此區塊快捷鍵預設使用 Alt+m！"
+
+#: theme-settings.php:192
+msgid "Accesskey for Search area"
+msgstr "搜尋區快捷鍵設置"
+
+#: theme-settings.php:194
+msgid "This block using access key Alt+s by default!"
+msgstr "此區塊快捷鍵預設使用 Alt+s！"
+
+#: theme-settings.php:199
+msgid "Accesskey for Breadcrumb"
+msgstr "階層式快捷列快捷鍵設置"
+
+#: theme-settings.php:201
+msgid "This block using access key Alt+b by default!"
+msgstr "此區塊快捷鍵預設使用 Alt+b！"
+
+#: theme-settings.php:206
+msgid "Accesskey for Content Block"
+msgstr "主要內容區快捷鍵設置"
+
+#: theme-settings.php:208
+msgid "This block using access key Alt+c by default!"
+msgstr "此區塊快捷鍵預設使用 Alt+c！"
+
+#: theme-settings.php:213
+msgid "Accesskey for Left Sidebar"
+msgstr "左側邊欄快捷鍵設置"
+
+#: theme-settings.php:215
+msgid "This block using access key Alt+l by default!"
+msgstr "此區塊快捷鍵預設使用 Alt+l！"
+
+#: theme-settings.php:220
+msgid "Accesskey for Right Sidebar"
+msgstr "右側邊欄快捷鍵設置"
+
+#: theme-settings.php:222
+msgid "This block using access key Alt+r by default!"
+msgstr "此區塊快捷鍵預設使用 Alt+r！"
+
+#: theme-settings.php:227
+msgid "Accesskey for Footer first block"
+msgstr "頁尾上層一區快捷鍵設置"
+
+#: theme-settings.php:229
+msgid "This block using access key Alt+i by default!"
+msgstr "此區塊快捷鍵預設使用 Alt+i！"
+
+#: theme-settings.php:234
+msgid "Accesskey for Footer second block"
+msgstr "頁尾上層二區快捷鍵設置"
+
+#: theme-settings.php:236
+msgid "This block using access key Alt+j by default!"
+msgstr "此區塊快捷鍵預設使用 Alt+j！"
+
+#: theme-settings.php:241
+msgid "Accesskey for Footer third block"
+msgstr "頁尾上層三區快捷鍵設置"
+
+#: theme-settings.php:243
+msgid "This block using access key Alt+k by default!"
+msgstr "此區塊快捷鍵預設使用 Alt+k！"
+
+#: theme-settings.php:248
+msgid "Accesskey for Footer block"
+msgstr "頁尾下層左側邊欄快捷鍵設置"
+
+#: theme-settings.php:250
+msgid "This block using access key Alt+t by default!"
+msgstr "此區塊快捷鍵預設使用 Alt+t！"
+
+#: theme-settings.php:255
+msgid "Accesskey for Footer bottom right block"
+msgstr "頁尾下層右側邊欄快捷鍵設置"
+
+#: theme-settings.php:257
+msgid "This block using access key Alt+o by default!"
+msgstr "此區塊快捷鍵預設使用 Alt+o！"
+
+#: theme-settings.php:269
+msgid "Credits"
+msgstr "作者資訊"
+
+#: theme-settings.php:276
+msgid "Show credits"
+msgstr "顯示本版型的作者資訊"
+
+#: theme-settings.php:277
+msgid "Use the checkbox to enable or disable credits."
+msgstr "也許您覺得顯示版型作者的資訊很酷，那就打開吧！"
+
+#: Accessibility.info:0
+msgid "Accessibility for Taiwan"
+msgstr "台灣無障礙模板"
+
+#: Accessibility.info:0
+msgid "Accessibility Template for Taiwan"
+msgstr "台灣無障礙模板，修改自 CorporateClean 設計者：李忠憲 leejoneshane@gmail.com，目前支援的功能包含：導盲磚(定位點)、H213200 自動補齊超連結 title 屬性、H101000 自動補齊圖片的 alt 屬性、H101001 自動補齊 applet 的 alt 以及內容替代文字說明、H101002 自動補齊 object 的 alt 屬性、H101004 自動補齊影像地圖的 alt 屬性、H105101 自動為表格中的 TH 加入 scope 屬性、H305004 自動補齊表格的 summary 屬性、H205105 自動補齊資料表格的 title 屬性、H206104 自動補齊超連結 tabindex 屬性、H203201 自動用 &lt;em&gt; 代替 &lt;i&gt;、自動用 &lt;strong&gt; 代替 &lt;b&gt;、H203004 在PC上版型自動改用相對尺寸(如%)，在平板上則維持絕對定位，畢竟無障礙規範只針對PC上的線性瀏覽器"
+
+#: Accessibility.info:0
+msgid "Navigation"
+msgstr "導覽列"
+
+#: Accessibility.info:0
+msgid "Search area"
+msgstr "搜尋區"
+
+#: Accessibility.info:0
+msgid "Highlighted"
+msgstr "醒目提示區"
+
+#: Accessibility.info:0
+msgid "Content"
+msgstr "主要內容"
+
+#: Accessibility.info:0
+msgid "Sidebar left"
+msgstr "左側邊欄"
+
+#: Accessibility.info:0
+msgid "Sidebar right"
+msgstr "右側邊欄"
+
+#: Accessibility.info:0
+msgid "Banner"
+msgstr "網站橫幅"
+
+#: Accessibility.info:0
+msgid "Footer first"
+msgstr "頁尾上層一區"
+
+#: Accessibility.info:0
+msgid "Footer second"
+msgstr "頁尾上層二區"
+
+#: Accessibility.info:0
+msgid "Footer third"
+msgstr "頁尾上層三區"
+
+#: Accessibility.info:0
+msgid "Footer"
+msgstr "頁尾下層左側邊欄"
+
+#: Accessibility.info:0
+msgid "Footer bottom right"
+msgstr "頁尾下層右側邊欄"
+
+#: Accessibility.info:0
+msgid "Help"
+msgstr "說明欄"
+
+#: Accessibility.info:0
+msgid "Page top"
+msgstr "頁首"
+
+#: Accessibility.info:0
+msgid "Page bottom"
+msgstr "頁底"
