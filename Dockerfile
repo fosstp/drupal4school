@@ -28,6 +28,11 @@ RUN curl -fSL "http://files.drush.org/drush.phar" -o drush.phar \
     && cd /var/www/html \
     && composer require google/apiclient:1.*
 
+ADD modules /var/www/html/sites/all/modules
+ADD themes /var/www/html/sites/all/themes
+ADD translations /var/www/html/sites/default/files/translations
+RUN chown -R apache:apache /var/www/html
+
 ADD run-httpd.sh /usr/sbin/run-httpd.sh
 RUN chmod +x /usr/sbin/run-httpd.sh
 
