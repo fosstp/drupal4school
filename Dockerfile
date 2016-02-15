@@ -2,8 +2,10 @@ FROM drupal:7
 MAINTAINER fosstp drupal team
 
 RUN apt-get update \
-    && apt-get install -y ksh gcc make freetds-dev php-pear \
-    && docker-php-ext-install ldap odbc mssql
+    && apt-get install -y ksh gcc make freetds-dev php-pear libldap2-dev \
+    && rm -rf /var/lib/apt/lists/* \
+    && docker-php-ext-configure ldap --with-libdir=lib/x86_64-linux-gnu/ \
+    && docker-php-ext-install ldap
 
 #https://www-304.ibm.com/support/docview.wss?rs=71&uid=swg27007053
 RUN mkdir /opt/ibm \
