@@ -19,7 +19,7 @@ RUN mkdir /opt/ibm \
 RUN { \
 	echo 'extension=ibm_db2.so'; \
 	echo 'ibm_db2.instance_name=db2inst1'; \
-    } > /etc/php.d/ibm_db2.ini
+    } > /usr/local/etc/php/conf.d/30-ibm_db2.ini
 RUN echo 'TLS_REQCERT	never' >> /etc/openldap/ldap.conf
 
 #Now, install drush then install google api client library.
