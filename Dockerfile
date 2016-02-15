@@ -1,7 +1,7 @@
 FROM drupal:7
 MAINTAINER fosstp drupal team
 
-RUN apt-get install -y ksh gcc make freetds\
+RUN apt-get install -y ksh gcc make freetds-bin \
     && docker-php-ext-install ldap odbc mssql pear
 
 #https://www-304.ibm.com/support/docview.wss?rs=71&uid=swg27007053
