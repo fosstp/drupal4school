@@ -2,10 +2,10 @@ FROM drupal:7
 MAINTAINER fosstp drupal team
 
 RUN apt-get update \
-    && apt-get install -y ksh unzip gcc make freetds-dev php-pear libldap2-dev \
+    && apt-get -y --no-install-recommends install ksh unzip gcc make git freetds-dev php-pear libldap2-dev mariadb-client \
     && rm -rf /var/lib/apt/lists/* \
     && docker-php-ext-configure ldap --with-libdir=lib/x86_64-linux-gnu/ \
-    && docker-php-ext-install ldap
+    && docker-php-ext-install ldap pcntl zip
 
 #https://www-304.ibm.com/support/docview.wss?rs=71&uid=swg27007053
 RUN mkdir /opt/ibm \
@@ -24,12 +24,15 @@ RUN { \
     && chmod a+r -R /usr/local/lib/php/extensions \
     && echo 'TLS_REQCERT	never' >> /etc/ldap/ldap.conf
 
-#Now, install drush then install google api client library.
-RUN curl -fSL "http://files.drush.org/drush.phar" -o drush.phar \
-    && php drush.phar core-status \
-    && chmod +x drush.phar \
-    && mv drush.phar /usr/local/bin/drush \
-    && drush init \
+#Now, install composer, drush then install google api client library.
+RUN curl -sS https://getcomposer.org/installer | php \
+    && mv composer.phar /usr/local/bin/composer \
+    && ln -s /usr/local/bin/composer /usr/bin/composer \
+    && git clone https://github.com/drush-ops/drush.git /usr/local/src/drush \
+    && cd /usr/local/src/drush \
+    && git checkout 7.x \
+    && ln -s /usr/local/src/drush/drush /usr/bin/drush \
+    && composer install
     && cd /var/www/html \
     && composer require google/apiclient:1.*
 
