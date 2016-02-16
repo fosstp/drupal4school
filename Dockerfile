@@ -32,7 +32,7 @@ RUN curl -sS https://getcomposer.org/installer | php \
     && cd /usr/local/src/drush \
     && git checkout 7.x \
     && ln -s /usr/local/src/drush/drush /usr/bin/drush \
-    && composer install
+    && composer install \
     && cd /var/www/html \
     && composer require google/apiclient:1.*
 
