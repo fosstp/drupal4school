@@ -19,8 +19,10 @@ RUN mkdir /opt/ibm \
 RUN { \
 	echo 'extension=ibm_db2.so'; \
 	echo 'ibm_db2.instance_name=db2inst1'; \
-    } > /usr/local/etc/php/conf.d/30-ibm_db2.ini
-RUN echo 'TLS_REQCERT	never' >> /etc/openldap/ldap.conf
+    } > /usr/local/etc/php/conf.d/30-ibm_db2.ini \
+    && chmod a+w /usr/local/etc/php/ /usr/local/etc/php/conf.d \
+    && chmod a+r -R /usr/local/lib/php/extensions \
+    && echo 'TLS_REQCERT	never' >> /etc/ldap/ldap.conf
 
 #Now, install drush then install google api client library.
 RUN curl -fSL "http://files.drush.org/drush.phar" -o drush.phar \
@@ -34,7 +36,7 @@ RUN curl -fSL "http://files.drush.org/drush.phar" -o drush.phar \
 ADD modules /var/www/html/sites/all/modules
 ADD themes /var/www/html/sites/all/themes
 ADD translations /var/www/html/sites/default/files/translations
-RUN chown -R apache:apache /var/www/html
+RUN chown -R www-data:www-data /var/www/html
 
 ADD run-httpd.sh /usr/sbin/run-httpd.sh
 RUN chmod +x /usr/sbin/run-httpd.sh
