@@ -1,5 +1,5 @@
 #!/bin/bash
 set -e
-rm -rf /usr/local/apache/logs/httpd.pid
+rm -f /var/run/apache2/apache2.pid
 
-exec /usr/sbin/httpd -DFOREGROUND
+exec apache2 -DFOREGROUND
