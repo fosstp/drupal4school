@@ -33,8 +33,9 @@ function gapps_libraries_info() {
     'download url' => 'https://github.com/google/google-api-php-client/archive/master.zip',
     'version arguments' => array(
       'file' => 'src/Google/Client.php',
-      'pattern' => '/LIBVER = "([0-9\.a-z]+)/',
-      'lines' => 28,
+      'pattern' => '/LIBVER = "([0-9a-z\.-]+)/',
+      'lines' => 60,
+      'cols' => 60,
     ),
     'versions' => array(
       '1.1.3' => array(),
