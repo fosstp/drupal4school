@@ -46,14 +46,15 @@ RUN mkdir -p /var/www/html/profiles/standard/translations/ \
     && curl -fSL "http://ftp.drupal.org/files/translations/7.x/drupal/drupal-7.43.zh-hant.po" -o drupal-7.43.zh-hant.po 
 
 RUN cd /var/www/html \
-    && drush dl services,ctools,views,date,calendar,openid_provider,xrds_simple,libraries
+    && drush dl services,ctools,views,date,calendar,openid_provider,xrds_simple,libraries,l10n_update
 
 RUN echo "\$conf['drupal_http_request_fails'] = FALSE;" >> /var/www/html/sites/default/settings.php
 
 ADD modules /var/www/html/sites/all/modules
 ADD themes /var/www/html/sites/all/themes
-ADD translations /var/www/html/sites/default/files/translations
-RUN chown -R www-data:www-data /var/www/html
+ADD translations /var/www/html/sites/all/translations
+RUN chown -R www-data:www-data /var/www/html \
+    && chmod 777 /var/www/html/sites/all/translations
 
 ADD run-httpd.sh /usr/sbin/run-httpd.sh
 RUN chmod +x /usr/sbin/run-httpd.sh
