@@ -42,7 +42,8 @@ RUN mkdir -p /var/www/html/profiles/standard/translations/ \
     && curl -fSL "http://ftp.drupal.org/files/translations/7.x/drupal/drupal-7.43.zh-hant.po" -o drupal-7.43.zh-hant.po 
 
 RUN cd /var/www/html \
-    && drush dl services,ctools,views,date,calendar,openid_provider,xrds_simple
+    && drush dl services,ctools,views,date,calendar,openid_provider,xrds_simple,libraries \
+    && drush en libraries,ctools,calendar,views
 
 ADD modules /var/www/html/sites/all/modules
 ADD themes /var/www/html/sites/all/themes
