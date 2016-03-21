@@ -5,7 +5,8 @@ RUN apt-get update \
     && apt-get -y --no-install-recommends install ksh unzip gcc make git freetds-dev php-pear libldap2-dev mariadb-client \
     && rm -rf /var/lib/apt/lists/* \
     && docker-php-ext-configure ldap --with-libdir=lib/x86_64-linux-gnu/ \
-    && docker-php-ext-install ldap pcntl zip
+    && docker-php-ext-install ldap pcntl zip \
+    && echo 'memory_limit=256M' > /usr/local/etc/php/conf.d/10-php.ini
 
 #https://www-304.ibm.com/support/docview.wss?rs=71&uid=swg27007053
 RUN mkdir /opt/ibm \
@@ -35,6 +36,13 @@ RUN curl -sS https://getcomposer.org/installer | php \
     && composer install \
     && cd /var/www/html \
     && composer require google/apiclient:1.*
+    
+RUN mkdir -p /var/www/html/profiles/standard/translations/ \
+    && cd /var/www/html/profiles/standard/translations/ \
+    && curl -fSL "http://ftp.drupal.org/files/translations/7.x/drupal/drupal-7.43.zh-hant.po" -o drupal-7.43.zh-hant.po 
+
+RUN cd /var/www/html \
+    && drush dl services,ctools,views,date,calendar,openid_provider,xrds_simple
 
 ADD modules /var/www/html/sites/all/modules
 ADD themes /var/www/html/sites/all/themes
