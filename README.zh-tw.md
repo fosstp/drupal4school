@@ -9,6 +9,7 @@ $ docker run --name drupal -d fosstp/drupal
 如果您想要對外提供服務，必須讓訪客透過主機的真實IP連接微虛擬機，而非使用微虛擬機的虛擬介面IP，使用以下語法進行通訊埠對應：
 
 $ docker run --name some-drupal -p 80:80 -p 443:443 -d fosstp/drupal
+
 然後，使用 http[s]://localhost 或 http[s]://主機的真實IP 語法連結 drupal 網站。
 
 有許多資料庫可以支援此映像檔，我們建議您採用 docker 映像檔來部署資料庫。根據 Drupal 7 的預設值，SQLite 是最簡單易用的資料庫，採用文檔形式儲存資料。其他還有許多資料庫系統可以採用，細節在下文中介紹：
