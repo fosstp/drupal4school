@@ -14,14 +14,16 @@ There are multiple database types supported by this image, most easily used via 
 
 When first accessing the webserver provided by this image, it will go through a brief setup process. The details provided below are specifically for the "Set up database" step of that configuration process.
 
-MySQL
+## MySQL
 $ docker run --name some-drupal --link some-mysql:mysql -d fosstp/drupal
+
 Database type: MySQL, MariaDB, or equivalent
 Database name/username/password: <details for accessing your MySQL instance> (MYSQL_USER, MYSQL_PASSWORD, MYSQL_DATABASE; see environment variables in the description for mysql)
 ADVANCED OPTIONS; Database host: mysql (for using the /etc/hosts entry added by --link to access the linked container's MySQL instance)
 
-PostgreSQL
+## PostgreSQL
 $ docker run --name some-drupal --link some-postgres:postgres -d fosstp/drupal
+
 Database type: PostgreSQL
 Database name/username/password: <details for accessing your PostgreSQL instance> (POSTGRES_USER, POSTGRES_PASSWORD; see environment variables in the description for postgres)
 ADVANCED OPTIONS; Database host: postgres (for using the /etc/hosts entry added by --link to access the linked container's PostgreSQL instance)
