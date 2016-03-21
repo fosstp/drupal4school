@@ -8,6 +8,10 @@ RUN apt-get update \
     && docker-php-ext-install ldap pcntl zip \
     && echo 'memory_limit=256M' > /usr/local/etc/php/conf.d/10-php.ini
 
+#https://pecl.php.net/package/uploadprogress
+RUN pecl install uploadprogress \
+    && echo "extension=uploadprogress.so" > /usr/local/etc/php/conf.d/20-uploadprogress.ini
+
 #https://www-304.ibm.com/support/docview.wss?rs=71&uid=swg27007053
 RUN mkdir /opt/ibm \
     && cd /opt/ibm \
@@ -16,8 +20,8 @@ RUN mkdir /opt/ibm \
     && rm -rf dsdriver.tar.gz \
     && chmod +x /opt/ibm/dsdriver/installDSDriver \
     && /opt/ibm/dsdriver/installDSDriver \
-    && echo "/opt/ibm/dsdriver" | pecl install ibm_db2
-RUN { \
+    && echo "/opt/ibm/dsdriver" | pecl install ibm_db2 \
+    && { \
 	echo 'extension=ibm_db2.so'; \
 	echo 'ibm_db2.instance_name=db2inst1'; \
     } > /usr/local/etc/php/conf.d/30-ibm_db2.ini \
@@ -43,7 +47,9 @@ RUN mkdir -p /var/www/html/profiles/standard/translations/ \
 
 RUN cd /var/www/html \
     && drush dl services,ctools,views,date,calendar,openid_provider,xrds_simple,libraries
-    
+
+RUN echo "\$conf['drupal_http_request_fails'] = FALSE;" >> /var/www/html/sites/default/settings.php
+
 ADD modules /var/www/html/sites/all/modules
 ADD themes /var/www/html/sites/all/themes
 ADD translations /var/www/html/sites/default/files/translations
