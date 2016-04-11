@@ -20,12 +20,12 @@ When first accessing the webserver provided by this image, it will go through a 
 $ docker run --name some-drupal --link some-mysql:mysql -d fosstp/drupal
 
 Database type: MySQL, MariaDB, or equivalent
-Database name/username/password: <details for accessing your MySQL instance> (MYSQL_USER, MYSQL_PASSWORD, MYSQL_DATABASE; see environment variables in the description for mysql)
+Database name/username/password: details for accessing your MySQL instance (MYSQL_USER, MYSQL_PASSWORD, MYSQL_DATABASE; see environment variables in the description for mysql)
 ADVANCED OPTIONS; Database host: mysql (for using the /etc/hosts entry added by --link to access the linked container's MySQL instance)
 
 ## PostgreSQL
 $ docker run --name some-drupal --link some-postgres:postgres -d fosstp/drupal
 
 Database type: PostgreSQL
-Database name/username/password: <details for accessing your PostgreSQL instance> (POSTGRES_USER, POSTGRES_PASSWORD; see environment variables in the description for postgres)
+Database name/username/password: details for accessing your PostgreSQL instance (POSTGRES_USER, POSTGRES_PASSWORD; see environment variables in the description for postgres)
 ADVANCED OPTIONS; Database host: postgres (for using the /etc/hosts entry added by --link to access the linked container's PostgreSQL instance)
