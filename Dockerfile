@@ -48,7 +48,8 @@ RUN mkdir -p /var/www/html/profiles/standard/translations/ \
 RUN cd /var/www/html \
     && drush dl services,ctools,views,date,calendar,openid_provider,xrds_simple,libraries,l10n_update
 
-RUN echo "\$conf['drupal_http_request_fails'] = FALSE;" >> /var/www/html/sites/default/settings.php
+RUN cp /var/www/html/sites/default/default.settings.php /var/www/html/sites/default/settings.php \
+    && echo "\$conf['drupal_http_request_fails'] = FALSE;" >> /var/www/html/sites/default/settings.php
 
 ADD modules /var/www/html/sites/all/modules
 ADD themes /var/www/html/sites/all/themes
