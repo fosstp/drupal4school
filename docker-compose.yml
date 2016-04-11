@@ -1,0 +1,21 @@
+version: '2'
+services:
+  mysql:
+    image: mysql/mysql-server
+    environment:
+      MYSQL_ROOT_PASSWORD: "123456"
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - "12000:80"
+    links:
+      - mysql:db
+
+  drupal:
+    image: fosstp/drupal
+    ports:
+      - "80:80"
+      - "443:443"
+    links:
+      - mysql:db
