@@ -59,7 +59,7 @@ RUN chown -R www-data:www-data /var/www/html \
 
 ADD run-httpd.sh /usr/sbin/run-httpd.sh
 ADD first.sh /usr/sbin/first.sh
-RUN chmod +x /usr/sbin/run-httpd.sh
+RUN chmod +x /usr/sbin/run-httpd.sh /usr/sbin/first.sh
 
 EXPOSE 80 443 9005
 CMD ["/usr/sbin/run-httpd.sh"]
