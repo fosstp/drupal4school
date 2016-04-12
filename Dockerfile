@@ -6,7 +6,7 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/* \
     && docker-php-ext-configure ldap --with-libdir=lib/x86_64-linux-gnu/ \
     && docker-php-ext-install ldap pcntl zip \
-    && echo 'memory_limit=256M' > /usr/local/etc/php/conf.d/10-php.ini
+    && sed -i 's/memory_limit = -1/memory_limit = 256M/g' /usr/local/etc/php/php.ini
 
 #https://pecl.php.net/package/uploadprogress
 RUN pecl install uploadprogress \
@@ -43,7 +43,10 @@ RUN curl -sS https://getcomposer.org/installer | php \
     
 RUN mkdir -p /var/www/html/profiles/standard/translations/ \
     && cd /var/www/html/profiles/standard/translations/ \
-    && curl -fSL "http://ftp.drupal.org/files/translations/7.x/drupal/drupal-7.43.zh-hant.po" -o drupal-7.43.zh-hant.po 
+    && curl -fSL "http://ftp.drupal.org/files/translations/7.x/drupal/drupal-7.x.zh-hant.po" -o drupal-7.x.zh-hant.po \
+    && drush language-add zh-hant \
+    && drush language-enable zh-hant \
+    && drupal drush language-default zh-hant
 
 RUN cd /var/www/html \
     && drush dl services,ctools,views,date,calendar,openid_provider,xrds_simple,libraries,l10n_update
