@@ -58,6 +58,7 @@ RUN chown -R www-data:www-data /var/www/html \
     && chmod 777 /var/www/html/sites/all/translations
 
 ADD run-httpd.sh /usr/sbin/run-httpd.sh
+ADD first.sh /usr/sbin/first.sh
 RUN chmod +x /usr/sbin/run-httpd.sh
 
 EXPOSE 80 443 9005
