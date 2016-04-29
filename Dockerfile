@@ -6,7 +6,7 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/* \
     && docker-php-ext-configure ldap --with-libdir=lib/x86_64-linux-gnu/ \
     && docker-php-ext-install ldap pcntl zip \
-    && sed -i 's/memory_limit = -1/memory_limit = 256M/g' /usr/local/etc/php/php.ini
+    && echo "memory_limit = 256M' > /usr/local/etc/php/conf.d/20-memory.ini
 
 #https://pecl.php.net/package/uploadprogress
 RUN pecl install uploadprogress \
