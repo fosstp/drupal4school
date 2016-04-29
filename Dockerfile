@@ -64,5 +64,6 @@ ADD run-httpd.sh /usr/sbin/run-httpd.sh
 ADD first.sh /usr/sbin/first.sh
 RUN chmod +x /usr/sbin/run-httpd.sh /usr/sbin/first.sh
 
-EXPOSE 80 443 9005
+VOLUME ["/var/www/html/sites/default/files"]
+EXPOSE 80 443
 CMD ["/usr/sbin/run-httpd.sh"]
