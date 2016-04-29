@@ -43,10 +43,7 @@ RUN curl -sS https://getcomposer.org/installer | php \
     
 RUN mkdir -p /var/www/html/profiles/standard/translations/ \
     && cd /var/www/html/profiles/standard/translations/ \
-    && curl -fSL "http://ftp.drupal.org/files/translations/7.x/drupal/drupal-7.x.zh-hant.po" -o drupal-7.x.zh-hant.po \
-    && drush language-add zh-hant \
-    && drush language-enable zh-hant \
-    && drupal drush language-default zh-hant
+    && curl -fSL "http://ftp.drupal.org/files/translations/7.x/drupal/drupal-7.x.zh-hant.po" -o drupal-7.x.zh-hant.po
 
 RUN cd /var/www/html \
     && drush dl services,ctools,views,date,calendar,openid_provider,xrds_simple,libraries,l10n_update
