@@ -2,7 +2,7 @@
 set -e
 rm -f /var/run/apache2/apache2.pid
 
-if [-f /usr/sbin/first.sh]; then
+if test -e /usr/sbin/first.sh; then
   /usr/sbin/first.sh
 fi
 
