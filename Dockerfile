@@ -54,13 +54,15 @@ RUN cp /var/www/html/sites/default/default.settings.php /var/www/html/sites/defa
 ADD modules /var/www/html/sites/all/modules
 ADD themes /var/www/html/sites/all/themes
 ADD translations /var/www/html/sites/all/translations
-RUN chown -R www-data:www-data /var/www/html \
-    && chmod 777 /var/www/html/sites/all/translations
+RUN mkdir /var/www/html/sites/default/files \
+    && chown -R www-data:www-data /var/www/html \
+    && chmod 777 /var/www/html/sites/all/translations \
+    && chmod 744 /var/www/html/sites/default/files
 
 ADD run-httpd.sh /usr/sbin/run-httpd.sh
 ADD first.sh /usr/sbin/first.sh
 RUN chmod +x /usr/sbin/run-httpd.sh /usr/sbin/first.sh
 
-VOLUME ["/var/www/html/sites/default/files"]
+VOLUME ["/var/www/html/sites/all/modules", "/var/www/html/sites/all/themes", "/var/www/html/sites/all/translations", "/var/www/html/sites/default/files"]
 EXPOSE 80 443
 CMD ["/usr/sbin/run-httpd.sh"]
