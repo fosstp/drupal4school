@@ -1,0 +1,18 @@
+ibmdb2.db2_admin:
+  type: string
+  label: 'SIMS Database Admin'
+ibmdb2.db2_pass:
+  type: string
+  label: 'SIMS Database Admin Password'
+ibmdb2.db2_server:
+  type: string
+  label: 'Account Management Server'
+ibmdb2.db2_port:
+  type: integer
+  label: 'SIMS Database Connect Port'
+ibmdb2.database:
+  type: string
+  label: 'SIMS Database Name'
+ibmdb2.schema:
+  type: string
+  label: 'SIMS Database Schema'

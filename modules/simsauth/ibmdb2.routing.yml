@@ -1,0 +1,7 @@
+ibmdb2.config:
+  path: 'admin/config/people/ibmdb2'
+  defaults:
+    _form: '\Drupal\simsauth\Form\ibmdb2ConfigForm'
+    _title: 'SIMS Account Database settings'
+  requirements:
+    _permission: 'administer sims configuration'

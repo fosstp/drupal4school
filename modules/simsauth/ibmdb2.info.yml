@@ -1,0 +1,9 @@
+name: 'IBM DB2 Client'
+type: module
+description: 'Driver for IBM DB2 Universal Database, IBM Cloudscape, and Apache Derby databases.'
+package: School Information Management System
+
+version: '1.0'
+core: '8.x'
+project: 'ibmdb2'
+datestamp: 1453075146

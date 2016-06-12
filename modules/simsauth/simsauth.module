@@ -4,6 +4,15 @@
  * @file
  * sims authentication module for Drupal.
  */
+use Drupal\Core\Url;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\UserInterface;
+use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
+use Drupal\Component\Utility\Unicode;
+use Drupal\user\Entity\User;
+use Drupal\user\Entity\Role;
+use Drupal\user\Form\UserLoginForm;
 
 require_once 'sims.api.php';
 
@@ -11,32 +20,23 @@ require_once 'sims.api.php';
  * Implements hook_update_projects_alter().
  */
 function simsauth_update_projects_alter(&$projects) {
+  $projects['simsauth'] = array(
+    'info' => array(
+      'project status url' => 'http://drupal.tp.edu.tw/projects/%core/%project/',
+    ),
+  );
   unset($projects['simsauth']);
 }
 
 /**
- * Implements hook_menu().
+ * Implements hook_locale_translation_projects_alter().
  */
-function simsauth_menu() {
-  $items = array();
-
-  $items['admin/config/people/simsauth'] = array(
-    'title' => 'SIMS authentication settings',
-    'description' => 'Control the various settings of the sims authentication module',
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('simsauth_settings'),
-    'access arguments' => array('administer sims authentication'),
-    'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
+function simsauth_locale_translation_projects_alter(&$projects) {
+  $projects['simsauth'] = array(
+    'info' => array(
+      'interface translation server pattern' => 'http://drupal.tp.edu.tw/translations/%core/%project/%project-%version.%language.po',
+    ),
   );
-
-  return $items;
-}
-
-/**
- * Implements hook_admin_paths().
- */
-function simsauth_admin_paths() {
-  return array('admin/config/people/simsauth' => TRUE);
 }
 
 /**
@@ -52,95 +52,134 @@ function simsauth_help($path, $arg) {
 }
 
 /**
- * Implements hook_permission().
+ * Implements hook_entity_extra_field_info().
  */
-function simsauth_permission() {
-  return array(
-    'administer sims authentication' => array(
-      'title' => t('Administer sims authentication'),
-      'description' => t('Warning: Give to trusted roles only; this permission has security implications.'),
-    ),
+function simsauth_entity_extra_field_info() {
+  $fields['user']['user']['display']['birthday'] = array(
+    'label' => t('Birthday'),
+    'description' => t('simsauth module \'birthday\' view element.'),
+    'weight' => 10,
   );
+  $fields['user']['user']['display']['gender'] = array(
+    'label' => t('Gender'),
+    'description' => t('simsauth module \'gender\' view element.'),
+    'weight' => 11,
+  );
+  $fields['user']['user']['display']['depname'] = array(
+    'label' => t('Department'),
+    'description' => t('simsauth module \'department\' view element.'),
+    'weight' => 12,
+  );
+  $fields['user']['user']['display']['stdno'] = array(
+    'label' => t('Student No'),
+    'description' => t('simsauth module \'student no\' view element.'),
+    'weight' => 12,
+  );
+  $fields['user']['user']['display']['titlename'] = array(
+    'label' => t('Job Title'),
+    'description' => t('simsauth module \'job title\' view element.'),
+    'weight' => 13,
+  );
+  $fields['user']['user']['display']['classname'] = array(
+    'label' => t('Attending Class'),
+    'description' => t('simsauth module \'attending class\' view element.'),
+    'weight' => 13,
+  );
+  $fields['user']['user']['display']['proclass'] = array(
+    'label' => t('Adoption Class'),
+    'description' => t('simsauth module \'adoption class\' view element.'),
+    'weight' => 14,
+  );
+  $fields['user']['user']['display']['seat'] = array(
+    'label' => t('Seat No'),
+    'description' => t('simsauth module \'seat no\' view element.'),
+    'weight' => 14,
+  );
+  $fields['user']['user']['display']['email'] = array(
+    'label' => t('Mail Box'),
+    'description' => t('simsauth module \'mail box\' view element.'),
+    'weight' => 15,
+  );
+
+  return $fields;
 }
 
 /**
- * Implements hook_user_load().
+ * Implements hook_ENTITY_TYPE_load().
  */
-function simsauth_user_load($accounts) {
-  foreach ($accounts as $uid => $account) {
-    if (variable_get('simsauth_enable') && simsauth_get_authname($uid)) {
+function simsauth_user_load(array $entities) {
+  $config = \Drupal::config('simsauth.settings');
+  if (!($config->get('simsauth.enable'))) return;
+  foreach ($entities as $uid => $account) {
+    if ($account->get("init") == 'simsauth') {
       $sdate = get_current_seme();
       $found = 0;
       $db2_query = "select * from USER_ACCOUNT as a left join TEABAS as b on a.USERNAME=b.IDNO where b.ATSCHOOL=1 and a.ACCOUNT_NAME=?";
-      $rs = db2_query($db2_query, array($account->name));
+      $rs = db2_query($db2_query, array($account->getAccountName()));
       if (db2_fetch_row($rs)) {
         $found = 1;
       }
 
       if ($found == 0) {
-        $std_ac = variable_get('simsauth_student_account');
+        $std_ac = $config->get('simsauth.student_account');
         $db2_query = "select * from STUDENT where STATUS=0 and $std_ac=? and SEYEAR>=?";
-        $rs = db2_query($db2_query, array($account->name, $sdate['seyear']));
+        $rs = db2_query($db2_query, array($account->getAccountName(), $sdate['seyear']));
         if (db2_fetch_row($rs)) {
           $found = 2;
         }
       }
-      if ($found == 0) {
-        $account->realname = $account->name;
-      }
-      else {
-        if ($found == 1) {
-          $account->realname = db2_result($rs, 'TEANAME');
-          $account->gender = (db2_result($rs, 'TEASEX') == 1) ? t('male') : t('female');
-          $account->userclass = 'teacher';
-          $account->idno = db2_result($rs, 'IDNO');
-          $account->empid = db2_result($rs, 'TEAID');
-          $birthday = db2_result($rs, 'BIRTHDAY');
-          $account->birthyear = substr($birthday, 0, 4);
-          $account->birthmonth = substr($birthday, 4, 2);
-          $account->birthday = substr($birthday, -2);
-          foreach (user_roles() as $depname) {
-            $db2_query = "select a.POS_ID,a.PROCLASS,b.POS_NAME,b.DEPT_ID,c.DEPT_NAME from TEASRV a left join SCHPOSITION b on a.POS_ID=b.POS_ID left join SCHDEPT c on b.DEPT_ID=c.DEPT_ID where a.TEAID=? and a.SEYEAR=? and a.SESEM=? and c.DEPT_NAME=?";
-            $rs2 = db2_query($db2_query, array(
-              $account->empid,
-              $sdate['year'],
-              $sdate['seme'],
-              $depname,
-            ));
-            if (db2_fetch_row($rs2)) {
-              $account->proclass = db2_result($rs2, 'PROCLASS');
-              $account->depid = db2_result($rs2, 'DEPT_ID');
-              $account->depname = db2_result($rs2, 'DEPT_NAME');
-              $account->titleid = db2_result($rs2, 'POS_ID');
-              $account->titlename = db2_result($rs2, 'POS_NAME');
-            }
-          }
-        }
-        elseif ($found == 2) {
-          $account->realname = db2_result($rs, 'NAME');
-          $account->gender = (db2_result($rs, 'SEX') == 1) ? t('male') : t('female');
-          $account->userclass = 'student';
-          $account->idno = db2_result($rs, 'IDNO');
-          $account->empid = db2_result($rs, 'ID');
-          $birthday = db2_result($rs, 'BIRTHDAY');
-          $account->birthyear = substr($birthday, 0, 4);
-          $account->birthmonth = substr($birthday, 4, 2);
-          $account->birthday = substr($birthday, -2);
-          $account->depid = db2_result($rs, 'YEAR') . db2_result($rs, 'CLASSNO');
-          $account->stdno = db2_result($rs, 'STDNO');
-          $account->class = $account->depid;
-          $account->seat = db2_result($rs, 'NO');
-          $db2_query = "select CLASSNAME from BASCLS where SEYEAR=? and SESEM=? and CLASSID=?";
+      if ($found == 1) {
+        $account->realname = db2_result($rs, 'TEANAME');
+        $account->gender = (db2_result($rs, 'TEASEX') == 1) ? t('male') : t('female');
+        $account->userclass = 'teacher';
+        $account->idno = db2_result($rs, 'IDNO');
+        $account->empid = db2_result($rs, 'TEAID');
+        $birthday = db2_result($rs, 'BIRTHDAY');
+        $account->birthyear = substr($birthday, 0, 4);
+        $account->birthmonth = substr($birthday, 4, 2);
+        $account->birthday = substr($birthday, -2);
+	$account->birthdate = mktime(0, 0, 0, $account->birthmonth, $account->birthday, $account->birthyear);
+        foreach (user_roles() as $depname) {
+          $db2_query = "select a.POS_ID,a.PROCLASS,b.POS_NAME,b.DEPT_ID,c.DEPT_NAME from TEASRV a left join SCHPOSITION b on a.POS_ID=b.POS_ID left join SCHDEPT c on b.DEPT_ID=c.DEPT_ID where a.TEAID=? and a.SEYEAR=? and a.SESEM=? and c.DEPT_NAME=?";
           $rs2 = db2_query($db2_query, array(
+            $account->empid,
             $sdate['year'],
             $sdate['seme'],
-            $account->depid,
+            $depname,
           ));
-          if ($rs2) {
-            db2_fetch_row($rs2);
-            $account->depname = t('Student');
-            $account->titlename = db2_result($rs2, 'CLASSNAME');
+          if (db2_fetch_row($rs2)) {
+            $account->proclass = db2_result($rs2, 'PROCLASS');
+            $account->depid = db2_result($rs2, 'DEPT_ID');
+            $account->depname = db2_result($rs2, 'DEPT_NAME');
+            $account->titleid = db2_result($rs2, 'POS_ID');
+            $account->titlename = db2_result($rs2, 'POS_NAME');
           }
+        }
+      }
+      elseif ($found == 2) {
+        $account->realname = db2_result($rs, 'NAME');
+        $account->gender = (db2_result($rs, 'SEX') == 1) ? t('male') : t('female');
+        $account->userclass = 'student';
+        $account->idno = db2_result($rs, 'IDNO');
+        $account->empid = db2_result($rs, 'ID');
+        $birthday = db2_result($rs, 'BIRTHDAY');
+        $account->birthyear = substr($birthday, 0, 4);
+        $account->birthmonth = substr($birthday, 4, 2);
+        $account->birthday = substr($birthday, -2);
+	$account->birthdate = mktime(0, 0, 0, $account->birthmonth, $account->birthday, $account->birthyear);
+        $account->depid = db2_result($rs, 'YEAR') . db2_result($rs, 'CLASSNO');
+        $account->stdno = db2_result($rs, 'STDNO');
+        $account->class = $account->depid;
+        $account->seat = db2_result($rs, 'NO');
+        $db2_query = "select CLASSNAME from BASCLS where SEYEAR=? and SESEM=? and CLASSID=?";
+        $rs2 = db2_query($db2_query, array(
+          $sdate['year'],
+          $sdate['seme'],
+          $account->depid,
+        ));
+        if (db2_fetch_row($rs2)) {
+          $account->depname = t('Student');
+          $account->titlename = db2_result($rs2, 'CLASSNAME');
         }
       }
     }
@@ -148,58 +187,35 @@ function simsauth_user_load($accounts) {
 }
 
 /**
- * Implements hook_username_alter().
+ * Implements hook_user_format_name_alter().
  */
-function simsauth_username_alter(&$name, $account) {
-  static $in_username_alter = FALSE;
-
-  if (empty($account->uid)) {
-    return;
-  }
-
-  $prefix = '';
-  if (variable_get('simsauth_display_depname') && isset($account->depname)) {
-    if (drupal_strlen($account->depname)) {
+function simsauth_user_format_name_alter(&$name, $account) {
+  $config = \Drupal::config('simsauth.settings');
+  $account = User::load($account->id());
+  if ($account->id() && $account->get("init")->value == 'simsauth') {
+    $prefix = '';
+    if ($config->get('simsauth.display_depname') && Unicode::strlen($account->depname)) {
       $prefix .= $account->depname . ' ';
     }
-  }
 
-  if (variable_get('simsauth_display_title') && isset($account->titlename)) {
-    if (drupal_strlen($account->titlename)) {
+    if ($config->get('simsauth.display_title') && Unicode::strlen($account->titlename)) {
       $prefix .= $account->titlename . ' ';
     }
-  }
 
-  if (isset($account->realname)) {
-    if (drupal_strlen($account->realname)) {
+    if (Unicode::strlen($account->realname)) {
       $name = $prefix . $account->realname;
     }
-    return;
-  }
-
-  if (!$in_username_alter) {
-    $in_username_alter = TRUE;
-
-    if ($realname_account = user_load($account->uid)) {
-      simsauth_username_alter($name, $realname_account);
-    }
-
-    $in_username_alter = FALSE;
   }
 }
 
 /**
- * Implements hook_form_FORM_alter().
+ * Implements hook_form_FORM_ID_alter().
  */
-function simsauth_form_user_admin_account_alter(&$form, $form_state) {
-  if (variable_get('simsauth_enable')) {
+function simsauth_form_user_admin_account_alter(array &$form, FormStateInterface $form_state, $form_id) {
+  $config = \Drupal::config('simsauth.settings');
+  if ($config->get('simsauth.enable')) {
     $destination = drupal_get_destination();
     $form['options']['operation']['#default_value'] = 'resetpw';
-    $form['accounts']['#header'] = array('org' => array('data' => t('come from'))) + $form['accounts']['#header'];
-    foreach ($form['accounts']['#options'] as $uid => $account) {
-      $module = db_query('SELECT module FROM {authmap} WHERE uid = :uid', array(':uid' => $uid))->fetchField();
-      $form['accounts']['#options'][$uid]['org'] = !empty($module) ? t('@m', array('@m' => $module)) : t('local');
-    }
   }
 }
 
@@ -207,7 +223,8 @@ function simsauth_form_user_admin_account_alter(&$form, $form_state) {
  * Implements hook_user_operations().
  */
 function simsauth_user_operations() {
-  if (variable_get('simsauth_enable')) {
+  $config = \Drupal::config('simsauth.settings');
+  if ($config->get('simsauth.enable')) {
     $operations['resetpw'] = array(
       'label' => t('Reset passwords of the selected users'),
       'callback' => 'simsauth_user_operations_resetpw',
@@ -219,28 +236,27 @@ function simsauth_user_operations() {
 /**
  * Implements simsauth_user_operations_resetpw().
  */
-function simsauth_user_operations_resetpw($accounts) {
+function simsauth_user_operations_resetpw(array $accounts) {
+  $config = \Drupal::config('simsauth.settings');
   $accounts = user_load_multiple($accounts);
   foreach ($accounts as $account) {
-    if (simsauth_get_authname($account)) {
+    if ($account->get("init") == 'simsauth') {
       $students = array();
       $teachers = array();
       if ($account->userclass == 'teacher') {
         $sql = 'select IDNO from TEABAS where TEAID=?';
         $rs = db2_query($sql, array($account->empid));
         if (db2_fetch_row($rs)) {
-          $org_pass = db2_result($rs, 0);
-          $account->org_pass = $org_pass;
+          $account->org_pass = db2_result($rs, 0);
           $teachers[] = $account;
         }
       }
       else {
-        $std_pw = variable_get('simsauth_student_password');
+        $std_pw = $config->get('simsauth.student_password');
         $sql = "select $std_pw from STUDENT where ID=?";
         $rs = db2_query($sql, array($account->empid));
         if (db2_fetch_row($rs)) {
-          $org_pass = db2_result($rs, 0);
-          $account->org_pass = $org_pass;
+          $account->org_pass = db2_result($rs, 0);
           $students[] = $account;
         }
       }
@@ -252,21 +268,21 @@ function simsauth_user_operations_resetpw($accounts) {
   $succ = '';
   $error = '';
   foreach ($teachers as $teacher) {
-    if (isset($tea_result->success[$teacher->uid]) && $tea_result->success[$teacher->uid]) {
+    if (isset($tea_result->success[$teacher->id()]) && $tea_result->success[$teacher->id()]) {
       user_save($teacher, array('pass' => $teacher->org_pass));
-      $succ .= "$teacher->name,";
+      $succ .= $teacher->realname . ',';
     }
     else {
-      $error .= "$teacher->name,";
+      $error .= $teacher->realname . ',';
     }
   }
   foreach ($students as $student) {
-    if (isset($std_result->success[$student->uid]) && $std_result->success[$student->uid]) {
+    if (isset($std_result->success[$student->id()]) && $std_result->success[$student->id()]) {
       user_save($student, array('pass' => $student->org_pass));
-      $succ .= "$student->name,";
+      $succ .= $student->realname . ',';
     }
     else {
-      $error .= "$student->name,";
+      $error .= $student->realname . ',';
     }
   }
   if ($error) {
@@ -290,12 +306,12 @@ function simsauth_user_operations_resetpw($accounts) {
 /**
  * Implements simsauth_teacher_resetpw().
  */
-function simsauth_teacher_resetpw($teachers) {
+function simsauth_teacher_resetpw(array $teachers) {
   $result = new stdClass();
   $result->success = array();
   foreach ($teachers as $teacher) {  
-    if (ldap_change_pass($teacher->name, $teacher->org_pass)) {
-      $result->success[$teacher->uid] = TRUE;
+    if (ldap_change_pass($teacher->getAccountName(), $teacher->org_pass)) {
+      $result->success[$teacher->id()] = TRUE;
     }
   }
   module_invoke_all('simsauth_teacher_resetpw', $teachers, $result);
@@ -305,61 +321,53 @@ function simsauth_teacher_resetpw($teachers) {
 /**
  * Implements simsauth_student_resetpw().
  */
-function simsauth_student_resetpw($students) {
+function simsauth_student_resetpw(array $students) {
   $result = new stdClass();
   $result->success = array();
   foreach ($students as $student) {
-    $result->success[$student->uid] = TRUE;
+    $result->success[$student->id()] = TRUE;
   }
   module_invoke_all('simsauth_student_resetpw', $students, $result);
   return $result;
 }
 
 /**
- * Implements hook_form_FORM_alter().
+ * Implements hook_form_FORM_ID_alter().
  */
-function simsauth_form_user_login_alter(&$form, $form_state) {
-  if (variable_get('simsauth_enable')) {
+function simsauth_form_user_login_form_alter(array &$form, FormStateInterface $form_state, $form_id) {
+  $config = \Drupal::config('simsauth.settings');
+  if ($config->get('simsauth.enable')) {
     unset($form['links']);
-    $name_description = variable_get('simsauth_loginname_desc');
-    $pass_description = variable_get('simsauth_password_desc');
+    $name_description = $config->get('simsauth.loginname_desc');
+    $pass_description = $config->get('simsauth.password_desc');
     if ($name_description) {
       $form['name']['#description'] = $name_description;
     }
     if ($pass_description) {
       $form['pass']['#description'] = $pass_description;
     }
-    if (variable_get('simsauth_personal_data_notice')) {
+    if ($config->get('simsauth.personal_data_notice')) {
       $form['extra_info'] = array(
         '#type' => 'markup',
-        '#markup' => '<p>' . t('I have read and understood <a href="@url">the policy of the website to collect personal data</a>, I agree to the site to collect my personal information.', array('@url' => url(variable_get('simsauth_personal_data_notice_path')))) . '</p>',
+        '#markup' => '<p>' . t('I have read and understood <a href="@url">the policy of the website to collect personal data</a>, I agree to the site to collect my personal information.', array('@url' => url($config->get('simsauth.personal_data_notice_nid')))) . '</p>',
       );
     }
-    $form['#validate'] = array(
-      'user_login_name_validate',
+  $form['#validate'] = array(
+      '::validateName',
       'simsauth_login_validate',
-      'user_login_final_validate',
+      '::validateAuthentication',
+      '::validateFinal',
     );
   }
-  else {
-    $form['#validate'] = user_login_default_validators();
-  }
-}
-
-/**
- * Implements hook_form_FORM_alter().
- */
-function simsauth_form_user_login_block_alter(&$form, $form_state) {
-  return simsauth_form_user_login_alter($form, $form_state);
 }
 
 /**
  * Implements simsauth_login_validate() authenticate a user by sims.
  */
-function simsauth_login_validate($form, &$form_state) {
-  global $user;
-  $username = $form_state['values']['name'];
-  $password = trim($form_state['values']['pass']);
+function simsauth_login_validate(array &$form, FormStateInterface $form_state) {
+  $config = \Drupal::config('simsauth.settings');
+  $username = $form_state->getValue('name');
+  $password = trim($form_state->getValue('pass'));
   if (!empty($username) && !empty($password)) {
     $sdate = get_current_seme();
     $found = 0;
@@ -377,11 +385,11 @@ function simsauth_login_validate($form, &$form_state) {
     }
 
     if ($found == 0) {
-      $std_ac = variable_get('simsauth_student_account');
-      $std_pw = variable_get('simsauth_student_password');
-      $std_ma = variable_get('simsauth_student_mail_account');
+      $std_ac = $config->get('simsauth.student_account');
+      $std_pw = $config->get('simsauth.student_password');
+      $std_ma = $config->get('simsauth.student_mail_account');
       if (!empty($std_ma)) {
-        if (!variable_get('simsauth_student_custom_password')) {
+        if (!$config->get('simsauth.student_custom_password')) {
           $db2_query = "select MAIL,$std_ma as MAIL_AC from STUDENT where STATUS=0 and $std_ac=? and SEYEAR>=? and $std_pw=?";
         }
         else {
@@ -389,14 +397,14 @@ function simsauth_login_validate($form, &$form_state) {
         }
       }
       else {
-        if (!variable_get('simsauth_student_custom_password')) {
+        if (!$config->get('simsauth.student_custom_password')) {
           $db2_query = "select MAIL from STUDENT where STATUS=0 and $std_ac=? and SEYEAR>=? and $std_pw=?";
         }
         else {
           $db2_query = "select MAIL from STUDENT where STATUS=0 and $std_ac=? and SEYEAR>=?";
         }
       }
-      if (!variable_get('simsauth_student_custom_password')) {
+      if (!$config->get('simsauth.student_custom_password')) {
         $rs = db2_query($db2_query, array($username, $sdate['seyear'], $password));
       }
       else {
@@ -404,7 +412,7 @@ function simsauth_login_validate($form, &$form_state) {
       }
       if (db2_fetch_row($rs)) {
         $email = db2_result($rs, 'MAIL');
-        $std_md = variable_get('simsauth_student_mail_address');
+        $std_md = $config->get('simsauth.student_mail_address');
         if (!empty($std_ma) && !empty($std_md)) {
           $email = db2_result($rs, 'MAIL_AC') . '@' . $std_md;
         }
@@ -412,19 +420,24 @@ function simsauth_login_validate($form, &$form_state) {
         db2_free_stmt($rs);
       }
     }
-
+    
+    $language = \Drupal::languageManager()->getCurrentLanguage()->getId();
     switch ($found) {
       case 1:
-        $user = user_external_load($username);
+        $user = user_load_by_name($username);
         if (!$user) {
-          $userinfo = array(
-            'name' => $username,
-            'mail' => $email,
-            'pass' => $password,
-            'init' => ($email) ? $email : $username,
-            'status' => 1,
-            'access' => REQUEST_TIME,
-          );
+	  $edit = array();
+	  $edit['init'] = 'simsauth';
+	  $edit['name'] = $username;
+	  $edit['mail'] = $email;
+	  $edit['pass'] = $password;
+	  $edit['status'] = 1;
+          $edit['roles'] = array(RoleInterface::AUTHENTICATED_ID);
+	  $edit['langcode'] = $language;
+	  $edit['preferred_langcode'] = $language;
+	  $edit['preferred_admin_langcode'] = $language;
+	  $user = User::create();
+	  $user->save();
         }
         else {
           if (trim($old_pass) != $password) {
@@ -436,7 +449,7 @@ function simsauth_login_validate($form, &$form_state) {
               }
             }
             if ($flag) {
-              if (variable_get('simsauth_sso_ldap')) {
+              if ($config->get('simsauth.sso_ldap_pwd')) {
                 if (!ldap_change_pass($username, $password)) {
                   $error .= ldap_error($ldap_conn) . t('change password to LDAP failed!');
                 }
@@ -457,24 +470,16 @@ function simsauth_login_validate($form, &$form_state) {
               drupal_set_message($error, 'error');
             }
 	  }
-          $userinfo = array(
-            'pass' => $password,
-            'mail' => $email,
-          );
+	  $user->setPassword($password);
+	  $user->setEmail($email);
         }
-        if (variable_get('simsauth_role_evaleverytime')) {
+        if ($config->get('simsauth.role_evaleverytime')) {
           $all_roles = user_roles(TRUE);
           $admin_role = user_roles(TRUE, 'access administration pages');
-          if (!$user) {
-            $newroles = array();
-          }
-          else {
-            if (in_array(current($admin_role), array_values($user->roles))) {
-              $newroles[key($admin_role)] = current($admin_role);
-            }
-            else {
-              $newroles = array();
-            }
+	  $admin_rid = key($admin_role);
+          $newroles = array();
+          if ($user->hasRole($admin_rid)) {
+            $newroles[$admin_rid] = $admin_role[$admin_rid];
           }
           $db2_query = "select c.DEPT_NAME from TEASRV a left join SCHPOSITION b on a.POS_ID=b.POS_ID left join SCHDEPT c on b.DEPT_ID=c.DEPT_ID where a.TEAID=? and a.SEYEAR=? and a.SESEM=?";
           $rs2 = db2_query($db2_query, array(
@@ -483,199 +488,194 @@ function simsauth_login_validate($form, &$form_state) {
             $sdate['seme'],
           ));
           while (db2_fetch_row($rs2)) {
-            $depname = db2_result($rs2, 'DEPT_NAME');
-            if (!in_array($depname, $all_roles)) {
-              $role = new stdClass();
-              $role->name = $depname;
-              user_role_save($role);
-              $all_roles = user_roles(TRUE);
-            }
-            if ($rid = array_search($depname, $all_roles)) {
-              $newroles[$rid] = $all_roles[$rid];
-            }
+	    $rid = trim(db2_result($rs2, 'DEPT_ID'));
+	    if ($rid) {
+              $data = [ 'id' => $rid, 'label'=> trim(db2_result($rs2, 'DEPT_NAME')) ];
+              if (!array_key_exists($data['id'], $all_roles)) {
+                $role = Role::create($data);
+                $role->save();
+              }
+              $user->addRole($data['id']);
+	    }
           }
           db2_free_stmt($rs2);
-          $userinfo['roles'] = $newroles;
+          $user->save();
         }
-        if (!$user) {
-          $user = user_save(drupal_anonymous_user(), $userinfo);
-          user_set_authmaps($user, array('authname_simsauth' => $username));
-        }
-        else {
-          $user = user_save($user, $userinfo);
-          $user = user_load($user->uid);
-        }
-        $form_state['uid'] = $user->uid;
-        $form_state['redirect'] = (variable_get('simsauth_logingotourl')) ? variable_get('simsauth_logingotourl') : '<front>';
-        user_login_finalize($form_state);
-        drupal_goto($form_state['redirect']);
+	$form_state->set("uid", $user->id());
         break;
 
       case 2:
-        $user = user_external_load($username);
+        if ($config->get('simsauth.student_custom_password')) {
+          $uid = \Drupal::service('user.auth')->authenticate($username, $password);
+          if (!$uid) {
+	    break;
+          }
+        }
+        $user = user_load_by_name($username);
         if (!$user) {
-          $userinfo = array(
-            'name' => $username,
-            'mail' => $email,
-            'pass' => $password,
-            'init' => ($email) ? $email : $username,
-            'status' => 1,
-            'access' => REQUEST_TIME,
-          );
+	  $edit = array();
+	  $edit['init'] = 'simsauth';
+	  $edit['name'] = $username;
+	  $edit['mail'] = $email;
+	  $edit['pass'] = $password;
+	  $edit['status'] = 1;
+          $edit['roles'] = array(RoleInterface::AUTHENTICATED_ID);
+	  $edit['langcode'] = $language;
+	  $edit['preferred_langcode'] = $language;
+	  $edit['preferred_admin_langcode'] = $language;
+	  $user = User::create();
+	  $user->save();
         }
         else {
-          if (variable_get('simsauth_student_custom_password')) {
-	    require_once DRUPAL_ROOT . '/' . variable_get('password_inc', 'includes/password.inc');
-            if (user_check_password($password, $user)) {
-              $userinfo = array(
-                'pass' => $password,
-                'mail' => $email,
-              );
-            }
-            else {
-              $form_state['uid'] = FALSE;
-              break;
-            }
-          }
-	  else {
-            $userinfo = array(
-              'pass' => $password,
-              'mail' => $email,
-            );
-          }
+          $user->setPassword($password);
+          $user->setEmail($email);
         }
-        if (variable_get('simsauth_role_evaleverytime')) {
+        if ($config->get('simsauth.role_evaleverytime')) {
           $all_roles = user_roles(TRUE);
-          if ($rid = array_search(t('Student'), $all_roles)) {
-            $newroles = array($rid => $all_roles[$rid]);
-            $userinfo['roles'] = $newroles;
+          $stu_role = [ 'id' => 'student', 'label'=> t('Student') ];
+          if (!array_key_exists($stu_role['id'], $all_roles)) {
+            $role = create($stu_role);
+            $role->save();
           }
+          $user->addRole($stu_role['id']);
+          $user->save();
         }
-        if (!$user) {
-          $user = user_save(drupal_anonymous_user(), $userinfo);
-          user_set_authmaps($user, array('authname_simsauth' => $username));
-        }
-        else {
-          user_save($user, $userinfo);
-          $user = user_load($use->uid);
-        }
-        $form_state['uid'] = $user->uid;
-        $form_state['redirect'] = (variable_get('simsauth_logingotourl')) ? variable_get('simsauth_logingotourl') : '<front>';
-        user_login_finalize($form_state);
-        drupal_goto($form_state['redirect']);
+	$form_state->set("uid", $user->id());
         break;
-
-      default:
-        $form_state['uid'] = FALSE;
     }
   }
-  if (empty($form_state['uid']) && variable_get('simsauth_allowdefaultlogin', TRUE)) {
-    user_login_authenticate_validate($form, $form_state);
+}
+
+/**
+ * Implements hook_user_login().
+ */
+function simsauth_user_login($account) {
+  $redirect = \Drupal::config('simsauth.settings')->get('simsauth.logingotourl');
+  if ($redirect) {
+    $response = new RedirectResponse(Url::fromRoute($redirect));
+    $response->send();
   }
 }
 
 /**
- * Implements hook_menu_alter().
+ * Implements hook_user_logout().
  */
-function simsauth_menu_alter(&$items) {
-  if (variable_get('simsauth_enable')) {
-    unset($items['node/register']);
+function simsauth_user_logout($account) {
+  $redirect = \Drupal::config('simsauth.settings')->get('simsauth.logoutgotourl');
+  if ($redirect) {
+    $response = new RedirectResponse(Url::fromRoute($redirect));
+    $response->send();
   }
 }
 
 /**
- * Implements hook_user_view().
+ * Implements hook_ENTITY_TYPE_view().
  */
-function simsauth_user_view($account) {
-  global $user;
-  if (variable_get('simsauth_enable') && simsauth_get_authname($account->uid) && $user->uid == $account->uid) {
-    $fields = array();
+function simsauth_user_view(array &$build, UserInterface $account, EntityViewDisplayInterface $display) {
+  $config = \Drupal::config('simsauth.settings');
+  drupal_set_message($account->get("init"));
+  if ($config->get('simsauth.enable') && $account->get("init") == 'simsauth') {
     if ($account->userclass == 'teacher') {
-      $account->content['sims'] = array(
-        '#type' => 'user_profile_category',
-        '#title' => t('SIMS Infomation'),
-      );
-      $account->content['sims']['birthday'] = array(
-        '#type' => 'user_profile_item',
-        '#title' => t('Birthday:'),
-        '#markup' => $account->birthyear . '/' . $account->birthmonth . '/' . $account->birthday,
-      );
-      $account->content['sims']['gender'] = array(
-        '#type' => 'user_profile_item',
-        '#title' => t('Gender:'),
-        '#markup' => $account->gender,
-      );
-      $account->content['sims']['depname'] = array(
-        '#type' => 'user_profile_item',
-        '#title' => t('Department:'),
-        '#markup' => $account->depname,
-      );
-      $account->content['sims']['titlename'] = array(
-        '#type' => 'user_profile_item',
-        '#title' => t('Job Title:'),
-        '#markup' => $account->titlename,
-      );
-      if (!empty($account->proclass)) {
-        $account->content['sims']['proclass'] = array(
-          '#type' => 'user_profile_item',
-          '#title' => t('Adoption Class:'),
-          '#markup' => $account->proclass,
+      if ($display->getComponent('birthday')) {
+        $build['birthday'] = array(
+          '#type' => 'item',
+          '#title' => t('Birthday:'),
+          '#markup' => Drupal::service('date.formatter')->format($account->birthdate),
         );
       }
-      $account->content['sims']['email'] = array(
-        '#type' => 'user_profile_item',
-        '#title' => t('Mail Box:'),
-        '#markup' => $account->mail,
-      );
+      if ($display->getComponent('gender')) {
+        $build['gender'] = array(
+          '#type' => 'item',
+          '#title' => t('Gender:'),
+          '#markup' => $account->gender,
+        );
+      }
+      if ($display->getComponent('depname')) {
+        $build['depname'] = array(
+          '#type' => 'item',
+          '#title' => t('Department:'),
+          '#markup' => $account->depname,
+        );
+      }
+      if ($display->getComponent('titlename')) {
+        $build['titlename'] = array(
+          '#type' => 'item',
+          '#title' => t('Job Title:'),
+          '#markup' => $account->titlename,
+        );
+      }
+      if (!empty($account->proclass) && $display->getComponent('proclass')) {
+          $build['proclass'] = array(
+            '#type' => 'item',
+            '#title' => t('Adoption Class:'),
+            '#markup' => $account->proclass,
+          );
+      }
+      if ($display->getComponent('email')) {
+        $build['email'] = array(
+          '#type' => 'item',
+          '#title' => t('Mail Box:'),
+          '#markup' => $account->mail,
+        );
+      }
     }
     if ($account->userclass == 'student') {
-      $account->content['sims'] = array(
-        '#type' => 'user_profile_category',
-        '#title' => t('SIMS Infomation'),
-      );
-      $account->content['sims']['birthday'] = array(
-        '#type' => 'user_profile_item',
-        '#title' => t('Birthday:'),
-        '#markup' => $account->birthyear . '/' . $account->birthmonth . '/' . $account->birthday,
-      );
-      $account->content['sims']['gender'] = array(
-        '#type' => 'user_profile_item',
-        '#title' => t('Gender:'),
-        '#markup' => $account->gender,
-      );
-      $account->content['sims']['stdno'] = array(
-        '#type' => 'user_profile_item',
-        '#title' => t('Student No:'),
-        '#markup' => $account->stdno,
-      );
-      $account->content['sims']['classname'] = array(
-        '#type' => 'user_profile_item',
-        '#title' => t('Attending Class:'),
-        '#markup' => $account->titlename,
-      );
-      $account->content['sims']['seat'] = array(
-        '#type' => 'user_profile_item',
-        '#title' => t('Seat No:'),
-        '#markup' => $account->seat,
-      );
-      $account->content['sims']['email'] = array(
-        '#type' => 'user_profile_item',
-        '#title' => t('Mail Box:'),
-        '#markup' => $account->mail,
-      );
+      if ($display->getComponent('birthday')) {
+        $build['birthday'] = array(
+          '#type' => 'item',
+          '#title' => t('Birthday:'),
+          '#markup' => Drupal::service('date.formatter')->format($account->birthdate),
+        );
+      }
+      if ($display->getComponent('gender')) {
+        $build['gender'] = array(
+          '#type' => 'item',
+          '#title' => t('Gender:'),
+          '#markup' => $account->gender,
+        );
+      }
+      if ($display->getComponent('stdno')) {
+        $build['stdno'] = array(
+          '#type' => 'item',
+          '#title' => t('Student No:'),
+          '#markup' => $account->stdno,
+        );
+      }
+      if ($display->getComponent('classname')) {
+        $build['classname'] = array(
+          '#type' => 'item',
+          '#title' => t('Attending Class:'),
+          '#markup' => $account->titlename,
+        );
+      }
+      if ($display->getComponent('seat')) {
+        $build['seat'] = array(
+          '#type' => 'item',
+          '#title' => t('Seat No:'),
+          '#markup' => $account->seat,
+        );
+      }
+      if ($display->getComponent('email')) {
+        $build['email'] = array(
+          '#type' => 'item',
+          '#title' => t('Mail Box:'),
+          '#markup' => $account->mail,
+        );
+      }
     }
   }
 }
 
 /**
- * Implements hook_user_profile_form_alter().
+ * Implements hook_form_FORM_ID_alter().
  */
-function simsauth_form_user_profile_form_alter(&$form, $form_state) {
-  if (variable_get('simsauth_enable') && simsauth_get_authname($form['#user']->uid)) {
+function simsauth_form_user_profile_form_alter(array &$form, FormStateInterface $form_state, $form_id) {
+  $config = \Drupal::config('simsauth.settings');
+  if ($config->get('simsauth.enable') && $form['#user']->get("init") == 'simsauth') {
     $form['account']['mail']['#disabled'] = TRUE;
     $form['account']['mail']['#description'] = t('The email for this account cannot be changed');
     if ($form['#user']->userclass == 'teacher') {
-      if (user_access('administer sims authentication') && variable_get('simsauth_sso_ldap_uid')) {
+      if (user_access('administer sims authentication') && $config->get('simsauth.sso_ldap_uid')) {
         $form['account']['name']['#description'] = '<div id="simsauth"></div>' . t('The new username will sync to School Information Management System as custom account name.');
         $form['account']['name']['#ajax'] = array('callback' => 'simsauth_ajax_check_duplicate_account');
         $form['#validate'][] = 'simsauth_check_duplicate_account';
@@ -684,7 +684,7 @@ function simsauth_form_user_profile_form_alter(&$form, $form_state) {
       else {
         unset($form['account']['name']);
       }
-      if (variable_get('simsauth_sso_ldap')) {
+      if ($config->get('simsauth.sso_ldap_pwd')) {
         $form['account']['pass']['#description'] = t('The new password will sync to School Information Management System.');
         array_unshift($form['#submit'], 'simsauth_sync_password');
       }
@@ -694,7 +694,7 @@ function simsauth_form_user_profile_form_alter(&$form, $form_state) {
     }
     elseif ($form['#user']->userclass == 'student') {
       unset($form['account']['name']);
-      if (variable_get('simsauth_student_custom_password')) {
+      if ($config->get('simsauth.student_custom_password')) {
         $form['account']['pass']['#description'] = t('This new password will replace your default password, so you should not forget it.');
       }
       else {
@@ -707,23 +707,17 @@ function simsauth_form_user_profile_form_alter(&$form, $form_state) {
 /**
  * Implements simsauth_ajax_check_duplicate_account().
  */
-function simsauth_ajax_check_duplicate_account($form, &$form_state) {
-  global $user;
+function simsauth_ajax_check_duplicate_account(array &$form, FormStateInterface $form_state) {
   $commands = array();
-  if (isset($form_state['user'])) {
-    $account = $form_state['user'];
-  }
-  else {
-    $account = $user;
-  }
-  $new_account = trim($form_state['values']['name']);
+  $account = $form_state->getValue('user') ? : \Drupal::currentUser();
+  $new_account = trim($form_state->getValue('name'));
   if (strlen($new_account) < 5) {
     $commands[] = ajax_command_invoke("input[name='name']", 'addClass', array('error'));
     $commands[] = ajax_command_html("#simsauth", t('Account name should be more than four characters.'));
     $commands[] = ajax_command_invoke("#simsauth", 'addClass', array('messages error'));
     return array('#type' => 'ajax', '#commands' => $commands);
   }
-  if ($new_account && $new_account != $account->name) {
+  if ($new_account && $new_account != $account->getAccountName()) {
     $sql = 'select ACCOUNT_NAME from USER_ACCOUNT where ACCOUNT_NAME=?';
     $rs = db2_query($sql, array($new_account));
     if (db2_fetch_row($rs)) {
@@ -738,20 +732,14 @@ function simsauth_ajax_check_duplicate_account($form, &$form_state) {
 /**
  * Implements simsauth_check_duplicate_account().
  */
-function simsauth_check_duplicate_account($form, &$form_state) {
-  global $user;
+function simsauth_check_duplicate_account(array &$form, FormStateInterface $form_state) {
   $commands = array();
-  if (isset($form_state['user'])) {
-    $account = $form_state['user'];
-  }
-  else {
-    $account = $user;
-  }
-  $new_account = trim($form_state['values']['name']);
+  $account = $form_state->getValue('user') ? : \Drupal::currentUser();
+  $new_account = trim($form_state->getValue('name'));
   if (strlen($new_account) < 5) {
     form_set_error('name', t('Account name should be more than four characters.'));
   }
-  if ($new_account && $new_account != $account->name) {
+  if ($new_account && $new_account != $account->getAccountName()) {
     $sql = 'select ACCOUNT_NAME from USER_ACCOUNT where ACCOUNT_NAME=?';
     $rs = db2_query($sql, array($new_account));
     if (db2_fetch_row($rs)) {
@@ -763,18 +751,12 @@ function simsauth_check_duplicate_account($form, &$form_state) {
 /**
  * Implements simsauth_sync_username() change custom account name for sims.
  */
-function simsauth_sync_username($form, &$form_state) {
-  global $user;
+function simsauth_sync_username(array &$form, FormStateInterface $form_state) {
   global $ldap_conn;
-  if (isset($form_state['user'])) {
-    $account = $form_state['user'];
-  }
-  else {
-    $account = $user;
-  }
+  $account = $form_state->getValue('user') ? : \Drupal::currentUser();
   $error = '';
-  $new_account = trim($form_state['values']['name']);
-  $old_account = $account->name;
+  $new_account = trim($form_state->getValue('name'));
+  $old_account = $account->getAccountName();
   if (!empty($new_account)) {
     $result = module_invoke_all('simsauth_sync_username', $account, $new_account);
     $flag = TRUE;
@@ -784,14 +766,14 @@ function simsauth_sync_username($form, &$form_state) {
       }
     }
     if ($flag) {
-      if (variable_get('simsauth_sso_ldap')) {
-        if (ldap_change_uid($account->name, $new_account)) {
+      if ($config->get('simsauth.sso_ldap_pwd')) {
+        if (ldap_change_uid($account->getAccountName(), $new_account)) {
           $sql = 'update USER_ACCOUNT set ACCOUNT_NAME=? where USERNAME=?';
           $result = db2_operate($sql, array($new_account, $account->idno));
           if (!$result) {
             $error .= t('change username to IBM DB2 USER_ACCOUNT table failed!');
 	    $flag = FALSE;
-	    ldap_change_uid($account->name, $old_account);
+	    ldap_change_uid($account->getAccountName(), $old_account);
           }
 	  else {
             user_set_authmaps($account, array('authname_simsauth' => $new_account));
@@ -819,19 +801,13 @@ function simsauth_sync_username($form, &$form_state) {
 /**
  * Implements simsauth_sync_password() change password for sims.
  */
-function simsauth_sync_password($form, &$form_state) {
-  global $user;
+function simsauth_sync_password(array &$form, FormStateInterface $form_state) {
   global $ldap_conn;
-  if (isset($form_state['user'])) {
-    $account = $form_state['user'];
-  }
-  else {
-    $account = $user;
-  }
+  $account = $form_state->getValue('user') ? : \Drupal::currentUser();
   $error = '';
-  $new_pass = trim($form_state['values']['pass']);
+  $new_pass = trim($form_state->getValue('pass'));
   $sql = 'select PASSWORD from USER_ACCOUNT where ACCOUNT_NAME=?';
-  $rs = db2_query($sql, array($account->name));
+  $rs = db2_query($sql, array($account->getAccountName()));
   if ($rs) {
     $old_pass = db2_result($rs, 'PASSWORD');
   }
@@ -847,13 +823,13 @@ function simsauth_sync_password($form, &$form_state) {
       }
     }
     if ($flag) {
-      if (variable_get('simsauth_sso_ldap')) {
-        if (!ldap_change_pass($account->name, $new_pass)) {
+      if ($config->get('simsauth.sso_ldap_pwd')) {
+        if (!ldap_change_pass($account->getAccountName(), $new_pass)) {
           $error .= ldap_error($ldap_conn) . t('change password to LDAP failed!');
         }
         else {
           $sql = "update USER_ACCOUNT set PASSWORD=? where ACCOUNT_NAME=?";
-          db2_operate($sql, array($new_pass, $account->name));
+          db2_operate($sql, array($new_pass, $account->getAccountName()));
         }
       }
     }
@@ -868,349 +844,4 @@ function simsauth_sync_password($form, &$form_state) {
   if ($error) {
     drupal_set_message($error, 'error');
   }
-}
-
-/**
- * Implements settings for the module.
- */
-function simsauth_settings() {
-  $error = '';
-  if (!extension_loaded('ibm_db2')) {
-    $error .= '<li>' . t('IBM DB2 client driver(V9.5 above)') . l(t('if you use linux x64, you can download it here!'), 'https://www.dropbox.com/s/ojzgxh99cypdq9l/v9.7fp10_linuxx64_dsdriver.tar.gz?dl=0') . '</li>';
-    $error .= '<li>' . t('ibm-db2 module for php(PEAR package)') . '</li>';
-  }
-  if (!function_exists('ldap_connect')) {
-    $error .= '<li>' . t('php-ldap or php5-ldap module') . '</li>';
-  }
-  if ($error != '') {
-    drupal_set_message(t('Before enable this drupal project, you must install:') . '<ul>' . $error . '</ul>', 'warning');
-  }
-
-  $form['simsauth_setup'] = array(
-    '#type' => 'fieldset',
-    '#title' => t('Account Management Server Setup'),
-    '#collapsible' => FALSE,
-    '#description' => t('How to install ibm_db2 module:<ol><li>Disable selinux:<br>vi /etc/selinux/config<br>SELINUX=disabled</li><li>Install packages:<br>yum install gcc ksh zip php-pear</li><li>Make directory:<br>mkdir /opt/ibm</li><li>Decompress dsdriver at /opt/ibm/:<br>tar -xvf the-package-download-from-ibm-com_dsdriver.tar.gz</li><li>Change permission for the instalation script in /opt/ibm/dsdriver:<br>chmod 755 installDSDriver</li><li>Run the installation script:<br>cd /opt/ibm/dsdriver<br>./installDSDriver</li><li>Download and install the driver using the pecl:<br>pecl install ibm_db2</li><li>Configure the installation directory:<br>DB2 Installation Directory? : /opt/ibm/dsdriver</li><li>Change php.ini add one line:<br>extension = ibm_db2.so</li><li>Reboot the Apache:<br>service httpd restart</li></ol>'),
-  );
-  $form['simsauth_setup']['simsauth_server'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Account Management Server'),
-    '#default_value' => variable_get('simsauth_server'),
-    '#description' => t('Your IBM DB2 server DNS record or NAT IP. Do not input NIC IP, You should not allow the connection pass throught the edge firewall.'),
-    '#required' => TRUE,
-  );
-  $form['simsauth_setup']['simsauth_server_port'] = array(
-    '#type' => 'textfield',
-    '#title' => t('IBM DB2 Server Port'),
-    '#default_value' => variable_get('simsauth_server_port', 50000),
-    '#description' => t('Which port is the IBM DB2 server connection port?'),
-    '#required' => TRUE,
-  );
-  $form['simsauth_setup']['simsauth_database'] = array(
-    '#type' => 'textfield',
-    '#title' => t('IBM DB2 Database Name'),
-    '#default_value' => variable_get('simsauth_database', 'SCHOOL01'),
-    '#description' => t('Which database to bind?'),
-    '#required' => TRUE,
-  );
-  $form['simsauth_setup']['simsauth_server_schema'] = array(
-    '#type' => 'textfield',
-    '#title' => t('IBM DB2 Database Schema'),
-    '#default_value' => variable_get('simsauth_server_schema'),
-    '#description' => t('Which schema to log in the server?'),
-    '#required' => TRUE,
-  );
-
-  $form['simsauth_ldap'] = array(
-    '#type' => 'fieldset',
-    '#title' => t('Authentication Server Setup'),
-    '#collapsible' => FALSE,
-  );
-  $form['simsauth_ldap']['simsauth_server_ldap'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Authentication Server'),
-    '#default_value' => variable_get('simsauth_server_ldap'),
-    '#description' => t('Your LDAP server DNS record or NAT IP. Usually same as IBM DB2 Server.'),
-    '#required' => TRUE,
-  );
-  $form['simsauth_ldap']['simsauth_server_ldap_port'] = array(
-    '#type' => 'textfield',
-    '#title' => t('LDAP Server Port'),
-    '#default_value' => variable_get('simsauth_server_ldap_port', 389),
-    '#description' => t('Which port is the LDAP server query port?'),
-    '#required' => TRUE,
-  );
-  $form['simsauth_ldap']['simsauth_server_ldap_basedn'] = array(
-    '#type' => 'textfield',
-    '#title' => t('LDAP Base DN'),
-    '#default_value' => variable_get('simsauth_server_ldap_basedn', 'ou=school,dc=developer,dc=alle,dc=com'),
-    '#description' => t('Please input the Base DN that containing user entries.'),
-    '#required' => TRUE,
-  );
-
-  $form['simsauth_user'] = array(
-    '#type' => 'fieldset',
-    '#title' => t('User Info and Syncing'),
-    '#collapsible' => TRUE,
-    '#collapsed' => TRUE,
-  );
-  $form['simsauth_user']['message'] = array(
-    '#type' => 'markup',
-    '#markup' => '<p>' . t('In IBM DB2 database, the students have no department(table name: SCHDEPT) and job title(table name: SCHPOSITION), so this module will use [Student] as their department, and use their current attending class name as their job title. When you enable role sync function, the department come from DB2 SCHDEPT table will sync to drupal roles immediate, no matter has account in there or not. When user log in they will not automatic assign to the roles, unless you enable [evaluate user roles when they login] function before that. The automatic evaluate function will skip the administer role, so if you assigned someone to be an administer manually, they will always be an administer, until you revoke them manually.') . '</p>',
-  );
-  $form['simsauth_user']['simsauth_display_depname'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Display department name in front of the user`s realname.'),
-    '#default_value' => variable_get('simsauth_display_depname', TRUE),
-    '#description' => t('Check this box if you want to display department name of user in front of the user`s realname.'),
-  );
-  $form['simsauth_user']['simsauth_display_title'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Display job title in front of the user`s realname.'),
-    '#default_value' => variable_get('simsauth_display_title', FALSE),
-    '#description' => t('Check this box if you want to display job title of user in front of the user`s realname but after the department name.'),
-  );
-  $form['simsauth_user']['simsauth_role_sync'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Automatic role population from IBM DB2 database'),
-    '#default_value' => variable_get('simsauth_role_sync', TRUE),
-    '#description' => t('Automatically created role basis the school department.'),
-  );
-  $form['simsauth_user']['simsauth_role_evaleverytime'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Evaluate user roles when they login.'),
-    '#default_value' => variable_get('simsauth_role_evaleverytime', FALSE),
-    '#description' => t('NOTE: This means users could loose any roles (except administer role) that have been assigned manually in Drupal.'),
-  );
-  $form['simsauth_user']['simsauth_sso_ldap_uid'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Allow Sync Account Name to LDAP Server.'),
-    '#default_value' => variable_get('simsauth_sso_ldap_uid', FALSE),
-    '#description' => t('Check this box if you want to let people set account name back to IBM DB2 database and LDAP Server. Disabling this to prevent change name from the user profile form.'),
-  );
-  $form['simsauth_user']['simsauth_sso_ldap'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Allow Sync Password to LDAP Server.'),
-    '#default_value' => variable_get('simsauth_sso_ldap', FALSE),
-    '#description' => t('Check this box if you want to let people set passwords back to LDAP Server. Disabling this to prevent change password from the user profile form.'),
-  );
-
-  $form['simsauth_std'] = array(
-    '#type' => 'fieldset',
-    '#title' => t('Account Setting for Students'),
-    '#collapsible' => TRUE,
-    '#collapsed' => TRUE,
-  );
-  $form['simsauth_std']['message'] = array(
-    '#type' => 'markup',
-    '#markup' => '<p>' . t('In IBM DB2 database, the students have not their own account record, so this module will use the STDNO as their account, and use the last 6 digitals of their security ID as their password. But You can change them below anyway. The email address take from STUDENT table there has a field named MAIL. If your school provided another email service to students, please input the mail address prefix and suffix below, or just leave them blank to use the data come from MAIL field.') . '</p>',
-  );
-  $form['simsauth_std']['simsauth_student_account'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Students Default Account Name'),
-    '#default_value' => variable_get('simsauth_student_account', 'STDNO'),
-    '#description' => t('The SQL statement of data field to use as account name. Usually input the field name like STDNO, If you want combind multiple field use ||(double pipe) to concat strings, Example: YEAR||CLASSNO||SEAT.'),
-    '#required' => TRUE,
-  );
-  $form['simsauth_std']['simsauth_student_password'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Students Default Password'),
-    '#default_value' => variable_get('simsauth_student_password', 'right(IDNO,6)'),
-    '#description' => t('The SQL statement of data field to use as password. Usually input the field name like STDNO, If you want combind multiple field use ||(double pipe) to concat strings, Example: YEAR||CLASSNO||SEAT.'),
-    '#required' => TRUE,
-  );
-  $form['simsauth_std']['simsauth_student_custom_password'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Allow students to custom their own password'),
-    '#default_value' => variable_get('simsauth_student_custom_password', FALSE),
-  );
-  $form['simsauth_std']['simsauth_student_mail_account'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Student mail address prefix'),
-    '#default_value' => variable_get('simsauth_student_mail_account'),
-    '#description' => t('The SQL statement of data field to use as email address part before @.  Usually input the field name, If you want combind multiple field use ||(double pipe) to concat strings, Example: YEAR||CLASSNO||SEAT.'),
-  );
-  $form['simsauth_std']['simsauth_student_mail_address'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Student mail address suffix'),
-    '#default_value' => variable_get('simsauth_student_mail_address'),
-    '#description' => t('The student email address part after @. If your school have using Google Apps service, you should input the Google Apps domain name.'),
-  );
-
-  $form['simsauth_auth'] = array(
-    '#type' => 'fieldset',
-    '#title' => t('Drupal Authentication'),
-    '#collapsible' => TRUE,
-    '#collapsed' => TRUE,
-  );
-  $form['simsauth_auth']['simsauth_loginname_desc'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Login Form Name Description'),
-    '#default_value' => variable_get('simsauth_loginname_desc'),
-    '#description' => t('Input the message to let user know they should login with their custom account name of School Information Management System.'),
-  );
-  $form['simsauth_auth']['simsauth_password_desc'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Login Form Password Description'),
-    '#default_value' => variable_get('simsauth_password_desc'),
-    '#description' => t('Input the message to let user know they should login with their School Information Management System password.'),
-  );
-  $form['simsauth_auth']['simsauth_allowdefaultlogin'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Allow authentication with local Drupal accounts'),
-    '#default_value' => variable_get('simsauth_allowdefaultlogin', TRUE),
-    '#description' => t('Check this box if you want to let people log in with local Drupal accounts (without using simsauth module).'),
-  );
-  $form['simsauth_auth']['simsauth_allowdefaultlogin'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Allow authentication with local Drupal accounts'),
-    '#default_value' => variable_get('simsauth_allowdefaultlogin', TRUE),
-    '#description' => t('Check this box if you want to let people log in with local Drupal accounts (without using simsauth module).'),
-  );
-  $form['simsauth_auth']['simsauth_logingotourl'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Optionally, specify a URL for users to go to after logging in'),
-    '#default_value' => variable_get('simsauth_logingotourl', ''),
-    '#description' => t('Example:') . 'node/news',
-  );
-  $form['simsauth_auth']['simsauth_personal_data_notice'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Show personal data notice link'),
-    '#default_value' => variable_get('simsauth_personal_data_notice', FALSE),
-    '#description' => t('Check this box if you want to display personal data notice link to users.'),
-  );
-  $form['simsauth_auth']['simsauth_personal_data_notice_path'] = array(
-    '#type' => 'textfield',
-    '#title' => t('specify a URL link to the personal data notice page when user is logging in.'),
-    '#default_value' => variable_get('simsauth_personal_data_notice_path', ''),
-    '#description' => t('Example:') . 'node/100',
-    '#states' => array (
-      'invisible' => array(
-        ':input[name="simsauth_personal_data_notice"]' => array( 'checked' => FALSE),
-      ),
-    ),
-  );
-
-  $form['actions']['#type'] = 'actions';
-  $form['actions']['submit'] = array(
-    '#type' => 'submit',
-    '#value' => t('Save sims configuration'),
-  );
-  $form['#submit'] = array('simsauth_server_test');
-  if (!isset($form['#theme'])) {
-    $form['#theme'] = 'system_settings_form';
-  }
-
-  return $form;
-}
-
-/**
- * Implements simsauth_server_test().
- */
-function simsauth_server_test($form, &$form_state) {
-  $error = '';
-  form_state_values_clean($form_state);
-  foreach ($form_state['values'] as $key => $value) {
-    if (is_array($value) && isset($form_state['values']['array_filter'])) {
-      $value = array_keys(array_filter($value));
-    }
-    variable_set($key, trim($value));
-  }
-
-  $hostname = variable_get('simsauth_server');
-  $port = variable_get('simsauth_server_port');
-  $user = variable_get('simsauth_server_admin');
-  $password = variable_get('simsauth_server_pass');
-  $schema = variable_get('simsauth_server_schema');
-  $database = variable_get('simsauth_database');
-  $conn_string = "DRIVER={IBM DB2 ODBC DRIVER};DATABASE=$database;HOSTNAME=$hostname;PORT=$port;PROTOCOL=TCPIP;UID=$user;PWD=$password;CurrentSchema=$schema;";
-  variable_set('simsauth_connect_string', $conn_string);
-  if (db2_test()) {
-    if (variable_get('simsauth_role_sync')) {
-      $all_roles = user_roles(TRUE);
-      $role = new stdClass();
-      $role->name = t('Student');
-      if (!in_array($role->name, $all_roles)) {
-        user_role_save($role);
-      }
-      $db2_query = 'select * from SCHDEPT where STATUS=1 order by DEPT_ID DESC';
-      $rs = db2_query($db2_query);
-      while (db2_fetch_row($rs)) {
-        $role = new stdClass();
-        $role->name = trim(db2_result($rs, 'DEPT_NAME'));
-        if (!in_array($role->name, $all_roles)) {
-          user_role_save($role);
-        }
-      }
-      db2_free_result($rs);
-    }
-  }
-  else {
-    $error .= $conn_string . '<br />' . t('IBM DB2 Database connection failed.');
-  }
-  $ret = ldap_test();
-  if ($ret == 2) {
-    $error .= t('LDAP server connected but can not login.');
-  }
-  if ($ret == 1) {
-    $error .= t('LDAP server connecting failed.');
-  }
-
-  if ($error != '') {
-    drupal_set_message($error . t('The configuration options have been saved, but you should check again!'), 'error');
-    variable_set('simsauth_enable', FALSE);
-  }
-  else {
-    drupal_set_message(t('The Server configure was setting perfectly. The configuration options have been saved.'));
-    variable_set('simsauth_enable', TRUE);
-  }
-}
-
-/**
- * Returns authname from the authmap table for a variant input.
- *
- * @param variant $data
- *   A variant input. Allowed variable types:
- *   - object: user account object
- *   - integer: user id
- *   - string: username
- */
-function simsauth_get_authname($data) {
-  if (!variable_get('simsauth_enable')) return NULL;
-  $cache = &drupal_static(__FUNCTION__, array());
-
-  $authname = NULL;
-  $uid = NULL;
-
-  if (is_object($data)) {
-    if (!empty($data->uid)) {
-      $uid = $data->uid;
-    }
-  }
-  elseif (is_numeric($data) && intval($data) == $data) {
-    if ($data > 0) {
-      $uid = $data;
-    }
-  }
-  elseif (is_string($data)) {
-    $account = user_load_by_name($data);
-    if (!empty($account->uid)) {
-      $uid = $account->uid;
-    }
-  }
-
-  if (empty($uid)) {
-    return NULL;
-  }
-
-  if (!array_key_exists($uid, $cache)) {
-    $authname = db_query('SELECT authname FROM {authmap} WHERE uid = :uid AND module = :module', array(
-      ':uid' => $uid,
-      ':module' => 'simsauth',
-    ))->fetchField();
-
-    $cache[$uid] = !empty($authname) ? $authname : NULL;
-  }
-
-  return $cache[$uid];
 }

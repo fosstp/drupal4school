@@ -1,4 +1,6 @@
 <?php
+setlocale(LC_ALL, 'zh_TW');
+setlocale(LC_ALL, 'zh_TW.UTF-8');
 setlocale(LC_ALL, 'zh_TW.utf8');
 date_default_timezone_set('Asia/Taipei');
 $db2_conn = NULL;
@@ -46,21 +48,25 @@ function get_seme($myyear, $mymonth) {
 }
 
 function db2_test() {
-  $conn_string = variable_get('simsauth_connect_string');
-  $db2_conn = db2_connect($conn_string, '', '');
-  if ($db2_conn) {
-    db2_close($db2_conn);
-	return TRUE;
-  }
-  else {
-    return FALSE;
-  }
+  $config = \Drupal::config('ibmdb2.settings');
+  $db2info = array(
+    'driver' => 'ibmdb2',
+    'database' => $config->get('ibmdb2.database'),
+    'hostname' => $config->get('ibmdb2.db2_server'),
+    'port' => $config->get('ibmdb2.db2_port'),
+    'uid' => $config->get('ibmdb2.db2_admin'),
+    'pwd' => $config->get('ibmdb2.db2_pass'),
+	'currentschema' => $config->get('ibmdb2.schema'),
+  );
+  Database::addConnectionInfo('db2', 'sims', $db2info);
+  Database::setActiveConnection('db2');
+  return Database::isActiveConnection();
 }
 
 function db2_query($query, array $args = array(), array $options = array()) {
   global $db2_conn;
   if (!$db2_conn) {
-    $conn_string = variable_get('simsauth_connect_string');
+    $conn_string = \Drupal::config('simsauth.settings')->get('simsauth.connect_string');
     $db2_conn = db2_pconnect($conn_string, '', '');
   }
 
@@ -102,7 +108,7 @@ function db2_query($query, array $args = array(), array $options = array()) {
 function db2_operate($query, array $args = array(), array $options = array()) {
   global $db2_conn;
   if (!$db2_conn) {
-    $conn_string = variable_get('simsauth_connect_string');
+    $conn_string = \Drupal::config('simsauth.settings')->get('simsauth.connect_string');
     $db2_conn = db2_pconnect($conn_string, '', '');
   }
 
@@ -154,14 +160,15 @@ function ldapspecialchars($string) {
 
 function ldap_test() {
   global $ldap_conn;
+  $config = \Drupal::config('simsauth.settings');
   if (!$ldap_conn) {
-    $ldap_host = variable_get('simsauth_server_ldap');
-    $ldap_port = variable_get('simsauth_server_ldap_port');
+    $ldap_host = $config->get('simsauth.ldap_server');
+    $ldap_port = $config->get('simsauth.ldap_port');
     $ldap_conn = ldap_connect($ldap_host, $ldap_port);
   }
   if ($ldap_conn) {
-    $ldap_user = variable_get('simsauth_server_ldap_admin');
-    $ldap_pass = variable_get('simsauth_server_ldap_pass');
+    $ldap_user = $config->get('simsauth.ldap_admin');
+    $ldap_pass = $config->get('simsauth.ldap_pass');
     $ldap_bind = ldap_bind($ldap_conn, $ldap_user, $ldap_pass);
     if ($ldap_bind) {
       ldap_close($ldap_conn);
@@ -178,14 +185,15 @@ function ldap_test() {
 
 function ldap_admin() {
   global $ldap_conn;
+  $config = \Drupal::config('simsauth.settings');
   if (!$ldap_conn) {
-    $ldap_host = variable_get('simsauth_server_ldap');
-    $ldap_port = variable_get('simsauth_server_ldap_port');
+    $ldap_host = $config->get('simsauth.ldap_server');
+    $ldap_port = $config->get('simsauth.ldap_port');
     $ldap_conn = ldap_connect($ldap_host, $ldap_port);
   }
   if ($ldap_conn) {
-    $ldap_user = variable_get('simsauth_server_ldap_admin');
-    $ldap_pass = variable_get('simsauth_server_ldap_pass');
+    $ldap_user = $config->get('simsauth.ldap_admin');
+    $ldap_pass = $config->get('simsauth.ldap_pass');
     $ldap_bind = ldap_bind($ldap_conn, $ldap_user, $ldap_pass);
     if ($ldap_bind) {
 	  return $ldap_conn;
@@ -196,13 +204,14 @@ function ldap_admin() {
 
 function ldap_login($username, $password) {
   global $ldap_conn;
+  $config = \Drupal::config('simsauth.settings');
   if (!$ldap_conn) {
-    $ldap_host = variable_get('simsauth_server_ldap');
-    $ldap_port = variable_get('simsauth_server_ldap_port');
+    $ldap_host = $config->get('simsauth.ldap_server');
+    $ldap_port = $config->get('simsauth.ldap_port');
     $ldap_conn = ldap_connect($ldap_host, $ldap_port);
   }
   if ($ldap_conn) {
-    $ldap_user = "cn=$username," . variable_get('simsauth_server_ldap_basedn');
+    $ldap_user = "cn=$username," . $config->get('simsauth.ldap_basedn');
     if (@ldap_bind($ldap_conn, $ldap_user, $password)) {
       return TRUE;
     }
@@ -214,7 +223,7 @@ function ldap_change_pass($username, $password){
   global $ldap_conn;
   $ldap_conn = ldap_admin();
   if ($ldap_conn) {
-    $dn = variable_get('simsauth_server_ldap_basedn');
+    $dn = \Drupal::config('simsauth.settings')->get('simsauth.ldap_basedn');
     $filter = "(uid=$username)";
     $user_search = ldap_search($ldap_conn, $dn, $filter);
     $user_entry = ldap_first_entry($ldap_conn, $user_search);
@@ -234,7 +243,7 @@ function ldap_change_uid($username, $newuid){
   global $ldap_conn;
   $ldap_conn = ldap_admin();
   if ($ldap_conn) {
-    $dn = variable_get('simsauth_server_ldap_basedn');
+    $dn = \Drupal::config('simsauth.settings')->get('simsauth.ldap_basedn');
     $filter = "(uid=$username)";
     $user_search = ldap_search($ldap_conn, $dn, $filter);
     $user_entry = ldap_first_entry($ldap_conn, $user_search);

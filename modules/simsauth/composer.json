@@ -1,0 +1,13 @@
+{
+    "name": "drupal/simsauth",
+    "description": "Allows users to authenticate by remote IBM DB2 Server and LDAP Server.",
+    "type": "drupal-module",
+    "license": "GPL-2.0+",
+    "homepage": "http://drupal.tp.edu.tw/project/simsauth",
+    "authors": {
+      "name": "Sean Lee",
+      "email": "leejoneshane@gmail.com",
+      "role": "Maintainer"
+    },
+    "require": { }
+}

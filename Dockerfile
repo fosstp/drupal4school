@@ -1,16 +1,16 @@
-FROM drupal:7
+FROM drupal
 MAINTAINER fosstp drupal team
 
 RUN apt-get update \
     && apt-get -y --no-install-recommends install ksh unzip gcc make git freetds-dev php-pear libldap2-dev mariadb-client \
     && rm -rf /var/lib/apt/lists/* \
     && docker-php-ext-configure ldap --with-libdir=lib/x86_64-linux-gnu/ \
-    && docker-php-ext-install ldap pcntl zip \
+    && docker-php-ext-install ldap pcntl \
     && echo "memory_limit = 256M" > /usr/local/etc/php/conf.d/20-memory.ini
 
 #https://pecl.php.net/package/uploadprogress
-RUN pecl install uploadprogress \
-    && echo "extension=uploadprogress.so" > /usr/local/etc/php/conf.d/20-uploadprogress.ini
+#RUN pecl install uploadprogress \
+#    && echo "extension=uploadprogress.so" > /usr/local/etc/php/conf.d/20-uploadprogress.ini
 
 #https://www-304.ibm.com/support/docview.wss?rs=71&uid=swg27007053
 RUN mkdir /opt/ibm \
@@ -35,21 +35,17 @@ RUN curl -sS https://getcomposer.org/installer | php \
     && ln -s /usr/local/bin/composer /usr/bin/composer \
     && git clone https://github.com/drush-ops/drush.git /usr/local/src/drush \
     && cd /usr/local/src/drush \
-    && git checkout 7.x \
     && ln -s /usr/local/src/drush/drush /usr/bin/drush \
     && composer install \
     && cd /var/www/html \
     && composer require google/apiclient:1.*
     
-RUN mkdir -p /var/www/html/profiles/standard/translations/ \
-    && cd /var/www/html/profiles/standard/translations/ \
-    && curl -fSL "http://ftp.drupal.org/files/translations/7.x/drupal/drupal-7.x.zh-hant.po" -o drupal-7.x.zh-hant.po
+#RUN mkdir -p /var/www/html/profiles/standard/translations/ \
+#    && cd /var/www/html/profiles/standard/translations/ \
+#    && curl -fSL "http://ftp.drupal.org/files/translations/7.x/drupal/drupal-7.x.zh-hant.po" -o drupal-7.x.zh-hant.po
 
-RUN cd /var/www/html \
-    && drush dl services,ctools,views,date,calendar,openid_provider,xrds_simple,libraries,l10n_update
-
-RUN cp /var/www/html/sites/default/default.settings.php /var/www/html/sites/default/settings.php \
-    && echo "\$conf['drupal_http_request_fails'] = FALSE;" >> /var/www/html/sites/default/settings.php
+#RUN cd /var/www/html \
+#    && drush dl services,ctools,views,date,calendar,openid_provider,xrds_simple,libraries,l10n_update
 
 ADD modules /var/www/html/sites/all/modules
 ADD themes /var/www/html/sites/all/themes
@@ -60,8 +56,7 @@ RUN mkdir /var/www/html/sites/default/files \
     && chmod 744 /var/www/html/sites/default/files
 
 ADD run-httpd.sh /usr/sbin/run-httpd.sh
-ADD first.sh /usr/sbin/first.sh
-RUN chmod +x /usr/sbin/run-httpd.sh /usr/sbin/first.sh
+RUN chmod +x /usr/sbin/run-httpd.sh
 
 VOLUME ["/var/www/html/sites/all/modules", "/var/www/html/sites/all/themes", "/var/www/html/sites/all/translations", "/var/www/html/sites/default/files"]
 EXPOSE 80 443

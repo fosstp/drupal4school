@@ -1,0 +1,72 @@
+simsauth.enable:
+  type: boolean
+  label: 'simsauth module is ready'
+simsauth.ldap_admin:
+  type: string
+  label: 'LDAP Admin'
+simsauth.ldap_pass:
+  type: string
+  label: 'LDAP Admin Password'
+simsauth.ldap_server:
+  type: string
+  label: 'Authentication Server'
+simsauth.ldap_port:
+  type: integer
+  label: 'LDAP Connect Port'
+simsauth.ldap_basedn:
+  type: string
+  label: 'LDAP base DN'
+simsauth.display_depname:
+  type: boolean
+  label: 'Display department name in front of the user`s realname.'
+simsauth.display_title:
+  type: boolean
+  label: 'Display job title in front of the user`s realname.'
+simsauth.role_sync:
+  type: boolean
+  label: 'Automatic role population from SIMS database'
+simsauth.role_evaleverytime:
+  type: boolean
+  label: 'Evaluate user roles when they login.'
+simsauth.sso_ldap_uid:
+  type: boolean
+  label: 'Allow Sync Account Name to LDAP Server.'
+simsauth.sso_ldap_pwd:
+  type: boolean
+  label: 'Allow Sync Password to LDAP Server.'
+simsauth.student_account:
+  type: string
+  label: 'Students Default Account Name'
+simsauth.student_password:
+  type: string
+  label: 'Students Default Password'
+simsauth.student_custom_password:
+  type: boolean
+  label: 'Allow students to custom their own password'
+simsauth.student_mail_account:
+  type: string
+  label: 'Student mail address prefix'
+simsauth.student_mail_address:
+  type: string
+  label: 'Student mail address suffix'
+simsauth.loginname_desc:
+  type: string
+  label: 'Login Form Name Description'
+simsauth.password_desc:
+  type: string
+  label: 'Login Form Password Description'
+simsauth.allowdefaultlogin:
+  type: boolean
+  label: 'Allow authentication with local Drupal accounts'
+simsauth.logingotourl:
+  type: string
+  label: 'Optionally, specify a URL for users to go to after logging in'
+simsauth.logoutgotourl:
+  type: string
+  label: 'Optionally, specify a URL for users to go to after logging out'
+simsauth.personal_data_notice:
+  type: boolean
+  label: 'Show personal data notice link'
+simsauth.personal_data_notice_nid:
+  type: integer
+  label: 'specify a URL link to the personal data notice page when user is logging in.'

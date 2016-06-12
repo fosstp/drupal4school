@@ -1,0 +1,3 @@
+administer sims configuration:
+  title: 'Configuration for the SIMS package'
+  description: 'Warning: Give to trusted roles only; this permission has security implications.'
