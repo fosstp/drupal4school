@@ -1,5 +1,5 @@
 # drupal for school
-[中文說明](https://github.com/fosstp/drupal4school/blob/master/README.zh-tw.md)
+[中文說明](https://github.com/fosstp/drupal4school/blob/develop/README.zh-tw.md)
 
 This docker image contains debian 8.2(jessie) + php 7 + apache 2.2 + drupal 8 + custom drupal modules & themes
 
