@@ -540,11 +540,11 @@ function gapps_start($form, &$form_state) {
                 }
               }
               if (variable_get('gapps_teacher_orgunit') && variable_get('gapps_teacher_orgunit') != '/') {
-                $user->setOrgunitPath(variable_get('gapps_teacher_orgunit'));
+                $user->setOrgUnitPath(variable_get('gapps_teacher_orgunit'));
               }
               if ($form_state['values']['password_sync']) {
                 $user->setHashFunction('SHA-1');
-                $user->setPassword(sha1($password));
+                $user->setPassword(sha1($passwd));
               }
               try {
                 $result = $directory->users->update($user_key, $user);
@@ -624,7 +624,7 @@ function gapps_start($form, &$form_state) {
               $user->setPhones(array($myphone));
             }
             if (variable_get('gapps_teacher_orgunit') && variable_get('gapps_teacher_orgunit') != '/') {
-              $user->setOrgunitPath(variable_get('gapps_teacher_orgunit'));
+              $user->setOrgUnitPath(variable_get('gapps_teacher_orgunit'));
             }
             $user->setHashFunction('SHA-1');
             $user->setPassword(sha1($password));
@@ -652,7 +652,7 @@ function gapps_start($form, &$form_state) {
             }
             if ($found) {
               $group_key = $group->getEmail();
-              $depgroup = split('@', $group_key)[0];
+              $depgroup = explode('@', $group_key)[0];
               if ($form_state['values']['log']) {
                 $detail_log .= "$depgroup =>" . t('This user group has been found in Google Apps....<br />');
               }
@@ -682,7 +682,7 @@ function gapps_start($form, &$form_state) {
               $group->setDescription($department);
               $group->setName($department);
               try {
-                $directory->groups->insert($group_key, $group);
+                $directory->groups->insert($group);
                 if ($form_state['values']['log']) {
                   $detail_log .= t('Create successful!');
                 }
@@ -716,7 +716,7 @@ function gapps_start($form, &$form_state) {
             }
             if ($found) {
               $group_key = $group->getEmail();
-              $posgroup = split('@', $group_key)[0];
+              $posgroup = explode('@', $group_key)[0];
               if ($form_state['values']['log']) {
                 $detail_log .= "$depgroup =>" . t('This user group has been found in Google Apps....<br />');
               }
@@ -880,7 +880,7 @@ function gapps_start($form, &$form_state) {
       $rs = db2_query($sql, array($seyear));
     }
     else {
-      $class = $form_state['values']['grade' . $grade];
+      $class = substr($form_state['values']['grade' . $grade],-2);
       if (!empty($std_ma)) {
         $sql = "select $std_ac as ACCOUNT,$std_pw as PASSWORD,MAIL,$std_ma as MAIL_AC,NAME,NO,STATUS from STUDENT where YEAR=? and CLASSNO=? and SEYEAR>=?";
       }
@@ -889,16 +889,16 @@ function gapps_start($form, &$form_state) {
       }
       $rs = db2_query($sql, array($grade, $class, $sdate['seyear']));
     }
-    $detail_log .= $sql . $seyear;
     $total = db2_num_rows($rs);
     variable_set('gapps_total', $total);
+    $current = 0;
     while (db2_fetch_row($rs)) {
       $current++;
       variable_set('gapps_current', $current);
       $account = trim(db2_result($rs, 'ACCOUNT'));
       $user_key =  "$account@" . variable_get('gapps_student_domain');
       $password = db2_result($rs, 'PASSWORD');
-      $email = db2_result($rs, 'MAIL');
+      $mail = db2_result($rs, 'MAIL');
       $std_md = variable_get('simsauth_student_mail_address');
       if (!empty($std_ma) && !empty($std_md)) {
         $email = db2_result($rs, 'MAIL_AC') . '@' . $std_md;
@@ -922,7 +922,7 @@ function gapps_start($form, &$form_state) {
       else {
         $sql = "select CLASSNAME from BASCLS where SEYEAR=? and SESEM=? and CLASSID=?";
         $rs2 = db2_query($sql, array($sdate['year'], $sdate['seme'], $class));
-        $classname = trim(db2_result($rs, 'CLASSNAME'));
+        $classname = trim(db2_result($rs2, 'CLASSNAME'));
         if ($form_state['values']['log']) {
           $detail_log .= '<p>' . t('processing') . " $classname ($seat) $stdname ($account)......<br />";
         }
@@ -955,17 +955,17 @@ function gapps_start($form, &$form_state) {
             $neworg->setPrimary(TRUE);
             $myorg = $user->setOrganizations(array($neworg));
           }
-          if ($mail && $mail!=$user_key) {
+          if ($email && $email!=$user_key) {
             $myemails = $user->getEmails();
             $newmail = new Google_Service_Directory_UserEmail();
-            $newmail->setAddress($mail);
+            $newmail->setAddress($email);
             $newmail->setPrimary(FALSE);
             if (!in_array($newmail, $myemails)) {
               $myemails = array_unshift($myemails, $newmail);
             }
           }
           if (variable_get('gapps_student_orgunit') && variable_get('gapps_student_orgunit') != '/') {
-            $user->setOrgunitPath(variable_get('gapps_teacher_orgunit'));
+            $user->setOrgUnitPath(variable_get('gapps_student_orgunit'));
           }
           if ($form_state['values']['password_sync']) {
             $user->setHashFunction('SHA-1');
@@ -1043,12 +1043,12 @@ function gapps_start($form, &$form_state) {
           $user->setEmails($mymail);
         }
         if (variable_get('gapps_student_orgunit') && variable_get('gapps_student_orgunit') != '/') {
-          $user->setOrgunitPath(variable_get('gapps_teacher_orgunit'));
+          $user->setOrgUnitPath(variable_get('gapps_student_orgunit'));
         }
         $user->setHashFunction('SHA-1');
         $user->setPassword(sha1($password));
         try {
-          $result = $directory->users->insert($user_key, $user);
+          $result = $directory->users->insert($user);
           if ($form_state['values']['log']) {
             $detail_log .= t('Create Successful!');
           }
@@ -1071,7 +1071,7 @@ function gapps_start($form, &$form_state) {
         }
         if ($found) {
           $group_key = $group->getEmail();
-          $depgroup = split('@', $group_key)[0];
+          $depgroup = explode('@', $group_key)[0];
           if ($form_state['values']['log']) {
             $detail_log .= "$depgroup =>" . t('This user group has been found in Google Apps....<br />');
           }
@@ -1311,6 +1311,7 @@ function gapps_settings() {
  */
 function gapps_server_test($form, &$form_state) {
   $error = '';
+  $message = '';
   $file = file_save_upload('gapps_service_private_key', array(
     'file_validate_extensions' => array('p12'),
   ), 'private://', FILE_EXISTS_REPLACE);

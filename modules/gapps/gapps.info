@@ -10,7 +10,7 @@ files[] = gapps.api.php
 files[] = gapps.sso.js
 files[] = sign-in-with-google.png
 
-version = "7.x-1.1"
+version = "7.x-1.2"
 core = "7.x"
 project = "gapps"
 datestamp = "1360609258"

@@ -46,17 +46,15 @@ function gapps_service($domain) {
   $credentials = new Google_Auth_AssertionCredentials(
     $client_email,
     $scopes,
-    $private_key,
-    'notasecret',
-    'http://oauth.net/grant_type/jwt/1.0/bearer',
-    $user_to_impersonate
+    $private_key
   );
+  $credentials->sub = $user_to_impersonate;
 
   $client = new Google_Client();
   $client->setApplicationName('Drupal gapps module');
   $client->setAssertionCredentials($credentials);
   while ($client->getAuth()->isAccessTokenExpired()) {
-    $client->getAuth()->refreshTokenWithAssertion();
+    $client->getAuth()->refreshTokenWithAssertion($credentials);
   }
 
   $directory = new Google_Service_Directory($client);
@@ -79,11 +77,11 @@ function gapps_test() {
       variable_get('gapps_student_domain') &&
       variable_get('gapps_student_admin')
      ) {
-    $domain = 'teacher';
-    $directory = gapps_service($domain);
+    $directory = gapps_service('teacher');
     if ($directory) {
       try {
-        $user = $directory->users->get(variable_get('gapps_teacher_admin'));
+		$userkey = variable_get('gapps_teacher_admin');
+        $user = $directory->users->get($userkey);
       } catch (Exception $e) {
         return FALSE;
 	  }
@@ -91,11 +89,11 @@ function gapps_test() {
     else {
       return FALSE;
     }
-    $domain = 'student';
-    $directory = gapps_service($domain);
+    $directory = gapps_service('student');
     if ($directory) {
       try {
-        $user = $directory->users->get(variable_get('gapps_student_admin'));
+		$userkey = variable_get('gapps_student_admin');
+        $user = $directory->users->get($userkey);
       } catch (Exception $e) {
         return FALSE;
 	  }
