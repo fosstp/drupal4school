@@ -60,8 +60,7 @@ RUN mkdir /var/www/html/sites/default/files \
     && chmod 744 /var/www/html/sites/default/files
 
 ADD run-httpd.sh /usr/sbin/run-httpd.sh
-ADD first.sh /usr/sbin/first.sh
-RUN chmod +x /usr/sbin/run-httpd.sh /usr/sbin/first.sh
+RUN chmod +x /usr/sbin/run-httpd.sh
 
 VOLUME ["/var/www/html/sites/all/modules", "/var/www/html/sites/all/themes", "/var/www/html/sites/all/translations", "/var/www/html/sites/default/files"]
 EXPOSE 80 443
