@@ -8,10 +8,17 @@ RUN apt-get update \
     && docker-php-ext-install ldap pcntl zip \
     && echo "memory_limit = 256M" > /usr/local/etc/php/conf.d/20-memory.ini
 
-#https://pecl.php.net/package/uploadprogress
-RUN pecl install uploadprogress \
+#https://github.com/scrazy77/uploadprogress  upload progress for php7
+RUN cd ~ && git clone https://github.com/scrazy77/uploadprogress.git \
+    && cd uploadprogress \
+    && phpize \
+    && ./configure \
+    && make \
+    && make install \
+    && cd .. \
+    && rm -rf uploadprogress
     && echo "extension=uploadprogress.so" > /usr/local/etc/php/conf.d/20-uploadprogress.ini
-
+    
 #https://www-304.ibm.com/support/docview.wss?rs=71&uid=swg27007053
 RUN mkdir /opt/ibm \
     && cd /opt/ibm \
