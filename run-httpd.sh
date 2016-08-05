@@ -3,7 +3,7 @@ set -e
 rm -f /var/run/apache2/apache2.pid
 FIRST_STARTUP_DONE="/var/log/docker-drupal-first-startup-done"
 
-if [ ! -e "$FIRST_STARTUP_DONE" ]; then
+if [ ! -e "$FIRST_STARTUP_DONE" ] && [ -e "/var/www/html/sites/default/settings.php"]; then
   cd /var/www/html
   TEST="ok"
   drush en locale translation views date calendar ctools services libraries i10n_update thumbnail_link simsauth sims_view sims_field gapps db2health adsync gevent
