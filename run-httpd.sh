@@ -6,7 +6,7 @@ FIRST_STARTUP_DONE="/var/log/docker-drupal-first-startup-done"
 if [ ! -e "$FIRST_STARTUP_DONE" ] && [ -e "/var/www/html/sites/default/settings.php" ]; then
   cd /var/www/html
   TEST="ok"
-  drush en locale translation views date calendar ctools services libraries i10n_update thumbnail_link simsauth sims_view sims_field gapps db2health adsync gevent
+  drush en locale translation views date calendar ctools services libraries l10n_update thumbnail_link simsauth sims_views sims_field gapps db2health adsync gevent
   [ ! -z "$(drush pm-list --status=enabled | grep locale)" ] || TEST="not ok"
   [ ! -z "$(drush pm-list --status=enabled | grep translation)" ] || TEST="not ok"
   [ ! -z "$(drush pm-list --status=enabled | grep views)" ] || TEST="not ok"
