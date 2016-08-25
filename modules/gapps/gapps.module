@@ -523,7 +523,7 @@ function gapps_start($form, &$form_state) {
                 $newmail = new Google_Service_Directory_UserEmail();
                 $newmail->setAddress($mail);
                 $newmail->setPrimary(FALSE);
-                if (!in_array($newmail, $myemails)) {
+                if (is_array($myemails) && !in_array($newmail, $myemails)) {
                   $myemails = array_unshift($myemails, $newmail);
                 }
               }
@@ -532,7 +532,7 @@ function gapps_start($form, &$form_state) {
                 $newphone = new Google_Service_Directory_UserPhone(); 
                 $newphone->setValue($telphone);
                 $newphone->setPrimary(TRUE);
-                if (!in_array($newphone, $myphones)) {
+                if (is_array($myphones) && !in_array($newphone, $myphones)) {
                   foreach ($myphones as $oldphone) {
                     $oldphone->setPrimary(FALSE);
                   }
@@ -605,7 +605,7 @@ function gapps_start($form, &$form_state) {
               $myorg->setDepartment($department);
               $myorg->setTitle($title);
               $myorg->setPrimary(TRUE);
-              $user->setOrganzations(array($myorg));
+              $user->setOrganizations(array($myorg));
             }
             if ($mail && $mail!=$user_key) {
               $mymail = array();
@@ -627,9 +627,9 @@ function gapps_start($form, &$form_state) {
               $user->setOrgUnitPath(variable_get('gapps_teacher_orgunit'));
             }
             $user->setHashFunction('SHA-1');
-            $user->setPassword(sha1($password));
+            $user->setPassword(sha1($passwd));
             try {
-              $result = $directory->users->insert($user_key, $user);
+              $result = $directory->users->insert($user);
               if ($form_state['values']['log']) {
                 $detail_log .= t('Create Successful!');
               }
@@ -833,7 +833,7 @@ function gapps_start($form, &$form_state) {
                 $group->setDescription($title);
                 $group->setName($title);
                 try {
-                  $directory->groups->insert($group_key, $group);
+                  $directory->groups->insert($group);
                   if ($form_state['values']['log']) {
                     $detail_log .= t('Create successful!');
                   }
@@ -1101,7 +1101,7 @@ function gapps_start($form, &$form_state) {
           $group->setDescription($classname);
           $group->setName($classname);
           try {
-            $directory->groups->insert($group_key, $group);
+            $directory->groups->insert($group);
             if ($form_state['values']['log']) {
               $detail_log .= t('Create successful!');
             }
