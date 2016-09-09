@@ -1,6 +1,8 @@
 # drupal for school
 [中文說明](https://github.com/fosstp/drupal4school/blob/master/README.zh-tw.md)
 
+[![Build Status](https://travis-ci.org/fosstp/drupal4school.svg?branch=master)](https://travis-ci.org/fosstp/drupal4school)
+
 This docker image contains debian 8.2(jessie) + php 5.6 + apache 2.2 + drupal 7 + custom drupal modules & themes
 
 How to use this image
