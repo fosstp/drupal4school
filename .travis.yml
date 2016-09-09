@@ -9,12 +9,11 @@ install:
 
 before_script:
   - env | sort
-  - cd "drupal4school"
+  - cd ~/drupal4school
   - image="fosstp:drupal"
 
 script:
   - docker build -t "$image" .
-  - ~/drupal4school/test/run.sh "$image"
 
 after_script:
   - docker images
