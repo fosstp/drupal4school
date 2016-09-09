@@ -16,7 +16,7 @@ RUN cd ~ && git clone https://github.com/scrazy77/uploadprogress.git \
     && make \
     && make install \
     && cd .. \
-    && rm -rf uploadprogress
+    && rm -rf uploadprogress \
     && echo "extension=uploadprogress.so" > /usr/local/etc/php/conf.d/20-uploadprogress.ini
     
 #https://www-304.ibm.com/support/docview.wss?rs=71&uid=swg27007053
