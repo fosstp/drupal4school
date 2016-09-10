@@ -69,6 +69,7 @@ RUN mkdir /var/www/html/sites/default/files \
 ADD run-httpd.sh /usr/sbin/run-httpd.sh
 RUN chmod +x /usr/sbin/run-httpd.sh
 
+ENV DATABASE_PASSWORD
 VOLUME ["/var/www/html/sites/all/modules", "/var/www/html/sites/all/themes", "/var/www/html/sites/all/translations", "/var/www/html/sites/default/files"]
 EXPOSE 80 443
 CMD ["/usr/sbin/run-httpd.sh"]
