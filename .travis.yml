@@ -1,0 +1,21 @@
+language: bash
+services: docker
+
+env:
+  - VERSION=7 VARIANT=apache
+
+install:
+  - git clone https://github.com/scrazy77/drupal4school.git ~/drupal4school
+
+before_script:
+  - env | sort
+  - cd ~/drupal4school
+  - image="fosstp:drupal"
+
+script:
+  - docker build -t "$image" .
+
+after_script:
+  - docker images
+
+# vim:set et ts=2 sw=2:
