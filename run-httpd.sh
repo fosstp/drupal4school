@@ -6,6 +6,8 @@ cd /var/www/html
 
 if [ ! -e "$FIRST_STARTUP_DONE" ] && [ ! -z "$(drush sql-connect | grep error)" ]; then
   TEST="ok"
+  drush dl utf8mb4_convert-7.x
+  drush utf8mb4-convert-databases
   drush en locale translation views date calendar ctools services libraries l10n_update thumbnail_link simsauth sims_views sims_field gapps db2health adsync gevent
   [ ! -z "$(drush pm-list --status=enabled | grep locale)" ] || TEST="not ok"
   [ ! -z "$(drush pm-list --status=enabled | grep translation)" ] || TEST="not ok"
