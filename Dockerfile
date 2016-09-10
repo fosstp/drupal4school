@@ -55,9 +55,9 @@ RUN mkdir -p /var/www/html/profiles/standard/translations/ \
 RUN cd /var/www/html \
     && drush dl services,ctools,views,date,calendar,openid_provider,xrds_simple,libraries,l10n_update
 
-RUN cp /var/www/html/sites/default/default.settings.php /var/www/html/sites/default/settings.php \
-    && echo "\$conf['drupal_http_request_fails'] = FALSE;" >> /var/www/html/sites/default/settings.php
+RUN echo "\$conf['drupal_http_request_fails'] = FALSE;" >> /var/www/html/sites/default/default.settings.php
 
+ADD profiles /var/www/html/profiles
 ADD modules /var/www/html/sites/all/modules
 ADD themes /var/www/html/sites/all/themes
 ADD translations /var/www/html/sites/all/translations
@@ -69,7 +69,7 @@ RUN mkdir /var/www/html/sites/default/files \
 ADD run-httpd.sh /usr/sbin/run-httpd.sh
 RUN chmod +x /usr/sbin/run-httpd.sh
 
-ENV DATABASE_PASSWORD
-VOLUME ["/var/www/html/sites/all/modules", "/var/www/html/sites/all/themes", "/var/www/html/sites/all/translations", "/var/www/html/sites/default/files"]
+ENV DATABASE_PASSWORD ""
+VOLUME ["/var/www/html/profiles", "/var/www/html/sites/all/modules", "/var/www/html/sites/all/themes", "/var/www/html/sites/all/translations", "/var/www/html/sites/default/files"]
 EXPOSE 80 443
 CMD ["/usr/sbin/run-httpd.sh"]
