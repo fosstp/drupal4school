@@ -1,0 +1,25 @@
+#!/bin/sh
+# set classpath
+
+S=":"
+if [ "$OSTYPE" == "cygwin" ]; then S=";"; fi
+
+CP=""
+
+SETUP_DIR=`dirname "$0"`
+
+RDFSTORE_LIB="$SETUP_DIR"\/..\/lib
+
+for jar in "$RDFSTORE_LIB"/*.jar
+do
+
+ if [ "$CP" == "" ]
+ then
+     CP="${jar}"
+ else
+     CP="$CP${S}${jar}"
+ fi
+done
+
+CP="$CP${S}$CLASSPATH"
+export CLASSPATH=$CP

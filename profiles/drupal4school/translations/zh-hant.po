@@ -12,6 +12,9 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n>1);\n"
 
+msgid "Drupal for School at Taipei"
+msgstr "臺北市Drupal校園網站架站包計畫"
+
 msgid "enable custom modules"
 msgstr "啟用自訂模組"
 

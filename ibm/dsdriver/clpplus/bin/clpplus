@@ -1,0 +1,250 @@
+#!/bin/sh
+# CLPPlus startup script
+# Copyright (c) 2009, IBM Corporation.  All rights reserved.
+
+
+# Find if input is redirected from a file
+REDIRECTION=-1
+if tty -s
+then
+ REDIRECTION=0
+else
+ REDIRECTION=1
+fi
+
+export REDIRECTION
+
+# Find 'which'
+if [ -x /bin/which ]
+then
+	WHICH=/bin/which
+elif [ -x /usr/bin/which ]
+then
+	WHICH=/usr/bin/which
+elif [ -x /usr/local/bin/which ]
+then
+	WHICH=/usr/local/bin/which
+else 
+	WHICH=which 
+fi	
+export WHICH
+
+# Find installation directory
+CLPPLUS_PATH=`$WHICH $0`
+echo $CLPPLUS_PATH | grep -e '^\.' > /dev/null 2>&1
+if [ $? -eq 0 ]
+then
+	CLPPLUS_PATH=`pwd`/`basename $CLPPLUS_PATH`
+fi
+INSTALL_DIR_BIN=`dirname $CLPPLUS_PATH`
+INSTALL_DIR=`echo $INSTALL_DIR_BIN | sed 's/\/bin$//'`
+
+# Check for Java 1.5 in our PATH
+if [ -n "$JAVA_HOME" ]
+then
+    PATH=$JAVA_HOME/bin:$JAVA_HOME/jre/bin:$PATH
+    export PATH
+fi
+EPATH=$INSTALL_DIR/java/jdk64/jre/bin:$INSTALL_DIR/java/jdk64/bin
+EPATH=$EPATH:$INSTALL_DIR/java/jdk32/jre/bin:$INSTALL_DIR/java/jdk32/bin
+EPATH=$EPATH:$INSTALL_DIR/java/jdk/jre/bin
+PATH=$PATH:$EPATH
+export PATH
+$WHICH java > /dev/null 2>&1
+if [ $? -ne 0 ]
+then
+    echo "CLPPlus requires Java 1.5 or higher to execute."
+    echo "Please ensure Java is in your PATH".
+    exit -1
+fi
+JAVA=`$WHICH java`
+export JAVA
+
+# Check for clpplus.jar
+echo $CLASSPATH | grep clpplus.jar > /dev/null 2>&1
+if [ $? -ne 0 ]
+then
+    if [ -f $INSTALL_DIR/tools/clpplus.jar -o -h $INSTALL_DIR/tools/clpplus.jar ]
+    then
+        CLPPLUS_JAR=$INSTALL_DIR/tools/clpplus.jar
+    elif [ -f $INSTALL_DIR/lib/clpplus.jar -o -h $INSTALL_DIR/lib/clpplus.jar ]
+    then
+        CLPPLUS_JAR=$INSTALL_DIR/lib/clpplus.jar
+    elif [ -f $INSTALL_DIR/clpplus.jar -o -h $INSTALL_DIR/clpplus.jar ]
+    then
+        CLPPLUS_JAR=$INSTALL_DIR/clpplus.jar
+    else 
+        find $INSTALL_DIR -name clpplus.jar > /tmp/clpplus.f1.$$ 2> /dev/null
+		grep -q 'clpplus.jar' /tmp/clpplus.f1.$$ > /dev/null 2>&1
+        if [ $? -eq 0 ]
+        then
+            CLPPLUS_JAR=$INSTALL_DIR/`head -n 1 /tmp/clpplus.f1.$$`
+            rm -f /tmp/clpplus.f1.$$
+        else 
+            rm -f /tmp/clpplus.f1.$$
+            echo "Could not find clpplus.jar."
+            echo "Please ensure that your installation completed successfully."
+            echo "If the problem persists, please locate and add clpplus.jar to your CLASSPATH."
+            exit -1;
+        fi
+    fi
+    CLASSPATH=$CLPPLUS_JAR:$CLASSPATH
+    export CLASSPATH
+fi
+
+# Check for jline.jar
+echo $CLASSPATH | grep jline-0.9.93.jar > /dev/null 2>&1
+if [ $? -ne 0 ]
+then
+    if [ -f $INSTALL_DIR/tools/jline-0.9.93.jar -o -h $INSTALL_DIR/tools/jline-0.9.93.jar ]
+    then
+        JLINE_JAR=$INSTALL_DIR/tools/jline-0.9.93.jar
+    elif [ -f $INSTALL_DIR/lib/jline-0.9.93.jar -o -h $INSTALL_DIR/lib/jline-0.9.93.jar ]
+    then
+        JLINE_JAR=$INSTALL_DIR/lib/jline-0.9.93.jar
+    elif [ -f $INSTALL_DIR/jline-0.9.93.jar -o -h $INSTALL_DIR/jline-0.9.93.jar ]
+    then
+        JLINE_JAR=$INSTALL_DIR/jline-0.9.93.jar
+    else 
+        find $INSTALL_DIR -name jline-0.9.93.jar > /tmp/clpplus.f2.$$ 2> /dev/null
+		grep -q 'jline-0.9.93.jar' /tmp/clpplus.f2.$$ > /dev/null 2>&1
+        if [ $? -eq 0 ]
+        then
+            JLINE_JAR=$INSTALL_DIR/`head -n 1 /tmp/clpplus.f2.$$`
+            rm -f /tmp/clpplus.f2.$$
+        else 
+            rm -f /tmp/clpplus.f2.$$
+            echo "Could not find jline-0.9.93.jar."
+            echo "Please ensure that your installation completed successfully."
+            echo "If the problem persists, please locate and add jline-0.9.93.jar to your CLASSPATH."
+            exit -1;
+        fi
+    fi
+    CLASSPATH=$JLINE_JAR:$CLASSPATH
+    export CLASSPATH
+fi
+
+# Check for antlr-3.3-java.jar
+echo $CLASSPATH | grep antlr-3.3-java.jar > /dev/null 2>&1
+if [ $? -ne 0 ]
+then
+    if [ -f $INSTALL_DIR/tools/rdf/lib/antlr-3.3-java.jar -o -h $INSTALL_DIR/tools/rdf/lib/antlr-3.3-java.jar ]
+    then
+        ANTLR_JAR=$INSTALL_DIR/tools/rdf/lib/antlr-3.3-java.jar
+    elif [ -f $INSTALL_DIR/../rdf/lib/antlr-3.3-java.jar -o -h $INSTALL_DIR/../rdf/lib/antlr-3.3-java.jar ]
+    then
+	DS_DRIVER_HOME=`echo $INSTALL_DIR | sed 's/\/clpplus$//'`
+        ANTLR_JAR=$DS_DRIVER_HOME/rdf/lib/antlr-3.3-java.jar
+	
+    elif [ -f $INSTALL_DIR/rdf/lib/antlr-3.3-java.jar -o -h $INSTALL_DIR/rdf/lib/antlr-3.3-java.jar ]
+    then
+        ANTLR_JAR=$INSTALL_DIR/rdf/lib/antlr-3.3-java.jar
+    else 
+        find $INSTALL_DIR -name antlr-3.3-java.jar > /tmp/clpplus.f2.$$ 2> /dev/null
+		grep -q 'antlr-3.3-java.jar' /tmp/clpplus.f2.$$ > /dev/null 2>&1
+        if [ $? -eq 0 ]
+        then
+            ANTLR_JAR=$INSTALL_DIR/`head -n 1 /tmp/clpplus.f2.$$`
+            rm -f /tmp/clpplus.f2.$$
+        else 
+            rm -f /tmp/clpplus.f2.$$
+            echo "Could not find antlr-3.3-java.jar."
+            echo "Please ensure that your installation completed successfully."
+            echo "If the problem persists, please locate and add antlr-3.3-java.jar to your CLASSPATH."
+            exit -1;
+        fi
+    fi
+    CLASSPATH=$ANTLR_JAR:$CLASSPATH
+    export CLASSPATH
+fi
+
+# Check for db2jcc.jar
+echo $CLASSPATH | grep db2jcc.jar > /dev/null 2>&1
+if [ $? -ne 0 ]
+then
+    if [ -f $INSTALL_DIR/java/db2jcc.jar -o -h $INSTALL_DIR/java/db2jcc.jar ]
+    then
+        DB2JCC_JAR=$INSTALL_DIR/java/db2jcc.jar
+    elif [ -f $INSTALL_DIR/lib/db2jcc.jar -o -h $INSTALL_DIR/lib/db2jcc.jar ]
+    then
+        DB2JCC_JAR=$INSTALL_DIR/lib/db2jcc.jar
+    elif [ -f $INSTALL_DIR/db2jcc.jar -o -h $INSTALL_DIR/db2jcc.jar ]
+    then
+        DB2JCC_JAR=$INSTALL_DIR/db2jcc.jar
+    else 
+        find $INSTALL_DIR -name db2jcc.jar > /tmp/clpplus.f3.$$ 2> /dev/null
+		grep -q 'db2jcc.jar' /tmp/clpplus.f3.$$ > /dev/null 2>&1
+        if [ $? -eq 0 ]
+        then
+            DB2JCC_JAR=$INSTALL_DIR/`head -n 1 /tmp/clpplus.f3.$$` 
+            rm -f /tmp/clpplus.f3.$$
+        else 
+            rm -f /tmp/clpplus.f3.$$
+            echo "Could not find db2jcc.jar."
+            echo "Please ensure that your installation completed successfully."
+            echo "If the problem persists, please locate and add db2jcc.jar to your CLASSPATH."
+            exit -1;
+        fi
+    fi
+    CLASSPATH=$DB2JCC_JAR:$CLASSPATH
+    export CLASSPATH
+fi
+
+
+# Check for JCC licence jar
+echo $CLASSPATH | grep db2jcc_license_cisuz.jar > /dev/null 2>&1
+if [ $? -ne 0 ]
+then
+    if [ -f $INSTALL_DIR/java/db2jcc_license_cisuz.jar -o -h $INSTALL_DIR/java/db2jcc_license_cisuz.jar ]
+    then
+        DB2JCC_LIC=$INSTALL_DIR/java/db2jcc_license_cisuz.jar
+    elif [ -f $INSTALL_DIR/lib/db2jcc_license_cisuz.jar -o -h $INSTALL_DIR/lib/db2jcc_license_cisuz.jar ]
+    then
+        DB2JCC_LIC=$INSTALL_DIR/lib/db2jcc_license_cisuz.jar
+    elif [ -f $INSTALL_DIR/db2jcc_license_cisuz.jar -o -h $INSTALL_DIR/db2jcc_license_cisuz.jar ]
+    then
+        DB2JCC_LIC=$INSTALL_DIR/db2jcc_license_cisuz.jar
+    else 
+        find $INSTALL_DIR -name db2jcc_license_cisuz.jar > /tmp/clpplus.f3.$$ 2> /dev/null
+		grep -q 'db2jcc_license_cisuz.jar' /tmp/clpplus.f3.$$ > /dev/null 2>&1
+        if [ $? -eq 0 ]
+        then
+            DB2JCC_LIC=$INSTALL_DIR/`head -n 1 /tmp/clpplus.f3.$$` 
+            rm -f /tmp/clpplus.f3.$$
+        fi
+    rm -f /tmp/clpplus.f3.$$
+    fi
+    CLASSPATH=$DB2JCC_LIC:$CLASSPATH
+    export CLASSPATH
+fi
+
+
+# Set the Help directory
+CLPPLUS_HELP=$INSTALL_DIR/help/clpplus
+export CLPPLUS_HELP
+
+# Set EDITOR
+if [ -z "$EDITOR" ]
+then 
+    for e in vi vim kwrite gedit kate
+    do
+        $WHICH $e > /dev/null 2>&1
+        if [ $? -eq 0 ]
+        then
+            EDITOR=$e
+            export EDITOR
+            break
+        fi
+    done
+fi
+
+INSTALL_DIR=$INSTALL_DIR
+export INSTALL_DIR
+
+# Invoke CLPPlus
+# echo $JAVA
+$JAVA com.ibm.clpplus.CLPPlus $* 2> /dev/null 
+
+exit $? 
+
+# end-of-file

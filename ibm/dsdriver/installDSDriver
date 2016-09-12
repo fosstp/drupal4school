@@ -1,0 +1,1430 @@
+#! /bin/ksh -p
+#-----------------------------------------------------------------------
+# (C) COPYRIGHT International Business Machines Corp 2010, 2012
+# All Rights Reserved
+#
+# US Government Users Ristricted Rights - Use, duplication or
+# disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
+#
+# NAME: installDSDriver
+#
+# FUNCTION: installDSDriver installs/upgrades IBM Data Server Driver Package
+#           (aka ds driver) on Linux and UNIX platforms.
+#
+#-----------------------------------------------------------------------
+
+#----------------------------------------------------------------------
+# Function: displayHelp
+#
+# Display the installDSDriver help
+#----------------------------------------------------------------------
+displayHelp ()
+{
+cat << EOF
+********************************************************************************
+*
+* Installation script for "IBM Data Server Driver Package" (aka "ds driver")
+* for Linux & UNIX platforms.
+*
+* Functionality provided with this script:
+* ----------------------------------------
+* - Installs various ds driver components
+* - ds driver upgrade feature is supported
+* - Creates 'db2profile' & 'db2profile32' files (for bash or korn shell users)
+* - Creates 'db2cshrc' & 'db2cshrc32' files (for C shell users)
+*
+* Generated 'db2profile' & 'db2cshrc' script files sets up a default ds driver
+* environment for the current install path for 64-bit architecture. To be in
+* 32-bit architecture, 'db2profile32' or 'db2cshrc32' can be used.
+*
+* Bourne shell or Korn shell users can use it as shown below:
+* $ . ./db2profile
+*
+* C shell users can use it as shown below:
+* $ source ./db2cshrc
+*
+********************************************************************************
+* Command syntax
+*
+* installDSDriver [ -upgrade <existing ds driver path> ]
+*                 [ -h ]
+*
+* Command parameters
+* 
+*                 -upgrade <existing ds driver path>
+*                       
+*                      The existing ds driver will be upgraded to new ds driver.
+*                      The absolute path of the existing ds driver has to be 
+*                      specified.
+*                      e.g.: installDSDriver -upgrade /opt/IBM/dsdriver        
+*
+*                 -h
+*
+*                      Display the installDSDriver help.    
+*
+********************************************************************************
+EOF
+}
+
+#----------------------------------------------------------------------
+# Function: preCheck
+#
+# - Check the existing install path to ensure this is a fresh install and
+#   not a rerun.
+# - Check if destination directory where installDSDriver needs to copy
+#   files, has sufficient permission.
+#----------------------------------------------------------------------
+preCheck ()
+{
+  cd "$installRoot"
+
+  if [ ! -r "$installRoot" ] || [ ! -w "$installRoot" ] || [ ! -x "$installRoot" ]
+  then
+      echo "Error: Insufficient permission on directory '$installRoot' to let installDSDriver proceed."
+      exit 1
+  fi
+
+  for dirName in *
+  do
+    if [ ! -d "$dirName" ]
+    then
+      continue
+    fi
+
+    # if any of these directories exists, we assume installDSDriver script
+    # is already ran before.
+    if [ "$dirName" = 'java' ] || [ "$dirName" = 'bin'  ] ||
+       [ "$dirName" = 'lib'  ] || [ "$dirName" = 'ruby' ] ||
+       [ "$dirName" = 'php'  ] || [ "$dirName" = 'cfg'  ]
+    then
+      printMsgErr "Installation seems already completed; rerun not supported."
+    fi
+
+    # if any of the existing directory do not have necessary premissions to
+    # let rest of the installation proceed, abort now.
+    if [ ! -r "$dirName" ] || [ ! -w "$dirName" ] || [ ! -x "$dirName" ]
+    then
+      printMsgErr "Insufficient permission on directory '$dirName' to let installDSDriver proceed."
+    fi
+  done
+}
+
+#----------------------------------------------------------------------
+# Function: declareVariables
+#
+# Declares the variables used in the script.
+#----------------------------------------------------------------------
+declareVariables ()
+{
+  if [ "$1" != "upgrade" ]
+  then 
+    # setting the install root directory; we allow install to do only in the
+    # directory where this script exists.
+    installRoot=`dirname $me`
+    prefixChar=`expr "$installRoot" : '\(.\).*'`
+
+    if [ "$prefixChar" != "/" ]
+    then
+      installRoot="`pwd`/$installRoot" 
+    fi
+  elif [ "$1" = "upgrade" ]
+  then
+    newDsdPkgPath=`dirname $me`
+    prefixChar=`expr "$newDsdPkgPath" : '\(.\).*'`
+
+    if [ "$prefixChar" != "/" ]
+    then
+      newDsdPkgPath="`pwd`/$newDsdPkgPath"
+    fi
+  
+    # the path of existing ds driver
+    upgradePath=""
+  
+    # the existing ds driver backup directory 
+    bkpDsdDirPath=""
+
+    # temporary installed ds driver path 
+    tmpDsdDirPath=""
+
+    # to store db2level of existing ds driver
+    # here MajorVersion is v9 or v10 etc
+    # MinorVersion is v9.5 or v9.7 or v10.1 etc
+    # Modification is Fix Pack <number>
+    # ex: v10.1 FP 2 
+    curRelMajorVer=0
+    curRelMinorVer=0
+    curRelModifier=0
+  
+    # to store db2level of installable ds driver
+    newRelMajorVer=0
+    newRelMinorVer=0
+    newRelModifier=0
+
+    # db2level exe path
+    db2levelPath=""
+
+    # flag variables used during upgrade
+    upgradeFlag=0
+    newRelease=0
+
+  fi    
+
+  # common variables used
+  osname=`uname`
+  logFile="$installRoot/installDSDriver.log"
+  db2profile="$installRoot/db2profile"
+  db2cshrc="$installRoot/db2cshrc"
+  db2profile32="$installRoot/db2profile32"
+  db2cshrc32="$installRoot/db2cshrc32"
+  bit64=64
+  bit32=32
+  linuxia32="false"
+  lnxnly64="false"
+
+}
+
+#----------------------------------------------------------------------
+# Function: installEachDriver
+#
+# Loop through each driver directory and copy relevant files to it
+#----------------------------------------------------------------------
+installEachDriver ()
+{
+  for dirName in *
+  do
+    # always starts from install root
+    cd "$installRoot"
+
+    case "$dirName" in
+
+      'clpplus')
+        cd "$dirName"
+        for subDir in *
+        do
+          if [ -d "$subDir" ]
+          then
+            cp -pR "$subDir" "$installRoot"
+            print2Log "  $dirName/$subDir files are copied to $installRoot/$subDir"
+          fi
+        done
+        ;;
+
+      'php_driver')
+        cd "$dirName"
+        mkdir "$installRoot/php"
+        for subDir in *
+        do
+          if [ -d "$subDir" ]
+          then
+            cd "$subDir"
+            for phpDir in *
+            do
+                 if [ -d "$phpDir" ]
+                 then
+                     mv -f "$phpDir/validate_install.php" "$installRoot/bin"
+                 fi
+            done
+            cp -pR . "$installRoot"/php
+            print2Log "  $dirName/$subDir files are copied to $installRoot/php/$subDir"
+            cd ..
+          fi
+        done
+        ;;
+
+      'ruby_driver')
+        cd "$dirName"
+        mkdir "$installRoot/ruby"
+        for subDir in *
+        do
+          if [ -d "$subDir" ]
+          then
+            cd "$subDir"
+            for rubyDir in *
+            do
+                 if [ -d "$rubyDir" ]
+                 then
+                     mv -f "$rubyDir/validate_install.rb" "$installRoot/bin"
+                 fi
+            done
+            cp -pR . "$installRoot"/ruby
+            print2Log "  $dirName/$subDir files are copied to $installRoot/ruby/$subDir"
+            cd ..
+          fi
+        done
+        ;;
+
+      # create the python driver directory structure in the same way as
+      # ruby & php.
+      'python32')
+         mkdir "$installRoot/python"
+         mv -f "python32/validate_install.py" "$installRoot/bin"
+         mv "python32" "$installRoot/python"
+         ;;
+      
+      'python64')
+         if [ ! -d "$installRoot/python" ]
+         then
+             mkdir "$installRoot/python"
+         fi
+         mv -f "python64/validate_install.py" "$installRoot/bin"
+         mv "python64" "$installRoot/python"
+         ;;
+      
+      'jdbc_sqlj_driver')
+        cd "$dirName"
+        mkdir "$installRoot/java"
+        for subDir in *
+        do
+          if [ -d "$subDir" ]
+          then
+            cd "$subDir"
+            cp -pR . "$installRoot"/java
+            print2Log "  $dirName/$subDir files are copied to $installRoot/java/$subDir"
+            cd ..
+          fi
+        done
+        unzipFiles "$installRoot/java"
+        ;;
+
+      'odbc_cli_driver')
+        cd "$dirName"
+        for clidir in *
+        do
+          bit=`expr "$clidir" : '.*\([0-9][0-9]\).*'`
+
+          # LinuxIA32 DS driver package need to be handled in the same way 
+          # as other ds driver pacakges
+          if  [[ ( "`ls | wc -w | awk '{print $1}' `" -eq "1" ) ]]
+          then
+              if [[ ( "$clidir" = "linuxia32" ) ]]
+              then    
+                  linuxia32="true"
+                  # On Inspur and LinuxPPC64LE platforms, we ship only 
+                  # 64bit folder, no 32-bit libraries. 
+              elif [[ ("$clidir" = "linux64" || "$clidir" = "linuxppc64le" ) ]]
+              then
+                lnxnly64="true"
+              fi  
+          fi
+
+          if [ "$bit" = "$bit64" ] ||
+             [ "$linuxia32" = "true" ]
+          then
+            # Store the lib folder name to which we need to create symbolic link. 
+            cd "$clidir"
+            for file in *
+            do
+              cp -pR "$file" "$installRoot"
+            done
+            unzipFiles "$installRoot"
+            clidrvdir="$installRoot/clidriver"
+            cd "$clidrvdir"
+            chmod 3775 "cfgcache"
+            chmod 666 "cfgcache/conlic.bin"
+            if [ "`whoami`" = "root" ]
+            then
+              chown 0 "adm/db2trc"
+              chgrp 0 "adm/db2trc"
+              chmod 06551 "adm/db2trc"
+            fi
+            for tmpdir in *
+            do
+              if [ -d "$tmpdir" ]
+              then
+                if [ -d "$installRoot/$tmpdir" ]
+                then
+                  cd "$tmpdir"
+                  for subdir in *
+                  do
+                    mv "$subdir" "$installRoot"/$tmpdir
+                    print2Log "  $dirName/$clidir/$tmpdir/$subdir files are copied to $installRoot/$tmpdir/$subdir"
+                  done
+                  cd ..
+                else
+                  mv "$tmpdir" "$installRoot"
+                  print2Log "  $dirName/$clidir/$tmpdir files are copied to $installRoot/$tmpdir"
+                fi
+              fi
+            done
+            cd ..
+
+            if [ -d "$clidrvdir" ]
+            then
+              rm -rf "$clidrvdir"
+            fi
+            cd "$installRoot/$dirName"
+          elif [ "$bit" = "$bit32" ]
+          then
+            cd "$clidir"
+            for file in *
+            do
+              cp -pR "$file" "$installRoot"
+            done
+            unzipFiles "$installRoot"
+            clidrvdir="$installRoot/clidriver"
+
+            # copy 32-bit binaries and libraries.
+            mv "$clidrvdir/lib" "$installRoot/lib32"
+            print2Log "  $dirName/$clidir/lib32 files are copied to $installRoot/$tmpdir"
+            mv "$clidrvdir/bin" "$installRoot/bin32"
+            print2Log "  $dirName/$clidir/bin32 files are copied to $installRoot/$tmpdir"
+            mv "$clidrvdir/adm" "$installRoot/adm32"
+            print2Log "  $dirName/$clidir/adm32 files are copied to $installRoot/$tmpdir"
+            if [ -d "$clidrvdir" ]
+            then
+              rm -rf "$clidrvdir"
+            fi
+          fi
+          cd "$installRoot/$dirName"
+        done
+        cd "$installRoot/$dirName"
+        cd ..
+        ;;
+
+    esac
+  done
+}
+
+#----------------------------------------------------------------------
+# Function: installCleanup
+#
+# Once driver specific files are copied to installRoot; we can now clean 
+# source directorie as those are of no use now.
+#----------------------------------------------------------------------
+installCleanup ()
+{
+  if [ "$1" != "upgrade" ]
+  then
+    printMsg "Performing post-installation clean up ..."
+  elif [ "$1"  = "upgrade" ]
+  then
+    print2Log " Performing clean up under temporary ds driver directory." 
+  fi
+  cd "$installRoot"
+
+  for rmdir in *
+  do
+    case "$rmdir" in
+
+      'clpplus'|'php_driver'|'ruby_driver'|'jdbc_sqlj_driver'|'python32'|'python64'|'odbc_cli_driver')
+        rm -rf "$rmdir"
+        print2Log "  Removed directory: $rmdir"
+        ;;
+
+    esac
+  done
+
+  printMsgSuccess
+}
+
+#----------------------------------------------------------------------
+# Function: unzipFiles
+#
+# Unzips the *.zip and *.Z files. Removes the zipped files after unzipping.
+#----------------------------------------------------------------------
+unzipFiles ()
+{
+  if [ -d "$1" ]
+  then
+    cd "$1"
+  else
+    printMsgErr "Directory $1 does not exist. Unable to continue unzip."
+  fi
+
+  for curFile in *
+  do
+    if [ ! -f "$curFile" ]
+    then
+      continue
+    fi
+
+    case "$curFile" in
+
+      *.zip)
+        print2Log "  Performing 'unzip -o -q $curFile' ..."
+        unzip -o -q "$curFile" >> "$logFile" 2>&1
+        if [ $? -ne 0 ]
+        then
+          printMsgErr "Error while extracting curFile from $curFile"
+        fi
+        rm -f "$curFile" >> "$logFile" 2>&1
+        ;;
+
+        *.Z|*.gz)
+        print2Log "  Performing 'gunzip $curFile' ..."
+        gunzip "$curFile" >> "$logFile" 2>&1
+        if [ $? -ne 0 ]
+        then
+          printMsgErr "Error while extracting curFile from $curFile"
+        fi
+        rm -f "$curFile" >> "$logFile" 2>&1
+        curFile=${curFile%.*}
+        tar -xf "$curFile" >> "$logFile" 2>&1
+        if [ $? -ne 0 ]
+        then
+          printMsgErr "Error while extracting curFile from $curFile"
+        fi
+        rm -f "$curFile" >> "$logFile" 2>&1
+        ;;
+
+    esac
+  done
+}
+
+#----------------------------------------------------------------------
+# Function: cleanupOnAbort
+#
+# Removes the newly created directories.
+#----------------------------------------------------------------------
+cleanupOnAbort ()
+{
+  cd "$installRoot"
+
+  print2Log "Performing undo of newly created files/directories."
+
+  for rmdir in *
+  do
+
+    case "$rmdir" in
+      'installDSDriver'|"$logFile"|'clpplus'|'jdbc_sqlj_driver'|'license'|'odbc_cli_driver'|'php_driver'|'python64'|'ruby_driver')
+        continue
+        ;;
+
+      *)
+        if [ -d "$rmdir" ]
+        then
+          rm -rf "$rmdir"
+        elif [ -f "$rmdir" ]
+        then
+          rm -f "$rmdir"
+        fi
+        ;;
+    esac
+  done
+}
+
+#----------------------------------------------------------------------
+# Function: print2Log
+#
+# Write messages to log file.
+#----------------------------------------------------------------------
+print2Log ()
+{
+  msg="- $1"
+  echo "$msg" >> "$logFile" 2>&1
+}
+
+#----------------------------------------------------------------------
+# Function: printMsgSuccess
+#     - Write successfully completed messages to stdout.
+#----------------------------------------------------------------------
+printMsgSuccess ()
+{
+  msg="  --> SUCCESS"
+  echo "$msg"
+  print2Log "$msg"
+}
+
+#----------------------------------------------------------------------
+# Function: printMsg
+#
+# Write messages to stdout.
+#----------------------------------------------------------------------
+printMsg ()
+{
+  echo "- $1"
+  print2Log "$1"
+}
+
+#----------------------------------------------------------------------
+# Function: printMsgErr
+#
+# Write messages to stdout. To be called when any error encountered and
+# we decide to abort the installation and exit.
+#----------------------------------------------------------------------
+printMsgErr ()
+{
+  echo "$1"
+  print2Log "$1"
+
+  echo "Aborting installDSDriver execution. Check $logFile file for complete report."
+  if [ "$2" != "upgrade" ]
+  then
+    cleanupOnAbort "$installRoot"
+    print2Log "Error cleanup completed."
+  elif [ "$2" = "upgrade" ]
+  then
+    upgradeErrorCleanup
+    print2Log "The error cleanup for ds driver upgrade is completed."
+  fi
+  exit 1
+}
+
+#----------------------------------------------------------------------
+# Function: creDb2ProfileHeader
+#
+# Creates header portion for db2profile file
+#----------------------------------------------------------------------
+creDb2ProfileHeader ()
+{
+   cat > $db2profile << EOF
+#############################################################################
+#
+# Licensed Materials - Property of IBM
+#
+# (C) COPYRIGHT International Business Machines Corp. 2011
+#
+# All Rights Reserved.
+#
+# US Government Users Restricted Rights - Use, duplication or
+# disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
+#
+#############################################################################
+#
+# NAME:     db2profile
+#
+# FUNCTION: This script sets up a default database environment for
+#           Bourne shell or Korn shell users.
+#
+#           This file is tuned for IBM Data Server Driver Package only.
+#
+# USAGE:    . db2profile
+#           This script can either be invoked directly as above or
+#           it can be added to the user's .profile file so that the
+#           database environment is established during login.
+#
+#           ##########################################################
+#           ####              DO NOT EDIT THIS FILE               ####
+#           #### THIS FILE IS GENERATED BY installDSDriver SCRIPT ####
+#           ##########################################################
+#
+#############################################################################
+
+EOF
+}
+
+#----------------------------------------------------------------------
+# Function: creDb2CshrcHeader
+#
+# Creates header portion for db2cshrc file
+#----------------------------------------------------------------------
+creDb2CshrcHeader ()
+{
+  cat > $db2cshrc << EOF
+#############################################################################
+#
+# Licensed Materials - Property of IBM
+#
+# (C) COPYRIGHT International Business Machines Corp. 2011
+#
+# All Rights Reserved.
+#
+# US Government Users Restricted Rights - Use, duplication or
+# disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
+#
+#############################################################################
+#
+# NAME:     db2cshrc
+#
+# FUNCTION: This script sets up a default database environment for
+#           C shell users.
+#
+#           This file is tuned for IBM Data Server Driver Package only.
+#
+# USAGE:    source db2cshrc
+#           This script can either be invoked directly as above or
+#           it can be added to the user's .cshrc file so that the
+#           database environment is established during login.
+#
+#           ##########################################################
+#           ####              DO NOT EDIT THIS FILE               ####
+#           #### THIS FILE IS GENERATED BY installDSDriver SCRIPT ####
+#           ##########################################################
+#
+#############################################################################
+
+EOF
+}
+
+#----------------------------------------------------------------------
+# Function: fillProfileFiles
+#
+# Fill all necessary environment variables to both profile files.
+#----------------------------------------------------------------------
+fillProfileFiles ()
+{
+  addPath2Profile $1
+  addLibPath2Profile $1
+  addJCC2Profile
+  addOS2Profile $1
+  addClpPlus2Profile
+  # set read permission for db2profile & db2cshrc files.
+  chmod 444 "$db2profile"
+  chmod 444 "$db2cshrc"
+}
+
+#----------------------------------------------------------------------
+# Function: addPath2Profile
+#
+# Adds PATH environment variable setting to db2profile.
+#----------------------------------------------------------------------
+addPath2Profile ()
+{
+  addMsg2Profile "# Generic PATH and library path settings"
+  addEnvVar2Profile "PATH" "$installRoot/bin$1" "doCheck"
+  addEnvVar2Profile "PATH" "$installRoot/adm$1"
+  addMsg2Profile ""
+  
+}
+
+#----------------------------------------------------------------------
+# Function: addLibPath2Profile
+#
+# Adds library path environment variable based on the platform to db2profile.
+#----------------------------------------------------------------------
+addLibPath2Profile ()
+{
+  if [ "$osname" = 'AIX' ]
+  then
+    addEnvVar2Profile "LIBPATH" "$installRoot/lib$1" "doCheck"
+  elif [ "$osname" = 'HP-UX' ]
+  then
+    addEnvVar2Profile "SHLIB_PATH" "$installRoot/lib$1" "doCheck"
+  else
+    addEnvVar2Profile "LD_LIBRARY_PATH" "$installRoot/lib$1" "doCheck"
+  fi
+
+  addMsg2Profile ""
+}
+
+#----------------------------------------------------------------------
+# Function: addJCC2Profile
+#
+# Add sqlj and JDBC/JCC drivers environment variables settings to db2profile.
+#----------------------------------------------------------------------
+addJCC2Profile ()
+{
+  addMsg2Profile "# Environment variables for sqlj and JDBC/JCC drivers"
+  addEnvVar2Profile "CLASSPATH" "$installRoot/java/db2jcc.jar" "doCheck"
+  addEnvVar2Profile "CLASSPATH" "$installRoot/java/sqlj.zip"
+  addMsg2Profile ""
+}
+
+#----------------------------------------------------------------------
+# Function: addOS2Profile
+#
+# Add open source driver's environment variables settings to db2profile.
+#----------------------------------------------------------------------
+addOS2Profile ()
+{
+  addMsg2Profile "# Environment variables for open source drivers"
+  addEnvVar2Profile "IBM_DB_DIR" "$installRoot" "noAppend"
+  addEnvVar2Profile "IBM_DB_HOME" "$installRoot" "noAppend"
+  addEnvVar2Profile "IBM_DB_LIB" "$installRoot/lib$1" "noAppend"
+  addEnvVar2Profile "IBM_DB_INCLUDE" "$installRoot/include" "noAppend"
+  addEnvVar2Profile "DB2_HOME" "$installRoot/include" "noAppend"
+  addEnvVar2Profile "DB2LIB" "$installRoot/lib$1" "noAppend"
+  addMsg2Profile ""
+}
+
+#----------------------------------------------------------------------
+# Function: addClpPlus2Profile
+#
+# Add CLPPlus tool's environment variables settings to db2profile.
+#----------------------------------------------------------------------
+addClpPlus2Profile ()
+{
+  addMsg2Profile "# Environment variables for CLPPlus utility"
+  addEnvVar2Profile "CLASSPATH" "$installRoot/tools/clpplus.jar"
+  addEnvVar2Profile "CLASSPATH" "$installRoot/tools/jline-0.9.93.jar"
+  addEnvVar2Profile "CLASSPATH" "$installRoot/rdf/lib/antlr-3.3-java.jar"
+  addMsg2Profile ""
+}
+
+#----------------------------------------------------------------------
+# Function: addEnvVar2Profile
+#
+# Writes the environment variables settings to the db2profile and db2cshrc 
+# files.
+#----------------------------------------------------------------------
+addEnvVar2Profile ()
+{
+
+  if [ $# -ge 3 ] && [ "$3" = 'noAppend' ]
+  then
+    echo "export $1=\"$2\"" >> "$db2profile"
+    echo "setenv $1 \"$2\"" >> "$db2cshrc"
+  else
+    echo "export $1=\"$2\":\"\$$1"\" >> "$db2profile"
+    if [ $# -ge 3 ] && [ "$3" = 'doCheck' ]
+    then
+      echo "if ( \${?$1} == 0 ) setenv $1 \"\"" >> "$db2cshrc"
+    fi
+    echo "setenv $1 \"$2\":\"\$$1\"" >> "$db2cshrc"
+  fi
+}
+
+#----------------------------------------------------------------------
+# Function: addMsg2Profile
+#
+# To add description message into the db2profile & db2cshrc files.
+#----------------------------------------------------------------------
+addMsg2Profile ()
+{
+  if [ $# -lt 1 ]
+  then
+    return
+  fi
+
+  echo "$1" >> $db2profile
+  echo "$1" >> $db2cshrc
+}
+
+# ds driver upgrade functions
+
+#----------------------------------------------------------------------
+# Function: initUpgrade 
+#
+# Function to begin ds driver upgrade 
+#----------------------------------------------------------------------
+initUpgrade ()
+{
+  upgradePath="$1"
+  # If the path contains the trailing /, remove it.
+  upgradePath=${upgradePath%"/"}
+
+  # pre check for ds driver upgrade
+  preCheckForUpgrade
+  # to create existing ds driver backup directory
+  createBkpDirectory
+  # compare and copy files from temporary ds driver directory
+  # to existing ds driver
+  upgradeDsdFiles
+  # rename ds driver back up directory and remove's temp directory. 
+  renameBackupDsdDirectory
+  # remove license files
+  removeLicenseDirectory 
+
+  printMsg "The ds driver upgrade completed successfully."
+  print2Log "  The previously installed ds driver backup directory '$bkpDsdDirPath' is created." 
+  printMsgSuccess
+  printMsg "Check $logFile file for complete details."  
+
+}
+
+#----------------------------------------------------------------------
+# Function: preCheckForUpgrade 
+#
+# Feasibility checks done before upgrade -
+# a) check for the existance of given upgrade path.
+# b) To confirm installed package is ds driver.
+# c) check for directory permission for existing ds driver parent directory.
+# d) check for directory permission for existing ds driver.
+# e) check directory permission for the new ds driver install package.
+# f) check for any .bkp directory exists.
+# g) check the db2 release level of current installed ds driver and new ds driver.
+#----------------------------------------------------------------------
+preCheckForUpgrade ()
+{
+  # a) check for the existance of given upgrade path.
+  if [ -d "$upgradePath" ]
+  then
+    # set log file location for ds driver upgrade.
+    logFile="$upgradePath/installDSDriver.log"
+    if [ -f "$logFile" ]
+    then
+      rm "$logFile"
+    fi
+    printMsg ""
+    printMsg "IBM Data Server Driver (aka ds driver) upgrade has started ..."
+    printMsg ""
+    printMsg "ds driver upgrade pre check started."   
+    print2Log "  The '$upgradePath' directory exists."
+  else
+    echo "Error: The upgrade path '$upgradePath' does not exists."
+    echo "Exiting the ds driver upgrade."
+    exit 1
+  fi 
+  cd "$upgradePath"
+
+  # b) To confirm installed package is ds driver
+  if [ -f "$upgradePath/license/dsdriver_notices.txt" ] ||
+     [[ ( ! -f "$upgradePath/bin/db2batch" ) &&  ( `ls "$upgradePath/license" | wc -l | awk '{print $1}'`  -gt 2 )]]
+  then
+    printMsg "Installed package at '$upgradePath' is ds driver."
+    print2Log "  The check to confirm the existing package is ds driver is completed." 
+  else 
+    print2Log "  The '$upgradePath/license/dsdriver_notices.txt' file does not exists."
+    printMsg "Error: The package installed at '$upgradePath' is not ds driver."
+    printMsg "Rerun the installation by providing existing ds driver path." 
+    printMsgErr "  ds driver upgrade pre check failed." "upgrade"
+  fi 
+
+  # c) check for directory permission for existing ds driver parent directory
+  if [ ! -r "$upgradePath/.." ] || [ ! -w "$upgradePath/.." ] || [ ! -x "$upgradePath/.." ]
+  then
+    printMsg "Error: Insufficient permission on '$upgradePath' parent directory to let upgrade proceed."
+    printMsgErr "ds driver upgrade pre check failed." "upgrade"
+  fi
+  
+  # d) check for directory permission for existing ds driver
+  if [ ! -r "$upgradePath" ] || [ ! -w "$upgradePath" ] || [ ! -x "$upgradePath" ]
+  then
+    printMsg "Error: Insufficient permission on directory '$upgradePath' to let upgrade proceed."
+    printMsgErr "ds driver upgrade pre check failed." "upgrade"
+  fi
+  for dirName in adm bin bnd cfg cfgcache conv db2dump include java lib license msg php ruby tools 
+  do
+    if [ ! -d "$dirName" ]
+    then
+      continue
+    fi
+
+    if [ ! -r "$dirName" ] || [ ! -w "$dirName" ] || [ ! -x "$dirName" ]
+    then
+      printMsg "Error: Insufficient permission on directory"
+      printMsg "'$upgradePath/$dirName' to let upgrade proceed."
+      printMsgErr "  ds driver upgrade pre check failed." "upgrade"
+    fi
+  done
+  print2Log "  The directory permission check on '$upgradePath' and sub directories completed." 
+
+  # e) check directory permission for the new ds driver install package
+  cd "$newDsdPkgPath"
+  if [ ! -r "$newDsdPkgPath" ] || [ ! -w "$newDsdPkgPath" ] || [ ! -x "$newDsdPkgPath" ]
+  then
+      printMsg "Error: Insufficient permission on directory"
+      printMsg "'$newDsdPkgPath' to let installDSDriver proceed."
+      printMsgErr "ds driver upgrade pre check failed." "upgrade"
+  fi
+
+  for dirName in *
+  do
+    if [ ! -d "$dirName" ]
+    then
+      continue
+    fi
+
+    # if any of these directories exists, we assume installDSDriver script
+    # is already ran before.
+    if [ "$dirName" = 'java' ] || [ "$dirName" = 'bin'  ] ||
+       [ "$dirName" = 'lib'  ] || [ "$dirName" = 'ruby' ] ||
+       [ "$dirName" = 'php'  ] || [ "$dirName" = 'cfg'  ]
+    then
+      printMsg "Error: Installation seems already completed at '$newDsdPkgPath'; rerun not supported."
+      printMsgErr "ds driver upgrade pre check failed." "upgrade"
+    fi
+
+    # if any of the existing directory do not have necessary premissions to
+    # let rest of the installation proceed, abort now.
+    if [ ! -r "$dirName" ] || [ ! -w "$dirName" ] || [ ! -x "$dirName" ]
+    then
+      printMsg "Error: insufficient permission on directory"
+      printMsg "'$newDsdPkgPath/$dirName' to let installDSDriver proceed."
+      printMsgErr "  ds driver upgrade pre check failed." "upgrade"
+    fi
+  done    
+  print2Log "  The directory permission check on '$newDsdPkgPath' and sub directories completed." 
+  cd "$upgradePath" 
+
+  # f) check for any .bkp directory exists
+  cd ..
+  for dir in *
+  do
+   bkpdir=`expr "$dir" : '.*\(....\)'`
+   if [ "$bkpdir" = ".bkp" ]
+   then
+    printMsg "Error: A backup directory '$upgradePath/../$dir' is present please rename and re run upgrade."
+    printMsg "ds driver upgrade pre check failed."
+    exit 1
+   fi
+  done
+  print2Log "  No backup directory exists."
+  print2Log "  The backup directory check completed."
+
+  # g) check the db2 release level of current installed ds driver and new ds driver
+  # which is going to be installed.
+  # get current installed ds driver db2 release.
+  cd "$upgradePath"
+  getDb2Release "CurrentPkg"
+  getDb2Release "NewPkg"
+  compareDb2Release 
+  print2Log "  The existing ds driver is of version $curRelMajorVer.$curRelMinorVer Fix Pack $curRelModifier."
+  print2Log "  The installable ds driver is of version $newRelMajorVer.$newRelMinorVer Fix Pack $newRelModifier."
+  if [ "$upgradeFlag" -eq 1 ]
+  then
+   printMsg "The ds driver upgrade is possible."
+  else
+   printMsg "Error: The ds driver upgrade is not possible"
+   printMsgErr "  ds driver upgrade pre check failed." "upgrade"
+  fi 
+  printMsg "The ds driver upgrade pre check completed successfully."
+  printMsgSuccess  
+}
+
+#----------------------------------------------------------------------
+# Function: getDb2Release 
+#
+# To get the Db2 release of existing ds driver and new ds driver. 
+#----------------------------------------------------------------------
+getDb2Release()
+{
+  if [ "$1" = 'NewPkg' ]
+  then
+   createTempDsdDirectory 
+   dsdPath="$tmpDsdDirPath"
+  elif [ "$1" = 'CurrentPkg' ]
+  then
+   dsdPath="$upgradePath"
+  fi
+  cd "$dsdPath"
+  for dirName in *
+    do
+     case "$dirName" in
+       'clidriver')     
+          db2levelPath="$dsdPath/clidriver"
+       ;;
+        'bin')
+          db2levelPath="$dsdPath"
+       ;;
+     esac   
+  done       
+
+  export PATH="$db2levelPath/bin:$PATH" 2> /dev/null
+  setenv PATH "$db2levelPath/bin:$PATH" 2> /dev/null
+  if [ "$osname" = 'AIX' ]
+  then
+    export LIBPATH="$db2levelPath/lib:$LIBPATH" 2> /dev/null
+    setenv LIBPATH "$db2levelPath/lib:$LIBPATH" 2> /dev/null
+  elif [ "$osname" = 'HP-UX' ]
+  then
+    export SHLIB_PATH="$db2levelPath/lib:$SHLIB_PATH" 2> /dev/null 
+    setenv SHLIB_PATH "$db2levelPath/lib:$SHLIB_PATH" 2> /dev/null 
+  else 
+    export LD_LIBRARY_PATH="$db2levelPath/lib:$LD_LIBRARY_PATH" 2> /dev/null
+    setenv LD_LIBRARY_PATH "$db2levelPath/lib:$LD_LIBRARY_PATH" 2> /dev/null
+  fi
+
+  if [ "$1" = 'CurrentPkg' ]
+  then
+    "$db2levelPath"/bin/db2level > level.txt 2> /dev/null
+    if [ $? -ne 0 ]
+    then
+      rm level.txt
+      printMsg "Failed to check the db2level. If 32 bit libraries are linked, db2level utility "
+      printMsg "will not work. Please link to 64 bit libraries."
+      printMsgErr "  ds driver upgrade pre check failed." "upgrade"
+    fi
+  
+    curRelMajorVer=`grep  'v[0-9][0-9]*\.[0-9]\.[0-9]\.[0-9][0-9]*' level.txt| sed -e 's/^.*\(v[0-9][0-9]*\.[0-9]\.[0-9]\.[0-9][0-9]*\).*$/\1/g' | cut -c2-|cut -d'.' -f1`
+    curRelMinorVer=`grep  'v[0-9][0-9]*\.[0-9]\.[0-9]\.[0-9][0-9]*' level.txt | sed -e 's/^.*\(v[0-9][0-9]*\.[0-9]\.[0-9]\.[0-9][0-9]*\).*$/\1/g' | cut -c2-|cut -d'.' -f2`
+    curRelModifier=`grep  'v[0-9][0-9]*\.[0-9]\.[0-9]\.[0-9][0-9]*' level.txt | sed -e 's/^.*\(v[0-9][0-9]*\.[0-9]\.[0-9]\.[0-9][0-9]*\).*$/\1/g' | cut -c2-|cut -d'.' -f4`
+    rm level.txt
+  fi
+
+  if [ "$1" = 'NewPkg' ]
+  then
+    "$db2levelPath"/bin/db2level > level.txt
+    newRelMajorVer=`grep  'v[0-9][0-9]*\.[0-9]\.[0-9]\.[0-9][0-9]*' level.txt | sed -e 's/^.*\(v[0-9][0-9]*\.[0-9]\.[0-9]\.[0-9][0-9]*\).*$/\1/g' | cut -c2-|cut -d'.' -f1`
+    newRelMinorVer=`grep  'v[0-9][0-9]*\.[0-9]\.[0-9]\.[0-9][0-9]*' level.txt | sed -e 's/^.*\(v[0-9][0-9]*\.[0-9]\.[0-9]\.[0-9][0-9]*\).*$/\1/g' | cut -c2-|cut -d'.' -f2`
+    newRelModifier=`grep  'v[0-9][0-9]*\.[0-9]\.[0-9]\.[0-9][0-9]*' level.txt | sed -e 's/^.*\(v[0-9][0-9]*\.[0-9]\.[0-9]\.[0-9][0-9]*\).*$/\1/g' | cut -c2-|cut -d'.' -f4`
+    rm level.txt
+  fi
+  # cd to upgrade path
+  cd "$upgradePath"
+}
+
+#----------------------------------------------------------------------
+# Function: createTempDsdDirectory 
+#
+# Creates and copy new installable ds driver files to tmp directory. 
+#----------------------------------------------------------------------
+createTempDsdDirectory ()
+{
+  cd "$upgradePath"
+  
+  tmpDsdDirName=`date +"%m%d%Y%H%M%S"`'.tmp'
+  tmpDsdDirPath="$upgradePath/../$tmpDsdDirName"
+  mkdir "$tmpDsdDirPath"
+ 
+  # copy new ds driver directories to temporary ds driver directory.
+  cp -pR "$newDsdPkgPath/" "$tmpDsdDirPath/" 2> /dev/null
+
+  if [ $? -eq 0 ]
+  then
+    print2Log "  The installable ds driver files are copied to temporary directory."
+  else
+   printMsg "Error: Failed to copy ds driver files to temporary directory."
+   printMsgErr "  ds driver upgrade failed." "upgrade"
+  fi 
+
+  # to install ds driver under temp directory existing functions are called.
+  # for that 'installRoot' variable is assigned 'tmpDsdDirPath' value.
+  installRoot="$tmpDsdDirPath"
+  cd "$installRoot"
+
+  db2profile="$installRoot/db2profile"
+  db2cshrc="$installRoot/db2cshrc"
+
+  db2profile32="$installRoot/db2profile32"
+  db2cshrc32="$installRoot/db2cshrc32"
+
+  print2Log "  Installing new ds driver under temp directory '$installRoot'..."  
+
+  installEachDriver
+  installCleanup "upgrade"
+  # creating the db2profile and db2cshrs files
+  creDb2ProfileHeader
+  creDb2CshrcHeader
+
+  # we need to use existing ds driver path to add environment variable 
+  # settings to db2profile & db2cshrc files. Now 'installRoot' 
+  # variable is assigned 'upgradePath'value.
+  installRoot="$upgradePath"
+  fillProfileFiles
+
+  # create db2profile32 and db2chsrc32 on all 64-bit ds driver packages. 
+  if [ "$linuxia32" = "false" ] &&
+     [ "$lnxnly64" = "false" ]  
+  then
+     db2profile="$db2profile32"
+     db2cshrc="$db2cshrc32"
+     creDb2ProfileHeader
+     creDb2CshrcHeader
+     fillProfileFiles "32"
+
+  fi 
+}
+
+#----------------------------------------------------------------------
+# Function: compareDb2Release 
+#
+# Compares db2 release level of existing ds driver and new ds driver. 
+#----------------------------------------------------------------------
+compareDb2Release ()
+{
+  if [ "$newRelMajorVer" -gt "$curRelMajorVer" ]
+  then
+    newRelease=1
+    upgradeFlag=1
+  elif [ "$newRelMajorVer" -eq "$curRelMajorVer" ] && 
+       [ "$newRelMinorVer" -gt "$curRelMinorVer" ]
+  then
+    upgradeFlag=1
+  elif [ "$newRelMajorVer" -eq "$curRelMajorVer" ] &&
+       [ "$newRelMinorVer" -eq "$curRelMinorVer" ] &&
+       [ "$newRelModifier" -ge "$curRelModifier" ]
+  then
+    upgradeFlag=1
+  else
+    upgradeFlag=0
+  fi    
+  print2Log "  The Db2 release compare flag value $upgradeFlag" 
+}
+
+#----------------------------------------------------------------------
+# Function: createBkpDirectory 
+#
+# Creates the existing ds driver back up directory 
+#----------------------------------------------------------------------
+createBkpDirectory ()
+{
+  cd "$upgradePath"
+
+  bkpDirName="Db2_v$curRelMajorVer.$curRelMinorVer""FP$curRelModifier.bkp"
+  bkpDsdDirPath="$upgradePath/../$bkpDirName"
+
+  mkdir "$bkpDsdDirPath"
+  for dirs in *
+    do
+     cp -pR "$dirs" "$bkpDsdDirPath/" 2> /dev/null
+     if [ $? -eq 0 ]
+     then
+        print2Log "  The existing ds driver file '$upgradePath/$dirs' copied to '$bkpDsdDirPath' directory."
+     else
+        printMsg "Error: Failed to copy existing ds driver files to back up directory failed."
+        printMsgErr "  ds driver upgrade failed." "upgrade"
+     fi
+  done
+  printMsg "The existing ds driver back up directory created."
+  printMsgSuccess  
+}
+
+#----------------------------------------------------------------------
+# Function: upgradeDsdFiles 
+#
+# Upgrades the existing ds driver to new ds driver. 
+#----------------------------------------------------------------------
+upgradeDsdFiles ()
+{
+  cd "$tmpDsdDirPath"
+
+  # If it is the fixpack upgrade don't overwrite conlic.bin
+  if [ "$newRelease" -ne 1 ]
+  then
+      rm "cfgcache/conlic.bin" >> /dev/null 2>&1
+  fi
+      
+  printMsg "Copying files to existing ds driver... " 
+
+  for file in $( find ./ -type d )
+  do
+    destination=${file#??}
+    if [ ! -d "$bkpDsdDirPath/$destination" ]
+    then
+        mkdir "$bkpDsdDirPath/$destination"
+        if [ $? -eq 0 ]
+        then
+            print2Log " The Directory $bkpDsdDirPath/$destination is created."
+        else
+            print2Log "  Failed to create directory $bkpDsdDirPath/$destination"
+            printMsg "Error: Failed to upgrade ds driver files."
+            printMsgErr "  ds driver upgrade failed." "upgrade"
+        fi
+    fi
+  done
+ 
+  for file in $( find ./ -type f )
+  do
+      destination=${file#??}
+      cp -f "$file" "$bkpDsdDirPath/$destination"
+      if [ $? -eq 0 ]
+      then
+         print2Log " The file '$file' copied to '$bkpDsdDirPath' directory."
+      else
+         print2Log "  Failed to copy $file to '$bkpDsdDirPath'."
+         printMsg "Error: Failed to upgrade ds driver files."
+         printMsgErr "  ds driver upgrade failed." "upgrade"
+      fi
+  done
+
+  for file in $( find ./ -type l )
+  do
+      destination=${file#??}
+      mv -f "$file" "$bkpDsdDirPath/$destination"
+      if [ $? -eq 0 ]
+      then
+         print2Log " The file '$file' copied to '$bkpDsdDirPath' directory."
+      else
+         print2Log "  Failed to copy $file to '$bkpDsdDirPath'."
+         printMsg "Error: Failed to upgrade ds driver files."
+         printMsgErr "  ds driver upgrade failed." "upgrade"
+      fi
+  done
+
+  cd "$bkpDsdDirPath"
+
+  printMsgSuccess  
+}
+
+#----------------------------------------------------------------------
+# Function: renameBackupDsdDirectory 
+#
+# Renames the back up ds driver directory to existing ds driver name. 
+# Keeps existing ds driver as back up directory. 
+#----------------------------------------------------------------------
+renameBackupDsdDirectory ()
+{
+  # move installDSDrivr.log file from existing ds driver directory
+  # to upgraded ds driver directory.
+  mv "$logFile" "$bkpDsdDirPath"
+
+  cd "$upgradePath/.."
+  # rename existing ds driver directory to back up directory.
+  mv "$upgradePath" "$upgradePath.bkp"
+  
+  # rename the back up directory to existing ds driver directory.
+  # extract existing ds driver directory name
+  length=`expr "$upgradePath" : '.*'`
+  idx=`expr "$upgradePath" : '.*\/'`
+  numChars=`expr $length - $idx`
+  idx=`expr $idx + 1`
+  dirName=`echo $upgradePath $idx $numChars | awk '{ print substr( $1, $2, $3  ) }'`
+  mv "$bkpDirName" "$dirName"
+
+  # rename the existing ds driver directory to back up directory.
+  mv "$upgradePath.bkp" "$bkpDirName"
+  print2Log "  renamed '$upgradePath' to '$upgradePath.bkp'."
+  print2Log "  renamed '$bkpDsdDirPath' to '$upgradePath'."
+  print2Log "  renamed '$upgradePath.bkp' to '$bkpDirName'."
+
+  if [ "$linuxia32" = "false" ] &&
+     [ "$lnxnly64" = "false" ] 
+  then    
+     #create the soft link for gskit library from lib32 to lib
+     cd "$upgradePath/lib32/icc"
+     for libgsk in *gsk*
+     do
+        if [[ $? -eq 0 ]] 
+        then    
+            ln -sf "$upgradePath/lib32/icc/$libgsk" "$upgradePath/lib/icc/$libgsk"
+        fi    
+     done
+  fi 
+     
+  # remove temp ds driver directory
+  rm -rf "$tmpDsdDirPath"
+  print2Log "  removed '$tmpDsdDirPath'."
+}
+
+#----------------------------------------------------------------------
+# Function: removeLicenseDirectory 
+# 
+# To remove the nodelock files and conlic.bin cache file. 
+#----------------------------------------------------------------------
+removeLicenseDirectory ()
+{
+  cd "$upgradePath"
+
+  if [ "$newRelease" -eq 1 ]
+  then
+    if [ -d "license" ] &&
+       [ -f 'license/nodelock' ] &&
+       [ -f 'license/nodelock.bak' ]
+    then
+        rm 'license/nodelock'
+        print2Log "  The 'nodelock' file is removed."
+        rm 'license/nodelock.bak'
+        print2Log "  The 'nodelock.bak' file is removed."
+    fi
+    if [ -f 'cfgcache/conlic.bin' ] 
+    then
+      rm 'cfgcache/conlic.bin'
+      print2Log "  The 'cfgcache/conlic.bin' file is removed."
+    fi
+  fi 
+} 
+
+#----------------------------------------------------------------------
+# Function: upgradeErrorCleanup 
+# 
+# Removes the newly copied files and restores the original ds driver
+# files. 
+#----------------------------------------------------------------------
+upgradeErrorCleanup ()
+{
+  cd "$upgradePath/.."
+
+  printMsg "Performing upgrade error clean up ..." 
+  # remove temp ds driver directory
+  if [ -d "$tmpDsdDirPath" ]
+  then
+    rm -rf "$tmpDsdDirPath" 2> /dev/null
+    print2Log "  removed temporary ds driver from '$tmpDsdDirPath'."
+  fi
+
+  # remove back up ds driver directory 
+  if [ -d "$bkpDsdDirPath" ]
+  then
+    rm -rf "$bkpDsdDirPath" 2> /dev/null
+    print2Log "  removed back up ds driver from '$bkpDsdDirPath'."
+  fi
+  printMsg "The ds driver upgrade error cleanup completed."
+}
+
+
+#--------------------------
+# main routine starts here
+#--------------------------
+
+# clear the screen
+clear
+
+me=$0
+
+# process command line arguments
+if [ $# -eq 0 ]
+then
+
+  # declare variables for new directories to be created.
+  declareVariables
+  # Pre check, before starting the script.
+  preCheck
+
+  printMsg ""
+  printMsg "'installDSDriver' script has started ..."
+  printMsg ""
+
+  cd "$installRoot"
+
+  # create new directory and copy the files
+  printMsg "Unzipping and Copying each driver files to install path ..."
+  installEachDriver
+  printMsgSuccess
+  
+  # create db2profile and dbcshrc files' header part
+  printMsg "Generating db2profile & db2cshrc files ..."
+  creDb2ProfileHeader
+  creDb2CshrcHeader
+  
+  # add different environment variable settings to db2profile & db2cshrc files.
+  fillProfileFiles
+   
+  if [ "$linuxia32" = "false" ] &&
+     [ "$lnxnly64" = "false" ]
+  then 
+     # create db2profile32 and dbcshrc32 files' header part
+     printMsg "Generating db2profile32 & db2cshrc32 files ..."
+     db2profile="$db2profile32"
+     db2cshrc="$db2cshrc32"
+     creDb2ProfileHeader 
+     creDb2CshrcHeader 
+     fillProfileFiles "32"
+     #create the soft link for gskit library from lib32 to lib
+     if [ -d $installRoot/lib32/icc ]
+     then
+       cd "$installRoot/lib32/icc"
+       for libgsk in *gsk*
+       do
+          if [[ $? -eq 0 ]]
+          then
+              ln -sf "$installRoot/lib32/icc/$libgsk" "$installRoot/lib/icc/$libgsk"
+          fi   
+       done
+     fi  
+  fi
+
+  printMsgSuccess
+  
+  # remove the old directories unzipped files
+  installCleanup
+  
+  printMsg ""
+  printMsg "'installDSDriver' completed successfully."
+  printMsg "Check $logFile file for complete details."
+  printMsg ""
+
+elif [ $# -eq 1 ] && [ $1 = "-h" ]
+then
+
+  displayHelp
+
+elif [ $# -eq 2 ]
+then
+
+  if [ $1 = "-upgrade" ]
+  then
+    #check, if path specified is the current directory
+    if [ $2 = "." ] ||
+       [ $2 = "`pwd`" ]
+    then
+       echo  "Error: Please specify the existing ds driver install location to upgrade"
+       exit 1;
+    fi
+    # declare variables for ds driver upgrade 
+    declareVariables "upgrade"
+    # begin ds driver upgrade
+    initUpgrade "$2"
+  else
+    echo "Error: Invalid option(s). Run 'installDSDriver -h' for usage."
+    exit 1
+  fi
+
+else
+
+  echo "Error: Invalid option(s). Run 'installDSDriver -h' for usage."
+  exit 1
+
+fi
+
+exit 0

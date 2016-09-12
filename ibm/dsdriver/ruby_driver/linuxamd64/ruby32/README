@@ -1,0 +1,70 @@
+========================================================
+README for the IBM_DB Gem
+For ActiveRecord Version >= 1.15.5 (and Rails >= 1.2.5)
+========================================================
+The IBM_DB gem is the Rails Adapter/Ruby Driver for IBM DataServers. Installing the IBM_DB adapter and driver as a gem enables any application in the Ruby environment, including Rails, to interact with IBM data servers.
+
+The gem available with this DB2 package might be of a lower version as compared to the one available on the community. It is recommended that you download the latest gem available on the rubyibm project Page on RubyForge, as it might contain important fixes and new features.
+
+Installing the IBM_DB adapter and driver
+========================================
+The ibm_db gem is dependent on the Rails ORM, ActiveRecord. To install the ibm_db gem it is required that Rails gem be installed on the system. To install Rails and its dependencies issue the following command
+
+        gem install rails --include-dependencies
+
+    Installing ibm_db gem
+    =====================
+    Note:- The ibm_db gem for Windows comes with a pre-built binary of the ibm_db ruby driver, hence step 1 below can be safely ignored if installing on a Windows machine.
+
+    1. On Linux, UNIX, and Mac OS X platforms, set environment variables and optionally source the DB2 profile:
+
+        a)  Issue the following commands to set the environment variables IBM_DB_INCLUDE and IBM_DB_LIB:
+
+            $ export IBM_DB_INCLUDE=<DB2HOME>/include
+            $ export IBM_DB_LIB=<DB2HOME>/lib 
+
+            where DB2HOME is the directory where the IBM® data server/client is installed. For example:
+
+            $ export IBM_DB_INCLUDE=/home/db2inst1/sqllib/include
+            $ export IBM_DB_LIB=/home/db2inst1/sqllib/lib 
+
+        b)  Source the DB2 profile, as shown in the following example [optional]:
+
+            $ . /home/db2inst1/sqllib/db2profile
+
+    2.  Issue the following command to install the IBM_DB adapter and driver:
+
+        $ gem install ibm_db
+
+        You are presented with a list of gems from which to select. For example:
+
+        1. ibm_db 1.x.x (mswin32)
+        2. ibm_db 1.x.x (ruby)
+        3. ibm_db 1.x.x (ruby)
+        4. ibm_db 1.x.x (mswin32)
+
+        The versions displayed will always be the latest two versions of the gem available on the community.
+
+    3.  Select the gem appropriate for your platform, (mswin32) for Windows and (ruby) for other supported platforms.
+
+    With this the ibm_db gem is installed on your workstation.
+	
+    TEST (simple gem install verification)
+    ======================================
+        $ irb
+        irb(main):001:0> require 'ibm_db'    # if on win32 use require 'mswin32/ibm_db'
+        => true
+        irb(main):002:0> IBM_DB.connect 'database', 'username', 'password'
+        => #<IBM_DB::Connection:0x2dddf40>
+        irb(main):003:0> stmt = IBM_DB.exec conn,'select * from cars'
+        => #<IBM_DB::Statement:0x2beaabc>
+        irb(main):004:0> res = IBM_DB.fetch_assoc stmt (will fetch the first row of the result set)
+        $ 
+
+For details on architecture related considerations refer to http://publib.boulder.ibm.com/infocenter/db2luw/v9r7/index.jsp?topic=/com.ibm.swg.im.dbclient.ruby.doc/doc/t0052765.html
+
+Rubyibm FeedBack and Support Forum
+==================================
+   - rubyibm project Home Page :     http://rubyforge.org/projects/rubyibm/
+   - rubyibm forum             :     http://rubyforge.org/forum/?group_id=2361
+   - rubyibm bug reports       :     http://rubyforge.org/tracker/?group_id=2361
