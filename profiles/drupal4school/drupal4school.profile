@@ -55,7 +55,7 @@ function system_form_install_settings_form_alter(&$form, $form_state) {
   $database['default']['default']['collation'] = 'utf8mb4_general_ci';
   foreach ($form['settings'] as $key => $driver) {
     $form['settings'][$key]['username']['#default_value'] = 'root';
-    $form['settings'][$key]['password']['#default_value'] = getenv('DATABASE_PASSWORD');
+    $form['settings'][$key]['password']['#default_value'] = $_ENV['DATABASE_PASSWORD'];
     $form['settings'][$key]['advanced_options']['host']['#default_value'] = 'db';
   }
 }
