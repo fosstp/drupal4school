@@ -38,11 +38,9 @@ function drupal4school_enable_custom_modules_form($form, &$form_state) {
 function drupal4school_enable_custom_modules($form, &$form_state) {
    if ($form_state['values']['enable_modules'] == 'sims') {
      module_enable(array("thumbnail_link", "simsauth", "sims_field", "sims_views", "adsync", "gapps", "gevent", "db2health"), FALSE);
-     l10n_update_system_update(array ("module" => array("thumbnail_link", "simsauth", "sims_field", "sims_views", "adsync", "gapps", "gevent", "db2health")));
    }
    else {
      module_enable(array("thumbnail_link"), FALSE);
-     l10n_update_system_update(array ("module" => array("thumbnail_link")));
    }
 }
 
@@ -51,8 +49,8 @@ function drupal4school_enable_custom_modules($form, &$form_state) {
  */
 function system_form_install_settings_form_alter(&$form, $form_state) {
   global $databases;
-  $database['default']['default']['charset'] = 'utf8mb4';
-  $database['default']['default']['collation'] = 'utf8mb4_general_ci';
+  $databases['default']['default']['charset'] = 'utf8mb4';
+  $databases['default']['default']['collation'] = 'utf8mb4_general_ci';
   foreach ($form['settings'] as $key => $driver) {
     $form['settings'][$key]['username']['#default_value'] = 'root';
     $form['settings'][$key]['password']['#default_value'] = $_ENV['DATABASE_PASSWORD'];
