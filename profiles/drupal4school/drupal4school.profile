@@ -36,12 +36,14 @@ function drupal4school_enable_custom_modules_form($form, &$form_state) {
 }
 
 function drupal4school_enable_custom_modules($form, &$form_state) {
-   if ($form_state['values']['enable_modules'] == 'sims') {
-     module_enable(array("thumbnail_link", "simsauth", "sims_field", "sims_views", "adsync", "gapps", "gevent", "db2health"), FALSE);
-   }
-   else {
-     module_enable(array("thumbnail_link"), FALSE);
-   }
+  if ($form_state['values']['enable_modules'] == 'sims') {
+    module_enable(array("thumbnail_link", "simsauth", "sims_field", "sims_views", "adsync", "gapps", "gevent", "db2health"), FALSE);
+  }
+  else {
+    module_enable(array("thumbnail_link"), FALSE);
+  }
+  system("drush l10n-update-refresh");
+  system("drush l10n-update");
 }
 
 /**
