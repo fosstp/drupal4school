@@ -1,14 +1,25 @@
 FROM drupal:7
 MAINTAINER fosstp drupal team
-
+# Build-time metadata as defined at http://label-schema.org
+ARG BUILD_DATE
+ARG VCS_REF
+LABEL org.label-schema.build-date=$BUILD_DATE \
+      org.label-schema.docker.dockerfile="/Dockerfile" \
+      org.label-schema.license="GPL-3.0" \
+      org.label-schema.name="drupal for school" \
+      org.label-schema.url="https://chat.foss.tp.edu.tw/" \
+      org.label-schema.vcs-ref=$VCS_REF \
+      org.label-schema.vcs-type="Git" \
+      org.label-schema.vcs-url="https://github.com/fosstp/drupal4school"
+        
 RUN apt-get update \
-    && apt-get -y --no-install-recommends install ksh unzip gcc make git freetds-dev php-pear libldap2-dev mariadb-client ksh \
+    && apt-get -y --no-install-recommends install ksh unzip gcc make git freetds-dev php-pear libldap2-dev mariadb-client \
     && rm -rf /var/lib/apt/lists/* \
     && docker-php-ext-configure ldap --with-libdir=lib/x86_64-linux-gnu/ \
     && docker-php-ext-install ldap pcntl zip \
     && echo "memory_limit = 256M" > /usr/local/etc/php/conf.d/20-memory.ini
 
-#https://github.com/scrazy77/uploadprogress  upload progress for php7 scrazy
+#https://github.com/scrazy77/uploadprogress  upload progress for php7
 RUN cd ~ && git clone https://github.com/scrazy77/uploadprogress.git \
     && cd uploadprogress \
     && phpize \
@@ -18,22 +29,19 @@ RUN cd ~ && git clone https://github.com/scrazy77/uploadprogress.git \
     && cd .. \
     && rm -rf uploadprogress \
     && echo "extension=uploadprogress.so" > /usr/local/etc/php/conf.d/20-uploadprogress.ini
-
-
+    
 #https://www-304.ibm.com/support/docview.wss?rs=71&uid=swg27007053
 ADD ibm /opt/ibm
 RUN chmod +x /opt/ibm/dsdriver/installDSDriver \
     && ksh /opt/ibm/dsdriver/installDSDriver \
     && echo "/opt/ibm/dsdriver" | pecl install ibm_db2 \
     && { \
-    echo 'extension=ibm_db2.so'; \
-    echo 'ibm_db2.instance_name=db2inst1'; \
+	echo 'extension=ibm_db2.so'; \
+	echo 'ibm_db2.instance_name=db2inst1'; \
     } > /usr/local/etc/php/conf.d/30-ibm_db2.ini \
     && chmod a+w /usr/local/etc/php/ /usr/local/etc/php/conf.d \
     && chmod a+r -R /usr/local/lib/php/extensions \
-    && echo 'TLS_REQCERT never' >> /etc/ldap/ldap.conf
-
-
+    && echo 'TLS_REQCERT	never' >> /etc/ldap/ldap.conf
 
 #Now, install composer, drush then install google api client library.
 RUN curl -sS https://getcomposer.org/installer | php \
