@@ -1,7 +1,9 @@
 # drupal for school
 [中文說明](https://github.com/fosstp/drupal4school/blob/master/README.zh-tw.md)
+
 [![Build Status](https://travis-ci.org/fosstp/drupal4school.svg?branch=master)](https://travis-ci.org/fosstp/drupal4school)
 [![](https://images.microbadger.com/badges/version/fosstp/drupal.svg)](http://microbadger.com/images/fosstp/drupal "Get your own version badge on microbadger.com")
+[![](https://images.microbadger.com/badges/image/fosstp/drupal.svg)](http://microbadger.com/images/fosstp/drupal "Get your own image badge on microbadger.com")
 
 This docker image contains debian 8.2(jessie) + php 5.6 + apache 2.2 + drupal 7 + custom drupal modules & themes
 
