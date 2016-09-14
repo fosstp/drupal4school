@@ -1,7 +1,8 @@
 # Drupal學校架站包計劃
 
 [![Build Status](https://travis-ci.org/fosstp/drupal4school.svg?branch=master)](https://travis-ci.org/fosstp/drupal4school)
-
+[![](https://images.microbadger.com/badges/version/fosstp/drupal.svg)](http://microbadger.com/images/fosstp/drupal "Get your own version badge on microbadger.com")
+[![](https://images.microbadger.com/badges/image/fosstp/drupal.svg)](http://microbadger.com/images/fosstp/drupal "Get your own image badge on microbadger.com")
 這是一個 [docker](https://www.docker.com/) 映像檔，此映像檔內容包含：debian 8.2(jessie) + php 5.6 + apache 2.2 + drupal 7 + 校務行政模組及無障礙版型
 
 如何使用此映像檔
