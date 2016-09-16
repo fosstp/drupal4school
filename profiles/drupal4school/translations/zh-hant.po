@@ -15,6 +15,9 @@ msgstr ""
 msgid "Drupal for School at Taipei"
 msgstr "臺北市Drupal校園網站架站包計畫"
 
+msgid "select custom modules"
+msgstr "選擇自訂模組"
+
 msgid "enable custom modules"
 msgstr "啟用自訂模組"
 
@@ -23,3 +26,6 @@ msgstr "包含國小校務行政系統相關模組"
 
 msgid "do not include primary school sims modules."
 msgstr "不要包含國小校務行政系統相關模組"
+
+msgid "import custom modules translations"
+msgstr "匯入自訂模組中文翻譯"
