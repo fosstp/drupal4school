@@ -1,4 +1,9 @@
 # Drupal學校架站包計劃
+
+[![Build Status](https://travis-ci.org/fosstp/drupal4school.svg?branch=master)](https://travis-ci.org/fosstp/drupal4school)
+[![](https://images.microbadger.com/badges/version/fosstp/drupal.svg)](http://microbadger.com/images/fosstp/drupal "Get your own version badge on microbadger.com")
+[![](https://images.microbadger.com/badges/image/fosstp/drupal.svg)](http://microbadger.com/images/fosstp/drupal "Get your own image badge on microbadger.com")
+
 這是一個 [docker](https://www.docker.com/) 映像檔，此映像檔內容包含：debian 8.2(jessie) + php 5.6 + apache 2.2 + drupal 7 + 校務行政模組及無障礙版型
 
 如何使用此映像檔
@@ -18,7 +23,7 @@ $ docker run --name some-drupal -p 80:80 -p 443:443 -d fosstp/drupal
 ## MySQL
 $ docker run --name mysql -e MYSQL_ROOT_PASSWORD=資料庫管理密碼 -d mysql/mysql-server
 
-$ docker run --name drupal --link mysql:db -d fosstp/drupal
+$ docker run --name drupal --link mysql:db -e DATABASE_PASSWORD=資料庫管理密碼 -d fosstp/drupal
 
 資料庫類型：MySQL, MariaDB, 或相容資料庫。上述範例則是使用 mysql 官網(非 docker 官網)組建的 docker 映像檔。
 資料庫名稱：需要透過指令或 phpmyadmin 網頁介面先把空白資料庫建好。我們建議您使用以下指令，安裝一台 phpmyadmin 微虛擬機，作為管理資料庫之用：
@@ -32,7 +37,7 @@ $ docker run --name phpmyadmin --link mysql:db -p 8080:80 -d phpmyadmin/phpmyadm
 
 $ docker run --name postgres -e POSTGRES_PASSWORD=資料庫管理密碼 -d postgres
 
-$ docker run --name drupal --link postgres:db -d fosstp/drupal
+$ docker run --name drupal --link postgres:db -e DATABASE_PASSWORD=資料庫管理密碼 -d fosstp/drupal
 
 資料庫類型：PostgreSQL
 資料庫名稱/管理帳號/密碼：<詳情請參考[DockerHub](https://hub.docker.com/_/postgres/)的說明>

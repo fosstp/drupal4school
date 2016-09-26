@@ -1,0 +1,36 @@
+===================================================
+README for the IBM_DB Driver and IBM_DB_DBI Wrapper
+===================================================
+The IBM_DB driver and IBM_DB_DBI Wrapper provides Python interface that enables any application in the Python environment to interact with IBM data servers. The wrapper conforms to the DBI specification located at: http://www.python.org/dev/peps/pep-0249/
+
+The extensions available with this DB2 package might be of a lower version as compared to the one available on the community. It is recommended that you download the latest driver/wrapper available on the PYPI page of IBM_DB (http://pypi.python.org/pypi/ibm_db) or Google Code (http://code.google.com/p/ibm-db/), as it might contain important fixes and new features.
+
+Installing the IBM_DB wrapper and driver
+========================================
+
+Please follow the link below for installation of the binaries
+
+http://code.google.com/p/ibm-db/wiki/ibm_db_README
+
+Installing the IBM_DB_SA Adaptor
+================================
+
+Please follow the link below for installation of the binaries
+
+http://code.google.com/p/ibm-db/wiki/README
+
+Installing the IBM_DB_DJANGO Adaptor
+====================================
+
+Please follow the link below for installation of the binaries
+
+http://code.google.com/p/ibm-db/wiki/ibm_db_django_README
+
+Feedback
+========
+Your feedback is very much appreciated and expected through project ibm-db:
+
+- ibm-db project              :    http://code.google.com/p/ibm-db/
+- ibm-db wiki                 :    http://code.google.com/p/ibm-db/w/list
+- ibm-db issues reports       :    http://code.google.com/p/ibm-db/issues/list
+- ibm-db developers           :    opendev@us.ibm.com

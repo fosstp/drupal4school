@@ -1,0 +1,13 @@
+#!/bin/sh
+
+RDF_BIN=`dirname "$0"`
+
+RDF_BIN=`cd "$RDF_BIN";pwd`
+
+RDF_JAR="file://$RDF_BIN/../lib/db2rdf.jar"
+
+UDF_CALL="CALL sqlj.install_jar('$RDF_JAR','DB2RDFJAR') "
+
+db2 connect to $1 user $2
+
+db2 $UDF_CALL
