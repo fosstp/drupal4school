@@ -1096,7 +1096,7 @@ function gapps_start($form, &$form_state) {
           if ($form_state['values']['log']) {
             $detail_log .= t('Can not find this user group from Google Apps, createing the group now....<br />');
           }
-          $stdgroup = 'class-' . $class;
+          $stdgroup = 'class-' . $classid;
           $group_key = $stdgroup . '@' . variable_get('gapps_student_domain');
           $group = new Google_Service_Directory_Group();
           $group->setEmail($group_key);
