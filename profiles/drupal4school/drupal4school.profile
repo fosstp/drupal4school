@@ -72,6 +72,8 @@ function enable_custom_modules(&$install_state) {
   else {
     $modules = array("thumbnail_link");
   }
+  module_enable($modules, FALSE);
+  
   $files = system_rebuild_module_data();
   $operations = array();
   foreach ($modules as $module) {
