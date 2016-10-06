@@ -31,8 +31,12 @@ RUN cd ~ && git clone https://github.com/scrazy77/uploadprogress.git \
     && echo "extension=uploadprogress.so" > /usr/local/etc/php/conf.d/20-uploadprogress.ini
     
 #https://www-304.ibm.com/support/docview.wss?rs=71&uid=swg27007053
-ADD ibm /opt/ibm
-RUN chmod +x /opt/ibm/dsdriver/installDSDriver \
+RUN mkdir /opt/ibm \
+    && cd /opt/ibm \
+    && curl -fSL "https://www.dropbox.com/s/naq3p1hx852huxl/v10.5fp6_linuxx64_dsdriver.tar.gz?dl=0" -o dsdriver.tar.gz \
+    && tar -xzf dsdriver.tar.gz \
+    && rm -rf dsdriver.tar.gz \
+    && chmod +x /opt/ibm/dsdriver/installDSDriver \
     && ksh /opt/ibm/dsdriver/installDSDriver \
     && echo "/opt/ibm/dsdriver" | pecl install ibm_db2 \
     && { \

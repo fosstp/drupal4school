@@ -1,7 +1,0 @@
-#!/bin/sh
-
-RDF_BIN=`dirname "$0"`
-
-source "$RDF_BIN"\/setUp
-
-java com.ibm.rdf.store.cmd.UpdateRdfStoreStats $*
