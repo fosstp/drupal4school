@@ -1,0 +1,747 @@
+# $Id$
+#
+# Chinese, Traditional translation of Drupal (general)
+# Copyright 2016 Huang Yong-Ming <fhpsmis@gmail.com>
+# Generated from files:
+#  theme-settings.php: n/a
+#  js/bootstrap.admin.js: n/a
+#  d4s_bootstrap.info: n/a
+#  templates/sysytem/html.tpl.php: n/a
+#  templates/sysytem/html.vars.php: n/a
+#  templates/sysytem/page.tpl.php: n/a
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2016-06-03 09:01+0800\n"
+"PO-Revision-Date: 2016-06-03 09:01+0800\n"
+"Last-Translator: Huang Yong-Ming <fhpsmis@gmail.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n>1);\n"
+
+#: theme-settings.php:42
+msgid "jQuery Update is not enabled, Bootstrap requires a minimum jQuery version of 1.9 or higher. Please enable the <a href=\"!jquery_update_project_url\">jQuery Update</a> module. If you are seeing this message, then you must <a href=\"!jquery_update_configure\">manually configuration</a> this setting or optionally <a href=\"!bootstrap_suppress_jquery_error\">suppress this message</a> instead."
+msgstr ""
+
+#: theme-settings.php:59
+msgid "Drupal4School Accessibility Bootstrap Settings"
+msgstr ""
+"臺北市自由軟體推動小組 Drupal4School 校園網站計畫 "
+"無障礙版型設置"
+
+#: theme-settings.php:66
+msgid "General"
+msgstr "一般"
+
+#: theme-settings.php:73
+msgid "Container"
+msgstr "容器標籤"
+
+#: theme-settings.php:79
+msgid "Fluid container"
+msgstr "開啟流動版面"
+
+#: theme-settings.php:81
+msgid "Use <code>.container-fluid</code> class. See <a href=\"!url\" target=\"_blank\">Fluid container</a>"
+msgstr ""
+"開啟<code>.container-fluid</code> 類別標籤(class)，請參考 <a "
+"href=\"!url\" target=\"_blank\">Fluid container</a>"
+
+#: theme-settings.php:89
+msgid "Buttons"
+msgstr "按鍵"
+
+#: theme-settings.php:95
+msgid "Default button size"
+msgstr "預設的按鍵大小"
+
+#: theme-settings.php:97;305
+msgid "Normal"
+msgstr "標準"
+
+#: theme-settings.php:99
+msgid "Extra Small"
+msgstr "極小"
+
+#: theme-settings.php:100
+msgid "Small"
+msgstr "小型"
+
+#: theme-settings.php:101
+msgid "Large"
+msgstr "大型"
+
+#: theme-settings.php:106
+msgid "Colorize Buttons"
+msgstr "按鍵上色"
+
+#: theme-settings.php:108
+msgid "Adds classes to buttons based on their text value. See: <a href=\"!bootstrap_url\" target=\"_blank\">Buttons</a> and <a href=\"!api_url\" target=\"_blank\">hook_bootstrap_colorize_text_alter()</a>"
+msgstr ""
+"按鍵新增類別標籤(class)，並且依據給定的類別上色，例如：btn-default或btn-primary..等。請參考: "
+"<a href=\"!bootstrap_url\" "
+"target=\"_blank\">Bootstrap的按鍵選項</a> 和 <a "
+"href=\"!api_url\" "
+"target=\"_blank\">hook_bootstrap_colorize_text_alter()</a>"
+
+#: theme-settings.php:115
+msgid "Iconize Buttons"
+msgstr "按鍵加圖示"
+
+#: theme-settings.php:117
+msgid "Adds icons to buttons based on the text value. See: <a href=\"!api_url\" target=\"_blank\">hook_bootstrap_iconize_text_alter()</a>"
+msgstr ""
+"按鍵依據給定的參數增加圖示(icons)，請參考: <a "
+"href=\"!api_url\" "
+"target=\"_blank\">hook_bootstrap_iconize_text_alter()</a>"
+
+#: theme-settings.php:125;401
+msgid "Forms"
+msgstr "表單"
+
+#: theme-settings.php:131
+msgid "Make required elements display as an error"
+msgstr "填寫表單時如果漏填必填項目，顯示提醒訊息。"
+
+#: theme-settings.php:133
+msgid "If an element in a form is required, enabling this will always display the element with a <code>.has-error</code> class. This turns the element red and helps in usability for determining which form elements are required to submit the form.  This feature compliments the \"JavaScript > Forms > Automatically remove error classes when values have been entered\" feature."
+msgstr ""
+"開啟此選項後，使用者填寫表單時如果漏填必填項目，將顯示提醒訊息。另外，建議開啟 "
+"\"JavaScript > 表單 > "
+"使用者補填必填項目後，自動關閉提醒訊息。"
+
+#: theme-settings.php:137
+msgid "Smart form descriptions (via Tooltips)"
+msgstr "開啟表單提示"
+
+#: theme-settings.php:138
+msgid "Convert descriptions into tooltips (must be enabled) automatically based on certain criteria. This helps reduce the, sometimes unnecessary, amount of noise on a page full of form elements."
+msgstr "開啟此選項後，自動將表單的說明文字轉換為提示。"
+
+#: theme-settings.php:143
+msgid "\"Smart form descriptions\" maximum character limit"
+msgstr "說明文字超過下列字數將不會轉為提示"
+
+#: theme-settings.php:144
+msgid "Prevents descriptions from becoming tooltips by checking the character length of the description (HTML is not counted towards this limit). To disable this filtering criteria, leave an empty value."
+msgstr "說明文字超過上列字數將不會轉為提示，若留白則不會啟用此功能。"
+
+#: theme-settings.php:154
+msgid "\"Smart form descriptions\" allowed (HTML) tags"
+msgstr "套用下列HTML標籤的說明文字才會轉為提示"
+
+#: theme-settings.php:155
+msgid "Prevents descriptions from becoming tooltips by checking for HTML not in the list above (i.e. links). Separate by commas. To disable this filtering criteria, leave an empty value."
+msgstr "套用上列HTML標籤才會轉為提示，使用\",\"分隔，若留白則不會啟用此功能。"
+
+#: theme-settings.php:167
+msgid "Images"
+msgstr "圖片"
+
+#: theme-settings.php:173
+msgid "Default image shape"
+msgstr "預設的圖片外觀"
+
+#: theme-settings.php:174
+msgid "Add classes to an <code>&lt;img&gt;</code> element to easily style images in any project. Note: Internet Explorer 8 lacks support for rounded corners. See: <a href=\"!bootstrap_url\" target=\"_blank\">Image Shapes</a>"
+msgstr ""
+"在圖片<code>&lt;img&gt;</code>增加類別標籤(class)以美化網站的圖片。請注意：Internet "
+"Explorer 8不支援圓角圖片，請參考<a href=\"!bootstrap_url\" "
+"target=\"_blank\">Image Shapes</a>說明。"
+
+#: theme-settings.php:178;331
+msgid "None"
+msgstr "無"
+
+#: theme-settings.php:180
+msgid "Rounded"
+msgstr "圓角"
+
+#: theme-settings.php:181
+msgid "Circle"
+msgstr "圓形"
+
+#: theme-settings.php:182
+msgid "Thumbnail"
+msgstr "縮圖"
+
+#: theme-settings.php:187 js/bootstrap.admin.js:0
+msgid "Responsive Images"
+msgstr "開啟自適應圖片"
+
+#: theme-settings.php:189
+msgid "Images in Bootstrap 3 can be made responsive-friendly via the addition of the <code>.img-responsive</code> class. This applies <code>max-width: 100%;</code> and <code>height: auto;</code> to the image so that it scales nicely to the parent element."
+msgstr ""
+"增加類別標籤<code>.img-responsive</code>讓圖片根據螢幕尺寸自動調整適合的大小。使用CSS語法 "
+"<code>max-width: 100%;</code> 和 <code>height: "
+"auto;</code>讓圖片等比例縮放。"
+
+#: theme-settings.php:195
+msgid "Tables"
+msgstr "表格"
+
+#: theme-settings.php:201
+msgid "Bordered table"
+msgstr "表格加邊框"
+
+#: theme-settings.php:203
+msgid "Add borders on all sides of the table and cells."
+msgstr "所有的表格和儲存格的四邊都加入邊框效果。"
+
+#: theme-settings.php:207
+msgid "Condensed table"
+msgstr "緊湊表格"
+
+#: theme-settings.php:209
+msgid "Make tables more compact by cutting cell padding in half."
+msgstr "將表格儲存格（cell）的內距（padding）減半，讓表格更加緊湊。"
+
+#: theme-settings.php:213
+msgid "Hover rows"
+msgstr "停留效果"
+
+#: theme-settings.php:215
+msgid "Enable a hover state on table rows."
+msgstr "當滑鼠指標停留表格的行列上，呈現顏色變換效果。"
+
+#: theme-settings.php:219
+msgid "Striped rows"
+msgstr "條紋式表格"
+
+#: theme-settings.php:221
+msgid "Add zebra-striping to any table row within the <code>&lt;tbody&gt;</code>. <strong>Note:</strong> Striped tables are styled via the <code>:nth-child</code> CSS selector, which is not available in Internet Explorer 8."
+msgstr "為表格的 <code>&lt;tbody&gt;</code> 加入像斑馬條紋的樣式。 <strong>注意:</strong> 條紋式表格是經由 <code>:nth-child</code> CSS 選擇器來實現，Internet Explorer 8不支援。"
+
+#: theme-settings.php:225
+msgid "Responsive tables"
+msgstr "自適應表格"
+
+#: theme-settings.php:227
+msgid "Makes tables responsive by wrapping them in <code>.table-responsive</code> to make them scroll horizontally up to small devices (under 768px). When viewing on anything larger than 768px wide, you will not see any difference in these tables."
+msgstr "將任何 <code>.table</code> 包裝在 <code>.table-responsive</code> 之內以建立自適應表格，它能讓表格在小螢幕設備（小於 768px）進行水平式的滑動。當你在任何大於 768px 的螢幕寬度觀看時，並不會和平常有何不同。"
+
+#: theme-settings.php:233
+msgid "Components"
+msgstr "元件"
+
+#: theme-settings.php:240 js/bootstrap.admin.js:0
+msgid "Breadcrumbs"
+msgstr "階層式選單"
+
+#: theme-settings.php:245
+msgid "The <a href=\"!path_breadcrumbs\" target=\"_blank\">Path Breadcrumbs</a> module is being used to manage this site's breadcrumbs display and cannot be configured via theme settings. To configure this site's breadcrumbs display, enable the <a href=\"!enable\">Path Breadcrumbs UI</a> sub-module and then visit <a href=\"!settings\">Path Breadcrumbs Settings</a>."
+msgstr "本版型的階層選單使用<a href=\"!path_breadcrumbs\" target=\"_blank\">Path Breadcrumbs</a>模組管理，無法在此設定。請啟用<a href=\"!enable\">Path Breadcrumbs UI</a>子模組後，從<a href=\"!settings\">Path Breadcrumbs Settings</a>設定。"
+
+#: theme-settings.php:256
+msgid "Breadcrumb visibility"
+msgstr "是否顯示階層式選單"
+
+#: theme-settings.php:259
+msgid "Hidden"
+msgstr "隱藏"
+
+#: theme-settings.php:260
+msgid "Visible"
+msgstr "可視"
+
+#: theme-settings.php:261
+msgid "Only in admin areas"
+msgstr "只在管理畫面顯示"
+
+#: theme-settings.php:266
+msgid "Show \"Home\" breadcrumb link"
+msgstr "顯示\"Home\" 連結"
+
+#: theme-settings.php:268
+msgid "If your site has a module dedicated to handling breadcrumbs already, ensure this setting is enabled."
+msgstr "如果你的網站已經有專門管理階層式選單的模組，記得開啟這一項設定。"
+
+#: theme-settings.php:277
+msgid "Show current page title at end"
+msgstr "在階層式選單的最後顯示目前網頁的標題"
+
+#: theme-settings.php:279
+msgid "If your site has a module dedicated to handling breadcrumbs already, ensure this setting is disabled."
+msgstr "如果你的網站已經有專門管理階層式選單的模組，記得關閉這一項設定。"
+
+#: theme-settings.php:291
+msgid "Navbar"
+msgstr "導覽列"
+
+#: theme-settings.php:297
+msgid "Navbar Position"
+msgstr "導覽列位置"
+
+#: theme-settings.php:298
+msgid "Select your Navbar position."
+msgstr "選擇導覽列位置"
+
+#: theme-settings.php:301
+msgid "Static Top"
+msgstr "頂端靜止"
+
+#: theme-settings.php:302
+msgid "Fixed Top"
+msgstr "固定至頂端"
+
+#: theme-settings.php:303
+msgid "Fixed Bottom"
+msgstr "固定至底端"
+
+#: theme-settings.php:309
+msgid "Inverse navbar style"
+msgstr "轉換導覽列的樣式"
+
+#: theme-settings.php:310
+msgid "Select if you want the inverse navbar style."
+msgstr "是否要轉換導覽列的樣式"
+
+#: theme-settings.php:317
+msgid "Pagination"
+msgstr "分頁巡覽"
+
+#: theme-settings.php:324
+msgid "Show \"First\" and \"Last\" links in the pager"
+msgstr "在分頁顯示第一頁和最後一頁的連結。"
+
+#: theme-settings.php:325
+msgid "Allow user to choose whether to display \"First\" and \"Last\" links on pagers."
+msgstr "否在分頁顯示第一頁和最後一頁的連結。"
+
+#: theme-settings.php:332
+msgid ".well (normal)"
+msgstr ""
+
+#: theme-settings.php:333
+msgid ".well-sm (small)"
+msgstr ""
+
+#: theme-settings.php:334
+msgid ".well-lg (large)"
+msgstr ""
+
+#: theme-settings.php:338
+msgid "Region wells"
+msgstr "嵌入效果"
+
+#: theme-settings.php:339
+msgid "Enable the <code>.well</code>, <code>.well-sm</code> or <code>.well-lg</code> classes for specified regions. See: documentation on <a href=\"!wells\" target=\"_blank\">Bootstrap Wells</a>."
+msgstr "使用 <code>.well</code>, <code>.well-sm</code> 或 <code>.well-lg</code> 樣式能給元素加入一個簡單的嵌入效果。請參考<a href=\"!wells\" target=\"_blank\">Bootstrap Wells</a>"
+
+#: theme-settings.php:362
+msgid "JavaScript"
+msgstr "JavaScript"
+
+#: theme-settings.php:369
+msgid "Anchors"
+msgstr "定錨點"
+
+#: theme-settings.php:372
+msgid "This plugin is not able to be configured from the UI as it is severely broken. In an effort to balance not break backwards compatibility and to prevent new users from running into unforeseen issues, you must manually opt-in/out inside your theme .info file. Please see the following issue for more details: <a href=\"!url\" target=\"_blank\">Replace custom JS with the bootstrap-anchor plugin</a>"
+msgstr "這個外掛元件不能從使用者介面調整設定。為了避免不經意的出錯，請務必在 "版型名稱.info"中手動設定。請參考：<a href=\"!url\" target=\"_blank\">Replace custom JS with the bootstrap-anchor plugin</a>"
+
+#: theme-settings.php:378
+msgid "Fix anchor positions"
+msgstr "修正定錨點的位置"
+
+#: theme-settings.php:380
+msgid "Ensures anchors are correctly positioned only when there is margin or padding detected on the BODY element. This is useful when fixed navbar or administration menus are used."
+msgstr "在"BODY"標籤中如果有邊界(margin)或內距(padding)屬性，確認定錨點的位置正確。當使用固定導覽列或管理選單時，這將很有用。"
+
+#: theme-settings.php:386
+msgid "Enable smooth scrolling"
+msgstr "啟用滑順捲動"
+
+#: theme-settings.php:388
+msgid "Animates page by scrolling to an anchor link target smoothly when clicked."
+msgstr "滑鼠點選連結後，滑順捲動頁面至定錨點"
+
+#: theme-settings.php:407
+msgid "Automatically remove error classes when values have been entered"
+msgstr "當輸入數值時，自動移除錯誤的類別(classes)"
+
+#: theme-settings.php:409
+msgid "If an element has a <code>.has-error</code> class attached to it, enabling this will automatically remove that class when a value is entered. This feature compliments the \"General > Forms > Make required elements display as an error\" feature."
+msgstr "如果元件顯示<code>.has-error</code>錯誤訊息，啟用此選項後，當輸入數值時將自動移除"
+
+#: theme-settings.php:415 js/bootstrap.admin.js:0
+msgid "Popovers"
+msgstr "彈出視窗"
+
+#: theme-settings.php:416
+msgid "Add small overlays of content, like those on the iPad, to any element for housing secondary information."
+msgstr "為任意元素加入一個小覆蓋層以加入額外資訊，類似iPad的功能。"
+
+#: theme-settings.php:422
+msgid "Enable popovers."
+msgstr "啟用彈出視窗"
+
+#: theme-settings.php:423
+msgid "Elements that have the <code>data-toggle=\"popover\"</code> attribute set will automatically initialize the popover upon page load. <strong class=\"error text-error\">WARNING: This feature can sometimes impact performance. Disable if pages appear to \"hang\" after initial load.</strong>"
+msgstr "當讀取網頁時，有<code>data-toggle=\"popover\"</code>屬性的元件將自動初始化彈出視窗。"<strong class=\"error text-error\">警告: 這項設定有時會影響效能，請關閉這項功能當網頁讀取時感覺\"卡卡的\"。</strong>"
+
+#: theme-settings.php:428;537
+msgid "Options"
+msgstr "選項"
+
+#: theme-settings.php:429
+msgid "These are global options. Each popover can independently override desired settings by appending the option name to <code>data-</code>. Example: <code>data-animation=\"false\"</code>."
+msgstr "這些是全域選項，利用附加選項<code>data-</code>，每個彈出視窗可以單獨設定，例如：<code>data-animation=\"false\"</code>"
+
+#: theme-settings.php:440;549
+msgid "animate"
+msgstr "動畫效果"
+
+#: theme-settings.php:441
+msgid "Apply a CSS fade transition to the popover."
+msgstr "彈出視窗套用CSS淡入淡出轉場效果。"
+
+#: theme-settings.php:446;555
+msgid "HTML"
+msgstr "HTML標籤"
+
+#: theme-settings.php:447
+msgid "Insert HTML into the popover. If false, jQuery's text method will be used to insert content into the DOM. Use text if you're worried about XSS attacks."
+msgstr "在彈出視窗套用HTML標籤。如果不啟用，jQuery的文字模式將在DOM內加入內容。如果擔心跨網站指令碼攻擊(XSS attacks)，請使用文字模式(text)。"
+
+#: theme-settings.php:452;561
+msgid "placement"
+msgstr "定位"
+
+#: theme-settings.php:453
+msgid "Where to position the popover. When \"auto\" is specified, it will dynamically reorient the popover. For example, if placement is \"auto left\", the popover will display to the left when possible, otherwise it will display right."
+msgstr "設定彈出視窗的位置。如果設定為\"auto\",彈出視窗的位置將動態定位。如果設定為\"auto left\",彈出視窗的位置將置左，如果不能置左，則顯示在右邊。"
+
+#: theme-settings.php:469;578
+msgid "selector"
+msgstr "選擇器"
+
+#: theme-settings.php:470
+msgid "If a selector is provided, tooltip objects will be delegated to the specified targets. In practice, this is used to enable dynamic HTML content to have popovers added. See <a href=\"!this\" target=\"_blank\">this</a> and <a href=\"!example\" target=\"_blank\">an informative example</a>."
+msgstr "如果設定選擇器，工具列提示物件將被指定至特定物件。實務上，通常用在附有彈出視窗的動態HTML內容上。"
+
+#: theme-settings.php:478;584
+msgid "trigger"
+msgstr "觸發條件"
+
+#: theme-settings.php:479
+msgid "How a popover is triggered."
+msgstr "設定彈出視窗的觸發條件。"
+
+#: theme-settings.php:490
+msgid "Auto-close on document click"
+msgstr "當按下文件時自動關閉"
+
+#: theme-settings.php:491
+msgid "Will automatically close the current popover if a click occurs anywhere else other than the popover element."
+msgstr "當滑鼠點按除了彈出視窗外的任何地方時將自動關閉。"
+
+#: theme-settings.php:496
+msgid "title"
+msgstr "標題"
+
+#: theme-settings.php:497
+msgid "Default title value if \"title\" attribute isn't present."
+msgstr "標題的預設值。"
+
+#: theme-settings.php:502
+msgid "content"
+msgstr "內容"
+
+#: theme-settings.php:503
+msgid "Default content value if \"data-content\" or \"data-target\" attributes are not present."
+msgstr "內容預設值。"
+
+#: theme-settings.php:508;596
+msgid "delay"
+msgstr "延遲時間"
+
+#: theme-settings.php:509
+msgid "The amount of time to delay showing and hiding the popover (in milliseconds). Does not apply to manual trigger type."
+msgstr "顯示和隱藏彈出視窗的延遲時間(單位：毫秒)，不能套用在手動設定的觸發條件上。"
+
+#: theme-settings.php:514;602
+msgid "container"
+msgstr "容器"
+
+#: theme-settings.php:515
+msgid "Appends the popover to a specific element. Example: \"body\". This option is particularly useful in that it allows you to position the popover in the flow of the document near the triggering element - which will prevent the popover from floating away from the triggering element during a window resize."
+msgstr "在特定的元件上套用彈出視窗，例如：\"body\"。這個選項很有用，可以讓你很順利的把彈出視窗放在靠近觸發元件的文件裡，這將避免當瀏覽器視窗調整大小時，彈出視窗離開觸發元件。"
+
+#: theme-settings.php:522 js/bootstrap.admin.js:0
+msgid "Tooltips"
+msgstr "提示工具列"
+
+#: theme-settings.php:523
+msgid "Inspired by the excellent jQuery.tipsy plugin written by Jason Frame; Tooltips are an updated version, which don't rely on images, use CSS3 for animations, and data-attributes for local title storage. See <a href=\"!url\" target=\"_blank\">Bootstrap tooltips</a> for more documentation."
+msgstr "新版的工具提示列，不需倚賴影像，而是使用CSS3的動畫技術，和data-attributes的本地端儲存技術。請參考<a href=\"!url\" target=\"_blank\">Bootstrap tooltips</a>說明。"
+
+#: theme-settings.php:531
+msgid "Enable tooltips"
+msgstr "啟用工具提示列"
+
+#: theme-settings.php:532
+msgid "Elements that have the <code>data-toggle=\"tooltip\"</code> attribute set will automatically initialize the tooltip upon page load. <strong class=\"error text-error\">WARNING: This feature can sometimes impact performance. Disable if pages appear to \"hang\" after initial load.</strong>"
+msgstr "當讀取網頁時，有<code>data-toggle=\"tooltip\"</code>屬性的元件將自動初始化工具提示列。"<strong class=\"error text-error\">警告: 這項設定有時會影響效能，請關閉這項功能當網頁讀取時感覺\"卡卡的\"。</strong>"
+
+#: theme-settings.php:538
+msgid "These are global options. Each tooltip can independently override desired settings by appending the option name to <code>data-</code>. Example: <code>data-animation=\"false\"</code>."
+msgstr "這些是全域選項，利用附加選項<code>data-</code>，每個工具提示列可以單獨設定，例如：<code>data-animation=\"false\"</code>"
+
+#: theme-settings.php:550
+msgid "Apply a CSS fade transition to the tooltip."
+msgstr "工具提示列套用CSS淡入淡出轉場效果。"
+
+#: theme-settings.php:556
+msgid "Insert HTML into the tooltip. If false, jQuery's text method will be used to insert content into the DOM. Use text if you're worried about XSS attacks."
+msgstr "在工具提示列套用HTML標籤。如果不啟用，jQuery的文字模式將在DOM內加入內容。如果擔心跨網站指令碼攻擊(XSS attacks)，請使用文字模式(text)。"
+
+#: theme-settings.php:562
+msgid "Where to position the tooltip. When \"auto\" is specified, it will dynamically reorient the tooltip. For example, if placement is \"auto left\", the tooltip will display to the left when possible, otherwise it will display right."
+msgstr "設定工具提示列的位置。如果設定為\"auto\",工具提示列的位置將動態定位。如果設定為\"auto left\",工具提示列的位置將置左，如果不能置左，則顯示在右邊。"
+
+#: theme-settings.php:579
+msgid "If a selector is provided, tooltip objects will be delegated to the specified targets."
+msgstr "如果設定選擇器，工具列提示物件將被指定至特定物件。"
+
+#: theme-settings.php:585
+msgid "How a tooltip is triggered."
+msgstr "設定工具提示列的觸發條件"
+
+#: theme-settings.php:597
+msgid "The amount of time to delay showing and hiding the tooltip (in milliseconds). Does not apply to manual trigger type."
+msgstr "顯示和隱藏工具提示列的延遲時間(單位：毫秒)，不能套用在手動設定的觸發條件上。"
+
+#: theme-settings.php:603
+msgid "Appends the tooltip to a specific element. Example: \"body\""
+msgstr "在特定的元件上套用工具提示列，例如：\"body\"。"
+
+#: theme-settings.php:610
+msgid "Advanced"
+msgstr "進階設定"
+
+#: theme-settings.php:617
+msgid "Suppress jQuery version error message"
+msgstr "停用jQuery的版本錯誤訊息"
+
+#: theme-settings.php:619
+msgid "Enable this if the version of jQuery has been upgraded to 1.9+ using a method other than the <a href=\"!jquery_update\" target=\"_blank\">jQuery Update</a> module."
+msgstr "啟用此選項，如果jQuery不是利用<a href=\"!jquery_update\" target=\"_blank\">jQuery Update</a>模組升級至1.9以上。"
+
+#: theme-settings.php:633
+msgid "Accessibility"
+msgstr "無障礙設定"
+
+#: theme-settings.php:644
+msgid "Accessibility Guide Brick"
+msgstr "無障礙導盲磚"
+
+#: theme-settings.php:652
+msgid "Show guide brick"
+msgstr "啟用導盲磚"
+
+#: theme-settings.php:654
+msgid "After enabled guide brick function, you still have to build their own instructions page (<em> Administer -> Content -> Add new content </em>), and then create a link for the page, placed prominently on the home page position (<em> Administer -> Structure -> Menu </em>)!"
+msgstr "開啟導盲磚功能後，您仍然必須自行建立導盲磚的說明頁面( <em>管理介面->內容->新增內容</em> )，然後為該頁面建立連結，擺放在首頁醒目的位置( <em>管理介面->架構->選單</em> )！"
+
+#: theme-settings.php:659
+msgid "Navigation Menu"
+msgstr "導覽列選單"
+
+#: theme-settings.php:666
+msgid "Accesskey for Navigation Menu"
+msgstr "導覽列選單快捷鍵設置"
+
+#: theme-settings.php:668
+msgid "Now that we know has been used by browser as keyboard shortcuts, include: d, e, f. This block using access key Alt+n by default!"
+msgstr "已知被瀏覽器用掉而不能設置的快速鍵有：d、e、f，此區塊快捷鍵預設使用 Alt+n！"
+
+#: theme-settings.php:674
+msgid "Header"
+msgstr "頁首"
+
+#: theme-settings.php:682
+msgid "Accesskey for Header Block"
+msgstr "頁首快捷鍵設置"
+
+#: theme-settings.php:684
+msgid "This block using access key Alt+h by default!"
+msgstr "此區塊快捷鍵預設使用 Alt+h！"
+
+#: theme-settings.php:690
+msgid "Sidebar"
+msgstr "側邊選單"
+
+#: theme-settings.php:698
+msgid "Accesskey for First Sidebar"
+msgstr "左側邊選單快捷鍵設置"
+
+#: theme-settings.php:700
+msgid "This block using access key Alt+r by default!"
+msgstr "此區塊快捷鍵預設使用 Alt+r！"
+
+#: theme-settings.php:705
+msgid "Accesskey for Second Sidebar"
+msgstr "右側邊選單快捷鍵設置"
+
+#: theme-settings.php:707
+msgid "This block using access key Alt+s by default!"
+msgstr "此區塊快捷鍵預設使用 Alt+s！"
+
+#: theme-settings.php:713 d4s_bootstrap.info:0
+msgid "Highlighted"
+msgstr "醒目提示區"
+
+#: theme-settings.php:720
+msgid "Accesskey for Highlighted Block"
+msgstr "醒目提示區快捷鍵設置"
+
+#: theme-settings.php:722
+msgid "This block using access key Alt+i by default!"
+msgstr "此區塊快捷鍵預設使用 Alt+i！"
+
+#: theme-settings.php:728 d4s_bootstrap.info:0
+msgid "Content"
+msgstr "主要內容"
+
+#: theme-settings.php:736
+msgid "Accesskey for Main Content"
+msgstr "主要內容快捷鍵設置"
+
+#: theme-settings.php:738
+msgid "This block using access key Alt+c by default!"
+msgstr "此區塊快捷鍵預設使用 Alt+c！"
+
+#: theme-settings.php:745
+msgid "Accesskey for Help Content"
+msgstr "說明欄快捷鍵設置"
+
+#: theme-settings.php:747
+msgid "This block using access key Alt+p by default!"
+msgstr "此區塊快捷鍵預設使用 Alt+p！"
+
+#: theme-settings.php:753 d4s_bootstrap.info:0
+msgid "Footer"
+msgstr "頁尾"
+
+#: theme-settings.php:760
+msgid "Accesskey for Footer block"
+msgstr "頁尾快捷鍵設置"
+
+#: theme-settings.php:762
+msgid "This block using access key Alt+o by default!"
+msgstr "此區塊快捷鍵預設使用 Alt+o！"
+
+#: theme-settings.php:813
+msgid "Credits"
+msgstr "作者資訊"
+
+#: theme-settings.php:821
+msgid "Show credits"
+msgstr "顯示本版型的作者資訊"
+
+#: theme-settings.php:822
+msgid "Use the checkbox to enable or disable credits."
+msgstr "也許您覺得顯示版型作者的資訊很酷，那就打開吧！"
+
+#: d4s_bootstrap.info:0
+msgid "d4s_bootstrap"
+msgstr ""
+"臺北市自由軟體推動小組 Drupal4School 校園網站計畫 "
+"Bootstrap無障礙版型"
+
+#: d4s_bootstrap.info:0
+msgid "Drupal4School By Huang Yong-Ming"
+msgstr ""
+"<strong>臺北市自由軟體推動小組Drupal4School校園網站計畫 "
+"Bootstrap無障礙版型</strong><p>版型設計：臺北市福星國小 "
+"黃永銘</p><li>此版型為<a "
+"href=\"https://www.drupal.org/project/bootstrap\" "
+"target=\"_blank\">bootstrap</a>原始版型的無障礙化子版型，需要先安裝原始bootstrap版型，安裝後，將此版型放在和原始版型同一層目錄(注意：不是放在原始版型的下層目錄內)，然後啟用此版型，原始版型可不需啟用。另外，根據原作者說明<a "
+"href=\"http://drupal-bootstrap.org/api/bootstrap\" "
+"target=\"_blank\">http://drupal-bootstrap.org/api/bootstrap</a>，原始版型升級不會影響子版型的運作。</li><li>使用移動手持式裝置瀏覽時，本版型無障礙導盲磚將自動隱藏，畢竟無障礙規範只針對PC上的線性瀏覽器。</li><li>此版型未附首頁圖片輪播，強烈建議安裝圖片輪播模組<a "
+"href=\"https://www.drupal.org/project/nivo_slider\" "
+"target=\"_blank\">Nivo "
+"Slider</a>，按下按鈕圖片直接上傳，操作非常直覺簡單。</li><li>強烈建議安裝<a "
+"href=\"https://www.drupal.org/project/views_bootstrap\" "
+"target=\"_blank\">Views "
+"Bootstrap</a>，內含許多bootstrap元件，例如：Accordion,Grid,Tab,Carousel...等，讓bootstrap版型發揮最大功能。</li><strong>◎無障礙支援功能說明：</strong><li>導盲磚(定位點)</li><li>H213200 "
+"自動補齊超連結 title 屬性</li><li>H101000 "
+"自動補齊圖片的 alt 屬性</li><li>H101001 自動補齊 applet "
+"的 alt 以及內容替代文字說明</li><li>H101002 自動補齊 "
+"object 的 alt 屬性</li><li>H101004 自動補齊影像地圖的 alt "
+"屬性</li><li>H105101 自動為表格中的 TH 加入 scope "
+"屬性</li><li>H305004 自動補齊表格的 summary "
+"屬性</li><li>H205105 自動補齊資料表格的 title "
+"屬性</li><li>H206104 自動補齊超連結 tabindex "
+"屬性</li><li>H203201 自動用 &amp;lt;em&amp;gt; 代替 "
+"&amp;lt;i&amp;gt;</li><li>自動用 &amp;lt;strong&amp;gt; 代替 "
+"&amp;lt;b&amp;gt;</li><li>H203004 "
+"在PC上版型自動改用相對尺寸(如%)，在平板上則維持絕對定位，畢竟無障礙規範只針對PC上的線性瀏覽器</li>"
+
+#: d4s_bootstrap.info:0
+msgid "Navigation"
+msgstr "導覽列"
+
+#: d4s_bootstrap.info:0
+msgid "Top Bar"
+msgstr "頂端橫幅區"
+
+#: d4s_bootstrap.info:0
+msgid "Help"
+msgstr "說明欄"
+
+#: d4s_bootstrap.info:0
+msgid "Primary"
+msgstr "左側邊欄"
+
+#: d4s_bootstrap.info:0
+msgid "Secondary"
+msgstr "右側邊欄"
+
+#: d4s_bootstrap.info:0
+msgid "Page top"
+msgstr "頁首"
+
+#: d4s_bootstrap.info:0
+msgid "Page bottom"
+msgstr "頁底"
+
+#: js/bootstrap.admin.js:0
+msgid "Responsive Tables"
+msgstr "自適應表格"
+
+#: js/bootstrap.admin.js:0
+msgid "Inverse"
+msgstr "相反化"
+
+#: js/bootstrap.admin.js:0
+msgid "CDN provider: %provider"
+msgstr "CDN 來源: %provider"
+
+#: js/bootstrap.admin.js:0
+msgid "Preview of the Bootstrap theme"
+msgstr "Bootstrap版型預覽"
+
+#: js/bootstrap.admin.js:0
+msgid "Preview of the @title Bootswatch theme"
+msgstr "預覽@title Bootswatch版型"
+
+#: templates/sysytem/html.tpl.php:74
+msgid "Skip to main content"
+msgstr "移至主內容"
+
+#: templates/sysytem/html.vars.php:82
+msgid "Search"
+msgstr "搜尋"
+
+#: templates/sysytem/page.tpl.php:80;81;86
+msgid "Home"
+msgstr "首頁"
+
+#: templates/sysytem/page.tpl.php:92
+msgid "Toggle navigation"
+msgstr "觸發導覽列"

@@ -1,0 +1,61 @@
+/**
+ * Place your custom styles here.
+ */
+body{font-size:100%; /* ~16px */}
+.page-header,#first-time{display:none;}
+.block-title{
+	font-size:2em;
+	margin-top:16px!important;
+	font-weight:600;
+}
+
+.panel-default {
+    border-color: #ddd;
+}
+.panel {
+    margin-bottom: 20px!important;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    -webkit-box-shadow: 0 1px 1px rgba(0,0,0,.05);
+    box-shadow: 0 1px 1px rgba(0,0,0,.05);	
+}
+.views-field-title{
+	font-size:1.5em;	
+	color: #333;
+    background-color: #f5f5f5;
+    border-color: #ddd;
+    padding: 10px 15px;
+    border-bottom: 1px solid transparent;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+	
+}
+.views-field-body{font-size:1.5em;padding: 15px;}
+.views-field-created{padding:0 0 10px 16px;}
+h3,.h3 {font-size: 18px;}
+.thumbnail .caption.h3 {text-align: center;}
+.thumbnail > img, .thumbnail a > img { width: 100%;}
+.field-item{font-size:1.8em;}
+
+.field-item img{
+    margin-top: 20px;
+	vertical-align:middle;
+	
+	border: 2px solid #999;
+    padding: 6px;
+    -webkit-box-shadow: 0px 0px 4px rgba (50, 50, 50, 0.7);
+    -moz-box-shadow: 0px 0px 4px rgba(50, 50, 50, 0.7);
+    box-shadow: 0px 0px 4px rgba(50, 50, 50, 0.7);
+    -webkit-border-radius: 15px;
+    -moz-border-radius: 15px;
+    border-radius: 15px;
+    background: -moz-linear-gradient(top,#fff, #e8e2e1);
+    background: -ms-linear-gradient(top, #fff, #e8e2e1);
+    background: -o-linear-gradient(top, #fff, #e8e2e1);
+    background: -webkit-linear-gradient(top, #fff, #e8e2e1);	
+	
+}
+
+
+
+
