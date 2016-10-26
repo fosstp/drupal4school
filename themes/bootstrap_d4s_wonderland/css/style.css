@@ -1,0 +1,496 @@
+/**
+ * Place your custom styles here.
+ */
+/*開始設定全域字體*/
+*{
+    font-family: Arial,Microsoft JhengHei,MingLiU,sans-serif;
+}
+/*結束設定全域字體*/
+/*開始修改herder icon button*/
+#d4s_icon_button .btn-primary{
+    background-color: rgba(49,133,203,0.65);
+    margin: 0 0 0 1px;
+    border-radius: 0 0 3px 3px;
+    border: 0;
+}
+#d4s_icon_button #d4s_icon_button_facebook:hover{
+    background-color: rgb(59, 89, 152);
+}
+#d4s_icon_button #d4s_icon_button_youtube:hover{
+    background-color: rgb(179, 18, 23);
+}
+#d4s_icon_button #d4s_icon_button_twitter:hover{
+    background-color: rgb(64, 153, 255);
+}
+#d4s_icon_button #d4s_icon_button_google_plus:hover{
+    background-color: rgb(179, 18, 23);
+}
+/*結束修改herder icon button*/
+/*開始修改header背景*/
+#d4s_header{
+    background: #8fc0ea;
+    background-image: url("../img/cloud.png") ;
+    background-position: center top;
+    background-repeat: repeat-x;
+}
+/*結束修改header背景*/
+/*開始修改navbar*/
+.navbar-default {
+    background-color: #3185cb;
+    border-color: #2b75b3;
+}
+/*結束修改navbar*/
+/*開始修改navbar字體*/
+.navbar-nav > li > a{
+    color: white !important;
+    font-size: 18px;
+    margin-top: 9px;
+}
+/*結束修改navbar字體*/
+/*開始修改nivoSlider*/
+.nivoSlider{
+    position: relative;
+    background: #fff;
+    border-radius: 8px;
+    -moz-border-radius: 8px;
+    -webkit-border-radius: 8px;
+    border: 10px solid white;
+    box-shadow: 0px 5px 0px 0px #e8e2c4 !important;
+    margin-bottom: -58px !important;
+    z-index: 999;
+}
+/*結束修改nivoSlider*/
+/*開始新增左側氣球*/
+#d4s_slider_left{
+    width: 346.5px;
+    background-image: url("../img/slider-left.png");
+    position: absolute;
+    top: -14px;
+    left: 0;
+    z-index: 1;
+    background-position: right top;
+    bottom: 5px;
+}
+/*結束新增左側氣球*/
+/*開始新增右側氣球*/
+#d4s_slider_right{
+    width: 346.5px;
+    background-image: url("../img/slider-left.png");
+    position: absolute;
+    top: -14px;
+    left:auto;
+    right: 0;
+    z-index: 1;
+    background-position: left top;
+    bottom: 5px;
+}
+/*結束新增右側氣球*/
+/*開始修改Top Content*/
+#d4s_top_content{
+    padding-top: 80px !important;
+    padding-bottom: 25px !important;
+    border-top: 7px solid !important;
+    border-bottom: 15px solid !important;
+    border-color: #fee6b4 !important;
+    background-color: #fcf5d5 !important;
+    position: relative !important;
+    margin: 0 !important;
+    outline: 0 !important;
+    font-size: 100% !important;
+    vertical-align: baseline !important;
+    display: block !important;
+    min-height: 280px !important;
+}
+.view-booking-system-views p{
+    text-align: left;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    color: #a2825c;
+    font-size: 14px;
+    line-height: 1.8;
+    display: block;
+}
+.view-booking-system-views .btn{
+     position: relative;
+     left: 100px;
+}
+.view-booking-system-views .btn a{
+    color: white;
+}
+/*結束修改Top Content*/
+/*開始隱藏navbar pagination*/
+.nivo-controlNav{
+    display: none;
+}
+/*結束隱藏navbar pagination*/
+/*開始隱藏歡文字*/
+.page-header{
+    display: none;
+}
+/*結束隱藏歡迎文字*/
+/*開始活動報導標題文字*/
+.block-views .block-title{
+    font-size: 32px;
+    color: #3185cb;
+    line-height: 1.25;
+    margin-top: 30px !important;
+}
+/*結束活動報導標題文字*/
+/*開始活動報導影像*/
+.owl-item img{
+    border: 10px solid #fee6b4;
+    border-radius: 10px;
+    width: 250px;
+    height: 250px;
+    margin:15px;
+}
+/*結束活動報導影像*/
+/*開始活動報導標題文字*/
+.owl-item .views-field-title span a{
+    font-size: 1.6875em;
+    font-weight: 900;
+    color: #a2825c;
+    line-height: 1.375;
+}
+/*結束活動報導標題文字*/
+/*開始活動報導內文*/
+.owl-item .views-field-body p{
+    font-size: 14px;
+    color: #a2825c;
+    line-height: 1.375;
+    margin-bottom: 20px;
+}
+/*結束活動報導內文*/
+/*開始活動報導按鈕*/
+.owl-item .views-field-view-node a{
+   color:white;
+    font-size:14px;
+}
+.owl-item .views-field-view-node span:hover{
+    background-color:#ff633c;
+    border: 1px solid transparent;
+}
+/*結束活動報導按鈕*/
+.owl-wrapper-outer{
+    text-align: center;
+}
+.owl-item{
+    align-content: center;
+}
+.booking_system_title{
+    font-size: 1.75em;
+    text-align: left;
+    clear: none;
+    margin-bottom: 10px;
+    z-index: 1;
+    margin-top: 0;
+    line-height: 1.0909090909;
+    font-weight: 900;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    outline: 0;
+    vertical-align: baseline;
+    background: transparent;
+}
+.booking_system_image{
+    margin-right: 15px;
+}
+/*開始修改tabs*/
+#block-quicktabs-tabs-test .block-title{
+    font-size: 32px;
+    color: #3185cb;
+    line-height: 1.25;
+    margin-top: 50px;
+}
+.block-quicktabs ul .active a{
+    background-color: #fee6b4;
+
+}
+.block-quicktabs .nav-tabs{
+    margin-bottom: 0px;
+    border-bottom: 0px;
+}
+.block-quicktabs .tab-content table{
+    margin-bottom: 10px;
+}
+.block-quicktabs .tab-content{
+    border-color: #fee6b4 !important;
+    background-color: #fcf5d5;
+    border: 1px solid;
+    -webkit-border-radius: 0 8px 8px 8px;
+    -moz-border-radius: 0 8px 8px 8px;
+    border-radius: 0 8px 8px 8px;
+}
+.block-quicktabs .tab-content .table-striped > tbody > tr:nth-of-type(odd){
+    background-color: white;
+
+}
+.block-quicktabs .tab-content .table-hover > tbody > tr:hover{
+    background-color: rgba(242,161,176,0.4)
+}
+.block-quicktabs .tab-content table tbody tr td a{
+    text-decoration: none ;
+    color: #a2825c ;
+}
+/*結束修改tabs*/
+/*開始修改post calendar*/
+
+.owl_carousel_year{
+      position: absolute;
+      top: 25px;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: -1;
+      font-size: 12px;
+      line-height: 1;
+      color: #fff;
+      display: block;
+      width: 70px;
+      height: 15px;
+      -webkit-border-top-left-radius: 5px;
+      -moz-border-radius-topleft: 5px;
+      border-top-left-radius: 5px;
+      background-color: #3185cb;
+      padding: 3px;
+  }
+.owl_carousel_month{
+    position: absolute;
+    top: 40px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: -1;
+    font-size: 12px;
+    line-height: 1;
+    color: #fff;
+    display: block;
+    width: 70px;
+    height: 45px;
+    padding: 1px;
+    -webkit-border-bottom-left-radius: 5px;
+    -moz-border-radius-bottomleft: 5px;
+    border-bottom-left-radius: 5px;
+    background-color: #3185cb;
+}
+.owl_carousel_day{
+    position: absolute;
+    top: 55px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    font-size: 26px;
+    line-height: 1;
+    color: #fff;
+    display: block;
+    width: 70px;
+    height: 30px;
+    padding: 2px;
+}
+.owl_carousel_day::after{
+    content: "";
+    position:absolute;
+    bottom: -4px;
+    left: 5px;
+    right: 0;
+    height: 20px;
+    -webkit-transform: skewY(6deg);
+    -moz-transform: skewY(6deg);
+    -ms-transform: skewY(6deg);
+    transform: skewY(6deg);
+    background: rgba(0,0,0,0.15);
+    z-index: -2 !important;
+}
+.owl_carousel_calendar_image{
+    margin-left: 65px;
+    height: 230px;
+    width: 480px;
+    background-color: #fcf5d5;
+    border-top-left-radius: 9px;
+    border-top-right-radius: 9px;
+}
+.owl_carousel_calendar_image img{
+    border: 0px;
+    height: 185px;
+    width: 185px;
+    background-color: #fcf5d5;
+    border-radius: 9px;
+    position: absolute;
+}
+.owl_carousel_calendar_title{
+    position: absolute;
+    top: 20px;
+}
+.owl_carousel_calendar_body{
+    position: absolute;
+    top: 60px;
+    left: 290px;
+    max-width: 230px;
+    text-align: left;
+}
+.view-owl-carousel-calendar .views-field-type{
+    background-color: #fee6b4;
+    width: 480px;
+    margin-left: 65px;
+    padding:3px;
+    padding-left: 15px;
+    text-align: left;
+}
+.view-owl-carousel-calendar .views-field-last-comment-name{
+    background-color: #fee6b4;
+    width: 480px;
+    margin-left: 65px;
+    padding:3px;
+    padding-left: 15px;
+    text-align: left;
+    border-bottom-left-radius: 9px;
+    border-bottom-right-radius: 9px;
+}
+.owl-carousel-calendar-button{
+    position: absolute;
+    bottom: 5px;
+    right: 50px;
+}
+/*結束修改post calendar*/
+/*開始隱藏新增內容*/
+#first-time{
+    display: none;
+}
+/*結束隱藏新增內容*/
+/*開始修改footer_top*/
+#d4s_footer_top{
+    background-image: url("../img/land.png");
+    background-position: center bottom;
+    background-repeat: repeat-x;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 160px;
+    z-index: 4;
+}
+/*結束修改footer_top*/
+/*開始修改footer*/
+#d4s_footer{
+    background-color: #3185cb;
+    border-top: 15px solid rgba(0,0,0,0.12);
+    color: #fff;
+    height: auto;
+    padding-top: 25px;
+    padding: 50px;
+}
+/*結束修改footer*/
+/*開始修改footer_bottom*/
+#d4s_footer_bottom{
+    background-color: #2b75b3;
+    color: rgba(255,255,255,0.5);
+    height: 56px;
+    padding: 15px 0;
+}
+/*結束修改footer_bottom*/
+/*開始footer gallery*/
+.footer_gallery img{
+    border: 2px solid rgba(255,255,255,0.5);
+    border-radius: 4px;
+    margin: 0px;
+    width:260px;
+    height: 260px;
+}
+.region-footer-left .block-title{
+    color: #fff !important;
+    font-size: 24px;
+    line-height: 1;
+    margin-bottom: 10px;
+    margin-top: 0;
+    font-weight: 700;
+    text-align: left;
+}
+/*結束footer gallery*/
+/*開始修改footer other web*/
+#block-views-footer-other-web-view-block .block-title{
+    color: #fff !important;
+    font-size: 24px;
+    line-height: 1;
+    margin-bottom: 10px;
+    margin-top: 0;
+    font-weight: 700;
+    text-align: left;
+}
+.view-footer-other-web-view img{
+    padding: 8px;
+}
+/*結束修改footer other web*/
+/*開始修改footer calendar*/
+#view-footer-calendar-views-block-1 .block-title{
+    color: #fff !important;
+    font-size: 24px;
+    line-height: 1;
+    margin-bottom: 10px;
+    margin-top: 0;
+    font-weight: 700;
+    text-align: left;
+}
+.view-footer-calendar-views .date-nav{
+    padding-bottom: 0px;
+    margin-bottom: 0px;
+}
+.view-footer-calendar-views .date-nav a{
+    color: white;
+}
+.view-footer-calendar-views .date-nav .pager li{
+    background-color: transparent;
+}
+.view-footer-calendar-views .date-nav .pager li a{
+    background: rgba(255,255,255,0.5);
+    color: #fff;
+    border-radius: 3px;
+    border: 0px;
+    font-size: 16px;
+}
+.view-footer-calendar-views{
+    border: 1px solid;
+    padding: 10px;
+    border-radius: 8px;
+    background: rgba(0,0,0,0.08);
+    border-color: rgba(255,255,255,0.5);
+    color: white;!important;
+}
+.view-footer-calendar-views table tr{
+    border: 0px !important;
+    color: white !important;
+    background-color: transparent !important;
+}
+.view-footer-calendar-views table td{
+    border: 0px !important;
+    color: white !important;
+    background-color: transparent !important;
+    text-align: center;
+}
+.view-footer-calendar-views table tr th{
+    border: 0px !important;
+    color: white !important;
+    background-color: transparent !important;
+}
+.view-footer-calendar-views table tbody{
+    background-color: #3185cb;
+}
+.view-footer-calendar-views table tbody tr:nth-child(even){
+   background: rgba(0,0,0,0.08) !important;
+}
+.today .month{
+    background: rgba(255,255,255,0.5) !important;
+    border-radius: 4px;
+}
+.mini-day-on a{
+    color: white;
+}
+/*結束修改footer calendar*/
+/*開始修該hr*/
+hr{
+    border-color: #fee6b4;
+    margin-top: 40px;
+}
+/*結束修改hr*/
+.main-container{
+    margin-top: 40px;
+}

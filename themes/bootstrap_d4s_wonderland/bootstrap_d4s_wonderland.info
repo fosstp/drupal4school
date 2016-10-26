@@ -1,0 +1,32 @@
+name = Bootstrap Sub-Theme by FOSSTP
+description = A RWD sub-theme based on Bootstrap which is designed by FOSSTP.
+core = 7.x
+base theme = bootstrap
+
+
+;;;;;;;;;;;;;;;;;;;;;
+;; Regions
+;;;;;;;;;;;;;;;;;;;;;
+
+regions[navigation]     = 'Navigation'
+regions[header]         = 'Top Bar'
+regions[top_content]    = 'Top Content'
+regions[highlighted]    = 'Highlighted'
+regions[help]           = 'Help'
+regions[content]        = 'Content'
+regions[sidebar_first]  = 'Primary'
+regions[sidebar_second] = 'Secondary'
+regions[footer]         = 'Footer'
+regions[footer_left]    = 'Footer Left'
+regions[footer_center]  = 'Footer Center'
+regions[footer_right]   = 'Footer Right'
+regions[footer_bottom]  = 'Footer Bottom'
+regions[page_top]       = 'Page top'
+regions[page_bottom]    = 'Page bottom'
+
+
+;;;;;;;;;;;;;;;;;;;;;
+;; Stylesheets
+;;;;;;;;;;;;;;;;;;;;;
+
+stylesheets[all][] = css/style.css
