@@ -69,7 +69,7 @@ RUN mkdir -p /var/www/html/profiles/standard/translations/ \
     && mkdir -p /var/www/html/profiles/drupal4school/translations/ \
     && cp /var/www/html/profiles/standard/translations/drupal-7.x.zh-hant.po /var/www/html/profiles/drupal4school/translations \
     && cd /var/www/html \
-    && drush dl services,ctools,views,date,calendar,openid_provider,xrds_simple,libraries,l10n_update,bootstrap \
+    && drush dl services,ctools,views,date,calendar,openid_provider,xrds_simple,libraries,l10n_update,jquery_update,bootstrap \
     && echo "\$conf['drupal_http_request_fails'] = FALSE;" >> /var/www/html/sites/default/default.settings.php \
     && mkdir /var/www/html/sites/default/files \
     && chown -R www-data:www-data /var/www/html \
