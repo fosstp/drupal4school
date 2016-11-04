@@ -72,28 +72,27 @@ function enable_custom_modules(&$install_state) {
   else {
     $modules = array("thumbnail_link");
   }
-  module_enable($modules, FALSE);
   
   $files = system_rebuild_module_data();
   $operations = array();
+  $progress_message = array();
   foreach ($modules as $module) {
     $operations[] = array('module_enable', array($module), FALSE);
+    $progress_message[] = st('Enabling module: @module ...', array('@module' => $module));
   }
   $batch = array(
     'operations' => $operations,
     'title' => st('enable custom modules'),
+    'progress_message' => $progress_message,
     'error_message' => st('The installation has encountered an error.'),
   );
   return $batch;
 }
 
 function import_custom_modules_locales(&$install_state) {
-  module_load_include('compare.inc', 'l10n_update');
-//  l10n_update_flush_projects();
-  l10n_update_check_projects();
   module_load_include('fetch.inc', 'l10n_update');
-  $options['overwrite_options']['not_customized'] = TRUE;
-  $options['overwrite_options']['customized'] = TRUE;
+  $options = _l10n_update_default_update_options();
+  l10n_update_clear_status();
   $batch = l10n_update_batch_update_build(array(), array('zh-hant'), $options);
   return $batch;
 }
