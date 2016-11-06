@@ -47,4 +47,4 @@ dependencies[] = calendar
 dependencies[] = jquery_update
 
 ; Custom Modules
-dependencies[] = d4s_bootstrap_features 
+;dependencies[] = d4s_bootstrap_features 
