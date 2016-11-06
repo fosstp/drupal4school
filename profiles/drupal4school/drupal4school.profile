@@ -77,7 +77,7 @@ function enable_custom_modules(&$install_state) {
   $operations = array();
   $progress_message = array();
   foreach ($modules as $module) {
-    $operations[] = array('module_enable', array(array($module), FALSE);
+    $operations[] = array('module_enable', array(array($module), FALSE));
     $progress_message[] = st('Enabling module: @module ...', array('@module' => $module));
   }
   $batch = array(
