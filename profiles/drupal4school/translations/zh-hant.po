@@ -27,8 +27,8 @@ msgstr "不要包含國小校務行政系統相關模組"
 msgid "enable custom modules"
 msgstr "啟用自訂模組"
 
-msgid "Enabling module: @module ..."
-msgstr "正在啟用模組： @module ..."
+msgid "@module module enabled successfully."
+msgstr "已經成功啟用 @module 模組。"
 
 msgid "import custom modules translations"
 msgstr "匯入自訂模組中文翻譯"

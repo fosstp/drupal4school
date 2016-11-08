@@ -72,21 +72,28 @@ function enable_custom_modules(&$install_state) {
   else {
     $modules = array("thumbnail_link");
   }
-  
   $files = system_rebuild_module_data();
+
   $operations = array();
-  $progress_message = array();
+  $theme = array(
+    'theme_default' => 'Accessibility',
+    'admin_theme' => 'seven',
+  );
+  $operations[] = array('theme_enable', array($theme));
   foreach ($modules as $module) {
-    $operations[] = array('module_enable', array(array($module), FALSE));
-    $progress_message[] = st('Enabling module: @module ...', array('@module' => $module));
+    $operations[] = array('_module_enable', array($module));
   }
   $batch = array(
     'operations' => $operations,
     'title' => st('enable custom modules'),
-    'progress_message' => $progress_message,
     'error_message' => st('The installation has encountered an error.'),
   );
   return $batch;
+}
+
+function _module_enable($module, &$content) {
+    $content['message'] = st('@module module enabled successfully.', array('@module' => $module));
+    module_enable(array($module), FALSE);
 }
 
 function import_custom_modules_locales(&$install_state) {
