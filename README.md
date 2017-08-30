@@ -3,7 +3,9 @@
 
 This docker image contains debian 8.2(jessie) + php 7 + apache 2.2 + drupal 8 + custom drupal modules & themes
 
-How to use this image
+If You want d4s for drupal 7.x, please pull fosstp/drupal:7.x-1.0b
+
+## How to use this image
 The basic pattern for starting a drupal instance is:
 
 $ docker run --name some-drupal -d fosstp/drupal
