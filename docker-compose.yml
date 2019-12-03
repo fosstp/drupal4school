@@ -1,21 +1,33 @@
-version: '2'
+version: '3'
 services:
   mysql:
-    image: mysql/mysql-server
+    image: mysql
+    command: --default-authentication-plugin=mysql_native_password
     environment:
-      MYSQL_ROOT_PASSWORD: "123456"
+      MYSQL_DATABASE: drupal
+      MYSQL_ROOT_PASSWORD: dbpassword
+    restart: always
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     ports:
-      - "12000:80"
-    links:
-      - mysql:db
+      - "8080:80"
+    environment:
+      PMA_HOST: mysql
+      PMA_USER: root
+      PMA_PASSWORD: dbpassword
+    restart: always
 
   drupal:
-    image: fosstp/drupal
+    image: fosstp/drupal4school
     ports:
       - "80:80"
-      - "443:443"
-    links:
-      - mysql:db
+    environment:
+      DB_HOST: mysql
+      DB_USER: root
+      DB_PASSWORD: dbpassword
+    volumes:
+      - ./modules:/var/www/html/modules
+      - ./themes:/var/www/html/themes
+      - ./files:/var/www/html/sites/default/files
+    restart: always

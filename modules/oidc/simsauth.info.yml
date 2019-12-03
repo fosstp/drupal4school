@@ -5,7 +5,6 @@ package: School Information Management System
 
 dependencies:
   - user
-  - ibmdb2
 
 configure: simsauth.config
 

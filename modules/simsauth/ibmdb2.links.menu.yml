@@ -1,6 +1,0 @@
-ibmdb2.admin:
-  title: 'SIMS Account Database Settings'
-  description: 'Config connecting string for SIMS Account Database'
-  route_name: ibmdb2.config
-  weight: 20
-  parent: user.admin_index

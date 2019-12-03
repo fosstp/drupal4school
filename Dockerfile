@@ -1,63 +1,31 @@
 FROM drupal
-MAINTAINER fosstp drupal team
+
+ENV DB_HOST mysql
+ENV DB_USER root
+ENV DB_PASSWORD dbpassword
 
 RUN apt-get update \
-    && apt-get -y --no-install-recommends install ksh unzip gcc make git freetds-dev php-pear libldap2-dev mariadb-client \
+    && apt-get -y --no-install-recommends install unzip git \
     && rm -rf /var/lib/apt/lists/* \
-    && docker-php-ext-configure ldap --with-libdir=lib/x86_64-linux-gnu/ \
-    && docker-php-ext-install ldap pcntl \
-    && echo "memory_limit = 256M" > /usr/local/etc/php/conf.d/20-memory.ini
-
-#https://pecl.php.net/package/uploadprogress
-#RUN pecl install uploadprogress \
-#    && echo "extension=uploadprogress.so" > /usr/local/etc/php/conf.d/20-uploadprogress.ini
-
-#https://www-304.ibm.com/support/docview.wss?rs=71&uid=swg27007053
-RUN mkdir /opt/ibm \
-    && cd /opt/ibm \
-    && curl -fSL "https://www.dropbox.com/s/naq3p1hx852huxl/v10.5fp6_linuxx64_dsdriver.tar.gz?dl=0" -o dsdriver.tar.gz \
-    && tar -xzf dsdriver.tar.gz \
-    && rm -rf dsdriver.tar.gz \
-    && chmod +x /opt/ibm/dsdriver/installDSDriver \
-    && /opt/ibm/dsdriver/installDSDriver \
-    && echo "/opt/ibm/dsdriver" | pecl install ibm_db2 \
-    && { \
-	echo 'extension=ibm_db2.so'; \
-	echo 'ibm_db2.instance_name=db2inst1'; \
-    } > /usr/local/etc/php/conf.d/30-ibm_db2.ini \
-    && chmod a+w /usr/local/etc/php/ /usr/local/etc/php/conf.d \
-    && chmod a+r -R /usr/local/lib/php/extensions \
-    && echo 'TLS_REQCERT	never' >> /etc/ldap/ldap.conf
-
-#Now, install composer, drush then install google api client library.
-RUN curl -sS https://getcomposer.org/installer | php \
+    && curl -sS https://getcomposer.org/installer | php \
     && mv composer.phar /usr/local/bin/composer \
-    && ln -s /usr/local/bin/composer /usr/bin/composer \
-    && git clone https://github.com/drush-ops/drush.git /usr/local/src/drush \
-    && cd /usr/local/src/drush \
-    && ln -s /usr/local/src/drush/drush /usr/bin/drush \
-    && composer install \
     && cd /var/www/html \
-    && composer require google/apiclient:1.*
+    && composer require google/apiclient:"^2.0" \
+    && echo 'TLS_REQCERT	never' >> /etc/ldap/ldap.conf
     
-#RUN mkdir -p /var/www/html/profiles/standard/translations/ \
-#    && cd /var/www/html/profiles/standard/translations/ \
-#    && curl -fSL "http://ftp.drupal.org/files/translations/7.x/drupal/drupal-7.x.zh-hant.po" -o drupal-7.x.zh-hant.po
-
 #RUN cd /var/www/html \
 #    && drush dl services,ctools,views,date,calendar,openid_provider,xrds_simple,libraries,l10n_update
 
-ADD modules /var/www/html/sites/all/modules
-ADD themes /var/www/html/sites/all/themes
-ADD translations /var/www/html/sites/all/translations
+ADD profiles /var/www/html/profiles
+ADD modules /var/www/html/modules
+ADD themes /var/www/html/themes
 RUN mkdir /var/www/html/sites/default/files \
     && chown -R www-data:www-data /var/www/html \
-    && chmod 777 /var/www/html/sites/all/translations \
     && chmod 744 /var/www/html/sites/default/files
 
 ADD run-httpd.sh /usr/sbin/run-httpd.sh
 RUN chmod +x /usr/sbin/run-httpd.sh
 
-VOLUME ["/var/www/html/sites/all/modules", "/var/www/html/sites/all/themes", "/var/www/html/sites/all/translations", "/var/www/html/sites/default/files"]
-EXPOSE 80 443
-CMD ["/usr/sbin/run-httpd.sh"]
+VOLUME ["/var/www/html/modules", "/var/www/html/themes", "/var/www/html/sites/default/files"]
+EXPOSE 80
+CMD ["run-httpd.sh"]

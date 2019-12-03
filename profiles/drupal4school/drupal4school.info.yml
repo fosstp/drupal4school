@@ -1,0 +1,41 @@
+name: 臺北市Drupal校園網站架站包計畫
+type: profile
+description: 提供臺北市學校官方網站架站所需模組。
+core: 8.x
+
+langcode: zh-hant
+
+# Modules to install to support the profile.
+install:
+  - history
+  - block_content
+  - breakpoint
+  - color
+  - config
+  - comment
+  - contextual
+  - contact
+  - quickedit
+  - help
+  - image
+  - options
+  - path
+  - taxonomy
+  - dblog
+  - search
+  - shortcut
+  - toolbar
+  - field_ui
+  - file
+  - rdf
+  - views
+  - views_ui
+  - editor
+  - ckeditor
+
+# Required modules
+# Note that any dependencies of the modules listed here will be installed automatically.
+dependencies:
+  - node
+  - block
+  - views
