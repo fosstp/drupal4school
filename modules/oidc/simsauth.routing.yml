@@ -1,7 +1,0 @@
-simsauth.config:
-  path: 'admin/config/people/simsauth'
-  defaults:
-    _form: '\Drupal\simsauth\Form\simsauthConfigForm'
-    _title: 'SIMS authentication settings'
-  requirements:
-    _permission: 'administer sims configuration'

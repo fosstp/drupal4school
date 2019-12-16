@@ -1,0 +1,6 @@
+tpedu.admin:
+  title: '臺北市教育人員單一身分驗證模組設定'
+  description: '請先向教育局申請介接專案，然後完成底下的設定。'
+  route_name: tpedu.config
+  weight: 20
+  parent: user.admin_index

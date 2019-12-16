@@ -5,6 +5,6 @@
  * Perform actions to set up the site for this profile.
  */
 function drupal4school_install() {
-  include_once DRUPAL_ROOT . '/profiles/standard/standard.install';
+  include_once DRUPAL_ROOT . '/core/profiles/standard/standard.install';
   standard_install();
 }

@@ -1,0 +1,142 @@
+<?php
+
+use Drupal\Core\Routing\RouteMatchInterface;
+use Symfony\Component\HttpFoundation\Session;
+
+require 'tpedu.api.php';
+
+function tpedu_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    case 'admin/config/people/tpedu':
+      $output = '<p>本模組提供兩種不同功能：使用臺北市教育人員單一身分驗證帳號登入、介接學校全域資料。請先向教育局申請介接專案，完成模組設定後，才能啟用模組。</p>';
+      return $output;
+  }
+}
+
+function tpedu_user_load(array $entities) {
+    $config = \Drupal::config('tpedu.settings');
+    if (!$config->get('enable')) return;
+    foreach ($entities as $uid => $account) {
+        if ($account->get("init")->getValue() == 'tpedu') {
+            $uuid = $account->uuid();
+            $user = get_user($uuid);
+            $account->tpedu = $user;
+        }
+    }
+}
+
+function tpedu_user_format_name_alter(&$name, $account) {
+  $account = User::load($account->id());
+  if ($account->get("init")->getValue() == 'tpedu') return $account->tpedu->realname;
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function tpedu_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id) {
+    $config = \Drupal::config('tpedu.settings');
+    if ($config->get('enable') && ($form_id == 'user_login_block' || $form_id == 'user_login_form')) {
+        unset($form['links']);
+        if (!$config->get('allow_default_login')) {
+            unset($form['name']);
+            unset($form['pass']);
+        }
+        $form['submit_tpedu'] = array(
+            '#markup' => '<img src="' . file_create_url(drupal_get_path('module', 'tpedu') . '/tpedusso.png') .
+                   '" style="cursor: pointer; border:none; width:280px;" title="' . '使用臺北市教育人員單一身分驗證登入' .
+                   '" onclick="AuthClick(1)">',
+        );
+        $form['submit_google'] = array(
+            '#markup' => '<img src="' . file_create_url(drupal_get_path('module', 'tpedu') . '/google.png') .
+                   '" style="cursor: pointer; border:none; width:280px;" title="' . '使用 Google 帳號登入' .
+                   '" onclick="AuthClick(2)">',
+        );
+        if ($config->get('personal_data_notice')) {
+            $form['extra_info'] = array(
+                '#type' => 'markup',
+                '#markup' => '<p>我已經閱讀貴網站<a href="/personal_data_notice">個人資料收集政策</a>，我同意貴網站取得我的個人資料！</p>',
+            );
+        }
+    }
+}
+
+function tpedu_user_logout($account) {
+    $redirect = \Drupal::config('tpedu.settings')->get('logout_goto_url');
+    if ($redirect) {
+        $response = new RedirectResponse(Url::fromRoute($redirect));
+        $response->send();
+    }
+}
+
+function tpedu_user_view(array &$build, UserInterface $account, EntityViewDisplayInterface $display) {
+    $config = \Drupal::config('tpedu.settings');
+    drupal_set_message($account->get("init"));
+    if ($config->get('enable') && $account->get("init")->getValue() == 'tpedu') {
+        if ($display->getComponent('birthday')) {
+            $build['birthday'] = array(
+                '#type' => 'item',
+                '#title' => '出生日期',
+                '#markup' => Drupal::service('date.formatter')->format($account->tpedu->birthdate),
+            );
+        }
+        if ($display->getComponent('gender')) {
+            $build['gender'] = array(
+                '#type' => 'item',
+                '#title' => '性別',
+                '#markup' => ($account->tpedu->gender == 2) ? '女' : '男',
+            );
+        }
+        if ($account->tpedu->student) {
+            if ($display->getComponent('stdno')) {
+                $build['stdno'] = array(
+                    '#type' => 'item',
+                    '#title' => '學號:',
+                    '#markup' => $account->tpedu->id,
+                );
+            }
+            if ($display->getComponent('classname')) {
+                $build['classname'] = array(
+                    '#type' => 'item',
+                    '#title' => '就讀班級',
+                    '#markup' => $account->tpedu->dept_name,
+                );
+            }
+            if ($display->getComponent('seat')) {
+                $build['seat'] = array(
+                    '#type' => 'item',
+                    '#title' => '座號',
+                    '#markup' => $account->tpedu->seat,
+                );
+            }
+        } else {
+            if ($display->getComponent('depname')) {
+                $build['depname'] = array(
+                    '#type' => 'item',
+                    '#title' => '行政部門',
+                    '#markup' => $account->tpedu->dept_name,
+                );
+            }
+            if ($display->getComponent('titlename')) {
+                $build['titlename'] = array(
+                    '#type' => 'item',
+                    '#title' => '職稱',
+                    '#markup' => $account->tpedu->role_name,
+                );
+            }
+            if (!empty($account->tpedu->class) && $display->getComponent('class')) {
+                $build['proclass'] = array(
+                    '#type' => 'item',
+                    '#title' => '導師班級',
+                    '#markup' => $account->tpedu->class,
+                );
+            }
+        }
+        if ($display->getComponent('email')) {
+            $build['email'] = array(
+                '#type' => 'item',
+                '#title' => '電子郵件',
+                '#markup' => $account->tpedu->email,
+            );
+        }
+    }
+}

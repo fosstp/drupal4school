@@ -10,7 +10,7 @@ use Drupal\Core\Render\BubbleableMetadata;
 /**
  * Implements hook_token_info().
  */
-function simsauth_token_info_alter(&$info) {
+function tpedu_token_info_alter(&$info) {
   $info['tokens']['user']['realname'] = array(
     'name' => t('Real Name'),
     'description' => t('The real name of the user.'),
@@ -21,7 +21,7 @@ function simsauth_token_info_alter(&$info) {
   );
   $info['tokens']['user']['userclass'] = array(
     'name' => t('User Class'),
-    'description' => t('The user is a teacher or a student, identify by the simsauth module.'),
+    'description' => t('The user is a teacher or a student, identify by the tpedu module.'),
   );
   $info['tokens']['user']['idno'] = array(
     'name' => t('Security Id'),
@@ -73,7 +73,7 @@ function simsauth_token_info_alter(&$info) {
 /**
  * Implements hook_tokens().
  */
-function simsauth_tokens($type, $tokens, array $data, array $options, $bubbleable_metadata = NULL) {
+function tpedu_tokens($type, $tokens, array $data, array $options, $bubbleable_metadata = NULL) {
   $replacements = array();
   $bubbleable_metadata = $bubbleable_metadata ? : new BubbleableMetadata();
 

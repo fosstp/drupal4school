@@ -21,13 +21,7 @@ function drupal4school_install_tasks($install_state) {
       'type' => 'batch',
       'run' => INSTALL_TASK_RUN_IF_NOT_COMPLETED,
     ),
-    'import_custom_modules_locales' => array(
-      'display_name' => '匯入自訂模組中文翻譯',
-      'display' => TRUE,
-      'type' => 'batch',
-      'run' => INSTALL_TASK_RUN_IF_NOT_COMPLETED,
-    ),
-    'final_step' => array(),
+    'final_step' => array("final_step"),
   );
 
   return $mytask;
@@ -40,14 +34,14 @@ function select_custom_modules($form, &$form_state, &$install_state) {
     '#return_value' => 'sims',
     '#default_value' =>  'sims',
     '#title' => '包含單一身份驗證相關模組',
-    '#parents' => array('enable_modules')
+    '#parents' => array('enable_modules'),
   );
   $form['enable_modules']['not_sims'] = array(
     '#type' => 'radio',
     '#return_value' => 'not_sims',
     '#default_value' =>  '',
     '#title' => '不要包含單一身份驗證相關模組',
-    '#parents' => array('enable_modules')
+    '#parents' => array('enable_modules'),
   );
 
   $form['actions'] = array('#type' => 'actions');
@@ -67,7 +61,7 @@ function select_custom_modules_submit($form, &$form_state) {
 function enable_custom_modules(&$install_state) {
   $flag = variable_get("drupal4school_enable_modules");
   if ($flag == 'sims') {
-    $modules = array("thumbnail_link", "oidc");
+    $modules = array("thumbnail_link", "tpedu");
   }
   else {
     $modules = array("thumbnail_link");
@@ -76,8 +70,8 @@ function enable_custom_modules(&$install_state) {
 
   $operations = array();
   $theme = array(
-    'theme_default' => 'Accessibility',
-    'admin_theme' => 'seven',
+    'theme_default' => 'bootstrap4',
+//    'admin_theme' => 'eight',
   );
   $operations[] = array('theme_enable', array($theme));
   foreach ($modules as $module) {
@@ -92,16 +86,8 @@ function enable_custom_modules(&$install_state) {
 }
 
 function _module_enable($module, &$content) {
-    $content['message'] = t('已經成功啟用 @module 模組。', array('@module' => $module));
-    module_enable(array($module), FALSE);
-}
-
-function import_custom_modules_locales(&$install_state) {
-  module_load_include('fetch.inc', 'l10n_update');
-  $options = _l10n_update_default_update_options();
-  l10n_update_clear_status();
-  $batch = l10n_update_batch_update_build(array(), array('zh-hant'), $options);
-  return $batch;
+//    $content['message'] = t('已經成功啟用 @module 模組。', array('@module' => $module));
+//    module_enable(array($module), FALSE);
 }
 
 function final_step() {

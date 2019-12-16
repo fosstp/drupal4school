@@ -1,6 +1,0 @@
-simsauth.admin:
-  title: 'SIMS Authentication Settings'
-  description: 'Control the various settings of the sims authentication module'
-  route_name: simsauth.config
-  weight: 20
-  parent: user.admin_index

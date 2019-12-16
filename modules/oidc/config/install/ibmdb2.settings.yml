@@ -1,7 +1,0 @@
-ibmdb2:
-  db2_admin: 'db2inst1'
-  db2_pass: 'db2inst1'
-  db2_server: ''
-  db2_port: 50000
-  database: 'SCHOOL01'
-  schema: ''

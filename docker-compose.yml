@@ -19,7 +19,7 @@ services:
     restart: always
 
   drupal:
-    image: fosstp/drupal4school
+    image: drupal
     ports:
       - "80:80"
     environment:

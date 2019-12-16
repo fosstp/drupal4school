@@ -1,5 +1,6 @@
 #!/bin/bash
 set -e
+#php /var/www/html/core/scripts/drupal install drupal4school
 chown -R www-data:www-data /var/www/html/modules
 chown -R www-data:www-data /var/www/html/themes
 chown -R www-data:www-data /var/www/html/sites

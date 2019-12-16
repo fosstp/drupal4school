@@ -1,0 +1,318 @@
+<?php
+
+function tpedu_schema() {
+  $schema['units'] = array(
+    'description' => '行政部門資料表',
+    'fields' => array(
+      'id' => array(
+        'type' => 'varchar',
+        'length' => 50,
+        'not null' => TRUE,
+        'description' => '部門代號',
+      ),
+      'name' => array(
+        'type' => 'varchar',
+        'length' => 50,
+        'not null' => TRUE,
+        'description' => '部門名稱',
+      ),
+      'fetch_date' => array(
+        'type' => 'varchar',
+        'mysql_type' => 'datetime',
+        'default' => date("Y-m-d", time()),
+        'description' => '取得資料日期',
+      ),
+    ),
+    'primary key' => array('id'),
+  );
+
+  $schema['roles'] = array(
+    'description' => '職稱資料表',
+    'fields' => array(
+      'id' => array(
+        'type' => 'varchar',
+        'length' => 50,
+        'not null' => TRUE,
+        'description' => '職稱代號',
+      ),
+      'unit' => array(
+        'type' => 'varchar',
+        'length' => 50,
+        'not null' => TRUE,
+        'description' => '部門代號',
+      ),
+      'name' => array(
+        'type' => 'varchar',
+        'length' => 50,
+        'not null' => TRUE,
+        'description' => '職稱',
+      ),
+      'fetch_date' => array(
+        'type' => 'varchar',
+        'mysql_type' => 'datetime',
+        'default' => date("Y-m-d", time()),
+        'description' => '取得資料日期',
+      ),
+    ),
+    'primary key' => array('id'),
+    'indexes' => array(
+      'unit' => array('unit'),
+    ),
+  );
+  
+  $schema['classes'] = array(
+    'description' => '班級資料表',
+    'fields' => array(
+      'id' => array(
+        'type' => 'varchar',
+        'length' => 50,
+        'not null' => TRUE,
+        'description' => '班級代號',
+      ),
+      'grade' => array(
+        'type' => 'varchar',
+        'length' => 50,
+        'not null' => TRUE,
+        'description' => '年級',
+      ),
+      'name' => array(
+        'type' => 'varchar',
+        'length' => 50,
+        'not null' => TRUE,
+        'description' => '班級名稱',
+      ),
+      'tutor' => array(
+        'type' => 'varchar',
+        'length' => 36,
+        'not null' => TRUE,
+        'description' => '導師的人員代號',
+      ),
+      'fetch_date' => array(
+        'type' => 'varchar',
+        'mysql_type' => 'datetime',
+        'default' => date("Y-m-d", time()),
+        'description' => '取得資料日期',
+      ),
+    ),
+    'primary key' => array('id'),
+    'indexes' => array(
+      'grade' => array('grade'),
+      'tutor' => array('tutor'),
+    ),
+  );
+  
+  $schema['subjects'] = array(
+    'description' => '教學科目資料表',
+    'fields' => array(
+      'id' => array(
+        'type' => 'varchar',
+        'length' => 50,
+        'not null' => TRUE,
+        'description' => '科目代號',
+      ),
+      'domain' => array(
+        'type' => 'varchar',
+        'length' => 50,
+        'not null' => TRUE,
+        'description' => '課程領域',
+      ),
+      'name' => array(
+        'type' => 'varchar',
+        'length' => 50,
+        'not null' => TRUE,
+        'description' => '科目名稱',
+      ),
+      'fetch_date' => array(
+        'type' => 'varchar',
+        'mysql_type' => 'datetime',
+        'default' => date("Y-m-d", time()),
+        'description' => '取得資料日期',
+      ),
+    ),
+    'primary key' => array('id'),
+    'indexes' => array(
+      'domain' => array('domain'),
+    ),
+  );
+  
+  $schema['people'] = array(
+    'description' => '教育人員資料表',
+    'fields' => array(
+      'uuid' => array(
+        'type' => 'varchar',
+        'length' => 36,
+        'not null' => TRUE,
+        'description' => '人員代號',
+      ),
+      'idno' => array(
+        'type' => 'varchar',
+        'length' => 10,
+        'not null' => TRUE,
+        'description' => "身分證字號",
+      ),
+      'id' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+        'description' => '教務行政系統使用者編號',
+      ),
+      'student' => array(
+        'type' => 'int',
+        'size' => 'tiny',
+        'default' => 0,
+        'description' => '是否為學生',
+      ),
+      'account' => array(
+        'type' => 'varchar_ascii',
+        'length' => 50,
+        'description' => '登入帳號',
+      ),
+      'realname' => array(
+        'type' => 'varchar',
+        'length' => 50,
+        'description' => '真實姓名',
+      ),
+      'dept_id' => array(
+        'type' => 'varchar_ascii',
+        'length' => 50,
+        'description' => '部門代號',
+      ),
+      'dept_name' => array(
+        'type' => 'varchar',
+        'length' => 50,
+        'description' => '部門名稱',
+      ),
+      'role_id' => array(
+        'type' => 'varchar_ascii',
+        'length' => 50,
+        'description' => '職務代號',
+      ),
+      'role_name' => array(
+        'type' => 'varchar',
+        'length' => 50,
+        'description' => '職務名稱',
+      ),
+      'birthdate' => array(
+        'type' => 'varchar',
+        'mysql_type' => 'datetime',
+        'description' => '出生日期',
+      ),
+      'gender' => array(
+        'type' => 'int',
+        'size' => 'tiny',
+        'description' => '性別',
+      ),
+      'mobile' => array(
+        'type' => 'varchar',
+        'length' => 50,
+        'description' => '行動電話',
+      ),
+      'telephone' => array(
+        'type' => 'varchar',
+        'length' => 50,
+        'description' => '有線電話',
+      ),
+      'address' => array(
+        'type' => 'varchar',
+        'length' => 200,
+        'description' => '郵寄地址',
+      ),
+      'email' => array(
+        'type' => 'varchar',
+        'length' => 50,
+        'description' => '電子郵件信箱',
+      ),
+      'www' => array(
+        'type' => 'varchar',
+        'length' => 50,
+        'description' => '個人首頁',
+      ),
+      'class' => array(
+        'type' => 'varchar',
+        'length' => 50,
+        'description' => '就讀或任教班級',
+      ),
+      'seat' => array(
+        'type' => 'varchar',
+        'length' => 50,
+        'description' => '學生座號',
+      ),
+      'character' => array(
+        'type' => 'varchar',
+        'length' => 100,
+        'description' => '特殊身分註記',
+      ),
+      'fetch_date' => array(
+        'type' => 'varchar',
+        'mysql_type' => 'datetime',
+        'default' => date("Y-m-d", time()),
+        'description' => '取得資料日期',
+      ),
+    ),
+    'primary key' => array('uuid'),
+    'indexes' => array(
+      'idno' => array('idno'),
+      'id' => array('id'),
+    ),
+  );
+
+  $schema['jobs'] = array(
+    'description' => '職務分派資料表',
+    'fields' => array(
+      'uuid' => array(
+        'type' => 'varchar',
+        'length' => 36,
+        'not null' => TRUE,
+        'description' => '人員代號',
+      ),
+      'dept_id' => array(
+        'type' => 'varchar',
+        'length' => 50,
+        'not null' => TRUE,
+        'description' => '部門代號',
+      ),
+      'role_id' => array(
+        'type' => 'varchar',
+        'length' => 50,
+        'not null' => TRUE,
+        'description' => '職稱代號',
+      ),
+    ),
+    'primary key' => array('uuid'),
+    'indexes' => array(
+      'dept_id' => array('dept_id'),
+      'role_id' => array('role_id'),
+    ),
+  );
+
+  $schema['assignment'] = array(
+    'description' => '配課資料表',
+    'fields' => array(
+      'uuid' => array(
+        'type' => 'varchar',
+        'length' => 36,
+        'not null' => TRUE,
+        'description' => '人員代號',
+      ),
+      'class_id' => array(
+        'type' => 'varchar',
+        'length' => 50,
+        'not null' => TRUE,
+        'description' => '班級代號',
+      ),
+      'subject_id' => array(
+        'type' => 'varchar',
+        'length' => 50,
+        'not null' => TRUE,
+        'description' => '科目代號',
+      ),
+    ),
+    'primary key' => array('uuid'),
+    'indexes' => array(
+      'class_id' => array('class_id'),
+      'subj_id' => array('subj_id'),
+    ),
+  );
+  
+  return $schema;
+}

@@ -208,7 +208,7 @@ $user->seat 學生的座號，為數字，當 $user->userclass == 'student' 時�
 HOOK FUNCTIONS
 --------------
 
-function hook_simsauth_teacher_resetpw($teachers, $result) {
+function hook_tpedu_teacher_resetpw($teachers, $result) {
   foreach ($teachers as $teacher) {
     if (isset($result->success[$teacher->uid]) && $result->success[$teacher->uid]) {
       if (alt_change_pass($teacher->name, $teacher->org_pass)) {
@@ -221,7 +221,7 @@ function hook_simsauth_teacher_resetpw($teachers, $result) {
   }
 }
 
-function hook_simsauth_student_resetpw($students, $result) {
+function hook_tpedu_student_resetpw($students, $result) {
   foreach ($students as $student) {
     if (isset($result->success[$student->uid]) && $result->success[$student->uid]) {
       if (alt_change_pass($student->name, $student->org_pass)) {
@@ -234,7 +234,7 @@ function hook_simsauth_student_resetpw($students, $result) {
   }
 }
 
-function hook_simsauth_sync_username($old_account, $new_account) {
+function hook_tpedu_sync_username($old_account, $new_account) {
   if (ad_account_exist($old_account)) {
     $memberof = ad_get_group($old_account);
     ad_delete_account($old_account);
@@ -243,7 +243,7 @@ function hook_simsauth_sync_username($old_account, $new_account) {
   }
 }
 
-function hook_simsauth_sync_password($account, $new_pass) {
+function hook_tpedu_sync_password($account, $new_pass) {
   if (ad_account_exist($account)) {
     ad_replace_password($account, $new_pass);
   }
