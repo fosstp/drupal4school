@@ -1,16 +1,16 @@
-FROM drupal
+FROM drupal:fpm-alpine
 
 ENV DB_HOST mysql
 ENV DB_USER root
 ENV DB_PASSWORD dbpassword
 
-RUN apt-get update \
-    && apt-get -y --no-install-recommends install unzip git \
+RUN apk add --no-cache unzip git openldap-clients \
     && rm -rf /var/lib/apt/lists/* \
     && curl -sS https://getcomposer.org/installer | php \
     && mv composer.phar /usr/local/bin/composer \
     && cd /var/www/html \
-    && composer require google/apiclient:"^2.0" \
+    && composer global require drush/drush:dev-master \
+    && composer global require google/apiclient:"^2.0" \
     && echo 'TLS_REQCERT	never' >> /etc/ldap/ldap.conf
     
 #RUN cd /var/www/html \

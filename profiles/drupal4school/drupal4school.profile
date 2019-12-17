@@ -71,7 +71,7 @@ function enable_custom_modules(&$install_state) {
   $operations = array();
   $theme = array(
     'theme_default' => 'bootstrap4',
-//    'admin_theme' => 'eight',
+    'admin_theme' => 'seven',
   );
   $operations[] = array('theme_enable', array($theme));
   foreach ($modules as $module) {

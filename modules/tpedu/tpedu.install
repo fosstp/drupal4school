@@ -1,5 +1,10 @@
 <?php
 
+function tpedu_install() {
+  $user_settings = \Drupal::configFactory()->getEditable('user.settings');
+  $user_settings->set('register', USER_REGISTER_ADMINISTRATORS_ONLY)->save(true);
+}
+
 function tpedu_schema() {
   $schema['units'] = array(
     'description' => '行政部門資料表',
@@ -310,7 +315,7 @@ function tpedu_schema() {
     'primary key' => array('uuid'),
     'indexes' => array(
       'class_id' => array('class_id'),
-      'subj_id' => array('subj_id'),
+      'subject_id' => array('subject_id'),
     ),
   );
   

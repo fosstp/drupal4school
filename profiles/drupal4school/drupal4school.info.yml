@@ -2,7 +2,6 @@ name: 臺北市Drupal校園網站架站包計畫
 type: profile
 description: 提供臺北市學校官方網站架站所需模組。
 core: 8.x
-
 langcode: zh-hant
 
 # Modules to install to support the profile.
