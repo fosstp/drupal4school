@@ -31,4 +31,4 @@ RUN chmod +x /usr/sbin/run-httpd.sh
 
 VOLUME ["/var/www/html/modules", "/var/www/html/themes", "/var/www/html/sites/default/files"]
 EXPOSE 80
-CMD ["run-httpd.sh"]
+ENTRYPOINT ["run-httpd.sh"]
