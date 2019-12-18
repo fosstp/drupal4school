@@ -19,9 +19,7 @@ services:
     restart: always
 
   drupal:
-    build:
-      context: .
-    image: leejoneshane/d4s
+    image: dosstp/drupal
     ports:
       - "80:80"
     environment:
@@ -29,7 +27,7 @@ services:
       DB_USER: root
       DB_PASSWORD: dbpassword
     volumes:
-      - ~/Documents/Github/drupal4school/modules:/var/www/html/modules
-      - ~/Documents/Github/drupal4school/themes:/var/www/html/themes
-      - ~/Documents/Github/drupal4school/files:/var/www/html/sites/default/files
+      - ./modules:/var/www/html/modules
+      - ./themes:/var/www/html/themes
+      - ./files:/var/www/html/sites/default/files
     restart: always
