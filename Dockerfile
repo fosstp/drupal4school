@@ -14,6 +14,7 @@ RUN apt-get update \
     && composer require drush/drush \
     && curl -sSOL https://github.com/drush-ops/drush-launcher/releases/download/0.6.0/drush.phar \
     && mv drush.phar /usr/local/bin/drush \
+    && chmod 744 /usr/local/bin/drush \
     && echo 'TLS_REQCERT	never' >> /etc/ldap/ldap.conf
     
 #RUN cd /var/www/html \
