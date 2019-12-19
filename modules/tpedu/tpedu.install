@@ -6,7 +6,7 @@ function tpedu_install() {
 }
 
 function tpedu_uninstall() {
-  $schema = \Database::getConnection()->schema();
+  $schema = \Drupal::database()->schema();
   $schema->dropTable('tpedu_units');
   $schema->dropTable('tpedu_roles');
   $schema->dropTable('tpedu_classes');
