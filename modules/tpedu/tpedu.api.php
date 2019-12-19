@@ -1,7 +1,5 @@
 <?php
 
-use Symfony\Component\HttpFoundation\Session;
-
 function current_seme() {
     if (date('m') > 7) {
       $year = date('Y') - 1911;
@@ -33,14 +31,16 @@ function get_tokens($auth_code) {
     ));
     $data = json_decode((string) $response->getBody());
     if (json_last_error() == JSON_ERROR_NONE) {
-      Session::set('expires_in', time() + $data->expires_in);
-      Session::set('access_token', $data->access_token);
-      Session::set('refresh_token', $data->refresh_token);
+        $tempstore = \Drupal::service('user.private_tempstore')->get('tpedu');
+        $tempstore->set('expires_in', time() + $data->expires_in);
+        $tempstore->set('access_token', $data->access_token);
+        $tempstore->set('refresh_token', $data->refresh_token);
     }
 }
 
 function refresh_tokens() {
-    if (Session::get('refresh_token') && Session::get('expires_in') < time()) {
+    $tempstore = \Drupal::service('user.private_tempstore')->get('tpedu');
+    if ($tempstore->get('refresh_token') && $tempstore->get('expires_in') < time()) {
         $config = \Drupal::config('tpedu.settings');
         $response = \Drupal::httpClient()->post($config->get('api.token'), array(
             'headers' => array('Content-Type' => 'application/x-www-form-urlencoded'),
@@ -54,18 +54,20 @@ function refresh_tokens() {
         ));
         $data = json_decode((string) $response->getBody());
         if (json_last_error() == JSON_ERROR_NONE) {
-          Session::set('expires_in', time() + $data->expires_in);
-          Session::set('access_token', $data->access_token);
-          Session::set('refresh_token', $data->refresh_token);
+            $tempstore = \Drupal::service('user.private_tempstore')->get('tpedu');
+            $tempstore->set('expires_in', time() + $data->expires_in);
+            $tempstore->set('access_token', $data->access_token);
+            $tempstore->set('refresh_token', $data->refresh_token);
         }
     }
 }
 
 function who() {
     $config = \Drupal::config('tpedu.settings');
-    if (Session::get('access_token')) {
+    $tempstore = \Drupal::service('user.private_tempstore')->get('tpedu');
+    if ($tempstore->get('access_token')) {
       $response = \Drupal::httpClient()->get($config->get('api.login'), array(
-        'headers' => array( 'Authorization' => 'Bearer ' . Session::get('access_token') ),
+        'headers' => array( 'Authorization' => 'Bearer ' . $tempstore->get('access_token') ),
       ));
       $user = json_decode((string) $response->getBody());
       if (json_last_error() == JSON_ERROR_NONE) return $user->uuid;
@@ -75,7 +77,8 @@ function who() {
 
 function api($which, array $replacement = null) {
     $config = \Drupal::config('tpedu.settings');
-    if (Session::get('access_token')) {
+    $tempstore = \Drupal::service('user.private_tempstore')->get('tpedu');
+    if ($tempstore->get('access_token')) {
       $dataapi = $config->get('api.' . $which);
       if (!empty($replacement)) {
         if ($which == 'find_users') {
