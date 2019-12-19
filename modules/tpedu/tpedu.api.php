@@ -1,5 +1,7 @@
 <?php
 
+use Symfony\Component\HttpFoundation\Session;
+
 function current_seme() {
     if (date('m') > 7) {
       $year = date('Y') - 1911;
