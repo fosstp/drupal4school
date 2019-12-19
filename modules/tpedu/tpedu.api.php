@@ -88,6 +88,7 @@ function api($which, array $replacement = null) {
             }
             $dataapi = substr($dataapi, 0, -1);
         } else {
+            $replacement['dc'] = $config->get('api.dc');
             $search = array();
             $values = array();
             foreach ($replacement as $key => $data) {
@@ -105,6 +106,12 @@ function api($which, array $replacement = null) {
       return $json;
     }
     return false;
+}
+
+function get_school() {
+    $config = \Drupal::config('tpedu.settings');
+    $school = api('school');
+    return $school->dc;
 }
 
 function fetch_user($uuid) {

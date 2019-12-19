@@ -106,8 +106,11 @@ class tpeduConfigForm extends ConfirmFormBase {
       $config->set($key, $value);
     }
     $config->set('call_back', 'https://'.$_SERVER['HTTP_HOST'].'/retrieve');
-    $units = fetch_units();
-    if ($units) $config->set('enable', true);
+    $dc = get_school();
+    if ($dc) {
+      $config->set('enable', true);
+      $config->set('api.dc', $dc);
+    }
     $config->save();
   }
 
