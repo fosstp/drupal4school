@@ -1,6 +1,5 @@
 <?php
 
-use Drupal;
 use Drupal\Core\Url;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
@@ -21,7 +20,7 @@ function tpedu_help($route_name, RouteMatchInterface $route_match) {
 }
 
 function tpedu_user_load(array $entities) {
-    $config = Drupal::config('tpedu.settings');
+    $config = \Drupal::config('tpedu.settings');
     if (!$config->get('enable')) return;
     foreach ($entities as $uid => $account) {
         if ($account->get("init")->getValue() == 'tpedu') {
@@ -41,7 +40,7 @@ function tpedu_user_format_name_alter(&$name, $account) {
  * Implements hook_form_alter().
  */
 function tpedu_form_alter(&$form, FormStateInterface $form_state, $form_id) {
-    $config = Drupal::config('tpedu.settings');
+    $config = \Drupal::config('tpedu.settings');
     if ($config->get('enable') && ($form_id == 'user_login_block' || $form_id == 'user_login_form')) {
         unset($form['links']);
         if (!$config->get('allow_default_login')) {
@@ -68,7 +67,7 @@ function tpedu_form_alter(&$form, FormStateInterface $form_state, $form_id) {
 }
 
 function tpedu_user_logout($account) {
-    $redirect = Drupal::config('tpedu.settings')->get('logout_goto_url');
+    $redirect = \Drupal::config('tpedu.settings')->get('logout_goto_url');
     if ($redirect) {
         $response = new RedirectResponse(Url::fromRoute($redirect));
         $response->send();
@@ -76,14 +75,14 @@ function tpedu_user_logout($account) {
 }
 
 function tpedu_user_view(array &$build, UserInterface $account, EntityViewDisplayInterface $display) {
-    $config = Drupal::config('tpedu.settings');
+    $config = \Drupal::config('tpedu.settings');
     drupal_set_message($account->get("init"));
     if ($config->get('enable') && $account->get("init")->getValue() == 'tpedu') {
         if ($display->getComponent('birthday')) {
             $build['birthday'] = array(
                 '#type' => 'item',
                 '#title' => '出生日期',
-                '#markup' => Drupal::service('date.formatter')->format($account->tpedu->birthdate),
+                '#markup' => \Drupal::service('date.formatter')->format($account->tpedu->birthdate),
             );
         }
         if ($display->getComponent('gender')) {
