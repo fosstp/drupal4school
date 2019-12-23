@@ -43,7 +43,21 @@ class Oauth2Controller extends ControllerBase {
             $nextUrl = $config->get('login_goto_url');
         else
             $nextUrl = $base_url;
-        $response = new RedirectResponse(Url::fromRoute($nextUrl));
+        $response = new RedirectResponse(Url::fromUri($nextUrl));
+        $response->send();
+        return new Response();
+    }
+
+    public function purge(Request $request) {
+        $database = \Drupal::database();
+        $database->delete('tpedu_units')->execute();
+        $database->delete('tpedu_roles')->execute();
+        $database->delete('tpedu_classes')->execute();
+        $database->delete('tpedu_subjects')->execute();
+        $database->delete('tpedu_people')->execute();
+        $database->delete('tpedu_jobs')->execute();
+        $database->delete('tpedu_assignment')->execute();
+        $response = new RedirectResponse(Url::fromRoute('system.admin_config'));
         $response->send();
         return new Response();
     }

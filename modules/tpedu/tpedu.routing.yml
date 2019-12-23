@@ -14,12 +14,19 @@ tpedu.school_select:
   requirements:
     _permission: 'administer site configuration'
     
+tpedu.purge:
+  path: /admin/config/people/tpedu/purge
+  defaults:
+    _Controller: \Drupal\tpedu\Form\tpeduController::purge
+  requirements:
+    _permission: 'administer site configuration'
+    
 tpedu.sso:
   path: /retrieve
   defaults:
-    _controller: '\Drupal\tpedu\Controller\Oauth2Controller::handle'
+    _controller: '\Drupal\tpedu\Controller\tpeduController::handle'
 
 tpedu.personal:
   path: /personal_data_notice
   defaults:
-    _controller: '\Drupal\tpedu\Controller\Oauth2Controller::notice'
+    _controller: '\Drupal\tpedu\Controller\tpeduController::notice'
