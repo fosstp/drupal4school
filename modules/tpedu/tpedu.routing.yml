@@ -17,7 +17,7 @@ tpedu.school_select:
 tpedu.purge:
   path: /admin/config/people/tpedu/purge
   defaults:
-    _Controller: \Drupal\tpedu\Form\tpeduController::purge
+    _Controller: \Drupal\tpedu\Controller\tpeduController::purge
   requirements:
     _permission: 'administer site configuration'
     
