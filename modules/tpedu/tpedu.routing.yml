@@ -30,3 +30,5 @@ tpedu.personal:
   path: /personal_data_notice
   defaults:
     _controller: '\Drupal\tpedu\Controller\tpeduController::notice'
+  requirements:
+    _permission: 'access content'
