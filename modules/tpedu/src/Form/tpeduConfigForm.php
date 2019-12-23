@@ -62,19 +62,25 @@ class tpeduConfigForm extends ConfirmFormBase {
       '#description' => '請依上面說明之方法，填入學校管理員個人存取金鑰',
       '#required' => TRUE,
     );
-    $form['allowdefaultlogin'] = array(
+    $form['refresh_days'] = array(
+      '#type' => 'number',
+      '#title' => '快取資料庫更新頻率',
+      '#default_value' => $config->get('refresh_days'),
+      '#description' => '透過 Data API 取得的資料將快取在資料庫中，若該筆資料保存超過更新頻率，則自動重新取得。預設為 30 天！',
+    );
+    $form['allow_default_login'] = array(
       '#type' => 'checkbox',
       '#title' => '允許使用本地端帳號登入',
       '#default_value' => $config->get('allow_default_login'),
       '#description' => '預設系統管理員帳號為本地端帳號，如果您已經將管理權限授予給單一身分驗證帳號，則可以將此功能關閉。預設為允許！',
     );
-    $form['logingotourl'] = array(
+    $form['login_goto_url'] = array(
       '#type' => 'textfield',
       '#title' => '登入後跳轉網址（可不填）',
       '#default_value' => $config->get('login_goto_url'),
       '#description' => '請輸入想讓使用者登入時第一個看到的頁面，例如：node/news',
     );
-    $form['logoutgotourl'] = array(
+    $form['logout_goto_url'] = array(
       '#type' => 'textfield',
       '#title' => '登出後跳轉網址（可不填）',
       '#default_value' => $config->get('logout_goto_url'),
