@@ -28,6 +28,10 @@ class tpeduSchoolSelectForm extends ConfirmFormBase {
       'tpedu.settings',
     ];
   }
+
+  public function getCancelUrl() {
+    return ConfirmFormHelper::buildCancelLink($this, $this->getRequest());
+  }
   
   public function buildForm(array $form, FormStateInterface $form_state) {
     global $base_url;
