@@ -10,7 +10,7 @@ use Drupal\user\Entity\User;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
-class Oauth2Controller extends ControllerBase {
+class tpeduController extends ControllerBase {
 
     public function handle(Request $request) {
         global $base_url;

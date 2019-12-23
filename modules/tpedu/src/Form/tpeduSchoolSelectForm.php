@@ -13,7 +13,7 @@ use Drupal\Core\Form\ConfirmFormHelper;
 use Drupal\Core\Url;
 use Drupal\Core\Link;
 
-class tpeduConfigForm extends ConfirmFormBase {
+class tpeduSchoolSelectForm extends ConfirmFormBase {
 
   public function getFormId() {
     return 'tpedu_school_select_form';
