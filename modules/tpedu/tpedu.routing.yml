@@ -6,6 +6,14 @@ tpedu.config:
   requirements:
     _permission: 'administer site configuration'
 
+tpedu.school_select:
+  path: /admin/config/people/tpedu/school
+  defaults:
+    _form: \Drupal\tpedu\Form\tpeduSchoolSelectForm
+    _title: '臺北市教育人員單一身分驗證模組設定'
+  requirements:
+    _permission: 'administer site configuration'
+    
 tpedu.sso:
   path: /retrieve
   defaults:

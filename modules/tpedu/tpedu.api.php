@@ -108,10 +108,11 @@ function api($which, array $replacement = null) {
     return false;
 }
 
-function get_school() {
-    $config = \Drupal::config('tpedu.settings');
-    $school = api('school');
-    return $school->dc;
+function profile() {
+    $config = \Drupal::configFactory()->getEditable('tpedu.settings');
+    $user = api('profile');
+    if (!empty($user)) return $user;
+    return false;
 }
 
 function fetch_user($uuid) {

@@ -2,7 +2,7 @@ api:
   dc: ''
   token: 'https://ldap.tp.edu.tw/oauth/token'
   login: 'https://ldap.tp.edu.tw/api/v2/user'
-  school: 'https://ldap.tp.edu.tw/api/v2/school/current'
+  profile: 'https://ldap.tp.edu.tw/api/v2/profile'
   all_teachers: 'https://ldap.tp.edu.tw/api/v2/school/{dc}/teachers'
   all_units: 'https://ldap.tp.edu.tw/api/v2/school/{dc}/ou'
   one_unit: 'https://ldap.tp.edu.tw/api/v2/school/{dc}/ou/{ou}'
