@@ -111,7 +111,7 @@ class tpeduConfigForm extends ConfirmFormBase {
     foreach ($form_state->getValues() as $key => $value) {
       $config->set($key, $value);
     }
-    if (empty($config->set('call_back'))) $config->set('call_back', 'https://'.$_SERVER['HTTP_HOST'].'/retrieve');
+    if (empty($config->get('call_back'))) $config->set('call_back', 'https://'.$_SERVER['HTTP_HOST'].'/retrieve');
     $config->save();
 
     $user = profile();
