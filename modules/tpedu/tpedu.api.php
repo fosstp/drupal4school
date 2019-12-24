@@ -103,7 +103,7 @@ function api($which, array $replacement = null) {
         ));
         if (json_last_error() == JSON_ERROR_NONE) $json = json_decode((string) $response->getBody());
         if (isset($json->message)) {
-            \Drupal::logger('tpedu')->error('oauth2 error:'. $dataapi .'=>'. $json->message);
+            \Drupal::logger('tpedu')->error('oauth2 response:'. $dataapi .'=>'. $json->message);
             return false;
         }
         return $json;
