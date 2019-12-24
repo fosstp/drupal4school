@@ -1,6 +1,17 @@
 # Drupal學校架站包計劃
 這是一個 [docker](https://www.docker.com/) 映像檔，此映像檔內容包含：debian 10.2(buster-slim) + php 7.3 + apache 2.4 + drupal 8.8 + 臺北市教育人員單一身份驗證模組。
 
+## docker-compose
+要架設一個 drupal 網站最簡單的方法就是使用以下指令：
+
+$ docker-compose up -d
+
+要移除所有啟動的容器則使用以下指令：
+
+$ docker-compose down
+
+當然，您應該要先修改 docker-compose.yml 組態檔中的網路埠號、資料庫密碼、磁碟掛載路徑...等等參數，然後再建立容器。或者，您也可以依照以下步驟，手動建立所有必要的容器。
+
 ## Drupal
 使用此映像檔的基本語法如下：
 
@@ -10,7 +21,7 @@ $ docker run --name drupal -p 80:80 -d fosstp/drupal
 
 容器啟動後，可以使用 http://localhost 或 http://主機的真實IP 語法連結 drupal 網站。
 
-有許多資料庫可以支援此映像檔，我們建議您採用 mysql docker 映像檔來部署資料庫。說明如下：
+有許多資料庫可以支援此映像檔，我們建議您採用 mysql docker 映像檔來部署資料庫，說明如下。
 
 ## MySQL
 請使用下列指令建立 mysql 容器：
