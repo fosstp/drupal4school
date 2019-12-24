@@ -30,6 +30,6 @@ RUN mkdir /var/www/html/sites/default/files \
 ADD run-httpd.sh /usr/sbin/run-httpd.sh
 RUN chmod +x /usr/sbin/run-httpd.sh
 
-VOLUME ["/var/www/html/modules", "/var/www/html/themes", "/var/www/html/sites/default/files"]
+VOLUME ["/var/www/html/sites"]
 EXPOSE 80
 ENTRYPOINT ["run-httpd.sh"]
