@@ -147,9 +147,8 @@ function tpedu_user_view(array &$build, UserInterface $account, EntityViewDispla
 function tpedu_theme($existing, $type, $theme, $path) {
 
     return [		
-        'tpedu_theme_hook' => [
+        'tpedu_personal_data_notice' => [
             'render element' => 'children',
-            'template' => 'tpedu-theme-hook',
         ],
     ];
 }

@@ -65,7 +65,7 @@ class tpeduController extends ControllerBase {
 
     public function notice(Request $request) {
         return array(
-            '#theme' => 'tpedu_theme_hook',
+            '#theme' => 'tpedu_personal_data_notice',
         );
     }
 
