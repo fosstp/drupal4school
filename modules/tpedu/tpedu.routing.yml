@@ -17,7 +17,7 @@ tpedu.school_select:
 tpedu.purge:
   path: /admin/config/people/tpedu/purge
   defaults:
-    _Controller: \Drupal\tpedu\Controller\tpeduController::purge
+    _controller: '\Drupal\tpedu\Controller\tpeduController::purge'
     _title: '清除臺北市教育人員資料庫快取'
   requirements:
     _permission: 'administer site configuration'
