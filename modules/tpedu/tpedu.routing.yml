@@ -28,7 +28,7 @@ tpedu.sso:
     _controller: \Drupal\tpedu\Controller\tpeduController::handle
     _title: 'OAuth2 login'
   requirements:
-    _permission: 'access content'
+    _access: 'TRUE'
 
 tpedu.personal:
   path: /personal_data_notice
@@ -36,4 +36,4 @@ tpedu.personal:
     _controller: \Drupal\tpedu\Controller\tpeduController::notice
     _title: '個人資料蒐集政策'
   requirements:
-    _permission: 'access content'
+    _access: 'TRUE'
