@@ -26,8 +26,8 @@ docker run --name drupal -e DB_HOST=mysql -e DB_USER=root -e DB_PASSWORD=dbpassw
 $ docker run --name mysql -e MYSQL_ROOT_PASSWORD=dbpassword -d mysql --default-authentication-plugin=mysql_native_password
 
 資料庫類型：MySQL, MariaDB, 或相容資料庫。上述範例則是使用 docker 官網組建的映像檔。
-資料庫名稱：需要透過指令或 phpmyadmin 網頁介面先把空白資料庫建好。我們建議您使用以下指令，安裝一台 phpmyadmin 微虛擬機，作為管理資料庫之用：
+資料庫名稱：需要透過指令或 phpmyadmin 網頁介面先把空白資料庫建好。我們建議您使用以下指令，安裝 phpmyadmin 容器，作為管理資料庫之用：
 
-$ docker run --name phpmyadmin --link mysql:db -p 8080:80 -d phpmyadmin/phpmyadmin
+$ docker run --name phpmyadmin --link mysql:db -e MYSQL_PASSWORD=dbpassword -p 8080:80 -d phpmyadmin/phpmyadmin
 
-資料庫管理帳號/密碼：您可以使用以下環境變數指派給 mysql 微虛擬機，(-e MYSQL_USER=, -e MYSQL_PASSWORD=)，上述範例是使用預設的 root 帳號作為管理員，並指定管理員密碼。
+資料庫管理帳號/密碼：您可以使用以下環境變數指派給 mysql 容器，(-e MYSQL_USER=, -e MYSQL_PASSWORD=)，上述範例是使用預設的 root 帳號作為管理員，並指定管理員密碼。
