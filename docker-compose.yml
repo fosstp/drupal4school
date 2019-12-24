@@ -29,5 +29,5 @@ services:
     volumes:
       - ./modules:/var/www/html/modules
       - ./themes:/var/www/html/themes
-      - ./files:/var/www/html/sites/default/files
+      - ./sites:/var/www/html/sites
     restart: always
