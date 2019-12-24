@@ -25,7 +25,7 @@ enable: false
 client_id: ''
 client_secret: ''
 admin_token: ''
-call_back: '/retrieve'
+call_back: ''
 sub_dept: ''
 refresh_days: 30
 allow_default_login: true

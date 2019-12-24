@@ -111,10 +111,11 @@ class tpeduConfigForm extends ConfirmFormBase {
     foreach ($form_state->getValues() as $key => $value) {
       $config->set($key, $value);
     }
-    $config->set('call_back', 'https://'.$_SERVER['HTTP_HOST'].'/retrieve');
+    if (empty($config->set('call_back'))) $config->set('call_back', 'https://'.$_SERVER['HTTP_HOST'].'/retrieve');
     $config->save();
 
     $user = profile();
+    \Drupal::log()->message('oauth2 profile:'.print_r($user));
     if (!empty($user->o)) {
       if (is_array($user->o)) {
         $tempstore = \Drupal::service('user.private_tempstore')->get('tpedu');
