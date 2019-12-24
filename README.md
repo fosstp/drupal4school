@@ -17,9 +17,11 @@ $ docker run --name drupal -p 80:80 -d fosstp/drupal
 
 $ docker run --name mysql -e MYSQL_DATABASE=drupal -e MYSQL_ROOT_PASSWORD=dbpassword -d mysql --default-authentication-plugin=mysql_native_password
 
-以上指令中說明如下：
+上述指令之說明如下：
 
 --name 為容器名稱 mysql，-e 為設定環境變數，環境變數 MYSQL_DATABASE 為容器啟動時要自動建立的資料庫 drupal，環境變數 MYSQL_ROOT_PASSWORD 則指定該資料庫系統的管理員 root 密碼為 dcpassword。
+
+最後的容器啟動指令 --default-authentication-plugin=mysql_native_password 可以讓 MySql 8 使用 MySql 5 的加密演算法，由於 Linux 系統暫時還不支援 MySql 8 的編碼方式，因此想要與 phpMyAdmin 搭配使用就必須修改為向下相容。
 
 ## phpMyAdmin
 我們建議您使用以下指令，安裝 phpmyadmin 容器，作為管理資料庫之用：
