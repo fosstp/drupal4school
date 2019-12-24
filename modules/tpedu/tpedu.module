@@ -36,9 +36,6 @@ function tpedu_user_format_name_alter(&$name, $account) {
   if ($account->get("init")->getValue() == 'tpedu') return $account->tpedu->realname;
 }
 
-/**
- * Implements hook_form_alter().
- */
 function tpedu_form_alter(&$form, FormStateInterface $form_state, $form_id) {
     $config = \Drupal::config('tpedu.settings');
     if ($config->get('enable') && ($form_id == 'user_login_block' || $form_id == 'user_login_form')) {
@@ -145,4 +142,14 @@ function tpedu_user_view(array &$build, UserInterface $account, EntityViewDispla
             );
         }
     }
+}
+
+function tpedu_theme($existing, $type, $theme, $path) {
+
+    return [		
+        'tpedu_theme_hook' => [
+            'render element' => 'children',
+            'template' => 'tpedu-theme-hook',
+        ],
+    ];
 }
