@@ -148,7 +148,7 @@ function tpedu_theme($existing, $type, $theme, $path) {
 
     return [		
         'tpedu_personal_data_notice' => [
-            'render element' => 'children',
+            'template' => 'tpedu-personal-data-notice',
         ],
     ];
 }
