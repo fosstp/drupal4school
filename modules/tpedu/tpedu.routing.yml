@@ -17,7 +17,7 @@ tpedu.school_select:
 tpedu.purge:
   path: /admin/config/people/tpedu/purge
   defaults:
-    _controller: '\Drupal\tpedu\Controller\tpeduController::purge'
+    _controller: \Drupal\tpedu\Controller\tpeduController::purge
     _title: '清除臺北市教育人員資料庫快取'
   requirements:
     _permission: 'administer site configuration'
@@ -25,7 +25,7 @@ tpedu.purge:
 tpedu.sso:
   path: /retrieve
   defaults:
-    _controller: '\Drupal\tpedu\Controller\tpeduController::handle'
+    _controller: \Drupal\tpedu\Controller\tpeduController::handle
     _title: 'OAuth2 login'
   requirements:
     _permission: 'access content'
@@ -33,7 +33,7 @@ tpedu.sso:
 tpedu.personal:
   path: /personal_data_notice
   defaults:
-    _controller: '\Drupal\tpedu\Controller\tpeduController::notice'
+    _controller: \Drupal\tpedu\Controller\tpeduController::notice
     _title: '個人資料蒐集政策'
   requirements:
     _permission: 'access content'
