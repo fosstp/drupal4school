@@ -7,6 +7,9 @@ if [ ! -f "/var/run/apache2/apache2.pid" ]; then
     chmod 744 /var/www/html/sites/default/files
     exec apache2-foreground
 fi
+
+drush cr
+
 if [ $# -gt 0 ]; then
     exec drush $@
 fi
