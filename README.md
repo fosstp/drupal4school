@@ -15,9 +15,9 @@ __資料庫名稱：__ drupal
 
 __資料庫管理員：__ root
 
-__資料庫管理密碼：__ 下方 docker 指令中所指定的密碼（範例為 dbpassword）
+__資料庫管理密碼：__ MYSQL docker 指令中所指定的密碼（範例為 dbpassword）
 
-__資料庫主機：__ 下方 docker 指令中所指定的 --name 參數（範例為 mysql）
+__資料庫主機：__ MYSQL docker 指令中所指定的 --name 參數（範例為 mysql）
 
 您也可以使用環境變數指定上述參數，例如：
 docker run --name drupal -e DB_HOST=mysql -e DB_USER=root -e DB_PASSWORD=dbpassword -p 80:80 -d fosstp/drupal
