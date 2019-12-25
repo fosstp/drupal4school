@@ -77,38 +77,34 @@ function who() {
 
 function api($which, array $replacement = null) {
     $config = \Drupal::config('tpedu.settings');
-    $tempstore = \Drupal::service('user.private_tempstore')->get('tpedu');
-    if ($tempstore->get('access_token')) {
-        $dataapi = $config->get('api.' . $which);
-        if (!empty($replacement)) {
-            if ($which == 'find_users') {
-                $dataapi .= '?';
-                foreach ($replacement as $key => $data) {
-                    $dataapi .= $key . '=' . $data . '&';
-                }
-                $dataapi = substr($dataapi, 0, -1);
-            } else {
-                $replacement['dc'] = $config->get('api.dc');
-                $search = array();
-                $values = array();
-                foreach ($replacement as $key => $data) {
-                    $search[] = '{'.$key.'}';
-                    $values[] = $data;
-                }
-                $dataapi = str_replace($search, $values, $dataapi);
+    $dataapi = $config->get('api.' . $which);
+    if (!empty($replacement)) {
+        if ($which == 'find_users') {
+            $dataapi .= '?';
+            foreach ($replacement as $key => $data) {
+                $dataapi .= $key . '=' . $data . '&';
             }
-          }
-        $response = \Drupal::httpClient()->get($dataapi , array(
-            'headers' => array( 'Authorization' => 'Bearer ' . $config->get('admin_token') ),
-        ));
-        if (json_last_error() == JSON_ERROR_NONE) $json = json_decode((string) $response->getBody());
-        if (isset($json->message)) {
-            \Drupal::logger('tpedu')->error('oauth2 response:'. $dataapi .'=>'. $json->message);
-            return false;
+            $dataapi = substr($dataapi, 0, -1);
+        } else {
+            $replacement['dc'] = $config->get('api.dc');
+            $search = array();
+            $values = array();
+            foreach ($replacement as $key => $data) {
+                $search[] = '{'.$key.'}';
+                $values[] = $data;
+            }
+            $dataapi = str_replace($search, $values, $dataapi);
         }
-        return $json;
-      }
-    return false;
+    }
+    $response = \Drupal::httpClient()->get($dataapi , array(
+        'headers' => array( 'Authorization' => 'Bearer ' . $config->get('admin_token') ),
+    ));
+    if (json_last_error() == JSON_ERROR_NONE) $json = json_decode((string) $response->getBody());
+    if (isset($json->message)) {
+        \Drupal::logger('tpedu')->error('oauth2 response:'. $dataapi .'=>'. $json->message);
+        return false;
+    }
+    return $json;
 }
 
 function profile() {
