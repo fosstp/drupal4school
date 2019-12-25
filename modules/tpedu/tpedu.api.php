@@ -96,15 +96,19 @@ function api($which, array $replacement = null) {
             $dataapi = str_replace($search, $values, $dataapi);
         }
     }
-    $response = \Drupal::httpClient()->get($dataapi , array(
-        'headers' => array( 'Authorization' => 'Bearer ' . $config->get('admin_token') ),
-    ));
-    $json = json_decode((string) $response->getBody());
-    if (json_last_error() == JSON_ERROR_NONE || isset($json->message)) {
-        \Drupal::logger('tpedu')->error('oauth2 response:'. $dataapi .'=>'. $json->message);
-        return false;
+    $response = \Drupal::httpClient()->get($dataapi , [
+        'headers' => [ 'Authorization' => 'Bearer ' . $config->get('admin_token') ],
+        'http_errors' => false,
+    ]);
+    $json = json_decode($response->getBody());
+    if ($response->getStatusCode() == 200) {
+        return $json;    
+    } else {
+        if (isset($json->error)) {
+            \Drupal::logger('tpedu')->error('oauth2 response:'. $dataapi .'=>'. $json->error);
+            return false;
+        }
     }
-    return $json;
 }
 
 function profile() {
@@ -315,7 +319,7 @@ function fetch_units() {
 function all_units() {
     $config = \Drupal::config('tpedu.settings');
     $fetch = false;
-    $query = \Drupal::database()->select('tpedu_units')->orderBy('id')->execute();
+    $query = \Drupal::database()->select('tpedu_units','a')->fields('a')->orderBy('id')->execute();
     $data = $query->fetchAll();
     if ($data) {
         if (date_diff($data[0]->fetch_date, date('Y-m-d', time()))->format('%a') > $config->get('refresh_days')) $fetch = true;
@@ -324,7 +328,7 @@ function all_units() {
     }
     if ($fetch) {
         fetch_units();
-        $query = \Drupal::database()->select('tpedu_units')->orderBy('id')->execute();
+        $query = \Drupal::database()->select('tpedu_units','a')->fields('a')->orderBy('id')->execute();
         $data = $query->fetchAll();
     }
     if ($data) return $data;
