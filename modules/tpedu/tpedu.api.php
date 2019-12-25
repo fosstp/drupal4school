@@ -99,8 +99,8 @@ function api($which, array $replacement = null) {
     $response = \Drupal::httpClient()->get($dataapi , array(
         'headers' => array( 'Authorization' => 'Bearer ' . $config->get('admin_token') ),
     ));
-    if (json_last_error() == JSON_ERROR_NONE) $json = json_decode((string) $response->getBody());
-    if (isset($json->message)) {
+    $json = json_decode((string) $response->getBody());
+    if (json_last_error() == JSON_ERROR_NONE || isset($json->message)) {
         \Drupal::logger('tpedu')->error('oauth2 response:'. $dataapi .'=>'. $json->message);
         return false;
     }
