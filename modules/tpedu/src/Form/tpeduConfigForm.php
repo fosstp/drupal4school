@@ -117,7 +117,6 @@ class tpeduConfigForm extends ConfirmFormBase {
     $config->save();
 
     $user = profile();
-    \Drupal::logger('tpedu')->debug('oauth2 profile:'.print_r($user));
     if (!empty($user->o)) {
       if (is_array($user->o)) {
         $tempstore = \Drupal::service('user.private_tempstore')->get('tpedu');
