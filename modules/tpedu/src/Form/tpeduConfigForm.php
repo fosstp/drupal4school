@@ -56,7 +56,9 @@ class tpeduConfigForm extends ConfirmFormBase {
       '#required' => TRUE,
     );
     $form['admin_token'] = array(
-      '#type' => 'textfield',
+      '#type' => 'textarea',
+      '#rows' => 6,
+      '#cols' => 25,
       '#title' => '學校管理員個人存取金鑰',
       '#default_value' => $config->get('admin_token'),
       '#description' => '請依上面說明之方法，填入學校管理員個人存取金鑰',
