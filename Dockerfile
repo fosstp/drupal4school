@@ -25,7 +25,7 @@ ADD modules /var/www/html/modules
 ADD themes /var/www/html/themes
 RUN mkdir /var/www/html/sites/default/files \
     && chown -R www-data:www-data /var/www/html \
-    && chmod 777 /var/www/html/sites/default/files
+    && chmod 775 /var/www/html/sites/default/files
 
 ADD run-httpd.sh /usr/sbin/run-httpd.sh
 RUN chmod +x /usr/sbin/run-httpd.sh
