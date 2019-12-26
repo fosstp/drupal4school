@@ -49,14 +49,15 @@ function tpedu_form_alter(&$form, FormStateInterface $form_state, $form_id) {
                    '" style="cursor: pointer; border:none; width:280px;" title="' . '使用臺北市教育人員單一身分驗證登入' .
                    '" onclick="tpedussoAuth()"></p>',
         );
-        $form['submit_google'] = array(
-            '#markup' => '<p><img src="' . file_create_url(drupal_get_path('module', 'tpedu') . '/google.png') .
-                   '" style="cursor: pointer; border:none; width:280px;" title="' . '使用 Google 帳號登入' .
-                   '" onclick="googleAuth()"></p>',
-        );
+        if ($config->get('google_enable')) {
+            $form['submit_google'] = array(
+                '#markup' => '<p><img src="' . file_create_url(drupal_get_path('module', 'tpedu') . '/google.png') .
+                        '" style="cursor: pointer; border:none; width:280px;" title="' . '使用 Google 帳號登入' .
+                        '" onclick="googleAuth()"></p>',
+            );
+        }
         if ($config->get('personal_data_notice')) {
             $form['extra_info'] = array(
-                '#type' => 'markup',
                 '#markup' => '<p>我已經閱讀貴網站<a href="/personal_data_notice">個人資料收集政策</a>，我同意貴網站取得我的個人資料！</p>',
             );
         }

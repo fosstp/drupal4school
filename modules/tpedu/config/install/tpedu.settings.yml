@@ -26,6 +26,7 @@ client_id: ''
 client_secret: ''
 admin_token: ''
 call_back: ''
+google_enable: false
 google_client_id: ''
 google_apikey: ''
 sub_dept: ''
