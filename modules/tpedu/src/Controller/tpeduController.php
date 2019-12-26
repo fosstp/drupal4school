@@ -17,35 +17,60 @@ class tpeduController extends ControllerBase {
         $config = \Drupal::config('tpedu.settings');
         if (!($config->get('enable'))) throw new AccessDeniedHttpException();
         $auth_code = $request->query->get('code');
+        $user_email = $request->query->get('user');
         if ($auth_code) {
             get_tokens($auth_code);
+            $uuid = who();
+            $user = get_user($uuid);
+            $account = \Drupal::database()->select('users','a')->fields('a')->condition('uuid', $uuid)->execute()->fetchObject();
+            if (!$account) {
+                $new_user = [
+                    'uuid' => $uuid,
+                    'name' => $user->account,
+                    'mail' => $user->email,
+                    'init' => 'tpedu',
+                    'pass' => substr($user->idno, -6),
+                    'status' => 1,
+                ];
+                $account = User::create($new_user);
+                $account->save();
+            }
+            $user = User::load($account->id());
+            user_login_finalize($account);
+            if (!empty($config->get('login_goto_url')))
+                $nextUrl = $config->get('login_goto_url');
+            else
+                $nextUrl = $base_url;
+            $response = new RedirectResponse(Url::fromUri($nextUrl));
+            $response->send();
+            return new Response();
+        } elseif ($user_email) {
+            $user = find_user('email=' . $user_email);
+            $account = \Drupal::database()->select('users','a')->fields('a')->condition('uuid', $uuid)->execute()->fetchObject();
+            if (!$account) {
+                $new_user = [
+                    'uuid' => $uuid,
+                    'name' => $user->account,
+                    'mail' => $user->email,
+                    'init' => 'tpedu',
+                    'pass' => substr($user->idno, -6),
+                    'status' => 1,
+                ];
+                $account = User::create($new_user);
+                $account->save();
+            }
+            $user = User::load($account->id());
+            user_login_finalize($account);
+            if (!empty($config->get('login_goto_url')))
+                $nextUrl = $config->get('login_goto_url');
+            else
+                $nextUrl = $base_url;
+            $response = new RedirectResponse(Url::fromUri($nextUrl));
+            $response->send();
+            return new Response();
         } else {
             refresh_tokens();
         }
-        $uuid = who();
-        $user = get_user($uuid);
-        $account = \Drupal::database()->select('users')->condition('uuid', $uuid)->execute()->fetchObject();
-        if (!$account) {
-            $new_user = [
-                'uuid' => $uuid,
-                'name' => $user->account,
-                'mail' => $user->email,
-                'init' => 'tpedu',
-                'pass' => substr($user->idno, -6),
-                'status' => 1,
-            ];
-            $account = User::create($new_user);
-            $account->save();
-        }
-        $user = User::load($account->id());
-        user_login_finalize($account);
-        if (!empty($config->get('login_goto_url')))
-            $nextUrl = $config->get('login_goto_url');
-        else
-            $nextUrl = $base_url;
-        $response = new RedirectResponse(Url::fromUri($nextUrl));
-        $response->send();
-        return new Response();
     }
 
     public function purge(Request $request) {

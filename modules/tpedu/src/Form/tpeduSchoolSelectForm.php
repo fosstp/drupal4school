@@ -69,6 +69,10 @@ class tpeduSchoolSelectForm extends ConfirmFormBase {
       $config->set('api.dc', $dc);
       $config->set('enable', true);
       $config->save();
+      fetch_units();
+      fetch_roles();
+      fetch_subjects();
+      fetch_classes();
     }
     $tempstore = \Drupal::service('user.private_tempstore')->get('tpedu');
     $tempstore->delete('organization');
