@@ -46,7 +46,6 @@ class tpeduConfigForm extends ConfirmFormBase {
         '<li>請詳細閱讀<a href="https://github.com/leejoneshane/tpeduSSO/blob/master/%E8%87%BA%E5%8C%97%E5%B8%82%E6%95%99%E8%82%B2%E4%BA%BA%E5%93%A1%E5%96%AE%E4%B8%80%E8%BA%AB%E5%88%86%E9%A9%97%E8%AD%89%E8%B3%87%E6%96%99%E4%BB%8B%E6%8E%A5%E6%89%8B%E5%86%8AV2.0.docx">臺北市教育人員單一身分驗證資料介接手冊V2.0</a>有關代理授權與管理員個人存取金鑰的取得方式，授權範圍務必勾選 profile、school 和 schoolAdmin。</li></ol></p>' .
         '<p>要使用 G Suite 帳號單一簽入功能，您必須建立 Google 開發專案並取得 Google 發給您的<em>網路應用程式憑證</em>，請依照以下步驟取得相關組態值：' . 
         '<ol><li>請連結 <a href="https://console.cloud.google.com/apis/dashboard">Google apis 主控台</a>，如果還沒有介接專案，請先建立專案！</li>' .
-        '<li>請連結 <a href="https://console.cloud.google.com/apis/dashboard">Google apis 主控台</a>，如果還沒有介接專案，請先建立專案！</li>' .
         '<li>請進入「憑證」管理頁面，然後建立憑證，至少需要 OAuth 用戶端 ID 以及 API 金鑰，才能讓學校師生使用 G Suite 帳號登入。</li>' .
         '<li>如果想要使用 G Suite 帳號同步、行事曆同步...等模組，還需要建立「服務帳戶」憑證，並且需要從 G Suite 管理主控台進行全域授權，請參考<a href="https://support.google.com/a/answer/162106?hl=zh-Hant">這篇文章</a>。</li>' .
         '</ol>',
@@ -84,7 +83,6 @@ class tpeduConfigForm extends ConfirmFormBase {
       '#title' => 'Google OAuth2 用戶端ID',
       '#default_value' => $config->get('google_client_id'),
       '#description' => '請輸入透過 Google apis 主控台所建立的介接專案之「OAuth2 用戶端ID」。',
-      '#required' => TRUE,
       '#states' => array (
         'invisible' => array(
           ':input[name="google_enable"]' => array( 'checked' => FALSE),
@@ -96,7 +94,6 @@ class tpeduConfigForm extends ConfirmFormBase {
       '#title' => 'Google API 金鑰',
       '#default_value' => $config->get('google_apikey'),
       '#description' => '請輸入透過 Google apis 主控台所建立的介接專案之「API 金鑰」。',
-      '#required' => TRUE,
       '#states' => array (
         'invisible' => array(
           ':input[name="google_enable"]' => array( 'checked' => FALSE),
