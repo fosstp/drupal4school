@@ -78,7 +78,7 @@ class tpeduConfigForm extends ConfirmFormBase {
       '#title' => '啟用 G-suit 帳號登入',
       '#default_value' => $config->get('google_enable'),
     );
-    $form['google_enable']['google_client_id'] = array(
+    $form['google_client_id'] = array(
       '#type' => 'textfield',
       '#title' => 'Google OAuth2 用戶端ID',
       '#default_value' => $config->get('google_client_id'),
@@ -89,7 +89,7 @@ class tpeduConfigForm extends ConfirmFormBase {
         ),
       ),
     );
-    $form['google_enable']['google_apikey'] = array(
+    $form['google_apikey'] = array(
       '#type' => 'textfield',
       '#title' => 'Google API 金鑰',
       '#default_value' => $config->get('google_apikey'),
