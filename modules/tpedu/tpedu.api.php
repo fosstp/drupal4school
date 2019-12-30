@@ -246,7 +246,7 @@ function fetch_user($uuid) {
             'id' => $user->employeeNumber,
             'student' => $stu,
             'account' => $account,
-            'name' => $user->displayName,
+            'realname' => $user->displayName,
             'dept_id' => $m_dept_id,
             'dept_name' => $m_dept_name,
             'role_id' => $m_role_id,
