@@ -6,7 +6,7 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email';
 var mytoken = '';
 
 function tpedussoAuth() {
-    window.top.location='https://ldap.tp.edu.tw/oauth/authorize?client_id=' + clientid + '&redirect_uri=' + callback + '&response_type=code&scope=user';
+    window.top.location='https://ldap.tp.edu.tw/oauth/authorize?client_id=' + clientId + '&redirect_uri=' + callback + '&response_type=code&scope=user';
 }
 
 function googleAuth() {
@@ -26,13 +26,6 @@ function refresh_token() {
 	} else {
 		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
 	}
-	xmlhttp.onreadystatechange = function() {
-    	if (this.readyState == 4 && this.status == 200) {
-      		if (this.responseText) {
-	    		window.top.location=this.responseText;
-			}
-    	}
-  	};
   	xmlhttp.open("GET", "/retrieve", true);
 	xmlhttp.send();
 }
