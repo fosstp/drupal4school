@@ -9,3 +9,5 @@ dependencies:
 configure: tpedu.config
 files:
   - tpedu.tokens.inc
+libraries:
+  - tpedu/tpedusso

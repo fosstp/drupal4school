@@ -12,70 +12,60 @@ use Drupal\Core\Render\BubbleableMetadata;
  */
 function tpedu_token_info_alter(&$info) {
   $info['tokens']['user']['realname'] = array(
-    'name' => t('Real Name'),
-    'description' => t('The real name of the user.'),
+    'name' => '真實姓名',
+    'description' => '使用者的真實姓名',
   );
   $info['tokens']['user']['gender'] = array(
-    'name' => t('Gender'),
-    'description' => t('The gender of the user.'),
+    'name' => '性別',
+    'description' => '使用者的性別代號，1 為男、2 為女',
   );
-  $info['tokens']['user']['userclass'] = array(
-    'name' => t('User Class'),
-    'description' => t('The user is a teacher or a student, identify by the tpedu module.'),
+  $info['tokens']['user']['student'] = array(
+    'name' => '學生',
+    'description' => '是否為學生？ 1 是、0 不是',
   );
   $info['tokens']['user']['idno'] = array(
-    'name' => t('Security Id'),
-    'description' => t('The taiwan security id of the user account.'),
+    'name' => '身分證字號',
+    'description' => '使用者的身分證字號',
   );
   $info['tokens']['user']['birthdate'] = array(
-    'name' => t('Date of Birth'),
-    'description' => t('The date of birth.'),
+    'name' => '出生日期',
+    'description' => '使用者的出生日期',
     'type' => 'date',
   );
-  $info['tokens']['user']['birthyear'] = array(
-    'name' => t('Year of Birth'),
-    'description' => t('The year of birth.'),
-  );
-  $info['tokens']['user']['birthmonth'] = array(
-    'name' => t('Month of Birth'),
-    'description' => t('The month of birth.'),
-  );
-  $info['tokens']['user']['birthday'] = array(
-    'name' => t('Month Day of Birth'),
-    'description' => t('The month day of birth.'),
-  );
-  $info['tokens']['user']['proclass'] = array(
-    'name' => t('Adoption Class'),
-    'description' => t('The adoption class of the teacher.'),
+  $info['tokens']['user']['class'] = array(
+    'name' => '班級',
+    'description' => '導師班級（教師身分）或就讀班級（學生身分）',
   );
   $info['tokens']['user']['depname'] = array(
-    'name' => t('Department Name'),
-    'description' => t('The department name of the teacher.'),
+    'name' => '行政部門',
+    'description' => '教職員任職部門的名稱',
   );
   $info['tokens']['user']['titlename'] = array(
-    'name' => t('Job Title'),
-    'description' => t('The job title of the teacher.'),
+    'name' => '職稱',
+    'description' => '教職員的職稱',
   );
-  $info['tokens']['user']['stdno'] = array(
-    'name' => t('Student Id'),
-    'description' => t('The id of the student.'),
-  );
-  $info['tokens']['user']['class'] = array(
-    'name' => t('Attending Class'),
-    'description' => t('The class of the student.'),
+  $info['tokens']['user']['sysid'] = array(
+    'name' => '校務行政系統代號',
+    'description' => '教師編號（教師身分）或學號（學生身分）',
   );
   $info['tokens']['user']['seat'] = array(
-    'name' => t('Seat Number'),
-    'description' => t('The seat number of the student.'),
+    'name' => '座號',
+    'description' => '學生的座號',
   );
 }
 
 /**
  * Implements hook_tokens().
  */
-function tpedu_tokens($type, $tokens, array $data, array $options, $bubbleable_metadata = NULL) {
+function tpedu_tokens($type, $tokens, array $data, array $options, BubbleableMetadata $bubbleable_metadata) {
   $replacements = array();
   $bubbleable_metadata = $bubbleable_metadata ? : new BubbleableMetadata();
+  if (isset($options['langcode'])) {
+    $url_options['language'] = \Drupal::languageManager()->getLanguage($options['langcode']);
+    $langcode = $options['langcode'];
+  } else {
+    $langcode = NULL;
+  }
 
   if ($type == 'user' && !empty($data['user'])) {
     /** @var \Drupal\user\UserInterface $account */
@@ -83,75 +73,53 @@ function tpedu_tokens($type, $tokens, array $data, array $options, $bubbleable_m
     foreach ($tokens as $name => $original) {
       switch ($name) {
         case 'realname':
-          $replacements[$original] = $account->realname;
-	  $bubbleable_metadata->addCacheableDependency($account->realname);
+          $replacements[$original] = $account->tpedu->realname;
+	        $bubbleable_metadata->addCacheableDependency($account->tpedu->realname);
           break;
 
         case 'gender':
-          $replacements[$original] = $account->gender;
-	  $bubbleable_metadata->addCacheableDependency($account->gender);
+          $replacements[$original] = $account->tpedu->gender;
+	        $bubbleable_metadata->addCacheableDependency($account->tpedu->gender);
           break;
 
-        case 'userclass':
-          $replacements[$original] = $account->userclass;
-	  $bubbleable_metadata->addCacheableDependency($account->userclass);
+        case 'student':
+          $replacements[$original] = $account->tpedu->student;
+	        $bubbleable_metadata->addCacheableDependency($account->tpedu->student);
           break;
 
         case 'idno':
-          $replacements[$original] = $account->idno;
-	  $bubbleable_metadata->addCacheableDependency($account->idno);
+          $replacements[$original] = $account->tpedu->idno;
+	        $bubbleable_metadata->addCacheableDependency($account->tpedu->idno);
           break;
 
         case 'birthdate':
-          $date_format = DateFormat::load('medium');
-          $bubbleable_metadata->addCacheableDependency($date_format);
-	  $bubbleable_metadata->addCacheableDependency($account->birthdate);
-          $replacements[$original] = $account->birthdate ? format_date($account->birthdate, 'medium', '', NULL, $langcode) : t('unknow');
-          break;
-
-        case 'birthyear':
-          $replacements[$original] = $account->birthyear;
-	  $bubbleable_metadata->addCacheableDependency($account->birthyear);
-          break;
-
-        case 'birthmonth':
-          $replacements[$original] = $account->birthmonth;
-	  $bubbleable_metadata->addCacheableDependency($account->birthmonth);
-          break;
-
-        case 'birthday':
-          $replacements[$original] = $account->birthday;
-	  $bubbleable_metadata->addCacheableDependency($account->birthday);
-          break;
-
-        case 'proclass':
-          $replacements[$original] = $account->proclass;
-	  $bubbleable_metadata->addCacheableDependency($account->proclass);
-          break;
-
-        case 'depname':
-          $replacements[$original] = $account->depname;
-	  $bubbleable_metadata->addCacheableDependency($account->depname);
-          break;
-
-        case 'titlename':
-          $replacements[$original] = $account->titlename;
-	  $bubbleable_metadata->addCacheableDependency($account->titlename);
-          break;
-
-        case 'stdno':
-          $replacements[$original] = $account->stdno;
-	  $bubbleable_metadata->addCacheableDependency($account->stdno);
+          $replacements[$original] = format_date($account->tpedu->birthdate, 'medium', '', NULL, $langcode);;
+      	  $bubbleable_metadata->addCacheableDependency($account->tpedu->birthdate);
           break;
 
         case 'class':
-          $replacements[$original] = $account->class;
-	  $bubbleable_metadata->addCacheableDependency($account->class);
+          $replacements[$original] = $account->tpedu->class;
+	        $bubbleable_metadata->addCacheableDependency($account->tpedu->class);
+          break;
+
+        case 'depname':
+          $replacements[$original] = $account->tpedu->dept_name;
+	        $bubbleable_metadata->addCacheableDependency($account->tpedu->dept_name);
+          break;
+
+        case 'titlename':
+          $replacements[$original] = $account->tpedu->role_name;
+	        $bubbleable_metadata->addCacheableDependency($account->tpedu->role_name);
+          break;
+
+        case 'sysid':
+          $replacements[$original] = $account->tpedu->id;
+      	  $bubbleable_metadata->addCacheableDependency($account->tpedu->id);
           break;
 
         case 'seat':
-          $replacements[$original] = $account->seat;
-	  $bubbleable_metadata->addCacheableDependency($account->seat);
+          $replacements[$original] = $account->tpedu->seat;
+	        $bubbleable_metadata->addCacheableDependency($account->tpedu->seat);
           break;
       }
     }
