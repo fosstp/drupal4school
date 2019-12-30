@@ -29,12 +29,17 @@ function get_tokens($auth_code) {
             'code' => $auth_code,
         ),
     ));
-    $data = json_decode((string) $response->getBody());
-    if (json_last_error() == JSON_ERROR_NONE) {
+    $data = json_decode($response->getBody());
+    if ($response->getStatusCode() == 200) {
         $tempstore = \Drupal::service('user.private_tempstore')->get('tpedu');
         $tempstore->set('expires_in', time() + $data->expires_in);
         $tempstore->set('access_token', $data->access_token);
         $tempstore->set('refresh_token', $data->refresh_token);
+    } else {
+        if (isset($json->error)) {
+            \Drupal::logger('tpedu')->error('oauth2 response:'. $dataapi .'=>'. $json->error);
+            return false;
+        }
     }
 }
 
@@ -52,12 +57,17 @@ function refresh_tokens() {
                 'scope' => 'user',
             ),
         ));
-        $data = json_decode((string) $response->getBody());
-        if (json_last_error() == JSON_ERROR_NONE) {
+        $data = json_decode($response->getBody());
+        if ($response->getStatusCode() == 200) {
             $tempstore = \Drupal::service('user.private_tempstore')->get('tpedu');
             $tempstore->set('expires_in', time() + $data->expires_in);
             $tempstore->set('access_token', $data->access_token);
             $tempstore->set('refresh_token', $data->refresh_token);
+        } else {
+            if (isset($json->error)) {
+                \Drupal::logger('tpedu')->error('oauth2 response:'. $dataapi .'=>'. $json->error);
+                return false;
+            }
         }
     }
 }
@@ -66,11 +76,18 @@ function who() {
     $config = \Drupal::config('tpedu.settings');
     $tempstore = \Drupal::service('user.private_tempstore')->get('tpedu');
     if ($tempstore->get('access_token')) {
-      $response = \Drupal::httpClient()->get($config->get('api.login'), array(
-        'headers' => array( 'Authorization' => 'Bearer ' . $tempstore->get('access_token') ),
-      ));
-      $user = json_decode((string) $response->getBody());
-      if (json_last_error() == JSON_ERROR_NONE) return $user->uuid;
+        $response = \Drupal::httpClient()->get($config->get('api.login'), array(
+            'headers' => array( 'Authorization' => 'Bearer ' . $tempstore->get('access_token') ),
+        ));
+        $user = json_decode($response->getBody());
+        if ($response->getStatusCode() == 200) {
+            return $user->uuid;    
+        } else {
+            if (isset($json->error)) {
+                \Drupal::logger('tpedu')->error('oauth2 response:'. $dataapi .'=>'. $json->error);
+                return false;
+            }
+        }
     }
     return false;
 }
