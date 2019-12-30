@@ -4,4 +4,5 @@ tpedusso:
         js/logon.js: {}
         https://apis.google.com/js/client.js?onload=handleClientLoad: { type: external, minified: true }
     dependencies:
+        - core/jquery
         - core/drupalSettings
