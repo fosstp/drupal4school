@@ -604,9 +604,8 @@ function fetch_classes() {
                 'id' => $c->ou,
                 'grade' => $c->grade,
                 'name' => $c->description,
-                'tutor' => isset($c->tutor) ? $c->tutor : null,
             );
-            if (isset($c->tutor)) $fields['tutor'] = $c->tutor;
+            if (isset($c->tutor[0])) $fields['tutor'] = $c->tutor[0];
             \Drupal::database()->insert('tpedu_classes')->fields($fields)->execute();
         }
     }

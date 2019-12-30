@@ -45,13 +45,13 @@ function tpedu_form_alter(&$form, FormStateInterface $form_state, $form_id) {
             unset($form['pass']);
         }
         $form['submit_tpedu'] = array(
-            '#markup' => '<p><img src="' . file_create_url(drupal_get_path('module', 'tpedu') . '/tpedusso.png') .
+            '#markup' => '<p><img src="//' . $_SERVER['HTTP_HOST'] .'/'. drupal_get_path('module', 'tpedu') . '/tpedusso.png' .
                    '" style="cursor: pointer; border:none; width:240px;" title="' . '使用臺北市教育人員單一身分驗證登入' .
                    '" onclick="tpedussoAuth()"></p>',
         );
         if ($config->get('google_enable')) {
             $form['submit_google'] = array(
-                '#markup' => '<p><img src="' . file_create_url(drupal_get_path('module', 'tpedu') . '/google.png') .
+                '#markup' => '<p><img src="//' . $_SERVER['HTTP_HOST'] .'/'. drupal_get_path('module', 'tpedu') . '/google.png' .
                         '" style="cursor: pointer; border:none; width:240px;" title="' . '使用 Google 帳號登入' .
                         '" onclick="googleAuth()"></p>',
             );
