@@ -79,14 +79,17 @@ function api($which, array $replacement = null) {
     $config = \Drupal::config('tpedu.settings');
     $dataapi = $config->get('api.' . $which);
     if ($which == 'find_users') {
-        $dataapi .= '?';
-        foreach ($replacement as $key => $data) {
-            $dataapi .= $key . '=' . $data . '&';
+        if (!empty($replacement)) {
+            $dataapi .= '?';
+            foreach ($replacement as $key => $data) {
+                $dataapi .= $key . '=' . $data . '&';
+            }
+            $dataapi = substr($dataapi, 0, -1);
         }
-        $dataapi = substr($dataapi, 0, -1);
     } else {
-        $search = array('{dc}');
-        $values = array($config->get('api.dc'));
+        $replacement['dc'] = $config->get('api.dc');
+        $search = array();
+        $values = array();
         foreach ($replacement as $key => $data) {
             $search[] = '{'.$key.'}';
             $values[] = $data;
@@ -601,6 +604,7 @@ function fetch_classes() {
                 'id' => $c->ou,
                 'grade' => $c->grade,
                 'name' => $c->description,
+                'tutor' => isset($c->tutor) ? $c->tutor : null,
             );
             if (isset($c->tutor)) $fields['tutor'] = $c->tutor;
             \Drupal::database()->insert('tpedu_classes')->fields($fields)->execute();

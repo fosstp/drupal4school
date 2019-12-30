@@ -100,7 +100,6 @@ function tpedu_schema() {
       'tutor' => array(
         'type' => 'varchar',
         'length' => 36,
-        'not null' => TRUE,
         'description' => '導師的人員代號',
       ),
       'fetch_date' => array(
