@@ -1,4 +1,4 @@
-tpedu_sso:
+tpedusso:
     version: 1.x
     js:
         js/logon.js: {}

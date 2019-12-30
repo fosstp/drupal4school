@@ -46,13 +46,13 @@ function tpedu_form_alter(&$form, FormStateInterface $form_state, $form_id) {
         }
         $form['submit_tpedu'] = array(
             '#markup' => '<p><img src="' . file_create_url(drupal_get_path('module', 'tpedu') . '/tpedusso.png') .
-                   '" style="cursor: pointer; border:none; width:280px;" title="' . '使用臺北市教育人員單一身分驗證登入' .
+                   '" style="cursor: pointer; border:none; width:240px;" title="' . '使用臺北市教育人員單一身分驗證登入' .
                    '" onclick="tpedussoAuth()"></p>',
         );
         if ($config->get('google_enable')) {
             $form['submit_google'] = array(
                 '#markup' => '<p><img src="' . file_create_url(drupal_get_path('module', 'tpedu') . '/google.png') .
-                        '" style="cursor: pointer; border:none; width:280px;" title="' . '使用 Google 帳號登入' .
+                        '" style="cursor: pointer; border:none; width:240px;" title="' . '使用 Google 帳號登入' .
                         '" onclick="googleAuth()"></p>',
             );
         }
@@ -61,12 +61,12 @@ function tpedu_form_alter(&$form, FormStateInterface $form_state, $form_id) {
                 '#markup' => '<p>我已經閱讀貴網站<a href="/personal_data_notice">個人資料收集政策</a>，我同意貴網站取得我的個人資料！</p>',
             );
         }
-        $form['#attached']['library'][] = 'tpedu/tpedu_sso';
-        $form['#attached']['drupalSettings']['tpedu']['tpedu_sso'] = array(
-            'client_id' => $config->get('client_id'),
-            'call_back' => $config->get('call_back'),
-            'google_client_id' => $config->get('google_client_id'),
-            'google_apikey' => $config->get('google_apikey'),
+        $form['#attached']['library'][] = 'tpedu/tpedusso';
+        $form['#attached']['drupalSettings']['tpedu']['tpedusso'] = array(
+            'clientId' => $config->get('client_id'),
+            'callBack' => $config->get('call_back'),
+            'googleClientId' => $config->get('google_client_id'),
+            'googleApikey' => $config->get('google_apikey'),
         );
     }
 }

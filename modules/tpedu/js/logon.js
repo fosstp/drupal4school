@@ -1,7 +1,7 @@
-var clientId = drupalSettings.tpedu.tpedu_sso.client_id;
-var callback = drupalSettings.tpedu.tpedu_sso.call_back;
-var gclientId = drupalSettings.tpedu.tpedu_sso.google_client_id;
-var apiKey = drupalSettings.tpedu.tpedu_sso.google_apikey;
+var clientId = drupalSettings.tpedu.tpedusso.clientId;
+var callback = drupalSettings.tpedu.tpedusso.callBack;
+var gclientId = drupalSettings.tpedu.tpedusso.googleClientId;
+var apiKey = drupalSettings.tpedu.tpedusso.googleApikey;
 var scopes = 'https://www.googleapis.com/auth/userinfo.email';
 var mytoken = '';
 
