@@ -36,8 +36,9 @@ class tpeduController extends ControllerBase {
                 ];
                 $account = User::create($new_user);
                 $account->save();
+            } else {
+                $account = User::load($account->id);
             }
-            $user = User::load($account->id());
             user_login_finalize($account);
             if (!empty($config->get('login_goto_url')))
                 $nextUrl = $config->get('login_goto_url');
