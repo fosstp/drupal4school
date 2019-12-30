@@ -78,23 +78,20 @@ function who() {
 function api($which, array $replacement = null) {
     $config = \Drupal::config('tpedu.settings');
     $dataapi = $config->get('api.' . $which);
-    if (!empty($replacement)) {
-        if ($which == 'find_users') {
-            $dataapi .= '?';
-            foreach ($replacement as $key => $data) {
-                $dataapi .= $key . '=' . $data . '&';
-            }
-            $dataapi = substr($dataapi, 0, -1);
-        } else {
-            $replacement['dc'] = $config->get('api.dc');
-            $search = array();
-            $values = array();
-            foreach ($replacement as $key => $data) {
-                $search[] = '{'.$key.'}';
-                $values[] = $data;
-            }
-            $dataapi = str_replace($search, $values, $dataapi);
+    if ($which == 'find_users') {
+        $dataapi .= '?';
+        foreach ($replacement as $key => $data) {
+            $dataapi .= $key . '=' . $data . '&';
         }
+        $dataapi = substr($dataapi, 0, -1);
+    } else {
+        $search = array('{dc}');
+        $values = array($config->get('api.dc'));
+        foreach ($replacement as $key => $data) {
+            $search[] = '{'.$key.'}';
+            $values[] = $data;
+        }
+        $dataapi = str_replace($search, $values, $dataapi);
     }
     $response = \Drupal::httpClient()->get($dataapi , [
         'headers' => [ 'Authorization' => 'Bearer ' . $config->get('admin_token') ],
