@@ -293,8 +293,8 @@ function tpedu_schema() {
         'description' => '職稱代號',
       ),
     ),
-    'primary key' => array('uuid'),
     'indexes' => array(
+      'uuid' => array('uuid'),
       'dept_id' => array('dept_id'),
       'role_id' => array('role_id'),
     ),
@@ -322,8 +322,8 @@ function tpedu_schema() {
         'description' => '科目代號',
       ),
     ),
-    'primary key' => array('uuid'),
     'indexes' => array(
+      'uuid' => array('uuid'),
       'class_id' => array('class_id'),
       'subject_id' => array('subject_id'),
     ),

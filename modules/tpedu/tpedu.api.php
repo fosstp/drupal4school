@@ -166,13 +166,13 @@ function fetch_user($uuid) {
                     $o = $a[0];
                     if ($a[1] != $sdept) {
                         $m_dept_id = $a[1];
-                        $depts = $user->department[$o];
+                        $depts = $user->department->$o;
                         foreach ($depts as $d) {
                             if ($d->key == $ou_pair) $m_dept_name = $d->name;
                         }
                     } else {
                         $s_dept_id = $a[1];
-                        $depts = $user->department[$o];
+                        $depts = $user->department->$o;
                         foreach ($depts as $d) {
                             if ($d->key == $ou_pair) $s_dept_name = $d->name;
                         }
@@ -186,7 +186,7 @@ function fetch_user($uuid) {
                 $a = explode(',', $user->ou);
                 $o = $a[0];
                 $m_dept_id = $a[1];
-                $d = $user->department[$o][0];
+                $d = $user->department->$o[0];
                 $m_dept_name = $d->name;
             }
             if (is_array($user->title)) {
@@ -195,13 +195,13 @@ function fetch_user($uuid) {
                     $o = $a[0];
                     if ($a[1] != $sdept) {
                         $m_role_id = $a[2];
-                        $roles = $user->titleName[$o];
+                        $roles = $user->titleName->$o;
                         foreach ($roles as $r) {
                             if ($r->key == $ro_pair) $m_role_name = $r->name;
                         }
                     } else {
                         $s_role_id = $a[2];
-                        $roles = $user->titleName[$o];
+                        $roles = $user->titleName->$o;
                         foreach ($roles as $r) {
                             if ($r->key == $ro_pair) $s_role_name = $r->name;
                         }
