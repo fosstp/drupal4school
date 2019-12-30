@@ -25,7 +25,7 @@ function get_tokens($auth_code) {
             'grant_type' => 'authorization_code',
             'client_id' => $config->get('client_id'),
             'client_secret' => $config->get('client_secret'),
-            'redirect_uri' => $config->get('callback'),
+            'redirect_uri' => $config->get('call_back'),
             'code' => $auth_code,
         ),
     ));
