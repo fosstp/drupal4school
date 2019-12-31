@@ -193,17 +193,11 @@ function fetch_user($uuid) {
                 foreach ($user->title as $ro_pair) {
                     $a = explode(',', $ro_pair);
                     $o = $a[0];
-                    if ($a[1] != $sdept) {
+                    if ($a[1] == $m_dept_id) {
                         $m_role_id = $a[2];
                         $roles = $user->titleName->$o;
                         foreach ($roles as $r) {
                             if ($r->key == $ro_pair) $m_role_name = $r->name;
-                        }
-                    } else {
-                        $s_role_id = $a[2];
-                        $roles = $user->titleName->$o;
-                        foreach ($roles as $r) {
-                            if ($r->key == $ro_pair) $s_role_name = $r->name;
                         }
                     }
                     $database->insert('tpedu_jobs')->fields(array(
@@ -212,15 +206,11 @@ function fetch_user($uuid) {
                         'role_id' => $a[2],
                     ))->execute();
                 }
-                if (empty($m_role_id)) {
-                    $m_role_id = $s_role_id;
-                    $m_role_name = $s_role_name;
-                }
             } else {
                 $a = explode(',', $user->title);
                 $o = $a[0];
                 $m_role_id = $a[1];
-                $d = $user->titleName[$o][0];
+                $d = $user->titleName->$o[0];
                 $m_role_name = $d->name;
                 $database->insert('tpedu_jobs')->fields(array(
                     'uuid' => $uuid,
