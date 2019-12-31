@@ -46,6 +46,7 @@ function tpedu_form_alter(&$form, FormStateInterface $form_state, $form_id) {
         }
         $form['submit_tpedu'] = array(
             '#type' => 'html_tag',
+            '#tag' => 'img',
             '#attributes' => array(
                 'src' => '//'. $_SERVER['HTTP_HOST'] .'/'. drupal_get_path('module', 'tpedu') . '/tpedusso.png',
                 'style' => 'cursor: pointer; border:none; width:240px;',
@@ -56,6 +57,7 @@ function tpedu_form_alter(&$form, FormStateInterface $form_state, $form_id) {
         if ($config->get('google_enable')) {
             $form['submit_google'] = array(
                 '#type' => 'html_tag',
+                '#tag' => 'img',
                 '#attributes' => array(
                     'src' => '//'. $_SERVER['HTTP_HOST'] .'/'. drupal_get_path('module', 'tpedu') . '/google.png',
                     'style' => 'cursor: pointer; border:none; width:240px;',
