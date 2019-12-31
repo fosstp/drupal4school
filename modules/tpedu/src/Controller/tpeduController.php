@@ -24,7 +24,7 @@ class tpeduController extends ControllerBase {
             get_tokens($auth_code);
             $uuid = who();
             $user = get_user($uuid);
-            $account = \Drupal::database()->select('users','a')->fields('a')->condition('uuid', $uuid)->execute()->fetchObject();
+            $account = \Drupal::database()->query("select * from users where uuid='$uuid'")->execute()->fetchObject();
             if (!$account) {
                 $new_user = [
                     'uuid' => $uuid,
@@ -49,7 +49,7 @@ class tpeduController extends ControllerBase {
             return new Response();
         } elseif ($user_email) {
             $user = find_user('email=' . $user_email);
-            $account = \Drupal::database()->select('users','a')->fields('a')->condition('uuid', $uuid)->execute()->fetchObject();
+            $account = \Drupal::database()->query("select * from users where uuid='$uuid'")->execute()->fetchObject();
             if (!$account) {
                 $new_user = [
                     'uuid' => $uuid,
