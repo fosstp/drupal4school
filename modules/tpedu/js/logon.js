@@ -2,48 +2,28 @@ var clientId = drupalSettings.tpedu.tpedusso.clientId;
 var callback = drupalSettings.tpedu.tpedusso.callBack;
 var gclientId = drupalSettings.tpedu.tpedusso.googleClientId;
 var apiKey = drupalSettings.tpedu.tpedusso.googleApikey;
-var scopes = 'https://www.googleapis.com/auth/userinfo.email';
-var mytoken = '';
 
 function tpedussoAuth() {
     window.top.location='https://ldap.tp.edu.tw/oauth/authorize?client_id=' + clientId + '&redirect_uri=' + callback + '&response_type=code&scope=user';
 }
 
 function googleAuth() {
-    gapi.auth.authorize({client_id: gclientId, scope: scopes, immediate: true}, handleAuthResult);
+	gapi.load('client', start);
 }
 
-function handleClientLoad() {
-    gapi.client.setApiKey(apiKey);
-	window.setTimeout(googleAuth, 1);
-	window.setTimeout(refresh_token, 2);
-}
-
-function refresh_token() {
-	var xmlhttp;
-	if (window.XMLHttpRequest) {
-		xmlhttp=new XMLHttpRequest();
-	} else {
-		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
-	}
-  	xmlhttp.open("GET", "/retrieve", true);
-	xmlhttp.send();
-}
-
-function handleAuthResult(authResult) {
-    if (authResult && !authResult.error) {
-      var tokenobj=gapi.auth.getToken();
-      mytoken=tokenobj.access_token;
-	  getMail();
-    }
-}
-
-function getMail() {
-    gapi.client.load('oauth2', 'v2', function() {
-        var request = gapi.client.oauth2.userinfo.get();
-        request.execute(function(resp) {
-	        var user=resp.email;
-	        window.top.location = '/retrieve?user=' + user;
-        });
-    });
+function start() {
+	gapi.client.init({
+		'apiKey': apiKey,
+		'clientId': gclientId,
+		'scope': 'email',
+	}).then(function() {
+		return gapi.client.request({
+			//see https://accounts.google.com/.well-known/openid-configuration
+			'path': 'https://openidconnect.googleapis.com/v1/userinfo',
+		});
+	}).then(function(response) {
+			window.top.location = '/retrieve?user=' + response.result.email;
+		}, function(reason) {
+			console.log('Error: ' + reason.result.error.message);
+	});
 }

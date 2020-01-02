@@ -2,7 +2,7 @@ tpedusso:
     version: 1.x
     js:
         js/logon.js: {}
-        https://apis.google.com/js/client.js?onload=handleClientLoad: { type: external, minified: true }
+        https://apis.google.com/js/api.js: { type: external, minified: true }
     dependencies:
         - core/jquery
         - core/drupalSettings
