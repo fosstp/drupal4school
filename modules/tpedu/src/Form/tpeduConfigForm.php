@@ -48,6 +48,7 @@ class tpeduConfigForm extends ConfirmFormBase {
         '<ol><li>請連結 <a href="https://console.cloud.google.com/apis/dashboard">Google apis 主控台</a>，如果還沒有介接專案，請先建立專案！</li>' .
         '<li>請進入「憑證」管理頁面，然後建立憑證，至少需要 OAuth 用戶端 ID 以及 API 金鑰，才能讓學校師生使用 G Suite 帳號登入。</li>' .
         '<li>如果想要使用 G Suite 帳號同步、行事曆同步...等模組，還需要建立「服務帳戶」憑證，並且需要從 G Suite 管理主控台進行全域授權，請參考<a href="https://support.google.com/a/answer/162106?hl=zh-Hant">這篇文章</a>。</li>' .
+        '<li>線上測試 OAuth 用戶端 ID 以及 API 金鑰，請連到 <a href="https://developers.google.com/oauthplayground/">OAuth playground</a>。</li>' .
         '</ol>',
     );
     $form['client_id'] = array(
