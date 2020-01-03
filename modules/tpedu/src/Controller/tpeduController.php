@@ -44,18 +44,14 @@ class tpeduController extends ControllerBase {
                     $nextUrl = $config->get('login_goto_url');
                 else
                     $nextUrl = $base_url;
-                $response = new RedirectResponse($nextUrl);
-                $response->send();
-                return $response;
+                return new RedirectResponse($nextUrl);
             } else {
                 drupal_set_message('您的帳號並非隸屬於本校，因此無法登入！', 'status', TRUE);
-                $response = new RedirectResponse('/');
-                $response->send();
-                return $response;
+                return new RedirectResponse('/');
             }
         } elseif ($user_email) {
-            $user = find_user([ 'email' => $user_email ]);
-            if ($user) {
+            $users = find_user([ 'email' => $user_email ]);
+            if ($users && $user = $users[0]) {
                 $account = \Drupal::database()->query("select * from users where uuid='$user->uuid'")->fetchObject();
                 if (!$account) {
                     $new_user = [
@@ -68,21 +64,18 @@ class tpeduController extends ControllerBase {
                     ];
                     $account = User::create($new_user);
                     $account->save();
+                } else {
+                    $account = User::load($account->uid);
                 }
-                $user = User::load($account->id);
                 user_login_finalize($account);
                 if (!empty($config->get('login_goto_url')))
                     $nextUrl = $config->get('login_goto_url');
                 else
                     $nextUrl = $base_url;
-                $response = new RedirectResponse($nextUrl);
-                $response->send();
-                return $response;
+                return new RedirectResponse($nextUrl);
             } else {
                 drupal_set_message('很抱歉, 您的電子郵件並未登錄於臺北市單一身份驗證服務，因此無法確認您的身份！請連線到 ldap.tp.edu.tw 登錄您的　google 郵件帳號！', 'status', TRUE);
-                $response = new RedirectResponse('/');
-                $response->send();
-                return $response;
+                return new RedirectResponse('/');
             }
         } else {
             refresh_tokens();
