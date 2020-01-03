@@ -46,10 +46,12 @@ class tpeduController extends ControllerBase {
                     $nextUrl = $base_url;
                 $response = new RedirectResponse($nextUrl);
                 $response->send();
+                return $response;
             } else {
                 drupal_set_message('您的帳號並非隸屬於本校，因此無法登入！', 'status', TRUE);
                 $response = new RedirectResponse('/');
                 $response->send();
+                return $response;
             }
         } elseif ($user_email) {
             $user = find_user([ 'email' => $user_email ]);
@@ -75,10 +77,12 @@ class tpeduController extends ControllerBase {
                     $nextUrl = $base_url;
                 $response = new RedirectResponse($nextUrl);
                 $response->send();
+                return $response;
             } else {
                 drupal_set_message('很抱歉, 您的電子郵件並未登錄於臺北市單一身份驗證服務，因此無法確認您的身份！請連線到 ldap.tp.edu.tw 登錄您的　google 郵件帳號！', 'status', TRUE);
                 $response = new RedirectResponse('/');
                 $response->send();
+                return $response;
             }
         } else {
             refresh_tokens();

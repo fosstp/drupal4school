@@ -103,6 +103,7 @@ function api($which, array $replacement = null) {
             }
             $dataapi = substr($dataapi, 0, -1);
         }
+        $dataapi = str_replace('{dc}', $config->get('api.dc'), $dataapi);
     } else {
         $replacement['dc'] = $config->get('api.dc');
         $search = array();

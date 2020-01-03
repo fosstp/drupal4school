@@ -15,15 +15,10 @@ function start() {
 	gapi.client.init({
 		'apiKey': apiKey,
 		'clientId': gclientId,
-		'scope': 'email',
+		'scope': 'profile',
 	}).then(function() {
-		return gapi.client.request({
-			//see https://accounts.google.com/.well-known/openid-configuration
-			'path': 'https://openidconnect.googleapis.com/v1/userinfo',
-		});
-	}).then(function(response) {
-			window.top.location = '/retrieve?user=' + response.result.email;
-		}, function(reason) {
-			console.log('Error: ' + reason.result.error.message);
+		var GoogleAuth = gapi.auth2.getAuthInstance();
+		var GoogleUser = GoogleAuth.currentUser.get();
+		window.top.location = '/retrieve?user=' + GoogleUser.getBasicProfile().getEmail();
 	});
 }
