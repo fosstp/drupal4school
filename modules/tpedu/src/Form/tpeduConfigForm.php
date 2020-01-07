@@ -46,9 +46,10 @@ class tpeduConfigForm extends ConfirmFormBase {
         '<li>請詳細閱讀<a href="https://github.com/leejoneshane/tpeduSSO/blob/master/%E8%87%BA%E5%8C%97%E5%B8%82%E6%95%99%E8%82%B2%E4%BA%BA%E5%93%A1%E5%96%AE%E4%B8%80%E8%BA%AB%E5%88%86%E9%A9%97%E8%AD%89%E8%B3%87%E6%96%99%E4%BB%8B%E6%8E%A5%E6%89%8B%E5%86%8AV2.0.docx">臺北市教育人員單一身分驗證資料介接手冊V2.0</a>有關代理授權與管理員個人存取金鑰的取得方式，授權範圍務必勾選 profile、school 和 schoolAdmin。</li></ol></p>' .
         '<p>要使用 G Suite 帳號單一簽入功能，您必須建立 Google 開發專案並取得 Google 發給您的<em>網路應用程式憑證</em>，請依照以下步驟取得相關組態值：' . 
         '<ol><li>請連結 <a href="https://console.cloud.google.com/apis/dashboard">Google apis 主控台</a>，如果還沒有介接專案，請先建立專案！</li>' .
-        '<li>請進入「憑證」管理頁面，然後建立憑證，至少需要 OAuth 用戶端 ID 以及 API 金鑰，才能讓學校師生使用 G Suite 帳號登入。</li>' .
+        '<li>請進入「憑證」管理頁面，然後建立憑證，至少需要 OAuth 用戶端 ID，才能讓學校師生使用 G Suite 帳號登入。</li>' .
+        '<li>上述之 OAuth 用戶端請將「已授權的重新導向 URI」欄位，填寫為 https://'.$_SERVER['HTTP_HOST'].'/googlelogin</li>' .
         '<li>如果想要使用 G Suite 帳號同步、行事曆同步...等模組，還需要建立「服務帳戶」憑證，並且需要從 G Suite 管理主控台進行全域授權，請參考<a href="https://support.google.com/a/answer/162106?hl=zh-Hant">這篇文章</a>。</li>' .
-        '<li>線上測試 OAuth 用戶端 ID 以及 API 金鑰，請連到 <a href="https://developers.google.com/oauthplayground/">OAuth playground</a>。</li>' .
+        '<li>線上測試 OAuth 用戶端 API 資料存取，請連到 <a href="https://developers.google.com/oauthplayground/">OAuth playground</a>。</li>' .
         '</ol>',
     );
     $form['client_id'] = array(
@@ -74,32 +75,42 @@ class tpeduConfigForm extends ConfirmFormBase {
       '#description' => '請依上面說明之方法，填入學校管理員個人存取金鑰',
       '#required' => TRUE,
     );
-    $form['google_enable'] = array(
+    $form['google_login'] = array(
       '#type' => 'checkbox',
-      '#title' => '啟用 G-suit 帳號登入',
-      '#default_value' => $config->get('google_enable'),
+      '#title' => '啟用 G Suite 帳號登入',
+      '#default_value' => $config->get('google_login'),
     );
-    $form['google_client_id'] = array(
-      '#type' => 'textfield',
-      '#title' => 'Google OAuth2 用戶端ID',
-      '#default_value' => $config->get('google_client_id'),
-      '#description' => '請輸入透過 Google apis 主控台所建立的介接專案之「OAuth2 用戶端ID」。',
+    $form['google_oauth_json'] = array(
+      '#type' => 'file',
+      '#title' => 'Google OAuth 用戶端授權驗證 JSON 檔',
+      '#default_value' => $config->get('google_oauth_json'),
+      '#description' => '請從 Google apis 主控台專案管理頁面下載上述「OAuth 2.0 用戶端 ID」所提供的 JSON 檔案並上傳到這裡。',
       '#states' => array (
         'invisible' => array(
-          ':input[name="google_enable"]' => array( 'checked' => FALSE),
+          ':input[name="google_login"]' => array( 'checked' => FALSE),
         ),
       ),
     );
-    $form['google_apikey'] = array(
-      '#type' => 'textfield',
-      '#title' => 'Google API 金鑰',
-      '#default_value' => $config->get('google_apikey'),
-      '#description' => '請輸入透過 Google apis 主控台所建立的介接專案之「API 金鑰」。',
+    $form['google_domain_admin'] = array(
+      '#type' => 'checkbox',
+      '#title' => '啟用 G Suite 帳號同步',
+      '#default_value' => $config->get('google_domain_admin'),
+    );
+    $form['google_serivce_json'] = array(
+      '#type' => 'file',
+      '#title' => 'Google 服務帳號授權驗證 JSON 檔',
+      '#default_value' => $config->get('google_service_json'),
+      '#description' => '請從 Google apis 主控台專案管理頁面下載上述「服務帳戶」所提供的 JSON 檔案並上傳到這裡。',
       '#states' => array (
         'invisible' => array(
-          ':input[name="google_enable"]' => array( 'checked' => FALSE),
+          ':input[name="google_domain_admin"]' => array( 'checked' => FALSE),
         ),
       ),
+    );
+    $form['net_domain_admin'] = array(
+      '#type' => 'checkbox',
+      '#title' => '啟用微軟網域 AD 帳號同步',
+      '#default_value' => $config->get('net_domain_admin'),
     );
     $form['refresh_days'] = array(
       '#type' => 'number',
@@ -148,9 +159,19 @@ class tpeduConfigForm extends ConfirmFormBase {
     $config = \Drupal::configFactory()->getEditable('tpedu.settings');
     $form_state->cleanValues();
     foreach ($form_state->getValues() as $key => $value) {
-      $config->set($key, $value);
+      if ($key == 'google_oauth_json' || $key == 'google_service_json') {
+        $file = file_save_upload('google_oauth_json', array('file_validate_extensions' => array('json')), "/var/www/html/modules/tpedu", FILE_EXISTS_REPLACE);
+        if ($file) {
+          $file->status = FILE_STATUS_PERMANENT;
+          file_save($file);
+          $config->set($key, $file->filename);
+        }
+      } else {
+        $config->set($key, $value);
+      } 
     }
     $config->set('call_back', 'https://'.$_SERVER['HTTP_HOST'].'/retrieve');
+    $config->set('google_call_back', 'https://'.$_SERVER['HTTP_HOST'].'/googlelogin');
     $config->save();
 
     $user = profile();

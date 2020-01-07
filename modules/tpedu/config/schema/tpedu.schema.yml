@@ -1,3 +1,6 @@
+api.dc:
+  type: string
+  label: '臺北市教育人員單一身分驗證學校代碼'
 enable:
   type: boolean
   label: '已啟用臺北市教育人員單一身分驗證模組'
@@ -10,6 +13,33 @@ client_secret:
 admin_token:
   type: string
   label: '臺北市教育人員單一身分驗證學校管理員預存令牌'
+call_back:
+  type: string
+  label: '臺北市教育人員單一身分驗證學校管理員授權回呼網址'
+sub_dept:
+  type: boolean
+  label: '科任教師部門代號（未兼行政職務應出現之職稱）'
+refresh_days:
+  type: integer
+  label: '快取資料庫更新頻率'
+google_login:
+  type: boolean
+  label: '啟用 G Suite 帳號登入'
+google_oauth_json:
+  type: string
+  label: 'Google Oauth 用戶端授權驗證檔案'
+google_call_back:
+  type: string
+  label: 'Google 授權後轉送網址'
+google_domain_admin:
+  type: boolean
+  label: '啟用 G Suite 帳號同步'
+google_service_json:
+  type: string
+  label: 'Google Service Account 授權檔案'
+net_domain_admin:
+  type: boolean
+  label: '啟用 Microsoft AD 帳號同步'
 allow_default_login:
   type: boolean
   label: '允許使用 Drupal 本地帳號登入'

@@ -26,9 +26,12 @@ client_id: ''
 client_secret: ''
 admin_token: ''
 call_back: ''
-google_enable: false
-google_client_id: ''
-google_apikey: ''
+google_login: false
+google_oauth_json: ''
+google_call_back: ''
+google_domain_admin: false
+google_service_json: ''
+net_domain_admin: false
 sub_dept: ''
 refresh_days: 30
 allow_default_login: true
