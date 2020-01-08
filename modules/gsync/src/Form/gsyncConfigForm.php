@@ -75,6 +75,43 @@ class tpeduConfigForm extends ConfirmFormBase {
       '#description' => '請依上面說明之方法，填入學校管理員個人存取金鑰',
       '#required' => TRUE,
     );
+    $form['google_login'] = array(
+      '#type' => 'checkbox',
+      '#title' => '啟用 G Suite 帳號登入',
+      '#default_value' => $config->get('google_login'),
+    );
+    $form['google_oauth_json'] = array(
+      '#type' => 'file',
+      '#title' => 'Google OAuth 用戶端授權驗證 JSON 檔',
+      '#default_value' => $config->get('google_oauth_json'),
+      '#description' => '請從 Google apis 主控台專案管理頁面下載上述「OAuth 2.0 用戶端 ID」所提供的 JSON 檔案並上傳到這裡。',
+      '#states' => array (
+        'invisible' => array(
+          ':input[name="google_login"]' => array( 'checked' => FALSE),
+        ),
+      ),
+    );
+    $form['google_domain_admin'] = array(
+      '#type' => 'checkbox',
+      '#title' => '啟用 G Suite 帳號同步',
+      '#default_value' => $config->get('google_domain_admin'),
+    );
+    $form['google_serivce_json'] = array(
+      '#type' => 'file',
+      '#title' => 'Google 服務帳號授權驗證 JSON 檔',
+      '#default_value' => $config->get('google_service_json'),
+      '#description' => '請從 Google apis 主控台專案管理頁面下載上述「服務帳戶」所提供的 JSON 檔案並上傳到這裡。',
+      '#states' => array (
+        'invisible' => array(
+          ':input[name="google_domain_admin"]' => array( 'checked' => FALSE),
+        ),
+      ),
+    );
+    $form['net_domain_admin'] = array(
+      '#type' => 'checkbox',
+      '#title' => '啟用微軟網域 AD 帳號同步',
+      '#default_value' => $config->get('net_domain_admin'),
+    );
     $form['refresh_days'] = array(
       '#type' => 'number',
       '#title' => '快取資料庫更新頻率',
@@ -122,9 +159,19 @@ class tpeduConfigForm extends ConfirmFormBase {
     $config = \Drupal::configFactory()->getEditable('tpedu.settings');
     $form_state->cleanValues();
     foreach ($form_state->getValues() as $key => $value) {
-      $config->set($key, $value);
+      if ($key == 'google_oauth_json' || $key == 'google_service_json') {
+        $file = file_save_upload('google_oauth_json', array('file_validate_extensions' => array('json')), "/var/www/html/modules/tpedu", FILE_EXISTS_REPLACE);
+        if ($file) {
+          $file->status = FILE_STATUS_PERMANENT;
+          file_save($file);
+          $config->set($key, $file->filename);
+        }
+      } else {
+        $config->set($key, $value);
+      } 
     }
     $config->set('call_back', 'https://'.$_SERVER['HTTP_HOST'].'/retrieve');
+    $config->set('google_call_back', 'https://'.$_SERVER['HTTP_HOST'].'/googlelogin');
     $config->save();
 
     $user = profile();

@@ -33,7 +33,6 @@ function tpedu_user_load(array $entities) {
 
 function tpedu_user_format_name_alter(&$name, $account) {
   $account = User::load($account->id());
-  var_dump($account);
   if ($account->get("init")->getValue() == 'tpedu') return $account->tpedu->realname;
 }
 
@@ -55,6 +54,18 @@ function tpedu_form_alter(&$form, FormStateInterface $form_state, $form_id) {
                 'onclick' => 'tpedussoAuth();'
             ),
         );
+        if ($config->get('google_enable')) {
+            $form['submit_google'] = array(
+                '#type' => 'html_tag',
+                '#tag' => 'img',
+                '#attributes' => array(
+                    'src' => '//'. $_SERVER['HTTP_HOST'] .'/'. drupal_get_path('module', 'tpedu') . '/google.png',
+                    'style' => 'cursor: pointer; border:none; width:240px;',
+                    'title' => '使用 Google 帳號登入',
+                    'onclick' => 'googleAuth();'
+                ),
+            );
+        }
         if ($config->get('personal_data_notice')) {
             $form['extra_info'] = array(
                 '#markup' => '<p>我已經閱讀貴網站<a href="/personal_data_notice">個人資料收集政策</a>，我同意貴網站取得我的個人資料！</p>',
@@ -64,6 +75,8 @@ function tpedu_form_alter(&$form, FormStateInterface $form_state, $form_id) {
         $form['#attached']['drupalSettings']['tpedu']['tpedusso'] = array(
             'clientId' => $config->get('client_id'),
             'callBack' => $config->get('call_back'),
+            'googleClientId' => $config->get('google_client_id'),
+            'googleApikey' => $config->get('google_apikey'),
         );
     }
 }

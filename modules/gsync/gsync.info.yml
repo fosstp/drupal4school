@@ -1,0 +1,10 @@
+name: 使用 G Suite 帳號登入
+description: 本模組提供 Google 帳號登入並介接臺北市教育人員單一身分資料。使用者必須先在 ldap.tp.edu.tw 將要登入的 Google 帳號登錄為個人電子郵件，此模組才有作用。
+type: module
+package: School Information Management System
+version: 1.0
+core: 8.x
+dependencies:
+  - user
+  - tpedu
+configure: gsuite.config
