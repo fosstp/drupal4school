@@ -35,7 +35,7 @@ function tpedu_user_load(array $entities) {
 function tpedu_user_format_name_alter(&$name, $account) {
     $config = \Drupal::config('tpedu.settings');
     if (!$config->get('enable')) return;
-    $realname = get_user_name($account->uid);
+    $realname = get_user_name($account->id());
     if ($realname) $name = $realname;
 }
 
