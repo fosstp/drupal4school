@@ -8,6 +8,7 @@ use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Symfony\Component\HttpFoundation\Session;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Drupal\user\Entity\User;
+use Drupal\Core\Session\UserSession;
 
 require 'tpedu.api.php';
 
@@ -34,8 +35,7 @@ function tpedu_user_load(array $entities) {
 function tpedu_user_format_name_alter(&$name, $account) {
     $config = \Drupal::config('tpedu.settings');
     if (!$config->get('enable')) return;
-    $uuid = $account->uuid();
-    $realname = get_user_name($uuid);
+    $realname = get_user_name($account->uid);
     if ($realname) $name = $realname;
 }
 

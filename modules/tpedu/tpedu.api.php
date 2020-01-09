@@ -274,11 +274,14 @@ function get_user($uuid) {
     return false;
 }
 
-function get_user_name($uuid) {
+function get_user_name($uid) {
     $config = \Drupal::config('tpedu.settings');
-    $query = \Drupal::database()->query("select realname from {tpedu_people} where uuid='$uuid'");
-    $data = $query->fetchColumn(0);
-    if ($data) return $data;
+    $data = \Drupal::database()->query("select * from users where uid='$uid'")->fetchObject();
+    if ($data) {
+        $query = \Drupal::database()->query("select realname from {tpedu_people} where uuid='$data->uuid'");
+        $data = $query->fetchColumn(0);
+        if ($data) return $data;
+    }
     return false;
 }
 
