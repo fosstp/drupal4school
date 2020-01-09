@@ -39,18 +39,13 @@ class tpeduConfigForm extends ConfirmFormBase {
 
 	  $form['helper'] = array(
       '#type' => 'markup',
-      '#markup' => '<p>有關臺北市教育人員單一身分驗證服務，說明如下：<ol><li>該服務網址為 <a href="https://ldap.tp.edu.tw">https://ldap.tp.edu.tw</a></li>' .
+      '#markup' => '<p>有關臺北市教育人員單一身分驗證服務，說明如下：<ol>' .
+        '<li>該服務網址為 <a href="https://ldap.tp.edu.tw">https://ldap.tp.edu.tw</a></li>' .
         '<li>該服務採用開源模式開發，所有文件可以從 <a href="https://github.com/leejoneshane/tpeduSSO">Github 專案</a>取得。</li>' .
         '<li>請下載填寫「<a href="https://github.com/leejoneshane/tpeduSSO/blob/master/%E8%87%BA%E5%8C%97%E5%B8%82%E6%95%99%E8%82%B2%E5%B1%80%E5%96%AE%E4%B8%80%E8%BA%AB%E5%88%86%E9%A9%97%E8%AD%89%E4%BB%8B%E6%8E%A5%E7%94%B3%E8%AB%8B%E8%A1%A8.pdf">臺北市教育局單一身分驗證介接申請表.pdf</a>，「SSO 認證後重導向 URL」欄位請填寫 https://'.$_SERVER['HTTP_HOST'].'/retrieve。</li>' .
         '<li>申請介接專案請洽聯絡人 電話：1999（外縣市請撥02-27208889）#1234 信箱：edu_ict.19@mail.taipei.gov.tw</li>' .
-        '<li>請詳細閱讀<a href="https://github.com/leejoneshane/tpeduSSO/blob/master/%E8%87%BA%E5%8C%97%E5%B8%82%E6%95%99%E8%82%B2%E4%BA%BA%E5%93%A1%E5%96%AE%E4%B8%80%E8%BA%AB%E5%88%86%E9%A9%97%E8%AD%89%E8%B3%87%E6%96%99%E4%BB%8B%E6%8E%A5%E6%89%8B%E5%86%8AV2.0.docx">臺北市教育人員單一身分驗證資料介接手冊V2.0</a>有關代理授權與管理員個人存取金鑰的取得方式，授權範圍務必勾選 profile、school 和 schoolAdmin。</li></ol></p>' .
-        '<p>要使用 G Suite 帳號單一簽入功能，您必須建立 Google 開發專案並取得 Google 發給您的<em>網路應用程式憑證</em>，請依照以下步驟取得相關組態值：' . 
-        '<ol><li>請連結 <a href="https://console.cloud.google.com/apis/dashboard">Google apis 主控台</a>，如果還沒有介接專案，請先建立專案！</li>' .
-        '<li>請進入「憑證」管理頁面，然後建立憑證，至少需要 OAuth 用戶端 ID，才能讓學校師生使用 G Suite 帳號登入。</li>' .
-        '<li>上述之 OAuth 用戶端請將「已授權的重新導向 URI」欄位，填寫為 https://'.$_SERVER['HTTP_HOST'].'/googlelogin</li>' .
-        '<li>如果想要使用 G Suite 帳號同步、行事曆同步...等模組，還需要建立「服務帳戶」憑證，並且需要從 G Suite 管理主控台進行全域授權，請參考<a href="https://support.google.com/a/answer/162106?hl=zh-Hant">這篇文章</a>。</li>' .
-        '<li>線上測試 OAuth 用戶端 API 資料存取，請連到 <a href="https://developers.google.com/oauthplayground/">OAuth playground</a>。</li>' .
-        '</ol>',
+        '<li>請詳細閱讀<a href="https://github.com/leejoneshane/tpeduSSO/blob/master/%E8%87%BA%E5%8C%97%E5%B8%82%E6%95%99%E8%82%B2%E4%BA%BA%E5%93%A1%E5%96%AE%E4%B8%80%E8%BA%AB%E5%88%86%E9%A9%97%E8%AD%89%E8%B3%87%E6%96%99%E4%BB%8B%E6%8E%A5%E6%89%8B%E5%86%8AV2.0.docx">臺北市教育人員單一身分驗證資料介接手冊V2.0</a>有關代理授權與管理員個人存取金鑰的取得方式，授權範圍務必勾選 profile、school 和 schoolAdmin。</li>' .
+        '</ol></p>',
     );
     $form['client_id'] = array(
       '#type' => 'textfield',
