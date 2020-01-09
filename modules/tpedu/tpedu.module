@@ -3,11 +3,11 @@
 use Drupal\Core\Url;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Symfony\Component\HttpFoundation\Session;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Drupal\user\Entity\User;
-use Drupal\user\UserInterface;
 
 require 'tpedu.api.php';
 
@@ -32,9 +32,11 @@ function tpedu_user_load(array $entities) {
 }
 
 function tpedu_user_format_name_alter(&$name, $account) {
-  $account = User::load($account->id());
-  var_dump($account);
-  if ($account->get("init")->getValue() == 'tpedu') return $account->tpedu->realname;
+    $config = \Drupal::config('tpedu.settings');
+    if (!$config->get('enable')) return;
+    $uuid = $account->uuid();
+    $realname = get_user_name($uuid);
+    if ($realname) $name = $realname;
 }
 
 function tpedu_form_alter(&$form, FormStateInterface $form_state, $form_id) {
@@ -76,81 +78,63 @@ function tpedu_user_logout($account) {
     }
 }
 
-function tpedu_user_view(array &$build, UserInterface $account, EntityViewDisplayInterface $display) {
+function tpedu_user_view(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display, $view_mode) {
     $config = \Drupal::config('tpedu.settings');
-    drupal_set_message($account->get("init"));
-    if ($config->get('enable') && $account->get("init")->getValue() == 'tpedu') {
-        if ($display->getComponent('birthday')) {
-            $build['birthday'] = array(
+    if ($config->get('enable') && $entity->bundle() == 'user' && $user = User::load($entity->id())) {
+        $build['birthday'] = array(
+            '#type' => 'item',
+            '#title' => '出生日期',
+            '#markup' => \Drupal::service('date.formatter')->format($user->tpedu->birthdate),
+        );
+        $build['gender'] = array(
+            '#type' => 'item',
+            '#title' => '性別',
+            '#markup' => ($user->tpedu->gender == 2) ? '女' : '男',
+        );
+        if ($user->tpedu->student) {
+            $build['stdno'] = array(
                 '#type' => 'item',
-                '#title' => '出生日期',
-                '#markup' => \Drupal::service('date.formatter')->format($account->tpedu->birthdate),
+                '#title' => '學號:',
+                '#markup' => $user->tpedu->id,
             );
-        }
-        if ($display->getComponent('gender')) {
-            $build['gender'] = array(
+            $build['classname'] = array(
                 '#type' => 'item',
-                '#title' => '性別',
-                '#markup' => ($account->tpedu->gender == 2) ? '女' : '男',
+                '#title' => '就讀班級',
+                '#markup' => $user->tpedu->dept_name,
             );
-        }
-        if ($account->tpedu->student) {
-            if ($display->getComponent('stdno')) {
-                $build['stdno'] = array(
-                    '#type' => 'item',
-                    '#title' => '學號:',
-                    '#markup' => $account->tpedu->id,
-                );
-            }
-            if ($display->getComponent('classname')) {
-                $build['classname'] = array(
-                    '#type' => 'item',
-                    '#title' => '就讀班級',
-                    '#markup' => $account->tpedu->dept_name,
-                );
-            }
-            if ($display->getComponent('seat')) {
-                $build['seat'] = array(
-                    '#type' => 'item',
-                    '#title' => '座號',
-                    '#markup' => $account->tpedu->seat,
-                );
-            }
+            $build['seat'] = array(
+                '#type' => 'item',
+                '#title' => '座號',
+                '#markup' => $user->tpedu->seat,
+            );
         } else {
-            if ($display->getComponent('depname')) {
-                $build['depname'] = array(
-                    '#type' => 'item',
-                    '#title' => '行政部門',
-                    '#markup' => $account->tpedu->dept_name,
-                );
-            }
-            if ($display->getComponent('titlename')) {
-                $build['titlename'] = array(
-                    '#type' => 'item',
-                    '#title' => '職稱',
-                    '#markup' => $account->tpedu->role_name,
-                );
-            }
-            if (!empty($account->tpedu->class) && $display->getComponent('class')) {
+            $build['depname'] = array(
+                '#type' => 'item',
+                '#title' => '行政部門',
+                '#markup' => $user->tpedu->dept_name,
+            );
+            $build['titlename'] = array(
+                '#type' => 'item',
+                '#title' => '職稱',
+                '#markup' => $user->tpedu->role_name,
+            );
+            if (!empty($user->tpedu->class)) {
                 $build['proclass'] = array(
                     '#type' => 'item',
                     '#title' => '導師班級',
-                    '#markup' => $account->tpedu->class,
+                    '#markup' => $user->tpedu->class,
                 );
             }
         }
-        if ($display->getComponent('email')) {
-            $build['email'] = array(
-                '#type' => 'item',
-                '#title' => '電子郵件',
-                '#markup' => $account->tpedu->email,
-            );
-        }
+        $build['email'] = array(
+            '#type' => 'item',
+            '#title' => '電子郵件',
+            '#markup' => $user->tpedu->email,
+        );
     }
 }
 
 function tpedu_theme($existing, $type, $theme, $path) {
-
     return [		
         'tpedu_personal_data_notice' => [
             'variables' => [],

@@ -274,6 +274,14 @@ function get_user($uuid) {
     return false;
 }
 
+function get_user_name($uuid) {
+    $config = \Drupal::config('tpedu.settings');
+    $query = \Drupal::database()->query("select realname from {tpedu_people} where uuid='$uuid'");
+    $data = $query->fetchColumn(0);
+    if ($data) return $data;
+    return false;
+}
+
 function find_user(array $filter) {
     if (empty($filter)) return false;
     $uuids = api('find_users', $filter);
