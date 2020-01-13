@@ -262,8 +262,16 @@ function fetch_user($uuid) {
 function get_user($uuid) {
     $config = \Drupal::config('tpedu.settings');
     $off = $config->get('refresh_days');
-    $query = \Drupal::database()
-        ->query("select * from {tpedu_people} where uuid='$uuid' and fetch_date > DATE_SUB(NOW(), INTERVAL $off DAY)");
+    if (is_numeric($uuid)) {
+        $data = \Drupal::database()->query("select * from users where uid='$uuid'")->fetchObject();
+        if (!$data) return false;
+        $uuid = $data->uuid;
+        $query = \Drupal::database()
+            ->query("select * from {tpedu_people} where uuid='$uuid' and fetch_date > DATE_SUB(NOW(), INTERVAL $off DAY)");
+    } else {
+        $query = \Drupal::database()
+            ->query("select * from {tpedu_people} where uuid='$uuid' and fetch_date > DATE_SUB(NOW(), INTERVAL $off DAY)");
+    }
     $data = $query->fetchObject();
     if (!$data) {
         fetch_user($uuid);
