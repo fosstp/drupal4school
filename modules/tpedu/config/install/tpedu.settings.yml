@@ -28,6 +28,8 @@ admin_token: ''
 call_back: ''
 sub_dept: ''
 refresh_days: 30
+display_unit: false
+display_title: false
 allow_default_login: true
 login_goto_url: ''
 logout_goto_url: ''

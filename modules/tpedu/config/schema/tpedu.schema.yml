@@ -22,6 +22,12 @@ sub_dept:
 refresh_days:
   type: integer
   label: '快取資料庫更新頻率'
+display_unit:
+  type: boolean
+  label: '是否在真實姓名之前顯示單位名稱'
+display_title:
+  type: boolean
+  label: '是否在真實姓名之前顯示職務名稱'
 allow_default_login:
   type: boolean
   label: '允許使用 Drupal 本地帳號登入'

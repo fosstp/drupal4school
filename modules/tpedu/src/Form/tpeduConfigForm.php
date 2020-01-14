@@ -76,6 +76,18 @@ class tpeduConfigForm extends ConfirmFormBase {
       '#default_value' => $config->get('refresh_days'),
       '#description' => '透過 Data API 取得的資料將快取在資料庫中，若該筆資料保存超過更新頻率，則自動重新取得。預設為 30 天！',
     );
+    $form['display_unit'] = array(
+      '#type' => 'checkbox',
+      '#title' => '顯示部門名稱',
+      '#default_value' => $config->get('display_unit'),
+      '#description' => '預設僅顯示使用者真實姓名，當開啟此功能時，教師會顯示部門名稱，學生會顯示班級名稱。預設為不顯示！',
+    );
+    $form['display_title'] = array(
+      '#type' => 'checkbox',
+      '#title' => '顯示職稱',
+      '#default_value' => $config->get('display_title'),
+      '#description' => '預設僅顯示使用者真實姓名，當開啟此功能時，教師會顯示職稱，學生會顯示班級名稱。預設為不顯示！',
+    );
     $form['allow_default_login'] = array(
       '#type' => 'checkbox',
       '#title' => '允許使用本地端帳號登入',

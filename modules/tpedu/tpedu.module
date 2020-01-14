@@ -23,7 +23,7 @@ function tpedu_help($route_name, RouteMatchInterface $route_match) {
 function tpedu_user_load(array $entities) {
     $config = \Drupal::config('tpedu.settings');
     if (!$config->get('enable')) return;
-    foreach ($entities as $uid => $account) {
+    foreach ($entities as $account) {
         if ($account->get("init")->getValue() == 'tpedu') {
             $uuid = $account->uuid();
             $user = get_user($uuid);
@@ -35,13 +35,20 @@ function tpedu_user_load(array $entities) {
 function tpedu_user_format_name_alter(&$name, $account) {
     $config = \Drupal::config('tpedu.settings');
     if (!$config->get('enable')) return;
-    $realname = get_user_name($account->id());
-    if ($realname) $name = $realname;
+    $user = get_user($account->uuid());
+    if ($user->student) {
+        if ($config->get('display_unit') || $config->get('display_title')) $name = $user->dept_name.' ';
+    } else {
+        $name = '';
+        if ($config->get('display_unit')) $name = $user->dept_name.' ';
+        if ($config->get('display_title')) $name .= $user->role_name.' ';
+    }
+    if ($user->realname) $name .= $user->realname;
 }
 
-function tpedu_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+function tpedu_form_user_login_form_alter(&$form, FormStateInterface $form_state, $form_id) {
     $config = \Drupal::config('tpedu.settings');
-    if ($config->get('enable') && ($form_id == 'user_login_block' || $form_id == 'user_login_form')) {
+    if ($config->get('enable')) {
         unset($form['links']);
         if (!$config->get('allow_default_login')) {
             unset($form['name']);
@@ -70,11 +77,30 @@ function tpedu_form_alter(&$form, FormStateInterface $form_state, $form_id) {
     }
 }
 
+function tpedu_form_user_login_block_alter(&$form, FormStateInterface $form_state, $form_id) {
+    tpedu_form_user_login_form_alter($form, $form_state, $form_id);
+}
+
+function tpedu_form_user_profile_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+    $config = \Drupal::config('tpedu.settings');
+    if ($config->get('enable')) {
+        unset($form['account']['mail']);
+        unset($form['account']['name']);
+        unset($form['account']['pass']);
+    }
+}
+
+function tpedu_user_login($account) {
+    $redirect = \Drupal::config('tpedu.settings')->get('login_goto_url');
+    if ($redirect) {
+        return new RedirectResponse(Url::fromRoute($redirect));
+    }
+}
+
 function tpedu_user_logout($account) {
     $redirect = \Drupal::config('tpedu.settings')->get('logout_goto_url');
     if ($redirect) {
-        $response = new RedirectResponse(Url::fromRoute($redirect));
-        $response->send();
+        return new RedirectResponse(Url::fromRoute($redirect));
     }
 }
 
@@ -85,7 +111,7 @@ function tpedu_user_view(array &$build, EntityInterface $entity, EntityViewDispl
         $build['birthday'] = array(
             '#type' => 'item',
             '#title' => '出生日期',
-            '#markup' => $user->birthdate,
+            '#markup' => date('Y-m-d', strtotime($user->birthdate)),
         );
         $build['gender'] = array(
             '#type' => 'item',
