@@ -142,7 +142,7 @@ function fetch_user($uuid) {
     $database->delete('tpedu_assignment')->condition('uuid', $uuid)->execute();
     $config = \Drupal::config('tpedu.settings');
     $user = api('one_user', array( 'uuid' => $uuid ));
-    if (!isset($user->error)) {
+    if ($user) {
         if (is_array($user->uid)) {
             foreach ($user->uid as $u) {
                 if (!strpos($u, '@') && !is_numeric($u)) $account = $u; 
@@ -263,7 +263,7 @@ function get_user($uuid) {
     $config = \Drupal::config('tpedu.settings');
     $off = $config->get('refresh_days');
     if (is_numeric($uuid)) {
-        $data = \Drupal::database()->query("select * from users where uid='$uuid'")->fetchObject();
+        $data = \Drupal::database()->query("select a.uuid from users a join users_field_data b on a.uid=b.uid where b.init='tpedu' and a.uid='$uuid'")->fetchObject();
         if (!$data) return false;
         $uuid = $data->uuid;
         $query = \Drupal::database()
@@ -284,13 +284,13 @@ function get_user($uuid) {
 
 function get_user_name($uid) {
     $config = \Drupal::config('tpedu.settings');
-    $data = \Drupal::database()->query("select * from users where uid='$uid'")->fetchObject();
+    $data = \Drupal::database()->query("select * from users where init='tpedu' and uid='$uid'")->fetchObject();
     if ($data) {
         $query = \Drupal::database()->query("select realname from {tpedu_people} where uuid='$data->uuid'");
         $data = $query->fetchColumn(0);
         if ($data) return $data;
     }
-    return false;
+    return $uid;
 }
 
 function find_user(array $filter) {

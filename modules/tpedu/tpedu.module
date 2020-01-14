@@ -24,8 +24,8 @@ function tpedu_user_load(array $entities) {
     $config = \Drupal::config('tpedu.settings');
     if (!$config->get('enable')) return;
     foreach ($entities as $account) {
-        if ($account->get("init")->getValue() == 'tpedu') {
-            $uuid = $account->uuid();
+        if ($account->get('init')->value == 'tpedu') {
+            $uuid = $account->get('uuid')->value;
             $user = get_user($uuid);
             $account->tpedu = $user;
         }
@@ -35,15 +35,17 @@ function tpedu_user_load(array $entities) {
 function tpedu_user_format_name_alter(&$name, $account) {
     $config = \Drupal::config('tpedu.settings');
     if (!$config->get('enable')) return;
-    $user = get_user($account->uuid());
-    if ($user->student) {
-        if ($config->get('display_unit') || $config->get('display_title')) $name = $user->dept_name.' ';
-    } else {
-        $name = '';
-        if ($config->get('display_unit')) $name = $user->dept_name.' ';
-        if ($config->get('display_title')) $name .= $user->role_name.' ';
+    $user = User::load($account->id());
+    if (isset($user->tpedu)) {
+        if ($user->tpedu->student) {
+            if ($config->get('display_unit') || $config->get('display_title')) $name = $user->tpedu->dept_name.' ';
+        } else {
+            $name = '';
+            if ($config->get('display_unit')) $name = $user->tpedu->dept_name.' ';
+            if ($config->get('display_title')) $name .= $user->tpedu->role_name.' ';
+        }
+        if ($user->tpedu->realname) $name .= $user->tpedu->realname;
     }
-    if ($user->realname) $name .= $user->realname;
 }
 
 function tpedu_form_user_login_form_alter(&$form, FormStateInterface $form_state, $form_id) {
@@ -81,12 +83,16 @@ function tpedu_form_user_login_block_alter(&$form, FormStateInterface $form_stat
     tpedu_form_user_login_form_alter($form, $form_state, $form_id);
 }
 
-function tpedu_form_user_profile_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+function tpedu_form_user_form_alter(&$form, FormStateInterface $form_state, $form_id) {
     $config = \Drupal::config('tpedu.settings');
     if ($config->get('enable')) {
-        unset($form['account']['mail']);
-        unset($form['account']['name']);
-        unset($form['account']['pass']);
+        $user = $form_state->getFormObject()->getEntity();
+        if ($user->get('init')->value == 'tpedu') {
+            unset($form['account']['current_pass']);
+            unset($form['account']['mail']);
+            unset($form['account']['name']);
+            unset($form['account']['pass']);    
+        }
     }
 }
 
@@ -118,7 +124,7 @@ function tpedu_user_view(array &$build, EntityInterface $entity, EntityViewDispl
             '#title' => '性別',
             '#markup' => ($user->gender == 2) ? '女' : '男',
         );
-        if ($user->tpedu->student) {
+        if ($user->student) {
             $build['stdno'] = array(
                 '#type' => 'item',
                 '#title' => '學號:',
