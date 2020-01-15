@@ -1,20 +1,9 @@
 <?php
-
-/**
- * @file
- * Builds placeholder replacement tokens for realname.
- */
-
+use Drupal\Core\Datetime\Entity\DateFormat;
 use Drupal\Core\Render\BubbleableMetadata;
+use Drupal\user\Entity\User;
 
-/**
- * Implements hook_token_info().
- */
 function tpedu_token_info_alter(&$info) {
-  $info['tokens']['user']['realname'] = array(
-    'name' => '真實姓名',
-    'description' => '使用者的真實姓名',
-  );
   $info['tokens']['user']['gender'] = array(
     'name' => '性別',
     'description' => '使用者的性別代號，1 為男、2 為女',
@@ -58,7 +47,7 @@ function tpedu_token_info_alter(&$info) {
  * Implements hook_tokens().
  */
 function tpedu_tokens($type, $tokens, array $data, array $options, BubbleableMetadata $bubbleable_metadata) {
-  $replacements = array();
+  $token_service = \Drupal::token();
   $bubbleable_metadata = $bubbleable_metadata ? : new BubbleableMetadata();
   if (isset($options['langcode'])) {
     $url_options['language'] = \Drupal::languageManager()->getLanguage($options['langcode']);
@@ -66,17 +55,15 @@ function tpedu_tokens($type, $tokens, array $data, array $options, BubbleableMet
   } else {
     $langcode = NULL;
   }
-
+  $replacements = array();
   if ($type == 'user' && !empty($data['user'])) {
+
     /** @var \Drupal\user\UserInterface $account */
     $account = $data['user'];
+    $user = $account->load($accound->id());
+    \Drupal::logger('tpedu')->debug(var_export($account, true));
     foreach ($tokens as $name => $original) {
       switch ($name) {
-        case 'realname':
-          $replacements[$original] = $account->tpedu->realname;
-	        $bubbleable_metadata->addCacheableDependency($account->tpedu->realname);
-          break;
-
         case 'gender':
           $replacements[$original] = $account->tpedu->gender;
 	        $bubbleable_metadata->addCacheableDependency($account->tpedu->gender);
