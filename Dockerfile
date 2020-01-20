@@ -5,8 +5,9 @@ ENV DB_USER root
 ENV DB_PASSWORD dbpassword
 
 RUN apt-get update \
-    && apt-get -y --no-install-recommends install unzip git apt-utils php-mbstring mc \
+    && apt-get -y --no-install-recommends install unzip git apt-utils mc \
     && rm -rf /var/lib/apt/lists/* \
+    && docker-php-ext-install mbstring \
     && curl -sS https://getcomposer.org/installer | php \
     && mv composer.phar /usr/local/bin/composer \
     && cd /var/www/html \
