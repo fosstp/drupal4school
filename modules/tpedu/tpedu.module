@@ -5,10 +5,11 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
+use Drupal\Core\Session\UserSession;
+use Drupal\user\Entity\User;
+use Drupal\views\ViewExecutable;
 use Symfony\Component\HttpFoundation\Session;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use Drupal\user\Entity\User;
-use Drupal\Core\Session\UserSession;
 
 require 'tpedu.api.php';
 

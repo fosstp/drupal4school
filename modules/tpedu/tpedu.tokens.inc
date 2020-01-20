@@ -60,7 +60,6 @@ function tpedu_tokens($type, $tokens, array $data, array $options, BubbleableMet
 
     /** @var \Drupal\user\UserInterface $account */
     $account = $data['user'];
-    $user = $account->load($accound->id());
     \Drupal::logger('tpedu')->debug(var_export($account, true));
     foreach ($tokens as $name => $original) {
       switch ($name) {
@@ -80,7 +79,7 @@ function tpedu_tokens($type, $tokens, array $data, array $options, BubbleableMet
           break;
 
         case 'birthdate':
-          $replacements[$original] = format_date($account->tpedu->birthdate, 'medium', '', NULL, $langcode);;
+          $replacements[$original] =  \Drupal::service('date.formatter')->format($account->tpedu->birthdate, 'medium', '', NULL, $langcode);
       	  $bubbleable_metadata->addCacheableDependency($account->tpedu->birthdate);
           break;
 

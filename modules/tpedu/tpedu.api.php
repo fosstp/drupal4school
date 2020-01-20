@@ -325,7 +325,8 @@ function fetch_units() {
     $ous = api('all_units');
     if ($ous) {
         foreach ($ous as $o) {
-            if (strpos($o->description, '科任') >= 0) {
+            \Drupal::logger('tpedu')->debug($o->description . 'strpos=' . mb_strpos($o->description, '科任', 0, 'UTF-8'));
+            if (strpos($o->description, '科任') !== false) {
                 $config = \Drupal::configFactory()->getEditable('tpedu.settings');
                 $config->set('sub_dept', $o->ou);
                 $config->save();
