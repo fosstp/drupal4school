@@ -1,5 +1,4 @@
 <?php
-use Drupal\views\ViewExecutable;
 
 function tpedu_views_data() {
     $config = \Drupal::config('tpedu.settings');
@@ -287,10 +286,5 @@ function tpedu_views_data_alter(&$data) {
             'id' => 'standard',
             'label' => '臺北市教育人員',
         );
-    }
-}
-
-function tpedu_views_pre_view(ViewExecutable $view, $display_id, array &$args) {
-    if ($view->id() == 'user_admin_people') {
     }
 }
