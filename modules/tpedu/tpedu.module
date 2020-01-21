@@ -241,7 +241,7 @@ function tpedu_views_data() {
         );
         $data['tpedu_people']['student'] = array(
             'group' => 'User',
-            'title' => '是否為學生',
+            'title' => '學生',
             'help' => '教育人員是否為學生',
             'field' => array(
                 'id' => 'boolean',
