@@ -175,3 +175,55 @@ function tpedu_theme($existing, $type, $theme, $path) {
     ];
 }
 
+function tpedu_field_info(array &$info) {
+    $info['sims_field_syear'] = array(
+        'label' => t('School Year & Semester'),
+        'description' => t("This field choise school year and/or semester depend on IBM DB2 Database."),
+        'settings' => array('allowed_values_function' => 'sims_field_options_list', 'include_semester' => ''),
+        'instance_settings' => array('syear_range' => '0:+1', 'inline_columns' => 2),
+        'default_widget' => 'options_select',
+        'default_formatter' => 'sims_default',
+        'cardinality' => 0,
+    );
+    $info['sims_field_classes'] = array(
+        'label' => t('List (classes)'),
+        'description' => t("This field stores CLASSID data from IBM DB2 BASCLS table."),
+        'settings' => array('allowed_values_function' => 'sims_field_options_list'),
+        'instance_settings' => array('filter_by_current_semester' => 1, 'filter_by_current_user' => 0, 'inline_columns' => 10),
+        'default_widget' => 'options_select',
+        'default_formatter' => 'sims_default',
+    );
+    $info['sims_field_department'] = array(
+        'label' => t('List (departments)'),
+        'description' => t("This field stores DEPT_ID data from IBM DB2 SCHDEPT table."),
+        'settings' => array('allowed_values_function' => 'sims_field_options_list'),
+        'instance_settings' => array('inline_columns' => 5),
+        'default_widget' => 'options_select',
+        'default_formatter' => 'sims_default',
+    );
+    $info['sims_field_domain'] = array(
+        'label' => t('List (domains)'),
+        'description' => t("This field stores POS_ID data from IBM DB2 SCHPOSITION table."),
+        'settings' => array('allowed_values_function' => 'sims_field_options_list', 'specific_department' => ''),
+        'instance_settings' => array('inline_columns' => 5),
+        'default_widget' => 'options_select',
+        'default_formatter' => 'sims_default',
+    );
+    $info['sims_field_students'] = array(
+        'label' => t('List (students)'),
+        'description' => t("This field stores specific column data from IBM DB2 STUDENT table."),
+        'settings' => array('allowed_values_function' => 'sims_field_options_list', 'specific_column' => ''),
+        'instance_settings' => array('filter_by_current_semester' => 1, 'filter_by_class_field' => 1, 'specific_class' => '', 'inline_columns' => ''),
+        'default_widget' => 'options_buttons',
+        'default_formatter' => 'sims_default',
+    );
+    $info['sims_field_teachers'] = array(
+        'label' => t('List (teachers)'),
+        'description' => t("This field stores specific column data from IBM DB2 TEABAS table."),
+        'settings' => array('allowed_values_function' => 'sims_field_options_list', 'specific_column' => ''),
+        'instance_settings' => array('filter_by_current_semester' => 1, 'filter_by_class_field' => 1, 'filter_by_department_field' => 1, 'filter_by_domain_field' => 1, 'specific_class' => '', 'specific_department' => '', 'specific_domain' => '', 'inline_columns' => 5),
+        'default_widget' => 'options_buttons',
+        'default_formatter' => 'sims_default',
+    );
+}
+  

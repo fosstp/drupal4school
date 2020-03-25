@@ -13,8 +13,7 @@ RUN apt-get update \
     && cd /var/www/html \
     && composer require google/apiclient:"^2.0" \
     && composer require drush/drush \
-    && curl -sSOL https://github.com/drush-ops/drush-launcher/releases/download/0.6.0/drush.phar \
-    && mv drush.phar /usr/local/bin/drush \
+    && ln -s /var/www/html/vendor/bin/drush /usr/local/bin/drush \
     && chmod 744 /usr/local/bin/drush \
     && echo 'TLS_REQCERT	never' >> /etc/ldap/ldap.conf
     
