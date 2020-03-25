@@ -10,6 +10,12 @@ RUN apt-get update \
     && docker-php-ext-install mbstring \
     && curl -sS https://getcomposer.org/installer | php \
     && mv composer.phar /usr/local/bin/composer \
+    && sed -ri \
+           -e 's!^(max_execution_time = )(.*)$!\1 72000!g' \
+           -e 's!^(post_max_size = )(.*)$!\1 1024M!g' \
+           -e 's!^(upload_max_filesize = )(.*)$!\1 1024M!g' \
+           -e 's!^(memory_limit = )(.*)$!\1 2048M!g' \
+           "$PHP_INI_DIR/php.ini" \
     && cd /var/www/html \
     && composer require google/apiclient:"^2.0" \
     && composer require drush/drush \
