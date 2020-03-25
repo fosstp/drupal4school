@@ -10,6 +10,7 @@ RUN apt-get update \
     && docker-php-ext-install mbstring \
     && curl -sS https://getcomposer.org/installer | php \
     && mv composer.phar /usr/local/bin/composer \
+    && composer require google/apiclient:"^2.0" \
     && echo 'TLS_REQCERT	never' >> /etc/ldap/ldap.conf
     
 #RUN cd /var/www/html \
