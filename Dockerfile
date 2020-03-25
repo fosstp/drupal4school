@@ -15,7 +15,7 @@ RUN apt-get update \
            -e 's!^(post_max_size = )(.*)$!\1 1024M!g' \
            -e 's!^(upload_max_filesize = )(.*)$!\1 1024M!g' \
            -e 's!^(memory_limit = )(.*)$!\1 2048M!g' \
-           "$PHP_INI_DIR/php.ini" \
+           "/etc/php/php.ini" \
     && cd /var/www/html \
     && composer require google/apiclient:"^2.0" \
     && composer require drush/drush \
