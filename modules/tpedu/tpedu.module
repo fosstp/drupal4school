@@ -62,7 +62,7 @@ function tpedu_form_user_login_form_alter(&$form, FormStateInterface $form_state
             '#attributes' => array(
                 'src' => '//'. $_SERVER['HTTP_HOST'] .'/'. drupal_get_path('module', 'tpedu') . '/tpedusso.png',
                 'style' => 'cursor: pointer; border:none; width:240px;',
-                'title' => '使用臺北市教育人員單一身分驗證登入',
+                'alt' => '使用臺北市教育人員單一身分驗證登入',
                 'onclick' => 'tpedussoAuth();'
             ),
         );
@@ -186,7 +186,8 @@ function tpedu_for_taiwan($content) {
   global $tab_index;
   $dom = new DOMDocument;
   libxml_use_internal_errors(true);
-  $dom->loadHTML('<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />'.$content);
+//  $dom->loadHTML('<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />'.$content);
+  $dom->loadHTML($content);
   $images = $dom->getElementsByTagName('img');
   $links = $dom->getElementsByTagName('a');
   $objs = $dom->getElementsByTagName('object');
@@ -201,6 +202,8 @@ function tpedu_for_taiwan($content) {
     if (!$myalt) $img->setAttribute('alt','排版用裝飾圖片');
   }
   foreach ($links as $lnk) {
+    $mytext = $lnk->nodeValue;
+    if (!$mytext) $lnk->nodeValue = $lnk->getAttribute('id');
     $mytitle=$lnk->getAttribute('title');
     if (!$mytitle) $lnk->setAttribute('title', $lnk->nodeValue);
     $lnk->setAttribute('tabindex', $tab_index);
