@@ -57,13 +57,16 @@ function tpedu_form_user_login_form_alter(&$form, FormStateInterface $form_state
             unset($form['pass']);
         }
         $form['submit_tpedu'] = array(
+            '#type' => 'link',
+            '#url' => Url::fromRoute('tpedu.login'),
+        );
+        $form['submit_tpedu']['image'] = array(
             '#type' => 'html_tag',
             '#tag' => 'img',
             '#attributes' => array(
-                'src' => '//'. $_SERVER['HTTP_HOST'] .'/'. drupal_get_path('module', 'tpedu') . '/tpedusso.png',
+                'src' => file_create_url(drupal_get_path('module', 'tpedu') . '/tpedusso.png'),
                 'style' => 'cursor: pointer; border:none; width:240px;',
                 'alt' => '使用臺北市教育人員單一身分驗證登入',
-                'onclick' => 'tpedussoAuth();'
             ),
         );
         if ($config->get('personal_data_notice')) {
@@ -71,11 +74,13 @@ function tpedu_form_user_login_form_alter(&$form, FormStateInterface $form_state
                 '#markup' => '<p>我已經閱讀貴網站<a href="/personal_data_notice">個人資料收集政策</a>，我同意貴網站取得我的個人資料！</p>',
             );
         }
+/*
         $form['#attached']['library'][] = 'tpedu/tpedusso';
         $form['#attached']['drupalSettings']['tpedu']['tpedusso'] = array(
             'clientId' => $config->get('client_id'),
             'callBack' => $config->get('call_back'),
         );
+*/
     }
 }
 
@@ -256,7 +261,7 @@ function tpedu_for_taiwan($content) {
   return $content;
 }
 
-function tpedu_field_info(array &$info) {
+function tpedu_field_info_alter(array &$info) {
     $info['sims_field_syear'] = array(
         'label' => t('School Year & Semester'),
         'description' => t("This field choise school year and/or semester depend on IBM DB2 Database."),

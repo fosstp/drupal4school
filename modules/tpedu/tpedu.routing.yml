@@ -22,6 +22,14 @@ tpedu.purge:
   requirements:
     _permission: 'administer site configuration'
     
+tpedu.login:
+  path: /sso_login
+  defaults:
+    _controller: \Drupal\tpedu\Controller\tpeduController::redirect
+    _title: 'OAuth2 login'
+  requirements:
+    _access: 'TRUE'
+    
 tpedu.sso:
   path: /retrieve
   defaults:
