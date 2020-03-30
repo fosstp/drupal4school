@@ -59,14 +59,14 @@ function tpedu_form_user_login_form_alter(&$form, FormStateInterface $form_state
         $form['submit_tpedu'] = array(
             '#type' => 'link',
             '#url' => Url::fromRoute('tpedu.login'),
-        );
-        $form['submit_tpedu']['image'] = array(
-            '#type' => 'html_tag',
-            '#tag' => 'img',
-            '#attributes' => array(
-                'src' => file_create_url(drupal_get_path('module', 'tpedu') . '/tpedusso.png'),
-                'style' => 'cursor: pointer; border:none; width:240px;',
-                'alt' => '使用臺北市教育人員單一身分驗證登入',
+            '#children' => array(
+                '#type' => 'html_tag',
+                '#tag' => 'img',
+                '#attributes' => array(
+                    'src' => file_create_url(drupal_get_path('module', 'tpedu') . '/tpedusso.png'),
+                    'style' => 'cursor: pointer; border:none; width:240px;',
+                    'alt' => '使用臺北市教育人員單一身分驗證登入',
+                ),
             ),
         );
         if ($config->get('personal_data_notice')) {
