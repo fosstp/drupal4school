@@ -56,18 +56,22 @@ function tpedu_form_user_login_form_alter(&$form, FormStateInterface $form_state
             unset($form['name']);
             unset($form['pass']);
         }
-        $form['submit_tpedu'] = array(
-            '#type' => 'link',
-            '#url' => Url::fromRoute('tpedu.login'),
-            '#children' => array(
+        $form['tpedu'] = array(
+            '#type' => 'html_tag',
+            '#tag' => 'a',
+            '#attributes' => array( 
+                'href' => Url::fromRoute('tpedu.login')->toString(),
+                'style' => 'text-decoration: none',
+            ),
+            [
                 '#type' => 'html_tag',
                 '#tag' => 'img',
-                '#attributes' => array(
+                '#attributes' => array( 
                     'src' => file_create_url(drupal_get_path('module', 'tpedu') . '/tpedusso.png'),
                     'style' => 'cursor: pointer; border:none; width:240px;',
                     'alt' => '使用臺北市教育人員單一身分驗證登入',
-                ),
-            ),
+                ),    
+            ],
         );
         if ($config->get('personal_data_notice')) {
             $form['extra_info'] = array(
