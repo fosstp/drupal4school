@@ -61,7 +61,7 @@ function tpedu_form_user_login_form_alter(&$form, FormStateInterface $form_state
             '#tag' => 'a',
             '#attributes' => array( 
                 'href' => Url::fromRoute('tpedu.login')->toString(),
-                'style' => 'text-decoration: none',
+                'style' => 'border-bottom: 0px',
             ),
             [
                 '#type' => 'html_tag',
