@@ -1,3 +1,5 @@
+<?php
+
 /**
  * @file
  * Contains \Drupal\tpedu\Plugin\Field\FieldWidget\ClassesDefaultWidget.
@@ -15,7 +17,7 @@ use Drupal\Core\Form\FormStateInterface;
  *
  * @FieldWidget(
  *   id = "classes_default",
- *   label = "下拉選單",
+ *   label = "選擇班級",
  *   field_types = {
  *     "tpedu_classes"
  *   }

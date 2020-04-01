@@ -78,13 +78,6 @@ function tpedu_form_user_login_form_alter(&$form, FormStateInterface $form_state
                 '#markup' => '<p>我已經閱讀貴網站<a href="/personal_data_notice">個人資料收集政策</a>，我同意貴網站取得我的個人資料！</p>',
             );
         }
-/*
-        $form['#attached']['library'][] = 'tpedu/tpedusso';
-        $form['#attached']['drupalSettings']['tpedu']['tpedusso'] = array(
-            'clientId' => $config->get('client_id'),
-            'callBack' => $config->get('call_back'),
-        );
-*/
     }
 }
 
@@ -122,56 +115,55 @@ function tpedu_user_logout($account) {
 function tpedu_user_view(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display, $view_mode) {
     $config = \Drupal::config('tpedu.settings');
     if ($config->get('enable')) {
-        $user = get_user($entity->id());
         $build['birthday'] = array(
             '#type' => 'item',
             '#title' => '出生日期',
-            '#markup' => date('Y-m-d', strtotime($user->birthdate)),
+            '#markup' => date('Y-m-d', strtotime($entity->tpedu->birthdate)),
         );
         $build['gender'] = array(
             '#type' => 'item',
             '#title' => '性別',
-            '#markup' => ($user->gender == 2) ? '女' : '男',
+            '#markup' => ($entity->tpedu == 2) ? '女' : '男',
         );
-        if ($user->student) {
+        if ($entity->tpedu->student) {
             $build['stdno'] = array(
                 '#type' => 'item',
                 '#title' => '學號:',
-                '#markup' => $user->id,
+                '#markup' => $entity->tpedu->id,
             );
             $build['classname'] = array(
                 '#type' => 'item',
                 '#title' => '就讀班級',
-                '#markup' => $user->dept_name,
+                '#markup' => $entity->tpedu->dept_name,
             );
             $build['seat'] = array(
                 '#type' => 'item',
                 '#title' => '座號',
-                '#markup' => $user->seat,
+                '#markup' => $entity->tpedu->seat,
             );
         } else {
             $build['depname'] = array(
                 '#type' => 'item',
                 '#title' => '行政部門',
-                '#markup' => $user->dept_name,
+                '#markup' => $entity->tpedu->dept_name,
             );
             $build['titlename'] = array(
                 '#type' => 'item',
                 '#title' => '職稱',
-                '#markup' => $user->role_name,
+                '#markup' => $entity->tpedu->role_name,
             );
             if (!empty($user->tpedu->class)) {
                 $build['proclass'] = array(
                     '#type' => 'item',
                     '#title' => '導師班級',
-                    '#markup' => $user->class,
+                    '#markup' => $entity->tpedu->class,
                 );
             }
         }
         $build['email'] = array(
             '#type' => 'item',
             '#title' => '電子郵件',
-            '#markup' => $user->email,
+            '#markup' => $entity->tpedu->email,
         );
     }
 }
