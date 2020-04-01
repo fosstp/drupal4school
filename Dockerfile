@@ -11,7 +11,7 @@ RUN apt-get update \
     && curl -sS https://getcomposer.org/installer | php \
     && mv composer.phar /usr/local/bin/composer \
     && composer require google/apiclient:"^2.0" \
-    && echo "memory_limit = 256M" > /usr/local/etc/php/conf.d/memory.ini \
+    && echo "memory_limit = -1" > /usr/local/etc/php/conf.d/memory.ini \
     && echo 'TLS_REQCERT	never' >> /etc/ldap/ldap.conf
     
 #RUN cd /var/www/html \
