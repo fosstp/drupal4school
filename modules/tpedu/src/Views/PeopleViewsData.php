@@ -11,12 +11,14 @@ class PeopleViewsData extends EntityViewsData {
             $data = array();
             $data['tpedu_people'] = array();
             $data['tpedu_people']['table'] = array();
+            $data['tpedu_people']['table']['group'] = '使用者';
             $data['tpedu_people']['table']['provider'] = 'tpedu';
-//            $data['tpedu_people']['table']['join']['users'] = array(
-//                'left_field' => 'uuid',
-//                'field' => 'uuid',
-//            );
+            $data['tpedu_people']['table']['join']['users'] = array(
+                'left_field' => 'uuid',
+                'field' => 'uuid',
+            );
             $data['tpedu_people']['uuid']['relationship'] = array(
+                'group' => '使用者',
                 'title' => '使用者',
                 'help' => '透過 OAuth 取得之臺北市教育人員資料與系統使用者帳號之間的關聯',
                 'base' => 'tpedu_people',
@@ -26,6 +28,8 @@ class PeopleViewsData extends EntityViewsData {
                 'label' => '使用者',
             );
             $data['tpedu_people']['uuid_raw'] = array(
+                'group' => '使用者',
+                'title' => 'UUID',
                 'help' => '臺北市教育人員唯一編碼',
                 'real field' => 'uuid',
                 'filter' => array(
@@ -128,7 +132,7 @@ class PeopleViewsData extends EntityViewsData {
                 'title' => '出生日期',
                 'help' => '教育人員的出生日期',
                 'argument' => array(
-                    'field' => 'birthdatecreated',
+                    'field' => 'birthdate',
                     'id' => 'date_fulldate',
                 ),
                 'sort' => array(

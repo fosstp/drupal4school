@@ -26,7 +26,7 @@ use Drupal\user\UserInterface;
  *   base_table = "tpedu_people",
  *   admin_permission = "administer people entity",
  *   entity_keys = {
- *     "uuid" = "uuid"
+ *     "uuid" = "uuid",
  *     "idno" = "idno",
  *     "id" = "id",
  *   },
@@ -64,8 +64,8 @@ class People extends ContentEntityBase {
             ->setDisplayOptions('view', array(
                 'label' => 'above',
                 'type' => 'string',
-                'weight' => -5,
-              ))
+                'weight' => -19,
+            ))
             ->setDisplayConfigurable('view', TRUE);
       
         $fields['id'] = BaseFieldDefinition::create('integer')
@@ -75,8 +75,8 @@ class People extends ContentEntityBase {
             ->setDisplayOptions('view', array(
                 'label' => 'above',
                 'type' => 'integer',
-                'weight' => -5,
-              ))
+                'weight' => -18,
+            ))
             ->setDisplayConfigurable('view', TRUE);
       
         $fields['student'] = BaseFieldDefinition::create('boolean')
@@ -86,7 +86,7 @@ class People extends ContentEntityBase {
             ->setDisplayOptions('view', array(
                 'label' => 'above',
                 'type' => 'string',
-                'weight' => -5,
+                'weight' => -17,
             ))
             ->setDisplayConfigurable('view', TRUE);
     
@@ -96,7 +96,7 @@ class People extends ContentEntityBase {
             ->setDisplayOptions('view', array(
                 'label' => 'above',
                 'type' => 'string',
-                'weight' => -5,
+                'weight' => -16,
             ))
             ->setDisplayConfigurable('view', TRUE);    
 
@@ -106,7 +106,7 @@ class People extends ContentEntityBase {
             ->setDisplayOptions('view', array(
                 'label' => 'above',
                 'type' => 'string',
-                'weight' => -5,
+                'weight' => -15,
             ))
             ->setDisplayConfigurable('view', TRUE);    
 
@@ -116,7 +116,7 @@ class People extends ContentEntityBase {
             ->setDisplayOptions('view', array(
                 'label' => 'above',
                 'type' => 'string',
-                'weight' => -5,
+                'weight' => -14,
             ))
             ->setDisplayConfigurable('view', TRUE);    
 
@@ -126,7 +126,7 @@ class People extends ContentEntityBase {
             ->setDisplayOptions('view', array(
                 'label' => 'above',
                 'type' => 'string',
-                'weight' => -5,
+                'weight' => -13,
             ))
             ->setDisplayConfigurable('view', TRUE);    
 
@@ -136,7 +136,7 @@ class People extends ContentEntityBase {
             ->setDisplayOptions('view', array(
                 'label' => 'above',
                 'type' => 'string',
-                'weight' => -5,
+                'weight' => -12,
             ))
             ->setDisplayConfigurable('view', TRUE);    
 
@@ -146,7 +146,7 @@ class People extends ContentEntityBase {
             ->setDisplayOptions('view', array(
                 'label' => 'above',
                 'type' => 'string',
-                'weight' => -5,
+                'weight' => -11,
             ))
             ->setDisplayConfigurable('view', TRUE);    
 
@@ -156,7 +156,7 @@ class People extends ContentEntityBase {
             ->setDisplayOptions('view', array(
                 'label' => 'above',
                 'type' => 'datetime',
-                'weight' => -5,
+                'weight' => -10,
             ))
             ->setDisplayConfigurable('view', TRUE);    
 
@@ -174,7 +174,7 @@ class People extends ContentEntityBase {
             ->setDisplayOptions('view', array(
                 'label' => 'above',
                 'type' => 'list_default',
-                'weight' => -4,
+                'weight' => -9,
             ))
             ->setDisplayConfigurable('view', TRUE);
     
@@ -184,7 +184,7 @@ class People extends ContentEntityBase {
             ->setDisplayOptions('view', array(
                 'label' => 'above',
                 'type' => 'string',
-                'weight' => -5,
+                'weight' => -8,
             ))
             ->setDisplayConfigurable('view', TRUE);
 
@@ -194,7 +194,7 @@ class People extends ContentEntityBase {
             ->setDisplayOptions('view', array(
                 'label' => 'above',
                 'type' => 'string',
-                'weight' => -5,
+                'weight' => -7,
             ))
             ->setDisplayConfigurable('view', TRUE);
 
@@ -204,16 +204,16 @@ class People extends ContentEntityBase {
             ->setDisplayOptions('view', array(
                 'label' => 'above',
                 'type' => 'string',
-                'weight' => -5,
+                'weight' => -6,
             ))
             ->setDisplayConfigurable('view', TRUE);
 
-        $fields['email'] = BaseFieldDefinition::create('string')
+        $fields['email'] = BaseFieldDefinition::create('email')
             ->setLabel('電子郵件信箱')
             ->setDescription('臺北市教育人員的電子郵件信箱')
             ->setDisplayOptions('view', array(
                 'label' => 'above',
-                'type' => 'string',
+                'type' => 'email',
                 'weight' => -5,
             ))
             ->setDisplayConfigurable('view', TRUE);
@@ -224,7 +224,7 @@ class People extends ContentEntityBase {
             ->setDisplayOptions('view', array(
                 'label' => 'above',
                 'type' => 'string',
-                'weight' => -5,
+                'weight' => -4,
             ))
             ->setDisplayConfigurable('view', TRUE);
 
@@ -234,7 +234,7 @@ class People extends ContentEntityBase {
             ->setDisplayOptions('view', array(
                 'label' => 'above',
                 'type' => 'string',
-                'weight' => -5,
+                'weight' => -3,
             ))
             ->setDisplayConfigurable('view', TRUE);
 
@@ -244,7 +244,7 @@ class People extends ContentEntityBase {
             ->setDisplayOptions('view', array(
                 'label' => 'above',
                 'type' => 'string',
-                'weight' => -5,
+                'weight' => -2,
             ))
             ->setDisplayConfigurable('view', TRUE);
 
@@ -254,7 +254,7 @@ class People extends ContentEntityBase {
             ->setDisplayOptions('view', array(
                 'label' => 'above',
                 'type' => 'string',
-                'weight' => -5,
+                'weight' => -1,
             ))
             ->setDisplayConfigurable('view', TRUE);
 
