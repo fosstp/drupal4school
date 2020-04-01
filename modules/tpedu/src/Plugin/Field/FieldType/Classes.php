@@ -14,7 +14,7 @@ use Drupal\Core\TypedData\DataDefinition;
  *   label = "班級",
  *   description = "班級列表",
  *   category = "臺北市教育人員",
- *   default_widget = "options_select",
+ *   default_widget = "classes_default",
  *   default_formatter = "classes_default"
  * )
  */
