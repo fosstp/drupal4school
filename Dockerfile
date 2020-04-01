@@ -13,6 +13,7 @@ RUN apt-get update \
     && mv composer.phar /usr/local/bin/composer \
     && composer require google/apiclient:"^2.0" \
     && composer require drush/drush \
+    && ln -s /var/www/html/vendor/bin/drush /usr/local/bin/drush \
     && echo 'TLS_REQCERT	never' >> /etc/ldap/ldap.conf
     
 #RUN cd /var/www/html \
