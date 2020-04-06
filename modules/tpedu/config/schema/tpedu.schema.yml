@@ -44,6 +44,18 @@ field.field_settings.tpedu_classes:
     type: mapping
     label: '班級'
     mapping:
+      filter_by_grade:
+        type: boolean
+        label: '依年級欄位過濾班級'
+      grade:
+        type: integer
+        label: '年級'
+      filter_by_subject:
+        type: boolean
+        label: '依配課科目過濾班級'
+      subject:
+        type: string
+        label: '配課科目'
       filter by current user:
         type: boolean
         label: '依使用者過濾班級'

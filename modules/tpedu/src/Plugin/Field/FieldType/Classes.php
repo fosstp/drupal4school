@@ -20,11 +20,11 @@ use Drupal\Core\TypedData\DataDefinition;
  */
 class Classes extends ListItemBase {
 
-    public function getPossibleOptions(AccountInterface $account = NULL) {
+    public function getSettableOptions(AccountInterface $account = NULL) {
         if ($account->init == 'tpedu') {
             if ($this->getSetting('filter_by_current_user')) $classes = get_teach_classes($account->uuid);
-            if ($this->getSetting('filter_by_subject')) $classes = get_classes_of_subject($this->getSetting('subject'));
-            if ($this->getSetting('filter_by_grade')) $classes = get_classes_of_grade($this->getSetting('grade'));
+            if ($this->getSetting('filter_by_subject') && $this->getSetting('subject')) $classes = get_classes_of_subject($this->getSetting('subject'));
+            if ($this->getSetting('filter_by_grade') && $this->getSetting('grade')) $classes = get_classes_of_grade($this->getSetting('grade'));
         }
         else {
             $classes = all_classes();
@@ -38,7 +38,9 @@ class Classes extends ListItemBase {
     public static function defaultFieldSettings() {
         return [
             'filter_by_grade' => false,
+            'grade' => null,
             'filter_by_subject' => false,
+            'subject' => null,
             'filter_by_current_user' => false,
             'inline_columns' => 1,
         ] + parent::defaultFieldSettings();
@@ -52,11 +54,35 @@ class Classes extends ListItemBase {
             '#description' => '若勾選，僅顯示指定年級的所有班級。',
             '#default_value' => $this->getSetting('filter_by_grade'),
         );
+        $values = array();
+        $grade = all_grade();
+        foreach ($grade as $g) {
+            $values[$g] = $g . '年級';
+        }
+        $form['grade'] = array(
+            '#type' => 'select',
+            '#title' => '年級',
+            '#description' => '要顯示哪個年級的班級',
+            '#default_value' => $this->getSetting('grade'),
+            '#options' => $values,
+        );
         $form['filter_by_subject'] = array(
             '#type' => 'checkbox',
             '#title' => '依配課科目過濾班級',
             '#description' => '若勾選，僅顯示指定科目的所有已配課班級。',
             '#default_value' => $this->getSetting('filter_by_subject'),
+        );
+        $values = array();
+        $subjects = all_subjects();
+        foreach ($subjects as $s) {
+            $values[$s->id] = $s->name;
+        }
+        $form['subject'] = array(
+            '#type' => 'select',
+            '#title' => '配課科目',
+            '#description' => '請選擇已配課的科目',
+            '#default_value' => $this->getSetting('subject'),
+            '#options' => $values,
         );
         $form['filter_by_current_user'] = array(
             '#type' => 'checkbox',

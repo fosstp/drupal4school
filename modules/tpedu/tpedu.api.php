@@ -591,6 +591,21 @@ function fetch_classes() {
     }
 }  
 
+function all_grade() {
+    $config = \Drupal::config('tpedu.settings');
+    $off = $config->get('refresh_days');
+    $query = \Drupal::database()
+        ->query("select distinct grade from {tpedu_classes} where fetch_date > DATE_SUB(NOW(), INTERVAL $off DAY) order by id");
+    $data = $query->fetchAll();
+    if (!$data) {
+        fetch_classes();
+        $query = \Drupal::database()->query("select distinct grade from {tpedu_classes} order by id");
+        $data = $query->fetchAll();
+    }
+    if ($data) return $data;
+    return false;
+}
+
 function all_classes() {
     $config = \Drupal::config('tpedu.settings');
     $off = $config->get('refresh_days');
