@@ -23,8 +23,8 @@ class Classes extends ListItemBase {
     public function getPossibleOptions(AccountInterface $account = NULL) {
         if ($account->init == 'tpedu') {
             if ($this->getSetting('filter_by_current_user')) $classes = get_teach_classes($account->uuid);
-            if ($this->getSetting('filter_by_subject')) $classes = get_teach_classes($account->uuid);
-            if ($this->getSetting('filter_by_grade')) $classes = get_teach_classes($account->uuid);
+            if ($this->getSetting('filter_by_subject')) $classes = get_classes_of_subject($this->getSetting('subject'));
+            if ($this->getSetting('filter_by_grade')) $classes = get_classes_of_grade($this->getSetting('grade'));
         }
         else {
             $classes = all_classes();

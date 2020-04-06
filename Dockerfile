@@ -8,6 +8,7 @@ RUN apt-get update \
     && apt-get -y --no-install-recommends install unzip git apt-utils mc \
     && rm -rf /var/lib/apt/lists/* \
     && echo "memory_limit = -1" > /usr/local/etc/php/conf.d/memory.ini \
+    && echo "max_execution_time = 300" > /usr/local/etc/php/conf.d/execution_time.ini \
     && docker-php-ext-install mbstring \
     && curl -sS https://getcomposer.org/installer | php \
     && mv composer.phar /usr/local/bin/composer \
