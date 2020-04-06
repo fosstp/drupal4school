@@ -13,7 +13,7 @@ use Drupal\Core\TypedData\DataDefinition;
  *   id = "tpedu_classes",
  *   label = "班級",
  *   description = "班級列表",
- *   category = "臺北市教育人員",
+ *   category = "參照",
  *   default_widget = "classes_default",
  *   default_formatter = "classes_default"
  * )

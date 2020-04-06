@@ -25,7 +25,7 @@ tpedu.purge:
 tpedu.login:
   path: /sso_login
   defaults:
-    _controller: \Drupal\tpedu\Controller\tpeduController::redirect
+    _controller: \Drupal\tpedu\Controller\tpeduController::login
     _title: 'OAuth2 login'
   requirements:
     _access: 'TRUE'

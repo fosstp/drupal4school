@@ -51,12 +51,23 @@ class People extends ContentEntityBase {
             
     public static function baseFieldDefinitions(EntityTypeInterface $entity_type) {
     
-        $fields['uuid'] = BaseFieldDefinition::create('entity_reference')
-        ->setLabel('UUID')
+        $fields['people_user'] = BaseFieldDefinition::create('entity_reference')
+        ->setLabel('使用者')
         ->setCardinality(BaseFieldDefinition::CARDINALITY_UNLIMITED)
-        ->setDescription('臺北市教育人員唯一編碼')
+        ->setDescription('臺北市教育人員所關聯的使用者')
         ->setTargetEntityTypeId('user');
   
+        $fields['uuid'] = BaseFieldDefinition::create('uuid')
+            ->setLabel('UUID')
+            ->setDescription('臺北市教育人員唯一編碼')
+            ->setReadOnly(TRUE)
+            ->setDisplayOptions('view', array(
+                'label' => 'above',
+                'type' => 'string',
+                'weight' => -20,
+            ))
+            ->setDisplayConfigurable('view', TRUE);
+
         $fields['idno'] = BaseFieldDefinition::create('string')
             ->setLabel('身分證字號')
             ->setDescription('中華民國身分證或居留證號')

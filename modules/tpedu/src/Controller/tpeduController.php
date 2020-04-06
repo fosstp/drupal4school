@@ -14,10 +14,10 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class tpeduController extends ControllerBase {
 
-    public function redirect(Request $request) {
+    public function login(Request $request) {
         $config = \Drupal::config('tpedu.settings');
         if (!($config->get('enable'))) throw new AccessDeniedHttpException();
-        return new TrustedRedirectResponse('https://ldap.tp.edu.tw/oauth/authorize?client_id=' . $config->get('client_id') . '&redirect_uri=' . $config->get('call_back') . '&response_type=code&scope=user');
+        return new TrustedRedirectResponse('https://ldap.tp.edu.tw/oauth/authorize?client_id=' . $config->get('client_id') . '&redirect_uri=' . $config->get('call_back') . '&response_type=code&scope=user', [], []);
     }
 
     public function handle(Request $request) {
