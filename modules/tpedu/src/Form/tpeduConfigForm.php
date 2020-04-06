@@ -42,9 +42,9 @@ class tpeduConfigForm extends ConfirmFormBase {
       '#markup' => '<p>有關臺北市教育人員單一身分驗證服務，說明如下：<ol>' .
         '<li>該服務網址為 <a href="https://ldap.tp.edu.tw">https://ldap.tp.edu.tw</a></li>' .
         '<li>該服務採用開源模式開發，所有文件可以從 <a href="https://github.com/leejoneshane/tpeduSSO">Github 專案</a>取得。</li>' .
-        '<li>請下載填寫<a href="https://github.com/leejoneshane/tpeduSSO/blob/master/%E8%87%BA%E5%8C%97%E5%B8%82%E6%95%99%E8%82%B2%E5%B1%80%E5%96%AE%E4%B8%80%E8%BA%AB%E5%88%86%E9%A9%97%E8%AD%89%E4%BB%8B%E6%8E%A5%E7%94%B3%E8%AB%8B%E8%A1%A8.pdf">臺北市教育局單一身分驗證介接申請表.pdf</a>，「SSO 認證後重導向 URL」欄位請填寫 https://'.$_SERVER['HTTP_HOST'].'/retrieve。</li>' .
-        '<li>申請介接專案請洽聯絡人 電話：1999（外縣市請撥02-27208889）#1234 信箱：edu_ict.19@mail.taipei.gov.tw</li>' .
-        '<li>請詳細閱讀<a href="https://github.com/leejoneshane/tpeduSSO/blob/master/%E8%87%BA%E5%8C%97%E5%B8%82%E6%95%99%E8%82%B2%E4%BA%BA%E5%93%A1%E5%96%AE%E4%B8%80%E8%BA%AB%E5%88%86%E9%A9%97%E8%AD%89%E8%B3%87%E6%96%99%E4%BB%8B%E6%8E%A5%E6%89%8B%E5%86%8AV2.0.docx">臺北市教育人員單一身分驗證資料介接手冊V2.0</a>有關代理授權與管理員個人存取金鑰的取得方式，授權範圍務必勾選 profile、school 和 schoolAdmin。</li>' .
+        '<li>請從右方連結<a href="https://ldap.tp.edu.tw/3party">線上申請介接專案</a>，申請表單中之「SSO 認證後重導向 URL」欄位請填寫 https://'.$_SERVER['HTTP_HOST'].'/retrieve。</li>' .
+        '<li>介接專案相關問題，請洽聯絡人 電話：1999（外縣市請撥02-27208889）#1234 信箱：edu_ict.19@mail.taipei.gov.tw</li>' .
+        '<li>請以學校管理員身分登入上述網站，並從「學校管理」介面左側之「新增授權金鑰」取得全校授權金鑰，授權範圍請務必勾選 profile、school 和 schoolAdmin。</li>' .
         '</ol></p>',
     );
     $form['client_id'] = array(
@@ -65,9 +65,9 @@ class tpeduConfigForm extends ConfirmFormBase {
       '#type' => 'textarea',
       '#rows' => 6,
       '#cols' => 25,
-      '#title' => '學校管理員個人存取金鑰',
+      '#title' => '全校授權金鑰',
       '#default_value' => $config->get('admin_token'),
-      '#description' => '請依上面說明之方法，填入學校管理員個人存取金鑰',
+      '#description' => '請依上面說明之方法，填入全校授權金鑰',
       '#required' => TRUE,
     );
     $form['refresh_days'] = array(
