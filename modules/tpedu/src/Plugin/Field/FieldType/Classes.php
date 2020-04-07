@@ -2,7 +2,7 @@
 
 namespace Drupal\tpedu\Plugin\Field\FieldType;
 
-use Drupal\Core\Field\ListItemBase;
+use Drupal\options\Plugin\Field\FieldType\ListItemBase;
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
 use Drupal\Core\TypedData\DataDefinition;
 
