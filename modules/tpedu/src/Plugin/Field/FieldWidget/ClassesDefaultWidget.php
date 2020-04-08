@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\tpedu\Plugin\Field\FieldWidget\ClassesDefaultWidget.
- */
-
 namespace Drupal\tpedu\Plugin\Field\FieldWidget;
 
 use Drupal\Core\Field\FieldItemListInterface;
@@ -26,6 +21,16 @@ use Drupal\Core\Form\FormStateInterface;
 class ClassesDefaultWidget extends OptionsWidgetBase { 
 
     public function formElement(FieldItemListInterface $items, $delta, array $element, array &$form, FormStateInterface $form_state) {
+        $field_name = $element['#field_name'];
+        $langcode = $element['#language'];
+        $settings = $form_state['field'][$field_name][$langcode]['instance']['settings'];
+        $grade = null;
+        foreach ($form_state['field'] as $my_field_name => $parent_field) {
+            $my_field = $parent_field[$langcode]['field'];
+            if ($my_field['type'] == 'grade') {
+                $grade = $form_state['values'][$my_field_name][$langcode];
+            }
+        }
         $this->required = $element['#required'];
         $this->multiple = $this->fieldDefinition
             ->getFieldStorageDefinition()
@@ -40,28 +45,34 @@ class ClassesDefaultWidget extends OptionsWidgetBase {
             $element['class_id'] = array(
                 '#title' => '班級',
                 '#type' => 'checkboxes',
-                '#options' => $this->getOptions(),
+                '#options' => $this->getOptions($settings, $grade),
             );
         } else {
             $element['class_id'] = array(
                 '#title' => '班級',
                 '#type' => 'select',
-                '#options' => $this->getOptions(),
+                '#options' => $this->getOptions($settings, $grade),
             );
         }
         $element['#attached']['library'][] = 'tpedu/tpedu_fields';
         return $element;
     }
 
-    protected function getOptions($settings) {
+    protected function getOptions(array $settings = [], $grade = null) {
+        $classes = array();
         $account = \Drupal::currentUser;
         if ($account->init == 'tpedu') {
-            if ($this->getSetting('filter_by_current_user')) $classes = get_teach_classes($account->uuid);
-            if ($this->getSetting('filter_by_subject') && $this->getSetting('subject')) $classes = get_classes_of_subject($this->getSetting('subject'));
-            if ($this->getSetting('filter_by_grade') && $this->getSetting('grade')) $classes = get_classes_of_grade($this->getSetting('grade'));
-        } else {
-            $classes = all_classes();
+            if ($settings['filter_by_subject'] && $settings['subject']) $classes = get_classes_of_subject($settings['subject']);
+            if ($settings['filter_by_grade'] && $settings['grade']) {
+                $grades = explode(',', $settings['grade']);
+                foreach ($grades as $g) {
+                    $classes = $classes + get_classes_of_grade($g);
+                }
+            }
+            if ($settings['filter_by_grade_field']) $classes = get_classes_of_grade($grade);
+            if ($settings['filter_by_current_user']) $classes = get_teach_classes($account->uuid);
         }
+        if (empty($classes)) $classes = all_classes();
         foreach ($classes as $c) {
             $values[$c->id] = $c->name;
         }    
@@ -71,18 +82,16 @@ class ClassesDefaultWidget extends OptionsWidgetBase {
     function display_inline($element) {
         if (!isset($element['#inline']) || $element['#inline']<2) return $element;
         if (count($element ['#options']) > 0) {
-          $column = 0;
-          foreach ($element ['#options'] as $key => $choice) {
-            if ($key === 0) {
-              $key = '0';
+            $column = 0;
+            foreach ($element ['#options'] as $key => $choice) {
+                if ($key === 0) $key = '0';
+                $class = ($column % $element['#inline']) ? 'button-columns' : 'button-columns-clear';
+                if (isset($element[$key])) {
+                    $element[$key]['#prefix'] = '<div class="' . $class . '">';
+                    $element[$key]['#suffix'] = '</div>';
+                }
+                $column++;
             }
-            $class = ($column % $element['#inline']) ? 'button-columns' : 'button-columns-clear';
-            if (isset($element[$key])) {
-              $element[$key]['#prefix'] = '<div class="' . $class . '">';
-              $element[$key]['#suffix'] = '</div>';
-            }
-            $column++;
-          }
         }
         return $element;
     }
@@ -114,14 +123,14 @@ class ClassesDefaultWidget extends OptionsWidgetBase {
                     foreach ($my_element['#options'] as $key => $value) {
                         unset($my_element[$key]);
                     }
-                    $options = $this->getOptions();
+                    $options = $this->getOptions($my_instance['settings']);
                     if ($my_element['#properties']['empty_option']) {
                         $label = theme('options_none', array('instance' => $my_instance, 'option' => $my_element['#properties']['empty_option']));
                         $options = array('_none' => $label) + $options;
                     }
                     $my_element['#options'] = $options;
                     if ($my_element['#type'] == 'select') {
-//                        $my_element = form_process_select($my_element);
+//                        $my_element = drupal_render($my_element);
                         foreach ($my_element['#options'] as $key => $value) {
                             if ($key == $my_element['#value']) {
                                 $my_element[$key]['#value'] = $key;
@@ -130,15 +139,15 @@ class ClassesDefaultWidget extends OptionsWidgetBase {
                             }
                         }
                     } elseif ($my_element['#type'] == 'checkboxes') {
-//                        $my_element = form_process_checkboxes($my_element);
+//                        $my_element = drupal_render($my_element);
                         foreach ($my_element['#options'] as $key => $value) {
                             foreach (array_values((array) $my_element['#value']) as $default_value) {
                                 if ($key == $default_value) {
                                     $my_element[$key]['#value'] = $key;
-//                                    $my_element[$key] = form_process_checkbox($my_element[$key], $form_state);
+//                                    $my_element[$key] = drupal_render($my_element[$key]);
                                 } else {
                                     $my_element[$key]['#value'] = false;
-//                                    $my_element[$key] = form_process_checkbox($my_element[$key], $form_state);
+//                                    $my_element[$key] = drupal_render($my_element[$key]);
                                 }
                             }
                         }
