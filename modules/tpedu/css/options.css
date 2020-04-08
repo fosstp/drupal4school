@@ -1,0 +1,11 @@
+.button-columns .form-item {
+  margin-right: 10px !important;
+  float: left;
+  display: inline;
+}
+.button-columns-clear .form-item {
+  margin-right: 10px !important;
+  clear: left;
+  float: left;
+  display: inline;
+}

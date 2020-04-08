@@ -1,0 +1,5 @@
+tpedu_fields:
+    version: 1.x
+    css:
+        theme:
+            css/options.css: {}

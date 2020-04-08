@@ -30,23 +30,65 @@ class ClassesDefaultWidget extends OptionsWidgetBase {
         $this->multiple = $this->fieldDefinition
             ->getFieldStorageDefinition()
             ->isMultiple();
-        $this->has_value = isset($items[0]->{$this->column});
+        $this->has_value = isset($items[0]->class_id);
 
-        // Add our custom validator.
-        $element['#element_validate'][] = [
-            get_class($this),
-            'validateElement',
-        ];
-        $element['#key_column'] = $this->column;
+        $element['#key_column'] = 'class_id';
         $element['#ajax'] = array(
             'callback' => 'reload_class_ajax_callback',
         );
+        if ($this->multiple) {
+            $element['class_id'] = array(
+                '#title' => '班級',
+                '#type' => 'checkboxes',
+                '#options' => $this->getOptions(),
+            );
+        } else {
+            $element['class_id'] = array(
+                '#title' => '班級',
+                '#type' => 'select',
+                '#options' => $this->getOptions(),
+            );
+        }
+        $element['#attached']['library'][] = 'tpedu/tpedu_fields';
+        return $element;
+    }
+
+    protected function getOptions($settings) {
+        $account = \Drupal::currentUser;
+        if ($account->init == 'tpedu') {
+            if ($this->getSetting('filter_by_current_user')) $classes = get_teach_classes($account->uuid);
+            if ($this->getSetting('filter_by_subject') && $this->getSetting('subject')) $classes = get_classes_of_subject($this->getSetting('subject'));
+            if ($this->getSetting('filter_by_grade') && $this->getSetting('grade')) $classes = get_classes_of_grade($this->getSetting('grade'));
+        } else {
+            $classes = all_classes();
+        }
+        foreach ($classes as $c) {
+            $values[$c->id] = $c->name;
+        }    
+        return $values;
+    }
+
+    function display_inline($element) {
+        if (!isset($element['#inline']) || $element['#inline']<2) return $element;
+        if (count($element ['#options']) > 0) {
+          $column = 0;
+          foreach ($element ['#options'] as $key => $choice) {
+            if ($key === 0) {
+              $key = '0';
+            }
+            $class = ($column % $element['#inline']) ? 'button-columns' : 'button-columns-clear';
+            if (isset($element[$key])) {
+              $element[$key]['#prefix'] = '<div class="' . $class . '">';
+              $element[$key]['#suffix'] = '</div>';
+            }
+            $column++;
+          }
+        }
         return $element;
     }
 
     function reload_class_ajax_callback($form, $form_state) {
         $commands = array();
-        $period = current_seme();
         $element = $form_state['triggering_element'];
         $field_name = $element['#field_name'];
         $langcode = $element['#language'];
@@ -72,32 +114,31 @@ class ClassesDefaultWidget extends OptionsWidgetBase {
                     foreach ($my_element['#options'] as $key => $value) {
                         unset($my_element[$key]);
                     }
-                    $options = tpedu_options_list($my_field, $my_instance, $my_element['#entity_type'], $my_element['#entity'], $period['year'], $period['seme'], $class);
+                    $options = $this->getOptions();
                     if ($my_element['#properties']['empty_option']) {
                         $label = theme('options_none', array('instance' => $my_instance, 'option' => $my_element['#properties']['empty_option']));
                         $options = array('_none' => $label) + $options;
                     }
                     $my_element['#options'] = $options;
-                    if ($my_element['#type'] == 'radios') {
-                        $my_element = form_process_radios($my_element);
+                    if ($my_element['#type'] == 'select') {
+//                        $my_element = form_process_select($my_element);
                         foreach ($my_element['#options'] as $key => $value) {
                             if ($key == $my_element['#value']) {
-                                $my_element[$key]['#value'] = TRUE;
+                                $my_element[$key]['#value'] = $key;
                             } else {
-                                $my_element[$key]['#value'] = FALSE;
+                                $my_element[$key]['#value'] = false;
                             }
                         }
-                        $my_element = display_inline($my_element);
                     } elseif ($my_element['#type'] == 'checkboxes') {
-                        $my_element = form_process_checkboxes($my_element);
+//                        $my_element = form_process_checkboxes($my_element);
                         foreach ($my_element['#options'] as $key => $value) {
                             foreach (array_values((array) $my_element['#value']) as $default_value) {
                                 if ($key == $default_value) {
                                     $my_element[$key]['#value'] = $key;
-                                    $my_element[$key] = form_process_checkbox($my_element[$key], $form_state);
+//                                    $my_element[$key] = form_process_checkbox($my_element[$key], $form_state);
                                 } else {
-                                    $my_element[$key]['#value'] = FALSE;
-                                    $my_element[$key] = form_process_checkbox($my_element[$key], $form_state);
+                                    $my_element[$key]['#value'] = false;
+//                                    $my_element[$key] = form_process_checkbox($my_element[$key], $form_state);
                                 }
                             }
                         }

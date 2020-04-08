@@ -2,9 +2,11 @@
 
 namespace Drupal\tpedu\Plugin\Field\FieldType;
 
-use Drupal\options\Plugin\Field\FieldType\ListItemBase;
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
 use Drupal\Core\TypedData\DataDefinition;
+use Drupal\Core\Field\FieldItemBase;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Session\AccountInterface;
 
 /**
  * Plugin implementation of the 'tpedu_classes' field type.
@@ -18,21 +20,33 @@ use Drupal\Core\TypedData\DataDefinition;
  *   default_formatter = "classes_default"
  * )
  */
-class Classes extends ListItemBase {
+class Classes extends FieldItemBase {
 
-    public function getSettableOptions(AccountInterface $account = NULL) {
-        if ($account->init == 'tpedu') {
-            if ($this->getSetting('filter_by_current_user')) $classes = get_teach_classes($account->uuid);
-            if ($this->getSetting('filter_by_subject') && $this->getSetting('subject')) $classes = get_classes_of_subject($this->getSetting('subject'));
-            if ($this->getSetting('filter_by_grade') && $this->getSetting('grade')) $classes = get_classes_of_grade($this->getSetting('grade'));
-        }
-        else {
-            $classes = all_classes();
-        }
-        foreach ($classes as $c) {
-          $values[$c->id] = $c->name;
-        }    
-        return $values;
+    public static function schema(FieldStorageDefinitionInterface $field) {
+        return array(
+          'columns' => array(
+            'class_id' => array(
+              'type' => 'string',
+              'length' => 5,
+              'not null' => false,
+            ),
+            'class_name' => array(
+              'type' => 'string',
+              'length' => 250,
+              'not null' => FALSE,
+            ),
+          ),
+        );
+    }
+
+    public function isEmpty() {
+        return empty($this->get('class_id')->value);
+    }
+
+    public static function propertyDefinitions(FieldStorageDefinitionInterface $field_definition) {
+        $properties['class_id'] = DataDefinition::create('string')->setLabel('班級代號');    
+        $properties['class_name'] = DataDefinition::create('string')->setLabel('班級名稱');
+        return $properties;
     }
 
     public static function defaultFieldSettings() {
@@ -43,7 +57,7 @@ class Classes extends ListItemBase {
             'subject' => null,
             'filter_by_current_user' => false,
             'inline_columns' => 1,
-        ] + parent::defaultFieldSettings();
+        ];
     }
 
     public function fieldSettingsForm(array $form, FormStateInterface $form_state) {
