@@ -25,7 +25,7 @@ class Grade extends FieldItemBase {
         return array(
           'columns' => array(
             'grade' => array(
-              'type' => 'string',
+              'type' => 'varchar_ascii',
               'length' => 50,
               'not null' => false,
             ),

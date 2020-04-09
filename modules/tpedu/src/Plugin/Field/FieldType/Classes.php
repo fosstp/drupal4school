@@ -25,9 +25,9 @@ class Classes extends FieldItemBase {
         return array(
           'columns' => array(
             'class_id' => array(
-              'type' => 'string',
+              'type' => 'varchar_ascii',
               'length' => 50,
-              'not null' => false,
+              'not null' => true,
             ),
           ),
         );
