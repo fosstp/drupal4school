@@ -14,7 +14,7 @@ use Drupal\Core\Form\FormStateInterface;
  *   label = "選擇班級",
  *   field_types = {
  *     "tpedu_classes"
- *   }
+ *   },
  *   settings = {
  *     "filter_by_current_user" = false,
  *     "filter_by_grade_field" = false,
