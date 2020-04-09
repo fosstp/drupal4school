@@ -27,7 +27,7 @@ class Classes extends FieldItemBase {
             'class_id' => array(
               'type' => 'string',
               'length' => 50,
-              'not null' => true,
+              'not null' => false,
             ),
           ),
         );

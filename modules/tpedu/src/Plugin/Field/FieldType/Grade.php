@@ -27,7 +27,7 @@ class Grade extends FieldItemBase {
             'grade' => array(
               'type' => 'string',
               'length' => 50,
-              'not null' => true,
+              'not null' => false,
             ),
           ),
         );
