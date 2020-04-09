@@ -4,7 +4,6 @@ namespace Drupal\tpedu\Plugin\Field\FieldWidget;
 
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Field\WidgetBase;
-use Drupal\Core\Field\Plugin\Field\FieldWidget\OptionsWidgetBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Entity\FieldableEntityInterface;
 
@@ -19,41 +18,40 @@ use Drupal\Core\Entity\FieldableEntityInterface;
  *   }
  * )
  */
-class GradeDefaultWidget extends OptionsWidgetBase { 
+class GradeDefaultWidget extends WidgetBase { 
 
     public function formElement(FieldItemListInterface $items, $delta, array $element, array &$form, FormStateInterface $form_state) {
         $this->required = $element['#required'];
         $this->multiple = $this->fieldDefinition
             ->getFieldStorageDefinition()
             ->isMultiple();
-        $this->has_value = isset($items[0]->class_id);
-
+        $this->has_value = isset($items[0]->grade);
         $element['#key_column'] = 'grade';
+        $element['#title'] = '年級';
+        if ($this->multiple) {
+            $element['#type'] = 'checkboxes';
+        } else {
+            $element['#type'] = 'select';
+        }
+        if (!isset($this->options)) $this->getOptions();
+        if (!$this->required) {
+            $this->options = array( '' => '--' ) + $this->options;
+        }
+        $element['#options'] = $this->options;
+        $element['#attached']['library'] = array(
+            'tpedu/tpedu_fields',
+        );
         $element['#ajax'] = array(
             'callback' => 'reload_grade_ajax_callback',
         );
-        if ($this->multiple) {
-            $element['grade'] = array(
-                '#title' => '年級',
-                '#type' => 'checkboxes',
-                '#options' => $this->getOptions(),
-            );
-        } else {
-            $element['grade'] = array(
-                '#title' => '年級',
-                '#type' => 'select',
-                '#options' => $this->getOptions(),
-            );
-        }
-        $element['#attached']['library'][] = 'tpedu/tpedu_fields';
         return $element;
     }
 
-    protected function getOptions(FieldableEntityInterface $entity) {
+    protected function getOptions(FieldableEntityInterface $entity = null) {
         if (!isset($this->options)) {
             $grades = all_grade();
             foreach ($grades as $g) {
-                $options[$g] = $g . '年級';
+                $options[$g->grade] = $g->grade . '年級';
             }
             $this->options = $options;
         }

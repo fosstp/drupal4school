@@ -81,16 +81,6 @@ class ClassesDefaultWidget extends OptionsWidgetBase {
     }
 
     public function formElement(FieldItemListInterface $items, $delta, array $element, array &$form, FormStateInterface $form_state) {
-        $field_name = $element['#field_name'];
-        $langcode = $element['#language'];
-        $settings = $form_state['field'][$field_name][$langcode]['instance']['settings'];
-        $grade = null;
-        foreach ($form_state['field'] as $my_field_name => $parent_field) {
-            $my_field = $parent_field[$langcode]['field'];
-            if ($my_field['type'] == 'grade') {
-                $grade = $form_state['values'][$my_field_name][$langcode];
-            }
-        }
         $this->required = $element['#required'];
         $this->multiple = $this->fieldDefinition
             ->getFieldStorageDefinition()
@@ -105,13 +95,13 @@ class ClassesDefaultWidget extends OptionsWidgetBase {
             $element['class_id'] = array(
                 '#title' => '班級',
                 '#type' => 'checkboxes',
-                '#options' => $this->getOptions($settings, $grade),
+                '#options' => $this->options,
             );
         } else {
             $element['class_id'] = array(
                 '#title' => '班級',
                 '#type' => 'select',
-                '#options' => $this->getOptions($settings, $grade),
+                '#options' => $this->options,
             );
         }
         $element['#attached']['library'][] = 'tpedu/tpedu_fields';
