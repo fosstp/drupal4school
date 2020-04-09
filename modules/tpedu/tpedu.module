@@ -176,6 +176,16 @@ function tpedu_theme($existing, $type, $theme, $path) {
     ];
 }
 
+function tpedu_field_formatter_info_alter(&$info) {
+    $formatters = array(
+        'list_default' => array('tpedu_grade'),
+    );
+  
+    foreach ($formatters as $formatter => $field_types) {
+        $info[$formatter]['field types'] = array_merge($info[$formatter]['field types'], $field_types);
+    }
+}
+
 function tpedu_element_info_alter(array &$info) {
     foreach ($info as $id => $element) {
         if ($element['#type'] == 'link') {

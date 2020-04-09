@@ -16,7 +16,7 @@ use Drupal\Core\Session\AccountInterface;
  *   description = "年級選單",
  *   category = "臺北市教育人員",
  *   default_widget = "grade_default",
- *   default_formatter = "grade_default"
+ *   default_formatter = "list_default"
  * )
  */
 class Grade extends FieldItemBase {

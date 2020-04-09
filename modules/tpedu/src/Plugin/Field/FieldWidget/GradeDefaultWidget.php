@@ -29,13 +29,13 @@ class GradeDefaultWidget extends OptionsWidgetBase {
 
         $element['#key_column'] = 'grade';
         if ($this->multiple) {
-            $element['class_id'] = array(
+            $element['grade'] = array(
                 '#title' => '年級',
                 '#type' => 'checkboxes',
                 '#options' => $this->getOptions(),
             );
         } else {
-            $element['class_id'] = array(
+            $element['grade'] = array(
                 '#title' => '年級',
                 '#type' => 'select',
                 '#options' => $this->getOptions(),
