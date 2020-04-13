@@ -88,23 +88,23 @@ class ClassesDefaultWidget extends OptionsWidgetBase {
         $this->has_value = isset($items[0]->class_id);
 
         $element['#key_column'] = 'class_id';
+        $element['#title'] = '年級';
+        if ($this->multiple) {
+            $element['#type'] = 'checkboxes';
+        } else {
+            $element['#type'] = 'select';
+        }
+        if (!isset($this->options)) $this->getOptions();
+        if (! $this->required) {
+            $this->options = array( '' => '--' ) + $this->options;
+        }
+        $element['#options'] = $this->options;
+        $element['#attached']['library'] = array(
+            'tpedu/tpedu_fields',
+        );
         $element['#ajax'] = array(
             'callback' => 'reload_class_ajax_callback',
         );
-        if ($this->multiple) {
-            $element['class_id'] = array(
-                '#title' => '班級',
-                '#type' => 'checkboxes',
-                '#options' => $this->options,
-            );
-        } else {
-            $element['class_id'] = array(
-                '#title' => '班級',
-                '#type' => 'select',
-                '#options' => $this->options,
-            );
-        }
-        $element['#attached']['library'][] = 'tpedu/tpedu_fields';
         return $element;
     }
 
@@ -132,15 +132,39 @@ class ClassesDefaultWidget extends OptionsWidgetBase {
         return $this->options;
     }
 
+    protected function getStudentOptions(array $settings, $myclass) {
+        $values = array();
+        $students = array();
+        if ($settings['filter_by_class']) {
+            $students = get_students_of_class($myclass);
+            foreach ($students as $s) {
+                $values[$s->id] = $s->seat . ' ' . $s->realname;
+            }
+        }
+        return $values;
+    }
+
+    protected function getTeacherOptions(array $settings, $myclass) {
+        $values = array();
+        $teachers = array();
+        if ($settings['filter_by_class']) {
+            $teachers = get_teachers_of_class($myclass);
+            foreach ($teachers as $t) {
+                $values[$t->id] = $t->role_name . ' ' . $t->realname;
+            }
+        }
+        return $values;
+    }
+
     function display_inline($element) {
         if (!isset($element['#inline']) || $element['#inline']<2) return $element;
         if (count($element ['#options']) > 0) {
             $column = 0;
             foreach ($element ['#options'] as $key => $choice) {
                 if ($key === 0) $key = '0';
-                $class = ($column % $element['#inline']) ? 'button-columns' : 'button-columns-clear';
+                $style = ($column % $element['#inline']) ? 'button-columns' : 'button-columns-clear';
                 if (isset($element[$key])) {
-                    $element[$key]['#prefix'] = '<div class="' . $class . '">';
+                    $element[$key]['#prefix'] = '<div class="' . $style . '">';
                     $element[$key]['#suffix'] = '</div>';
                 }
                 $column++;
@@ -159,7 +183,7 @@ class ClassesDefaultWidget extends OptionsWidgetBase {
         foreach ($form_state['field'] as $my_field_name => $parent_field) {
             $my_field = $parent_field[$langcode]['field'];
             if ($my_field['type'] == 'tpedu_classes') {
-                $classes = $form_state['values'][$my_field_name][$langcode];
+                $current = $form_state['values'][$my_field_name][$langcode];
             }
         }
         foreach ($form_state['field'] as $my_field_name => $parent_field) {
@@ -174,16 +198,16 @@ class ClassesDefaultWidget extends OptionsWidgetBase {
                         unset($my_element[$key]);
                     }
                     if ($my_field['type'] == 'tpedu_students')
-                        $options = $this->getStudentOptions($my_instance['settings'], $classes);
+                        $options = $this->getStudentOptions($my_instance['settings'], $current);
                     else
-                        $options = $this->getTeacherOptions($my_instance['settings'], $classes);
+                        $options = $this->getTeacherOptions($my_instance['settings'], $current);
                     if ($my_element['#properties']['empty_option']) {
                         $label = theme('options_none', array('instance' => $my_instance, 'option' => $my_element['#properties']['empty_option']));
                         $options = array('_none' => $label) + $options;
                     }
                     $my_element['#options'] = $options;
                     if ($my_element['#type'] == 'select') {
-//                        $my_element = drupal_render($my_element);
+                        $my_element = drupal_render($my_element);
                         foreach ($my_element['#options'] as $key => $value) {
                             if ($key == $my_element['#value']) {
                                 $my_element[$key]['#value'] = $key;
@@ -192,15 +216,16 @@ class ClassesDefaultWidget extends OptionsWidgetBase {
                             }
                         }
                     } elseif ($my_element['#type'] == 'checkboxes') {
-//                        $my_element = drupal_render($my_element);
+                        $my_element['#inline'] = $my_instance['settings']['inline_columns'];
+                        $my_element = drupal_render($my_element);
                         foreach ($my_element['#options'] as $key => $value) {
                             foreach (array_values((array) $my_element['#value']) as $default_value) {
                                 if ($key == $default_value) {
                                     $my_element[$key]['#value'] = $key;
-//                                    $my_element[$key] = drupal_render($my_element[$key]);
+                                    $my_element[$key] = drupal_render($my_element[$key]);
                                 } else {
                                     $my_element[$key]['#value'] = false;
-//                                    $my_element[$key] = drupal_render($my_element[$key]);
+                                    $my_element[$key] = drupal_render($my_element[$key]);
                                 }
                             }
                         }

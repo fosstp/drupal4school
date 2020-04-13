@@ -12,7 +12,7 @@ use Drupal\Core\Entity\FieldableEntityInterface;
  *
  * @FieldWidget(
  *   id = "grade_default",
- *   label = "選擇班級",
+ *   label = "選擇年級",
  *   field_types = {
  *     "tpedu_grade"
  *   }
@@ -34,7 +34,7 @@ class GradeDefaultWidget extends WidgetBase {
             $element['#type'] = 'select';
         }
         if (!isset($this->options)) $this->getOptions();
-        if (!$this->required) {
+        if (! $this->required) {
             $this->options = array( '' => '--' ) + $this->options;
         }
         $element['#options'] = $this->options;
@@ -59,38 +59,33 @@ class GradeDefaultWidget extends WidgetBase {
     }
 
     protected function getClassesOptions(array $settings = [], $grade = null) {
+        $values = array();
         $classes = array();
-        $account = \Drupal::currentUser;
         if ($account->init == 'tpedu') {
-            if ($settings['filter_by_subject'] && $settings['subject']) $classes = get_classes_of_subject($settings['subject']);
             if ($settings['filter_by_grade'] && $grade) {
                 $grades = explode(',', $grade);
                 foreach ($grades as $g) {
                     $classes = $classes + get_classes_of_grade($g);
                 }
+                foreach ($classes as $c) {
+                    $values[$c->id] = $c->name;
+                }
             }
-            if ($settings['filter_by_current_user']) $classes = get_teach_classes($account->uuid);
-        }
-        if (empty($classes)) $classes = all_classes();
-        foreach ($classes as $c) {
-            $values[$c->id] = $c->name;
         }    
         return $values;
     }
 
     function display_inline($element) {
-        if (!isset($element['#inline']) || $element['#inline']<2) return $element;
         if (count($element ['#options']) > 0) {
             $column = 0;
             foreach ($element ['#options'] as $key => $choice) {
                 if ($key === 0) $key = '0';
-                $class = ($column % $element['#inline']) ? 'button-columns' : 'button-columns-clear';
                 if (isset($element[$key])) {
-                    $element[$key]['#prefix'] = '<div class="' . $class . '">';
+                    $element[$key]['#prefix'] = '<div class="button-columns">';
                     $element[$key]['#suffix'] = '</div>';
                 }
-                $column++;
             }
+            $element[$key]['#prefix'] = '<div class="button-columns-clear">';
         }
         return $element;
     }

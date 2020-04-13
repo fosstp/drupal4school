@@ -33,12 +33,16 @@ class ClassesDefaultFormatter extends FormatterBase {
     public function viewElements(FieldItemListInterface $items, $langcode) {
         $elements = array();
         foreach ($items as $delta => $item) {
-            $myclass = one_class($item->class_id);
+            $classes = explode(',', $item->class_id);
+            foreach ($classes as $c) {
+                $myclass = one_class($c);
+                $myclassname .= $myclass->name.' '; 
+            }
             $source = array(
                 '#type' => 'inline_template',
                 '#template' => "班級： {{name}}",
                 '#context' => [
-                    'name' => $myclass->name,
+                    'name' => $myclassname,
                 ],
             );
             $elements[$delta] = array('#markup' => drupal_render($source));
