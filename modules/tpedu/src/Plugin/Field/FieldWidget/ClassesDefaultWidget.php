@@ -111,7 +111,7 @@ class ClassesDefaultWidget extends WidgetBase {
         if (!isset($this->options)) {
             $classes = array();
             $account = \Drupal::currentUser();
-            if ($account->init == 'tpedu') {
+            if ($account->get('init')->value == 'tpedu') {
                 if ($this->getSetting('filter_by_subject') && $this->getSetting('subject'))
                     $classes = get_classes_of_subject($this->getSetting('subject'));
                 if ($this->getSetting('filter_by_grade') && $this->getSetting('grade')) {
@@ -120,7 +120,7 @@ class ClassesDefaultWidget extends WidgetBase {
                         $classes = $classes + get_classes_of_grade($g);
                     }
                 }
-                if ($this->getSetting('filter_by_current_user')) $classes = get_teach_classes($account->uuid);
+                if ($this->getSetting('filter_by_current_user')) $classes = get_teach_classes($account->get('uuid')->value);
             }
             if (empty($classes)) $classes = all_classes();
             foreach ($classes as $c) {
