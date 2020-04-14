@@ -108,7 +108,7 @@ class ClassesDefaultWidget extends OptionsWidgetBase {
         return $element;
     }
 
-    protected function getOptions(FieldableEntityInterface $entity) {
+    protected function getOptions() {
         if (!isset($this->options)) {
             $classes = array();
             $account = \Drupal::currentUser();
