@@ -4,7 +4,6 @@ namespace Drupal\tpedu\Plugin\Field\FieldWidget;
 
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Field\WidgetBase;
-use Drupal\Core\Field\Plugin\Field\FieldWidget\OptionsWidgetBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Entity\FieldableEntityInterface;
 
@@ -19,7 +18,7 @@ use Drupal\Core\Entity\FieldableEntityInterface;
  *   }
  * )
  */
-class ClassesDefaultWidget extends OptionsWidgetBase { 
+class ClassesDefaultWidget extends WidgetBase { 
 
     public function settingsForm(array $form, FormStateInterface $form_state) {
         $form['filter_by_current_user'] = array(
