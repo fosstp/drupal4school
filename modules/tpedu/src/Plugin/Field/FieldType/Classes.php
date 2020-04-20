@@ -6,6 +6,7 @@ use Drupal\Core\Field\FieldStorageDefinitionInterface;
 use Drupal\Core\TypedData\DataDefinition;
 use Drupal\Core\Field\FieldItemBase;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\Form\FormStateInterface;
 
 /**
  * Plugin implementation of the 'tpedu_classes' field type.
@@ -42,7 +43,7 @@ class Classes extends FieldItemBase {
         return $properties;
     }
 
-    public function settingsForm(array $form, FormStateInterface $form_state) {
+    public function fieldSettingsForm(array &$form, FormStateInterface $form_state) {
         $form['filter_by_current_user'] = array(
             '#type' => 'checkbox',
             '#title' => '依使用者過濾班級',
@@ -88,17 +89,6 @@ class Classes extends FieldItemBase {
             '#default_value' => $this->getSetting('inline_columns'),
         );
         return $form;
-    }
-
-    public function settingsSummary() {
-        $summary = array();
-        $summary[] = '依年級欄位過濾班級: ' . $this->getSetting('filter_by_grade_field') . '年級： ' . ($this->getSetting('grade') ?: '無');
-        $subject = null;
-        if (!empty(getSetting('subject'))) $subject = get_subject($this->getSetting('subject'));
-        $summary[] = '依配課科目過濾班級: ' . $this->getSetting('filter_by_subject') . '科目: ' . (isset($subject->name) ? $subject->name : '無');
-        $summary[] = '依使用者過濾班級: ' . $this->getSetting('filter_by_current_user');
-        $summary[] = '每行顯示數量: ' . $this->getSetting('inline_columns');
-        return $summary;
     }
 
 }

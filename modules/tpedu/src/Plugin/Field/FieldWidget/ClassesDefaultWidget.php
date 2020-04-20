@@ -113,7 +113,7 @@ class ClassesDefaultWidget extends WidgetBase {
         return $element;
     }
 
-    function reload_class_ajax_callback($form, $form_state) {
+    function reload_class_ajax_callback(array &$form, FormStateInterface $form_state) {
         $commands = array();
         $element = $form_state['triggering_element'];
         $field_name = $element['#field_name'];
