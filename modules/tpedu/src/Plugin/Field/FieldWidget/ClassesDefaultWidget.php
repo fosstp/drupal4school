@@ -6,6 +6,7 @@ use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Field\WidgetBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Entity\FieldableEntityInterface;
+use Drupal\user\Entity\User;
 
 /**
  * Plugin implementation of the 'classes_default' widget.
@@ -50,8 +51,8 @@ class ClassesDefaultWidget extends WidgetBase {
     protected function getOptions() {
         if (!isset($this->options)) {
             $classes = array();
-            $account = \Drupal::currentUser();
-            if ($account->get('init')->value == 'tpedu') {
+            $account = User::load(\Drupal::currentUser()->id());
+            if ($account->init == 'tpedu') {
                 if ($this->getFieldSetting('filter_by_subject') && $this->getFieldSetting('subject'))
                     $classes = get_classes_of_subject($this->getFieldSetting('subject'));
                 if ($this->getFieldSetting('filter_by_grade') && $this->getFieldSetting('grade')) {
@@ -60,7 +61,7 @@ class ClassesDefaultWidget extends WidgetBase {
                         $classes = $classes + get_classes_of_grade($g);
                     }
                 }
-                if ($this->getFieldSetting('filter_by_current_user')) $classes = get_teach_classes($account->get('uuid')->value);
+                if ($this->getFieldSetting('filter_by_current_user')) $classes = get_teach_classes($account->uuid);
             }
             if (empty($classes)) $classes = all_classes();
             foreach ($classes as $c) {
