@@ -42,13 +42,13 @@ personal_data_notice:
   label: '要顯示個資政策連結嗎？'
 field.field_settings.tpedu_classes:
     type: mapping
-    label: '班級'
+    label: '班級欄位設定'
     mapping:
       filter_by_grade:
         type: boolean
         label: '依年級欄位過濾班級'
       grade:
-        type: integer
+        type: string
         label: '年級'
       filter_by_subject:
         type: boolean

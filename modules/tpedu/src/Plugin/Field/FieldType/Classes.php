@@ -43,6 +43,17 @@ class Classes extends FieldItemBase {
         return $properties;
     }
 
+    public static function defaultFieldSettings() {
+        return [
+            'filter_by_current_user' => false,
+            'filter_by_grade' => false,
+            'grade' => '',
+            'filter_by_subject' => false,
+            'subject' => '',
+            'inline_columns' => 10,
+        ] + parent::defaultFieldSettings();
+    }
+
     public function fieldSettingsForm(array &$form, FormStateInterface $form_state) {
         $form['filter_by_current_user'] = array(
             '#type' => 'checkbox',
@@ -68,7 +79,7 @@ class Classes extends FieldItemBase {
             '#description' => '若勾選，僅顯示指定科目的所有已配課班級。',
             '#default_value' => $this->getSetting('filter_by_subject'),
         );
-        $values = array();
+        $values = array( '' => '--' );
         $subjects = all_subjects();
         foreach ($subjects as $s) {
             $values[$s->id] = $s->name;
