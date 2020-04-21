@@ -26,49 +26,48 @@ class ClassesDefaultWidget extends WidgetBase {
         $this->multiple = $this->fieldDefinition
             ->getFieldStorageDefinition()
             ->isMultiple();
-        $this->has_value = isset($items[0]->class_id);
+        $value = isset($items[$delta]->class_id) ? $items[$delta]->class_id : '';
+        $this->has_value = $value ? true : false;
         $element['#key_column'] = 'class_id';
-        $element['#title'] = '年級';
+        $element['#title'] = '班級';
         if ($this->multiple) {
             $element['#type'] = 'checkboxes';
+            $element['#attached']['library'] = array(
+                'tpedu/tpedu_fields',
+            );
         } else {
             $element['#type'] = 'select';
         }
-        if (!isset($this->options)) $this->getOptions();
-        if (! $this->required) {
-            $this->options = array( '' => '--' ) + $this->options;
-        }
-        $element['#options'] = $this->options;
-        $element['#attached']['library'] = array(
-            'tpedu/tpedu_fields',
-        );
+        if ($this->has_value) $element['#default_value'] = $value;
+        $element['#options'] = $this->getOptions();
         $element['#ajax'] = array(
             'callback' => 'reload_class_ajax_callback',
         );
-        return $element;
+        return ['class_id' => $element];
     }
 
     protected function getOptions() {
-        if (!isset($this->options)) {
-            $classes = array();
-            $account = User::load(\Drupal::currentUser()->id());
-            if ($account->init == 'tpedu') {
-                if ($this->getFieldSetting('filter_by_subject') && $this->getFieldSetting('subject'))
-                    $classes = get_classes_of_subject($this->getFieldSetting('subject'));
-                if ($this->getFieldSetting('filter_by_grade') && $this->getFieldSetting('grade')) {
-                    $grades = explode(',', $this->getFieldSetting('grade'));
-                    foreach ($grades as $g) {
-                        $classes = $classes + get_classes_of_grade($g);
-                    }
+        $classes = array();
+        $account = User::load(\Drupal::currentUser()->id());
+        if ($account->init == 'tpedu') {
+            if ($this->getFieldSetting('filter_by_subject') && $this->getFieldSetting('subject'))
+                $classes = get_classes_of_subject($this->getFieldSetting('subject'));
+            if ($this->getFieldSetting('filter_by_grade') && $this->getFieldSetting('grade')) {
+                $grades = explode(',', $this->getFieldSetting('grade'));
+                foreach ($grades as $g) {
+                    $classes = $classes + get_classes_of_grade($g);
                 }
-                if ($this->getFieldSetting('filter_by_current_user')) $classes = get_teach_classes($account->uuid);
             }
-            if (empty($classes)) $classes = all_classes();
-            foreach ($classes as $c) {
-                $options[$c->id] = $c->name;
-            }
-            $this->options = $options;
+            if ($this->getFieldSetting('filter_by_current_user')) $classes = get_teach_classes($account->uuid);
         }
+        if (empty($classes)) $classes = all_classes();
+        foreach ($classes as $c) {
+            $options[$c->id] = $c->name;
+        }
+        if (!$this->required) {
+            $options = array( '' => '--' ) + $options;
+        }
+        $this->options = $options;
         return $this->options;
     }
 
