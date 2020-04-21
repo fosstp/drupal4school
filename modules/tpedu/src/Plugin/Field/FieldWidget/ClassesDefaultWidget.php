@@ -22,10 +22,8 @@ use Drupal\user\Entity\User;
 class ClassesDefaultWidget extends WidgetBase { 
 
     public function formElement(FieldItemListInterface $items, $delta, array $element, array &$form, FormStateInterface $form_state) {
-        $this->required = $element['#required'];
-        $this->multiple = $this->fieldDefinition
-            ->getFieldStorageDefinition()
-            ->isMultiple();
+        $this->required = $this->fieldDefinition->get('required');
+        $this->multiple = $this->fieldDefinition->getFieldStorageDefinition()->isMultiple();
         $value = isset($items[$delta]->class_id) ? $items[$delta]->class_id : '';
         $this->has_value = $value ? true : false;
         $element['#key_column'] = 'class_id';
@@ -39,6 +37,7 @@ class ClassesDefaultWidget extends WidgetBase {
             $element['#type'] = 'select';
         }
         if ($this->has_value) $element['#default_value'] = $value;
+        if ($this->required) $element['#required'] = true;
         $element['#options'] = $this->getOptions();
         $element['#ajax'] = array(
             'callback' => 'reload_class_ajax_callback',
@@ -48,16 +47,16 @@ class ClassesDefaultWidget extends WidgetBase {
 
     protected function getOptions() {
         $classes = array();
+        if ($this->getFieldSetting('filter_by_subject') && $this->getFieldSetting('subject'))
+        $classes = get_classes_of_subject($this->getFieldSetting('subject'));
+        if ($this->getFieldSetting('filter_by_grade') && $this->getFieldSetting('grade')) {
+            $grades = explode(',', $this->getFieldSetting('grade'));
+            foreach ($grades as $g) {
+                $classes = $classes + get_classes_of_grade($g);
+            }
+        }    
         $account = User::load(\Drupal::currentUser()->id());
         if ($account->init == 'tpedu') {
-            if ($this->getFieldSetting('filter_by_subject') && $this->getFieldSetting('subject'))
-                $classes = get_classes_of_subject($this->getFieldSetting('subject'));
-            if ($this->getFieldSetting('filter_by_grade') && $this->getFieldSetting('grade')) {
-                $grades = explode(',', $this->getFieldSetting('grade'));
-                foreach ($grades as $g) {
-                    $classes = $classes + get_classes_of_grade($g);
-                }
-            }
             if ($this->getFieldSetting('filter_by_current_user')) $classes = get_teach_classes($account->uuid);
         }
         if (empty($classes)) $classes = all_classes();
@@ -67,8 +66,7 @@ class ClassesDefaultWidget extends WidgetBase {
         if (!$this->required) {
             $options = array( '' => '--' ) + $options;
         }
-        $this->options = $options;
-        return $this->options;
+        return $options;
     }
 
     protected function getStudentOptions(array $settings, $myclass) {
