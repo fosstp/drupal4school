@@ -50,6 +50,7 @@ class Classes extends FieldItemBase {
             'grade' => '',
             'filter_by_subject' => false,
             'subject' => '',
+            'multiple' => false,
             'inline_columns' => 10,
         ] + parent::defaultFieldSettings();
     }
@@ -91,6 +92,12 @@ class Classes extends FieldItemBase {
             '#description' => '請選擇已配課的科目',
             '#default_value' => $this->getSetting('subject'),
             '#options' => $values,
+        );
+        $element['multiple'] = array(
+            '#type' => 'checkbox',
+            '#title' => '可複選',
+            '#description' => '若未勾選則欄位值儲存為班級代號，例如：601，若勾選則欄位值會儲存為字串，班級代號中間以逗號隔開，例如：601,602,603。',
+            '#default_value' => $this->getSetting('multiple'),
         );
         $element['inline_columns'] = array(
             '#type' => 'number',

@@ -21,14 +21,18 @@ use Drupal\user\Entity\User;
  */
 class ClassesDefaultWidget extends WidgetBase { 
 
+    protected function handlesMultipleValues() {
+        return $this->getFieldSetting('multiple');
+    }
+
     public function formElement(FieldItemListInterface $items, $delta, array $element, array &$form, FormStateInterface $form_state) {
-        $this->required = $this->fieldDefinition->get('required');
-        $this->multiple = $this->fieldDefinition->getFieldStorageDefinition()->isMultiple();
+        $this->required = $element['#required'];
+        $this->multiple = $this->getFieldSetting('multiple');
         $value = isset($items[$delta]->class_id) ? $items[$delta]->class_id : '';
-        $this->has_value = $value ? true : false;
+        $this->has_data = $value ? true : false;
         $element['#key_column'] = 'class_id';
         $element['#title'] = '班級';
-        if ($this->multiple) {
+        if ($multiple) {
             $element['#type'] = 'checkboxes';
             $element['#attached']['library'] = array(
                 'tpedu/tpedu_fields',
@@ -36,9 +40,12 @@ class ClassesDefaultWidget extends WidgetBase {
         } else {
             $element['#type'] = 'select';
         }
-        if ($this->has_value) $element['#default_value'] = $value;
-        if ($this->required) $element['#required'] = true;
-        $element['#options'] = $this->getOptions();
+        if ($this->has_data) $element['#default_value'] = $value;
+        $options = $this->getOptions();
+        if (!$this->required) {
+            $options = array( '' => '--' ) + $options;
+        }
+        $element['#options'] = $options;
         $element['#ajax'] = array(
             'callback' => 'reload_class_ajax_callback',
         );
@@ -62,9 +69,6 @@ class ClassesDefaultWidget extends WidgetBase {
         if (empty($classes)) $classes = all_classes();
         foreach ($classes as $c) {
             $options[$c->id] = $c->name;
-        }
-        if (!$this->required) {
-            $options = array( '' => '--' ) + $options;
         }
         return $options;
     }
