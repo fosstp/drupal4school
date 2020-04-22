@@ -29,21 +29,23 @@ class ClassesDefaultWidget extends WidgetBase {
         $this->required = $element['#required'];
         $this->multiple = $this->getFieldSetting('multiple');
         $element['#key_column'] = 'class_id';
+        $options = $this->getOptions();
+        $element['#options'] = $options;
+        if (!$this->multiple && !$this->required) {
+            $element['#empty_option'] = '--';
+            $element['#empty_value'] = '';
+        }
         if ($this->multiple) {
             $element['#type'] = 'checkboxes';
             $element['#attached']['library'] = array(
                 'tpedu/tpedu_fields',
             );
+            $this->display_inline($element, $value);
         } else {
             $element['#type'] = 'select';
+            $value = isset($items[$delta]->class_id) ? $items[$delta]->class_id : '';
+            if ($value) $element['#default_value'] = $value;
         }
-        $options = $this->getOptions();
-        if (!$this->multiple && !$this->required) {
-            $options = array( '_none' => '--' ) + $options;
-        }
-        $element['#options'] = $options;
-        $value = isset($items[$delta]->class_id) ? $items[$delta]->class_id : '';
-        if ($value) $element['#default_value'] = $value;
         $element['#ajax'] = array(
             'callback' => 'reload_class_ajax_callback',
         );
@@ -100,12 +102,13 @@ class ClassesDefaultWidget extends WidgetBase {
     }
 
     function display_inline($element) {
-        if (!isset($element['#inline']) || $element['#inline']<2) return $element;
-        if (count($element ['#options']) > 0) {
+        $inline = $this->getFieldSetting('inline_columns');
+        if (empty($inline) || $inline<2) return $element;
+        if (count($element['#options']) > 0) {
             $column = 0;
-            foreach ($element ['#options'] as $key => $choice) {
+            foreach ($element['#options'] as $key => $choice) {
                 if ($key === 0) $key = '0';
-                $style = ($column % $element['#inline']) ? 'button-columns' : 'button-columns-clear';
+                $style = ($column % $inline) ? 'button-columns' : 'button-columns-clear';
                 if (isset($element[$key])) {
                     $element[$key]['#prefix'] = '<div class="' . $style . '">';
                     $element[$key]['#suffix'] = '</div>';
