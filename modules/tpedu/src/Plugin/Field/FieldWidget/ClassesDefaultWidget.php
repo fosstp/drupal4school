@@ -31,7 +31,6 @@ class ClassesDefaultWidget extends WidgetBase {
         $value = isset($items[$delta]->class_id) ? $items[$delta]->class_id : '';
         $this->has_data = $value ? true : false;
         $element['#key_column'] = 'class_id';
-        $element['#title'] = '班級';
         if ($this->multiple) {
             $element['#type'] = 'checkboxes';
             $element['#attached']['library'] = array(
@@ -43,7 +42,7 @@ class ClassesDefaultWidget extends WidgetBase {
         if ($this->has_data) $element['#default_value'] = $value;
         $options = $this->getOptions();
         if (!$this->required) {
-            $options = array( '' => '--' ) + $options;
+            $options = array( '_none' => '--' ) + $options;
         }
         $element['#options'] = $options;
         $element['#ajax'] = array(
@@ -59,14 +58,18 @@ class ClassesDefaultWidget extends WidgetBase {
         if ($this->getFieldSetting('filter_by_grade') && $this->getFieldSetting('grade')) {
             $grades = explode(',', $this->getFieldSetting('grade'));
             foreach ($grades as $g) {
-                $classes = $classes + get_classes_of_grade($g);
+                foreach (get_classes_of_grade($g) as $c) {
+                    $classes[] = $c;
+                }
             }
         }
         $account = User::load(\Drupal::currentUser()->id());
         if ($account->get('init')->value == 'tpedu') {
-            if ($this->getFieldSetting('filter_by_current_user')) $classes = get_teach_classes($account->uuid);
+            if ($this->getFieldSetting('filter_by_current_user')) $classes = get_teach_classes($account->get('uuid')->value);
         }
         if (empty($classes)) $classes = all_classes();
+        usort($classes, function($a, $b) { return strcmp($a->id, $b->id); });
+        $options = array();
         foreach ($classes as $c) {
             $options[$c->id] = $c->name;
         }
