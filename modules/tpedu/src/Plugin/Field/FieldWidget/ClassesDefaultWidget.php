@@ -40,7 +40,7 @@ class ClassesDefaultWidget extends WidgetBase {
             $element['#attached']['library'] = array(
                 'tpedu/tpedu_fields',
             );
-            $this->display_inline($element, $value);
+            $this->display_inline($element);
         } else {
             $element['#type'] = 'select';
             $value = isset($items[$delta]->class_id) ? $items[$delta]->class_id : '';
@@ -79,6 +79,24 @@ class ClassesDefaultWidget extends WidgetBase {
         return $options;
     }
 
+    function display_inline($element) {
+        $inline = $this->getFieldSetting('inline_columns');
+        if (empty($inline) || $inline<2) return $element;
+        if (count($element['#options']) > 0) {
+            $column = 0;
+            foreach ($element['#options'] as $key => $choice) {
+                if ($key === 0) $key = '0';
+                $style = ($column % $inline) ? 'button-columns' : 'button-columns-clear';
+                if (isset($element[$key])) {
+                    $element[$key]['#prefix'] = '<div class="' . $style . '">';
+                    $element[$key]['#suffix'] = '</div>';
+                }
+                $column++;
+            }
+        }
+        return $element;
+    }
+
     protected function getStudentOptions(array $settings, $myclass) {
         $values = array();
         $students = array();
@@ -101,24 +119,6 @@ class ClassesDefaultWidget extends WidgetBase {
             }
         }
         return $values;
-    }
-
-    function display_inline($element) {
-        $inline = $this->getFieldSetting('inline_columns');
-        if (empty($inline) || $inline<2) return $element;
-        if (count($element['#options']) > 0) {
-            $column = 0;
-            foreach ($element['#options'] as $key => $choice) {
-                if ($key === 0) $key = '0';
-                $style = ($column % $inline) ? 'button-columns' : 'button-columns-clear';
-                if (isset($element[$key])) {
-                    $element[$key]['#prefix'] = '<div class="' . $style . '">';
-                    $element[$key]['#suffix'] = '</div>';
-                }
-                $column++;
-            }
-        }
-        return $element;
     }
 
     function reload_class_ajax_callback(array &$form, FormStateInterface $form_state) {
