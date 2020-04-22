@@ -10,4 +10,4 @@ configure: tpedu.config
 files:
   - tpedu.tokens.inc
 libraries:
-  - tpedu/tpedusso
+  - tpedu/tpedu_fields
