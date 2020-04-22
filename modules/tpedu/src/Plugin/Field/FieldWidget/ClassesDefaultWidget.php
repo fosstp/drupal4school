@@ -32,7 +32,7 @@ class ClassesDefaultWidget extends WidgetBase {
         $this->has_data = $value ? true : false;
         $element['#key_column'] = 'class_id';
         $element['#title'] = '班級';
-        if ($multiple) {
+        if ($this->multiple) {
             $element['#type'] = 'checkboxes';
             $element['#attached']['library'] = array(
                 'tpedu/tpedu_fields',
@@ -55,15 +55,15 @@ class ClassesDefaultWidget extends WidgetBase {
     protected function getOptions() {
         $classes = array();
         if ($this->getFieldSetting('filter_by_subject') && $this->getFieldSetting('subject'))
-        $classes = get_classes_of_subject($this->getFieldSetting('subject'));
+            $classes = get_classes_of_subject($this->getFieldSetting('subject'));
         if ($this->getFieldSetting('filter_by_grade') && $this->getFieldSetting('grade')) {
             $grades = explode(',', $this->getFieldSetting('grade'));
             foreach ($grades as $g) {
                 $classes = $classes + get_classes_of_grade($g);
             }
-        }    
+        }
         $account = User::load(\Drupal::currentUser()->id());
-        if ($account->init == 'tpedu') {
+        if ($account->get('init')->value == 'tpedu') {
             if ($this->getFieldSetting('filter_by_current_user')) $classes = get_teach_classes($account->uuid);
         }
         if (empty($classes)) $classes = all_classes();

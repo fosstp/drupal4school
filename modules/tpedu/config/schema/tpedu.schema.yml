@@ -60,7 +60,7 @@ field.field_settings.tpedu_classes:
         type: boolean
         label: '依使用者過濾班級'
       multiple:
-        type: integer
+        type: boolean
         label: '可複選'
       inline_columns:
         type: integer

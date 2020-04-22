@@ -371,10 +371,8 @@ function get_unit($ou) {
 }
 
 function get_teachers_of_unit($ou) {
-    $config = \Drupal::config('tpedu.settings');
-    $off = $config->get('refresh_days');
     $query = \Drupal::database()
-        ->query("select uuid from {tpedu_jobs} where dept_id='$ou' and fetch_date > DATE_SUB(NOW(), INTERVAL $off DAY)");
+        ->query("select uuid from {tpedu_jobs} where dept_id='$ou'");
     $data = $query->fetchAll();
     if (!$data) {
         all_teachers();
@@ -455,10 +453,8 @@ function get_role($ro) {
 }
 
 function get_teachers_of_role($ro) {
-    $config = \Drupal::config('tpedu.settings');
-    $off = $config->get('refresh_days');
     $query = \Drupal::database()
-        ->query("select uuid from {tpedu_jobs} where role_id='$ro' and fetch_date > DATE_SUB(NOW(), INTERVAL $off DAY)");
+        ->query("select uuid from {tpedu_jobs} where role_id='$ro'");
     $data = $query->fetchAll();
     if (!$data) {
         all_teachers();
@@ -534,10 +530,8 @@ function get_subject($sub) {
 }
 
 function get_teachers_of_subject($sub) {
-    $config = \Drupal::config('tpedu.settings');
-    $off = $config->get('refresh_days');
     $query = \Drupal::database()
-        ->query("select uuid from {tpedu_assignment} where subject_id='$sub' and fetch_date > DATE_SUB(NOW(), INTERVAL $off DAY)");
+        ->query("select uuid from {tpedu_assignment} where subject_id='$sub'");
     $data = $query->fetchAll();
     if (!$data) {
         all_teachers();
@@ -555,10 +549,8 @@ function get_teachers_of_subject($sub) {
 }
 
 function get_classes_of_subject($sub) {
-    $config = \Drupal::config('tpedu.settings');
-    $off = $config->get('refresh_days');
     $query = \Drupal::database()
-        ->query("select class_id from {tpedu_assignment} where subject_id='$sub' and fetch_date > DATE_SUB(NOW(), INTERVAL $off DAY)");
+        ->query("select class_id from {tpedu_assignment} where subject_id='$sub'");
     $data = $query->fetchAll();
     if (!$data) {
         all_teachers();
@@ -667,10 +659,8 @@ function one_class($ou) {
 }
 
 function get_teachers_of_class($cls) {
-    $config = \Drupal::config('tpedu.settings');
-    $off = $config->get('refresh_days');
     $query = \Drupal::database()
-        ->query("select uuid from {tpedu_assignment} where class_id='$cls' and fetch_date > DATE_SUB(NOW(), INTERVAL $off DAY)");
+        ->query("select uuid from {tpedu_assignment} where class_id='$cls'");
     $data = $query->fetchAll();
     if (!$data) {
         all_teachers();
@@ -701,10 +691,8 @@ function get_students_of_class($cls) {
 }
 
 function get_subjects_of_class($cls) {
-    $config = \Drupal::config('tpedu.settings');
-    $off = $config->get('refresh_days');
     $query = \Drupal::database()
-        ->query("select distinct subject_id from {tpedu_assignment} where class_id='$cls' and fetch_date > DATE_SUB(NOW(), INTERVAL $off DAY)");
+        ->query("select distinct subject_id from {tpedu_assignment} where class_id='$cls'");
     $data = $query->fetchAll();
     if (!$data) {
         all_teachers();
@@ -722,10 +710,8 @@ function get_subjects_of_class($cls) {
 }
 
 function get_teach_classes($uuid) {
-    $config = \Drupal::config('tpedu.settings');
-    $off = $config->get('refresh_days');
     $query = \Drupal::database()
-        ->query("select distinct class_id from {tpedu_assignment} where uuid='$uuid' and fetch_date > DATE_SUB(NOW(), INTERVAL $off DAY)");
+        ->query("select distinct class_id from {tpedu_assignment} where uuid='$uuid'");
     $data = $query->fetchAll();
     if (!$data) {
         all_teachers();
@@ -743,10 +729,8 @@ function get_teach_classes($uuid) {
 }
 
 function get_teach_subjects($uuid) {
-    $config = \Drupal::config('tpedu.settings');
-    $off = $config->get('refresh_days');
     $query = \Drupal::database()
-        ->query("select distinct subject_id from {tpedu_assignment} where uuid='$uuid' and fetch_date > DATE_SUB(NOW(), INTERVAL $off DAY)");
+        ->query("select distinct subject_id from {tpedu_assignment} where uuid='$uuid'");
     $data = $query->fetchAll();
     if (!$data) {
         all_teachers();
@@ -764,10 +748,8 @@ function get_teach_subjects($uuid) {
 }
 
 function get_teach_classes_of_subject($uuid, $sub) {
-    $config = \Drupal::config('tpedu.settings');
-    $off = $config->get('refresh_days');
     $query = \Drupal::database()
-        ->query("select distinct class_id from {tpedu_assignment} where uuid='$uuid' and subject_id='$sub' and fetch_date > DATE_SUB(NOW(), INTERVAL $off DAY)");
+        ->query("select distinct class_id from {tpedu_assignment} where uuid='$uuid' and subject_id='$sub'");
     $data = $query->fetchAll();
     if (!$data) {
         all_teachers();
@@ -785,10 +767,8 @@ function get_teach_classes_of_subject($uuid, $sub) {
 }
 
 function get_teach_subjects_of_class($uuid, $cls) {
-    $config = \Drupal::config('tpedu.settings');
-    $off = $config->get('refresh_days');
     $query = \Drupal::database()
-        ->query("select distinct subject_id from {tpedu_assignment} where uuid='$uuid' and class_id='$cls' and fetch_date > DATE_SUB(NOW(), INTERVAL $off DAY)");
+        ->query("select distinct subject_id from {tpedu_assignment} where uuid='$uuid' and class_id='$cls'");
     $data = $query->fetchAll();
     if (!$data) {
         all_teachers();
@@ -806,10 +786,8 @@ function get_teach_subjects_of_class($uuid, $cls) {
 }
 
 function get_teachers_by_assign($cls, $sub) {
-    $config = \Drupal::config('tpedu.settings');
-    $off = $config->get('refresh_days');
     $query = \Drupal::database()
-        ->query("select distinct uuid from {tpedu_assignment} where class_id='$cls' and subject_id='$sub' and fetch_date > DATE_SUB(NOW(), INTERVAL $off DAY)");
+        ->query("select distinct uuid from {tpedu_assignment} where class_id='$cls' and subject_id='$sub'");
     $data = $query->fetchAll();
     if (!$data) {
         all_teachers();
@@ -830,7 +808,7 @@ function get_assign_by_domain($cls, $dom) {
     $config = \Drupal::config('tpedu.settings');
     $off = $config->get('refresh_days');
     $query = \Drupal::database()
-        ->query("select * from {tpedu_assignment} a join {tpedu_subjects} b on a.subject_id=b.id where a.class_id='$cls' and b.domain='$dom' and fetch_date > DATE_SUB(NOW(), INTERVAL $off DAY)");
+        ->query("select * from {tpedu_assignment} a join {tpedu_subjects} b on a.subject_id=b.id where a.class_id='$cls' and b.domain='$dom' and b.fetch_date > DATE_SUB(NOW(), INTERVAL $off DAY)");
     $data = $query->fetchAll();
     if (!$data) {
         all_teachers();
