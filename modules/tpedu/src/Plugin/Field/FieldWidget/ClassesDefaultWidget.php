@@ -28,8 +28,6 @@ class ClassesDefaultWidget extends WidgetBase {
     public function formElement(FieldItemListInterface $items, $delta, array $element, array &$form, FormStateInterface $form_state) {
         $this->required = $element['#required'];
         $this->multiple = $this->getFieldSetting('multiple');
-        $value = isset($items[$delta]->class_id) ? $items[$delta]->class_id : '';
-        $this->has_data = $value ? true : false;
         $element['#key_column'] = 'class_id';
         if ($this->multiple) {
             $element['#type'] = 'checkboxes';
@@ -39,12 +37,13 @@ class ClassesDefaultWidget extends WidgetBase {
         } else {
             $element['#type'] = 'select';
         }
-        if ($this->has_data) $element['#default_value'] = $value;
         $options = $this->getOptions();
-        if (!$this->required) {
+        if (!$this->multiple && !$this->required) {
             $options = array( '_none' => '--' ) + $options;
         }
         $element['#options'] = $options;
+        $value = isset($items[$delta]->class_id) ? $items[$delta]->class_id : '';
+        if ($value) $element['#default_value'] = $value;
         $element['#ajax'] = array(
             'callback' => 'reload_class_ajax_callback',
         );
