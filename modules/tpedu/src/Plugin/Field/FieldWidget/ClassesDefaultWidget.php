@@ -46,10 +46,10 @@ class ClassesDefaultWidget extends WidgetBase {
             $value = isset($items[$delta]->class_id) ? $items[$delta]->class_id : '';
             if ($value) $element['#default_value'] = $value;
         }
-        if (!$this->multiple) {
+        if (!$this->multiple && $this->required) {
             $element['#ajax'] = array(
                 'callback' => 'reload_class_ajax_callback',
-            );    
+            );
         }
         return ['class_id' => $element];
     }
