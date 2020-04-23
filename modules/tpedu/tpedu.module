@@ -176,47 +176,52 @@ function tpedu_theme($existing, $type, $theme, $path) {
     ];
 }
 
-function tpedu_field_formatter_info_alter(&$info) {
-    $formatters = array(
-        'list_default' => array('tpedu_grade'),
-    );
-  
-    foreach ($formatters as $formatter => $field_types) {
-        $info[$formatter]['field types'] = array_merge($info[$formatter]['field types'], $field_types);
-    }
-}
-
 function tpedu_element_info_alter(array &$info) {
-    foreach ($info as $id => $element) {
-        if ($element['#type'] == 'link') {
-            if (empty($element['#title'])) $info[$id]['#title'] = $id;
-            if (empty($element['#attributes']['alt'])) $info[$id]['#attributes']['alt'] = $info[$id]['#title'];
+    if (isset($info['checkboxes'])) {
+        $types['checkboxes']['#attached']['library'][] = 'tpedu/tpedu_fields';
+    }
+    if (isset($info['link'])) {
+        if (empty($info['link']['#title'])) $info['link']['#title'] = 'link';
+        if (empty($info['link']['#attributes']['alt'])) $info['link']['#attributes']['alt'] = $info['link']['#title'];
+    }
+    if (isset($info['image_button'])) {
+        if (empty($info['image_button']['#attributes']['alt'])) $info['image_button']['#attributes']['alt'] = '排版用裝飾圖片';
+    }
+    if (isset($info['table'])) {
+        if (isset($info['table']['#caption'])) {
+            if (empty($info['table']['#attributes']['title'])) $info['table']['#attributes']['title'] = $caption;
+            if (empty($info['table']['#attributes']['summary'])) $info['table']['#attributes']['summary'] = $caption;
+        } else {
+            if (empty($info['table']['#attributes']['title'])) $info['table']['#attributes']['title'] = '排版用表格';
+            if (empty($info['table']['#attributes']['summary'])) $info['table']['#attributes']['summary'] = '排版用表格';
         }
-        if ($element['#type'] == 'image_button') {
-            if (empty($element['#attributes']['alt'])) $info[$id]['#attributes']['alt'] = '排版用裝飾圖片';
-        }        
-        if ($element['#type'] == 'table' || $element['#type'] == 'tableselect') {
-            if (isset($element['#caption'])) {
-                if (empty($element['#attributes']['title'])) $info[$id]['#attributes']['title'] = $caption;
-                if (empty($element['#attributes']['summary'])) $info[$id]['#attributes']['summary'] = $caption;
-            } else {
-                if (empty($element['#attributes']['title'])) $info[$id]['#attributes']['title'] = '排版用表格';
-                if (empty($element['#attributes']['summary'])) $info[$id]['#attributes']['summary'] = '排版用表格';
+        if (!empty($info['table']['#header'])) {
+            foreach ($info['table']['#header'] as $row) {
+                $info['table'][0][$row]['#attributes']['scope'] = $row;
             }
-            if (!empty($element['#header'])) {
-                foreach ($element['#header'] as $row) {
-                    $info[$id][0][$row]['#attributes']['scope'] = $row;
-                }
+        }
+    }
+    if (isset($info['tableselect'])) {
+        if (isset($info['tableselect']['#caption'])) {
+            if (empty($info['tableselect']['#attributes']['title'])) $info['tableselect']['#attributes']['title'] = $caption;
+            if (empty($info['tableselect']['#attributes']['summary'])) $info['tableselect']['#attributes']['summary'] = $caption;
+        } else {
+            if (empty($info['tableselect']['#attributes']['title'])) $info['tableselect']['#attributes']['title'] = '排版用表格';
+            if (empty($info['tableselect']['#attributes']['summary'])) $info['tableselect']['#attributes']['summary'] = '排版用表格';
+        }
+        if (!empty($info['tableselect']['#header'])) {
+            foreach ($info['tableselect']['#header'] as $row) {
+                $info['tableselect'][0][$row]['#attributes']['scope'] = $row;
             }
         }
-        if ($element['#type'] == 'html_tag' && isset($element['#tag']) && $element['#tag'] == 'img') {
-            if (empty($element['#attributes']['alt'])) $info[$id]['#attributes']['alt'] = '排版用裝飾圖片';
-        }
-        if ($element['#type'] == 'html_tag' && isset($element['#tag']) && $element['#tag'] == 'object') {
-            if (empty($element['#attributes']['alt'])) $info[$id]['#attributes']['alt'] = '多媒體互動物件';
-        }
-        if ($element['#type'] == 'html_tag' && isset($element['#tag']) && $element['#tag'] == 'applet') {
-            if (empty($element['#attributes']['alt'])) $info[$id]['#attributes']['alt'] = '多媒體互動物件';
-        }
+    }  
+    if (isset($info['html_tag']) && $info['html_tag']['#tag'] == 'img') {
+        if (empty($info['html_tag']['#attributes']['alt'])) $info['html_tag']['#attributes']['alt'] = '排版用裝飾圖片';
+    }
+    if (isset($info['html_tag']) && $info['html_tag']['#tag'] == 'object') {
+        if (empty($info['html_tag']['#attributes']['alt'])) $info['html_tag']['#attributes']['alt'] = '多媒體互動物件';
+    }
+    if (isset($info['html_tag']) && $info['html_tag']['#tag'] == 'applet') {
+        if (empty($info['html_tag']['#attributes']['alt'])) $info['html_tag']['#attributes']['alt'] = '多媒體互動物件';
     }
 }
