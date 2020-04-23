@@ -59,9 +59,6 @@ field.field_settings.tpedu_classes:
       filter by current user:
         type: boolean
         label: '依使用者過濾班級'
-      multiple:
-        type: boolean
-        label: '可複選'
       inline_columns:
         type: integer
         label: '一行顯示幾個選項'

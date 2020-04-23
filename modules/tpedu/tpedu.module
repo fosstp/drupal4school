@@ -177,9 +177,6 @@ function tpedu_theme($existing, $type, $theme, $path) {
 }
 
 function tpedu_element_info_alter(array &$info) {
-    if (isset($info['checkboxes'])) {
-        $types['checkboxes']['#attached']['library'][] = 'tpedu/tpedu_fields';
-    }
     if (isset($info['link'])) {
         if (empty($info['link']['#title'])) $info['link']['#title'] = 'link';
         if (empty($info['link']['#attributes']['alt'])) $info['link']['#attributes']['alt'] = $info['link']['#title'];

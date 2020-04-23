@@ -21,13 +21,67 @@ use Drupal\user\Entity\User;
  */
 class ClassesDefaultWidget extends WidgetBase { 
 
-    protected function handlesMultipleValues() {
-        return $this->getFieldSetting('multiple');
+    public function form(FieldItemListInterface $items, array &$form, FormStateInterface $form_state, $get_delta = NULL) {
+        $field_name = $this->fieldDefinition->getName();
+        $parents = $form['#parents'];
+    
+        // Store field information in $form_state.
+        if (!static::getWidgetState($parents, $field_name, $form_state)) {
+          $field_state = array(
+            'items_count' => count($items),
+            'array_parents' => array(),
+          );
+          static::setWidgetState($parents, $field_name, $form_state, $field_state);
+        }
+    
+        // Collect widget elements.
+        $elements = array();
+        $delta = isset($get_delta) ? $get_delta : 0;
+        $element = array(
+            '#title' => $this->fieldDefinition->getLabel(),
+            '#description' => FieldFilteredMarkup::create(\Drupal::token()->replace($this->fieldDefinition->getDescription())),
+        );
+        $element = $this->formSingleElement($items, $delta, $element, $form, $form_state);
+        if ($element) {
+            if (isset($get_delta)) {
+                $elements[$delta] = $element;
+            } else {
+                $elements = $element;
+            }
+        }
+        $elements['#after_build'][] = array(
+            get_class($this),
+            'afterBuild',
+        );
+        $elements['#field_name'] = $field_name;
+        $elements['#field_parents'] = $parents;
+        $elements['#parents'] = array_merge($parents, array(
+            $field_name,
+        ));
+    
+        // Most widgets need their internal structure preserved in submitted values.
+        $elements += array(
+            '#tree' => TRUE,
+        );
+        return array(
+            '#type' => 'container',
+            '#parents' => array_merge($parents, array(
+                $field_name . '_wrapper',
+            )),
+            '#attributes' => array(
+                'class' => array(
+                    'field--type-' . Html::getClass($this->fieldDefinition->getType()),
+                    'field--name-' . Html::getClass($field_name),
+                    'field--widget-' . Html::getClass($this->getPluginId()),
+                ),
+            ),
+            'widget' => $elements,
+        );
     }
 
     public function formElement(FieldItemListInterface $items, $delta, array $element, array &$form, FormStateInterface $form_state) {
         $this->required = $element['#required'];
-        $this->multiple = $this->getFieldSetting('multiple');
+        $this->multiple = $this->fieldDefinition->isMultiple();
         $element['#key_column'] = 'class_id';
         $options = $this->getOptions();
         $element['#options'] = $options;
@@ -37,9 +91,6 @@ class ClassesDefaultWidget extends WidgetBase {
         }
         if ($this->multiple) {
             $element['#type'] = 'checkboxes';
-            $element['#attached']['library'] = array(
-                'tpedu/tpedu_fields',
-            );
             $this->display_inline($element);
         } else {
             $element['#type'] = 'select';
@@ -79,18 +130,17 @@ class ClassesDefaultWidget extends WidgetBase {
         return $options;
     }
 
-    function display_inline($element) {
+    function display_inline(array &$element) {
         $inline = $this->getFieldSetting('inline_columns');
         if (empty($inline) || $inline<2) return $element;
         if (count($element['#options']) > 0) {
+            $element['#attached']['library'][] = 'tpedu/tpedu_fields';
             $column = 0;
             foreach ($element['#options'] as $key => $choice) {
                 if ($key === 0) $key = '0';
                 $style = ($column % $inline) ? 'button-columns' : 'button-columns-clear';
-                if (isset($element[$key])) {
-                    $element[$key]['#prefix'] = '<div class="' . $style . '">';
-                    $element[$key]['#suffix'] = '</div>';
-                }
+                $element[$key]['#prefix'] = '<div class="' . $style . '">';
+                $element[$key]['#suffix'] = '</div>';
                 $column++;
             }
         }
