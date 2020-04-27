@@ -43,7 +43,7 @@ class ClassesDefaultWidget extends WidgetBase {
             '#title' => $this->fieldDefinition->getLabel(),
             '#description' => FieldFilteredMarkup::create(\Drupal::token()->replace($this->fieldDefinition->getDescription())),
         );
-        $element = $this->formSingleElement($items, $delta, $element, $form, $form_state);
+        $element = $this->formElement($items, $delta, $element, $form, $form_state);
         if ($element) {
             if (isset($get_delta)) {
                 $elements[$delta] = $element;
@@ -82,7 +82,6 @@ class ClassesDefaultWidget extends WidgetBase {
     }
 
     public function formElement(FieldItemListInterface $items, $delta, array $element, array &$form, FormStateInterface $form_state) {
-        $element['#field_parents'] = $form['#parents'];
         $element['#delta'] = $delta;
         $element['#weight'] = $delta;
         $element['#key_column'] = 'class_id';
@@ -107,11 +106,9 @@ class ClassesDefaultWidget extends WidgetBase {
             if ($value) $element['#default_value'] = $value;
         }
         if (!$this->multiple && $this->required) {
-            $element['#ajax'] = array(
-                'callback' => 'reload_class_ajax_callback',
-            );
+            $element['#ajax']['callback'][] = 'reload_class_ajax_callback';
         }
-        return ['class_id' => $element];
+        return $element;
     }
 
     protected function getOptions() {

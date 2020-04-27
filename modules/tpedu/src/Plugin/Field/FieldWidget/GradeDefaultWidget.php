@@ -22,28 +22,24 @@ class GradeDefaultWidget extends WidgetBase {
 
     public function formElement(FieldItemListInterface $items, $delta, array $element, array &$form, FormStateInterface $form_state) {
         $this->required = $element['#required'];
-        $this->multiple = $this->fieldDefinition
-            ->getFieldStorageDefinition()
-            ->isMultiple();
+        $cardinality = $this->fieldDefinition->getFieldStorageDefinition()->getCardinality();
+        $this->multiple = ($cardinality == -1 || $cardinality > 1) ? true : false;
         $this->has_value = isset($items[0]->grade);
         $element['#key_column'] = 'grade';
         $element['#title'] = '年級';
         if ($this->multiple) {
             $element['#type'] = 'checkboxes';
+            $this->display_inline($element);
         } else {
             $element['#type'] = 'select';
+            if (! $this->required) {
+                $element['#empty_option'] = '--';
+                $element['#empty_value'] = '';
+            } else {
+                $element['#ajax']['callback'][] = 'reload_grade_ajax_callback';
+            }
         }
-        if (!isset($this->options)) $this->getOptions();
-        if (! $this->required) {
-            $this->options = array( '' => '--' ) + $this->options;
-        }
-        $element['#options'] = $this->options;
-        $element['#attached']['library'] = array(
-            'tpedu/tpedu_fields',
-        );
-        $element['#ajax'] = array(
-            'callback' => 'reload_grade_ajax_callback',
-        );
+        $element['#options'] = $this->getOptions();
         return $element;
     }
 
@@ -59,33 +55,36 @@ class GradeDefaultWidget extends WidgetBase {
     }
 
     protected function getClassesOptions(array $settings = [], $grade = null) {
-        $values = array();
+        $options = array();
         $classes = array();
-        if ($account->init == 'tpedu') {
-            if ($settings['filter_by_grade'] && $grade) {
-                $grades = explode(',', $grade);
-                foreach ($grades as $g) {
-                    $classes = $classes + get_classes_of_grade($g);
-                }
-                foreach ($classes as $c) {
-                    $values[$c->id] = $c->name;
+        if ($settings['filter_by_grade'] && $grade) {
+            $grades = explode(',', $grade);
+            foreach ($grades as $g) {
+                foreach (get_classes_of_grade($g) as $c) {
+                    $classes[] = $c;
                 }
             }
-        }    
-        return $values;
+            usort($classes, function($a, $b) { return strcmp($a->id, $b->id); });
+            foreach ($classes as $c) {
+                $options[$c->id] = $c->name;
+            }
+        }
+        return $options;
     }
 
-    function display_inline($element) {
-        if (count($element ['#options']) > 0) {
+    function display_inline(array &$element) {
+        $inline = $this->getFieldSetting('inline_columns');
+        if (empty($inline) || $inline<2) return $element;
+        if (count($element['#options']) > 0) {
+            $element['#attached']['library'][] = 'tpedu/tpedu_fields';
             $column = 0;
-            foreach ($element ['#options'] as $key => $choice) {
+            foreach ($element['#options'] as $key => $choice) {
                 if ($key === 0) $key = '0';
-                if (isset($element[$key])) {
-                    $element[$key]['#prefix'] = '<div class="button-columns">';
-                    $element[$key]['#suffix'] = '</div>';
-                }
+                $style = ($column % $inline) ? 'button-columns' : 'button-columns-clear';
+                $element[$key]['#prefix'] = '<div class="' . $style . '">';
+                $element[$key]['#suffix'] = '</div>';
+                $column++;
             }
-            $element[$key]['#prefix'] = '<div class="button-columns-clear">';
         }
         return $element;
     }
