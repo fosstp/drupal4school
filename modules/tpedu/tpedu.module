@@ -212,13 +212,13 @@ function tpedu_element_info_alter(array &$info) {
             }
         }
     }  
-    if (isset($info['html_tag']) && $info['html_tag']['#tag'] == 'img') {
+    if (isset($info['html_tag']) && isset($info['html_tag']['#tag']) && $info['html_tag']['#tag'] == 'img') {
         if (empty($info['html_tag']['#attributes']['alt'])) $info['html_tag']['#attributes']['alt'] = '排版用裝飾圖片';
     }
-    if (isset($info['html_tag']) && $info['html_tag']['#tag'] == 'object') {
+    if (isset($info['html_tag']) && isset($info['html_tag']['#tag']) && $info['html_tag']['#tag'] == 'object') {
         if (empty($info['html_tag']['#attributes']['alt'])) $info['html_tag']['#attributes']['alt'] = '多媒體互動物件';
     }
-    if (isset($info['html_tag']) && $info['html_tag']['#tag'] == 'applet') {
+    if (isset($info['html_tag']) && isset($info['html_tag']['#tag']) && $info['html_tag']['#tag'] == 'applet') {
         if (empty($info['html_tag']['#attributes']['alt'])) $info['html_tag']['#attributes']['alt'] = '多媒體互動物件';
     }
 }
