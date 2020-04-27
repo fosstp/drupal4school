@@ -2,6 +2,8 @@
 
 namespace Drupal\tpedu\Plugin\Field\FieldWidget;
 
+use Drupal\Component\Utility\Html;
+use Drupal\Core\Field\FieldFilteredMarkup;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Field\WidgetBase;
 use Drupal\Core\Form\FormStateInterface;
@@ -80,14 +82,21 @@ class ClassesDefaultWidget extends WidgetBase {
     }
 
     public function formElement(FieldItemListInterface $items, $delta, array $element, array &$form, FormStateInterface $form_state) {
-        $this->required = $element['#required'];
-        $this->multiple = $this->fieldDefinition->isMultiple();
+        $element['#field_parents'] = $form['#parents'];
+        $element['#delta'] = $delta;
+        $element['#weight'] = $delta;
         $element['#key_column'] = 'class_id';
         $options = $this->getOptions();
         $element['#options'] = $options;
+        $this->required = $this->fieldDefinition->isRequired();
+        $cardinality = $this->fieldDefinition->getFieldStorageDefinition()->getCardinality();
+        $this->multiple = ($cardinality == -1 || $cardinality > 1) ? true : false;
         if (!$this->multiple && !$this->required) {
             $element['#empty_option'] = '--';
             $element['#empty_value'] = '';
+            $element['#required'] = false;
+        } else {
+            $element['#required'] = true;
         }
         if ($this->multiple) {
             $element['#type'] = 'checkboxes';
