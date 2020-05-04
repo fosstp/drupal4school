@@ -5,7 +5,6 @@ namespace Drupal\tpedu\Plugin\Field\FieldType;
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
 use Drupal\Core\TypedData\DataDefinition;
 use Drupal\Core\Field\FieldItemBase;
-use Drupal\Core\Session\AccountInterface;
 
 /**
  * Plugin implementation of the 'tpedu_classes' field type.
@@ -19,9 +18,10 @@ use Drupal\Core\Session\AccountInterface;
  *   default_formatter = "list_default"
  * )
  */
-class Grade extends FieldItemBase {
-
-    public static function schema(FieldStorageDefinitionInterface $field) {
+class Grade extends FieldItemBase
+{
+    public static function schema(FieldStorageDefinitionInterface $field)
+    {
         return array(
           'columns' => array(
             'grade' => array(
@@ -33,13 +33,15 @@ class Grade extends FieldItemBase {
         );
     }
 
-    public function isEmpty() {
+    public function isEmpty()
+    {
         return empty($this->get('grade')->value);
     }
 
-    public static function propertyDefinitions(FieldStorageDefinitionInterface $field_definition) {
+    public static function propertyDefinitions(FieldStorageDefinitionInterface $field_definition)
+    {
         $properties['grade'] = DataDefinition::create('string')->setLabel('年級');
+
         return $properties;
     }
-
 }

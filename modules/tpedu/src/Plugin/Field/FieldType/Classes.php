@@ -5,7 +5,6 @@ namespace Drupal\tpedu\Plugin\Field\FieldType;
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
 use Drupal\Core\TypedData\DataDefinition;
 use Drupal\Core\Field\FieldItemBase;
-use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Form\FormStateInterface;
 
 /**
@@ -20,9 +19,10 @@ use Drupal\Core\Form\FormStateInterface;
  *   default_formatter = "classes_default"
  * )
  */
-class Classes extends FieldItemBase {
-
-    public static function schema(FieldStorageDefinitionInterface $field) {
+class Classes extends FieldItemBase
+{
+    public static function schema(FieldStorageDefinitionInterface $field)
+    {
         return array(
           'columns' => array(
             'class_id' => array(
@@ -34,16 +34,20 @@ class Classes extends FieldItemBase {
         );
     }
 
-    public function isEmpty() {
+    public function isEmpty()
+    {
         return empty($this->get('class_id')->getValue());
     }
 
-    public static function propertyDefinitions(FieldStorageDefinitionInterface $field_definition) {
+    public static function propertyDefinitions(FieldStorageDefinitionInterface $field_definition)
+    {
         $properties['class_id'] = DataDefinition::create('string')->setLabel('班級代號');
+
         return $properties;
     }
 
-    public static function defaultFieldSettings() {
+    public static function defaultFieldSettings()
+    {
         return [
             'filter_by_current_user' => false,
             'filter_by_grade' => false,
@@ -54,7 +58,8 @@ class Classes extends FieldItemBase {
         ] + parent::defaultFieldSettings();
     }
 
-    public function fieldSettingsForm(array $form, FormStateInterface $form_state) {
+    public function fieldSettingsForm(array $form, FormStateInterface $form_state)
+    {
         $element = array();
         $element['filter_by_current_user'] = array(
             '#type' => 'checkbox',
@@ -80,7 +85,7 @@ class Classes extends FieldItemBase {
             '#description' => '若勾選，僅顯示指定科目的所有已配課班級。',
             '#default_value' => $this->getSetting('filter_by_subject'),
         );
-        $values = array( '' => '--' );
+        $values = array('' => '--');
         $subjects = all_subjects();
         foreach ($subjects as $s) {
             $values[$s->id] = $s->name;
@@ -100,7 +105,7 @@ class Classes extends FieldItemBase {
             '#description' => '當使用核取框（複選）時，您可以指定每一行要顯示的欄位數量。',
             '#default_value' => $this->getSetting('inline_columns'),
         );
+
         return $element;
     }
-
 }

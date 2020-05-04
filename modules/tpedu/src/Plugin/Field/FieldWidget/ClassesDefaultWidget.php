@@ -7,7 +7,6 @@ use Drupal\Core\Field\FieldFilteredMarkup;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Field\WidgetBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Entity\FieldableEntityInterface;
 use Drupal\user\Entity\User;
 
 /**
@@ -21,21 +20,22 @@ use Drupal\user\Entity\User;
  *   }
  * )
  */
-class ClassesDefaultWidget extends WidgetBase { 
-
-    public function form(FieldItemListInterface $items, array &$form, FormStateInterface $form_state, $get_delta = NULL) {
+class ClassesDefaultWidget extends WidgetBase
+{
+    public function form(FieldItemListInterface $items, array &$form, FormStateInterface $form_state, $get_delta = null)
+    {
         $field_name = $this->fieldDefinition->getName();
         $parents = $form['#parents'];
-    
+
         // Store field information in $form_state.
         if (!static::getWidgetState($parents, $field_name, $form_state)) {
-          $field_state = array(
+            $field_state = array(
             'items_count' => count($items),
             'array_parents' => array(),
           );
-          static::setWidgetState($parents, $field_name, $form_state, $field_state);
+            static::setWidgetState($parents, $field_name, $form_state, $field_state);
         }
-    
+
         // Collect widget elements.
         $elements = array();
         $delta = isset($get_delta) ? $get_delta : 0;
@@ -60,28 +60,30 @@ class ClassesDefaultWidget extends WidgetBase {
         $elements['#parents'] = array_merge($parents, array(
             $field_name,
         ));
-    
+
         // Most widgets need their internal structure preserved in submitted values.
         $elements += array(
-            '#tree' => TRUE,
+            '#tree' => true,
         );
+
         return array(
             '#type' => 'container',
             '#parents' => array_merge($parents, array(
-                $field_name . '_wrapper',
+                $field_name.'_wrapper',
             )),
             '#attributes' => array(
                 'class' => array(
-                    'field--type-' . Html::getClass($this->fieldDefinition->getType()),
-                    'field--name-' . Html::getClass($field_name),
-                    'field--widget-' . Html::getClass($this->getPluginId()),
+                    'field--type-'.Html::getClass($this->fieldDefinition->getType()),
+                    'field--name-'.Html::getClass($field_name),
+                    'field--widget-'.Html::getClass($this->getPluginId()),
                 ),
             ),
             'widget' => $elements,
         );
     }
 
-    public function formElement(FieldItemListInterface $items, $delta, array $element, array &$form, FormStateInterface $form_state) {
+    public function formElement(FieldItemListInterface $items, $delta, array $element, array &$form, FormStateInterface $form_state)
+    {
         $element['#delta'] = $delta;
         $element['#weight'] = $delta;
         $element['#key_column'] = 'class_id';
@@ -103,18 +105,23 @@ class ClassesDefaultWidget extends WidgetBase {
         } else {
             $element['#type'] = 'select';
             $value = isset($items[$delta]->class_id) ? $items[$delta]->class_id : '';
-            if ($value) $element['#default_value'] = $value;
+            if ($value) {
+                $element['#default_value'] = $value;
+            }
         }
         if (!$this->multiple && $this->required) {
             $element['#ajax']['callback'][] = 'reload_class_ajax_callback';
         }
+
         return $element;
     }
 
-    protected function getOptions() {
+    protected function getOptions()
+    {
         $classes = array();
-        if ($this->getFieldSetting('filter_by_subject') && $this->getFieldSetting('subject'))
+        if ($this->getFieldSetting('filter_by_subject') && $this->getFieldSetting('subject')) {
             $classes = get_classes_of_subject($this->getFieldSetting('subject'));
+        }
         if ($this->getFieldSetting('filter_by_grade') && $this->getFieldSetting('grade')) {
             $grades = explode(',', $this->getFieldSetting('grade'));
             foreach ($grades as $g) {
@@ -125,59 +132,75 @@ class ClassesDefaultWidget extends WidgetBase {
         }
         $account = User::load(\Drupal::currentUser()->id());
         if ($account->get('init')->value == 'tpedu') {
-            if ($this->getFieldSetting('filter_by_current_user')) $classes = get_teach_classes($account->get('uuid')->value);
+            if ($this->getFieldSetting('filter_by_current_user')) {
+                $classes = get_teach_classes($account->get('uuid')->value);
+            }
         }
-        if (empty($classes)) $classes = all_classes();
-        usort($classes, function($a, $b) { return strcmp($a->id, $b->id); });
+        if (empty($classes)) {
+            $classes = all_classes();
+        }
+        usort($classes, function ($a, $b) { return strcmp($a->id, $b->id); });
         $options = array();
         foreach ($classes as $c) {
             $options[$c->id] = $c->name;
         }
+
         return $options;
     }
 
-    function display_inline(array &$element) {
+    public function display_inline(array &$element)
+    {
         $inline = $this->getFieldSetting('inline_columns');
-        if (empty($inline) || $inline<2) return $element;
+        if (empty($inline) || $inline < 2) {
+            return $element;
+        }
         if (count($element['#options']) > 0) {
             $element['#attached']['library'][] = 'tpedu/tpedu_fields';
             $column = 0;
             foreach ($element['#options'] as $key => $choice) {
-                if ($key === 0) $key = '0';
+                if ($key === 0) {
+                    $key = '0';
+                }
                 $style = ($column % $inline) ? 'button-columns' : 'button-columns-clear';
-                $element[$key]['#prefix'] = '<div class="' . $style . '">';
+                $element[$key]['#prefix'] = '<div class="'.$style.'">';
                 $element[$key]['#suffix'] = '</div>';
-                $column++;
+                ++$column;
             }
         }
+
         return $element;
     }
 
-    protected function getStudentOptions(array $settings, $myclass) {
+    protected function getStudentOptions(array $settings, $myclass)
+    {
         $values = array();
         $students = array();
         if ($settings['filter_by_class']) {
             $students = get_students_of_class($myclass);
             foreach ($students as $s) {
-                $values[$s->id] = $s->seat . ' ' . $s->realname;
+                $values[$s->id] = $s->seat.' '.$s->realname;
             }
         }
+
         return $values;
     }
 
-    protected function getTeacherOptions(array $settings, $myclass) {
+    protected function getTeacherOptions(array $settings, $myclass)
+    {
         $values = array();
         $teachers = array();
         if ($settings['filter_by_class']) {
             $teachers = get_teachers_of_class($myclass);
             foreach ($teachers as $t) {
-                $values[$t->id] = $t->role_name . ' ' . $t->realname;
+                $values[$t->id] = $t->role_name.' '.$t->realname;
             }
         }
+
         return $values;
     }
 
-    function reload_class_ajax_callback(array &$form, FormStateInterface $form_state) {
+    public function reload_class_ajax_callback(array &$form, FormStateInterface $form_state)
+    {
         $commands = array();
         $element = $form_state['triggering_element'];
         $field_name = $element['#field_name'];
@@ -201,10 +224,11 @@ class ClassesDefaultWidget extends WidgetBase {
                     foreach ($my_element['#options'] as $key => $value) {
                         unset($my_element[$key]);
                     }
-                    if ($my_field['type'] == 'tpedu_students')
+                    if ($my_field['type'] == 'tpedu_students') {
                         $options = $this->getStudentOptions($my_instance['settings'], $current);
-                    else
+                    } else {
                         $options = $this->getTeacherOptions($my_instance['settings'], $current);
+                    }
                     if ($my_element['#properties']['empty_option']) {
                         $label = theme('options_none', array('instance' => $my_instance, 'option' => $my_element['#properties']['empty_option']));
                         $options = array('_none' => $label) + $options;
@@ -235,12 +259,12 @@ class ClassesDefaultWidget extends WidgetBase {
                         }
                         $my_element = display_inline($my_element);
                     }
-                    $element_id = 'edit-' . str_replace('_', '-', $my_field_name);
+                    $element_id = 'edit-'.str_replace('_', '-', $my_field_name);
                     $commands[] = ajax_command_replace("#$element_id div", drupal_render($my_element));
                 }
             }
         }
+
         return array('#type' => 'ajax', '#commands' => $commands);
     }
-
 }

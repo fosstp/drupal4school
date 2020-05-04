@@ -18,9 +18,10 @@ use Drupal\Core\Entity\FieldableEntityInterface;
  *   }
  * )
  */
-class GradeDefaultWidget extends WidgetBase { 
-
-    public function formElement(FieldItemListInterface $items, $delta, array $element, array &$form, FormStateInterface $form_state) {
+class GradeDefaultWidget extends WidgetBase
+{
+    public function formElement(FieldItemListInterface $items, $delta, array $element, array &$form, FormStateInterface $form_state)
+    {
         $this->required = $element['#required'];
         $cardinality = $this->fieldDefinition->getFieldStorageDefinition()->getCardinality();
         $this->multiple = ($cardinality == -1 || $cardinality > 1) ? true : false;
@@ -32,7 +33,7 @@ class GradeDefaultWidget extends WidgetBase {
             $this->display_inline($element);
         } else {
             $element['#type'] = 'select';
-            if (! $this->required) {
+            if (!$this->required) {
                 $element['#empty_option'] = '--';
                 $element['#empty_value'] = '';
             } else {
@@ -40,21 +41,25 @@ class GradeDefaultWidget extends WidgetBase {
             }
         }
         $element['#options'] = $this->getOptions();
+
         return $element;
     }
 
-    protected function getOptions(FieldableEntityInterface $entity = null) {
+    protected function getOptions(FieldableEntityInterface $entity = null)
+    {
         if (!isset($this->options)) {
             $grades = all_grade();
             foreach ($grades as $g) {
-                $options[$g->grade] = $g->grade . '年級';
+                $options[$g->grade] = $g->grade.'年級';
             }
             $this->options = $options;
         }
+
         return $this->options;
     }
 
-    protected function getClassesOptions(array $settings = [], $grade = null) {
+    protected function getClassesOptions(array $settings = [], $grade = null)
+    {
         $options = array();
         $classes = array();
         if ($settings['filter_by_grade'] && $grade) {
@@ -64,32 +69,40 @@ class GradeDefaultWidget extends WidgetBase {
                     $classes[] = $c;
                 }
             }
-            usort($classes, function($a, $b) { return strcmp($a->id, $b->id); });
+            usort($classes, function ($a, $b) { return strcmp($a->id, $b->id); });
             foreach ($classes as $c) {
                 $options[$c->id] = $c->name;
             }
         }
+
         return $options;
     }
 
-    function display_inline(array &$element) {
+    public function display_inline(array &$element)
+    {
         $inline = $this->getFieldSetting('inline_columns');
-        if (empty($inline) || $inline<2) return $element;
+        if (empty($inline) || $inline < 2) {
+            return $element;
+        }
         if (count($element['#options']) > 0) {
             $element['#attached']['library'][] = 'tpedu/tpedu_fields';
             $column = 0;
             foreach ($element['#options'] as $key => $choice) {
-                if ($key === 0) $key = '0';
+                if ($key === 0) {
+                    $key = '0';
+                }
                 $style = ($column % $inline) ? 'button-columns' : 'button-columns-clear';
-                $element[$key]['#prefix'] = '<div class="' . $style . '">';
+                $element[$key]['#prefix'] = '<div class="'.$style.'">';
                 $element[$key]['#suffix'] = '</div>';
-                $column++;
+                ++$column;
             }
         }
+
         return $element;
     }
 
-    function reload_grade_ajax_callback($form, $form_state) {
+    public function reload_grade_ajax_callback($form, $form_state)
+    {
         $commands = array();
         $element = $form_state['triggering_element'];
         $field_name = $element['#field_name'];
@@ -143,12 +156,12 @@ class GradeDefaultWidget extends WidgetBase {
                         }
                         $my_element = display_inline($my_element);
                     }
-                    $element_id = 'edit-' . str_replace('_', '-', $my_field_name);
+                    $element_id = 'edit-'.str_replace('_', '-', $my_field_name);
                     $commands[] = ajax_command_replace("#$element_id div", drupal_render($my_element));
                 }
             }
         }
+
         return array('#type' => 'ajax', '#commands' => $commands);
     }
-
 }

@@ -1,35 +1,38 @@
 <?php
 
-function tpedu_install() {
-  $user_settings = \Drupal::configFactory()->getEditable('user.settings');
-  $user_settings->set('register', USER_REGISTER_ADMINISTRATORS_ONLY)->save(true);
+function tpedu_install()
+{
+    $user_settings = \Drupal::configFactory()->getEditable('user.settings');
+    $user_settings->set('register', USER_REGISTER_ADMINISTRATORS_ONLY)->save(true);
 }
 
-function tpedu_uninstall() {
-  $schema = \Drupal::database()->schema();
-  $schema->dropTable('tpedu_units');
-  $schema->dropTable('tpedu_roles');
-  $schema->dropTable('tpedu_classes');
-  $schema->dropTable('tpedu_subjects');
-  $schema->dropTable('tpedu_people');
-  $schema->dropTable('tpedu_jobs');
-  $schema->dropTable('tpedu_assignment');
+function tpedu_uninstall()
+{
+    $schema = \Drupal::database()->schema();
+    $schema->dropTable('tpedu_units');
+    $schema->dropTable('tpedu_roles');
+    $schema->dropTable('tpedu_classes');
+    $schema->dropTable('tpedu_subjects');
+    $schema->dropTable('tpedu_people');
+    $schema->dropTable('tpedu_jobs');
+    $schema->dropTable('tpedu_assignment');
 }
 
-function tpedu_schema() {
-  $schema['tpedu_units'] = array(
+function tpedu_schema()
+{
+    $schema['tpedu_units'] = array(
     'description' => '行政部門資料表',
     'fields' => array(
       'id' => array(
         'type' => 'varchar',
         'length' => 50,
-        'not null' => TRUE,
+        'not null' => true,
         'description' => '部門代號',
       ),
       'name' => array(
         'type' => 'varchar',
         'length' => 50,
-        'not null' => TRUE,
+        'not null' => true,
         'description' => '部門名稱',
       ),
       'fetch_date' => array(
@@ -42,25 +45,25 @@ function tpedu_schema() {
     'primary key' => array('id'),
   );
 
-  $schema['tpedu_roles'] = array(
+    $schema['tpedu_roles'] = array(
     'description' => '職稱資料表',
     'fields' => array(
       'id' => array(
         'type' => 'varchar',
         'length' => 50,
-        'not null' => TRUE,
+        'not null' => true,
         'description' => '職稱代號',
       ),
       'unit' => array(
         'type' => 'varchar',
         'length' => 50,
-        'not null' => TRUE,
+        'not null' => true,
         'description' => '部門代號',
       ),
       'name' => array(
         'type' => 'varchar',
         'length' => 50,
-        'not null' => TRUE,
+        'not null' => true,
         'description' => '職稱',
       ),
       'fetch_date' => array(
@@ -75,26 +78,26 @@ function tpedu_schema() {
       'unit' => array('unit'),
     ),
   );
-  
-  $schema['tpedu_classes'] = array(
+
+    $schema['tpedu_classes'] = array(
     'description' => '班級資料表',
     'fields' => array(
       'id' => array(
         'type' => 'varchar',
         'length' => 50,
-        'not null' => TRUE,
+        'not null' => true,
         'description' => '班級代號',
       ),
       'grade' => array(
         'type' => 'varchar',
         'length' => 50,
-        'not null' => TRUE,
+        'not null' => true,
         'description' => '年級',
       ),
       'name' => array(
         'type' => 'varchar',
         'length' => 50,
-        'not null' => TRUE,
+        'not null' => true,
         'description' => '班級名稱',
       ),
       'tutor' => array(
@@ -115,26 +118,26 @@ function tpedu_schema() {
       'tutor' => array('tutor'),
     ),
   );
-  
-  $schema['tpedu_subjects'] = array(
+
+    $schema['tpedu_subjects'] = array(
     'description' => '教學科目資料表',
     'fields' => array(
       'id' => array(
         'type' => 'varchar',
         'length' => 50,
-        'not null' => TRUE,
+        'not null' => true,
         'description' => '科目代號',
       ),
       'domain' => array(
         'type' => 'varchar',
         'length' => 50,
-        'not null' => TRUE,
+        'not null' => true,
         'description' => '課程領域',
       ),
       'name' => array(
         'type' => 'varchar',
         'length' => 50,
-        'not null' => TRUE,
+        'not null' => true,
         'description' => '科目名稱',
       ),
       'fetch_date' => array(
@@ -149,26 +152,26 @@ function tpedu_schema() {
       'domain' => array('domain'),
     ),
   );
-  
-  $schema['tpedu_people'] = array(
+
+    $schema['tpedu_people'] = array(
     'description' => '教育人員資料表',
     'fields' => array(
       'uuid' => array(
         'type' => 'varchar',
         'length' => 36,
-        'not null' => TRUE,
+        'not null' => true,
         'description' => '人員代號',
       ),
       'idno' => array(
         'type' => 'varchar',
         'length' => 10,
-        'not null' => TRUE,
-        'description' => "身分證字號",
+        'not null' => true,
+        'description' => '身分證字號',
       ),
       'id' => array(
         'type' => 'int',
-        'not null' => TRUE,
-        'unsigned' => TRUE,
+        'not null' => true,
+        'unsigned' => true,
         'description' => '教務行政系統使用者編號',
       ),
       'student' => array(
@@ -271,25 +274,25 @@ function tpedu_schema() {
     ),
   );
 
-  $schema['tpedu_jobs'] = array(
+    $schema['tpedu_jobs'] = array(
     'description' => '職務分派資料表',
     'fields' => array(
       'uuid' => array(
         'type' => 'varchar',
         'length' => 36,
-        'not null' => TRUE,
+        'not null' => true,
         'description' => '人員代號',
       ),
       'dept_id' => array(
         'type' => 'varchar',
         'length' => 50,
-        'not null' => TRUE,
+        'not null' => true,
         'description' => '部門代號',
       ),
       'role_id' => array(
         'type' => 'varchar',
         'length' => 50,
-        'not null' => TRUE,
+        'not null' => true,
         'description' => '職稱代號',
       ),
     ),
@@ -300,25 +303,25 @@ function tpedu_schema() {
     ),
   );
 
-  $schema['tpedu_assignment'] = array(
+    $schema['tpedu_assignment'] = array(
     'description' => '配課資料表',
     'fields' => array(
       'uuid' => array(
         'type' => 'varchar',
         'length' => 36,
-        'not null' => TRUE,
+        'not null' => true,
         'description' => '人員代號',
       ),
       'class_id' => array(
         'type' => 'varchar',
         'length' => 50,
-        'not null' => TRUE,
+        'not null' => true,
         'description' => '班級代號',
       ),
       'subject_id' => array(
         'type' => 'varchar',
         'length' => 50,
-        'not null' => TRUE,
+        'not null' => true,
         'description' => '科目代號',
       ),
     ),
@@ -328,6 +331,6 @@ function tpedu_schema() {
       'subject_id' => array('subject_id'),
     ),
   );
-  
-  return $schema;
+
+    return $schema;
 }

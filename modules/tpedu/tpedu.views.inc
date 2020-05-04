@@ -1,6 +1,7 @@
 <?php
 
-function tpedu_views_data() {
+function tpedu_views_data()
+{
     $config = \Drupal::config('tpedu.settings');
     if ($config->get('enable')) {
         $data = array();
@@ -270,11 +271,13 @@ function tpedu_views_data() {
                 'id' => 'string',
             ),
         );
+
         return $data;
     }
 }
 
-function tpedu_views_data_alter(&$data) {
+function tpedu_views_data_alter(&$data)
+{
     $config = \Drupal::config('tpedu.settings');
     if ($config->get('enable')) {
         $data['users']['tpedu_people']['relationship'] = array(

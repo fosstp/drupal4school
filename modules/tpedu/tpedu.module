@@ -5,24 +5,27 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
-use Drupal\Core\Session\UserSession;
 use Drupal\user\Entity\User;
-use Symfony\Component\HttpFoundation\Session;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 require 'tpedu.api.php';
 
-function tpedu_help($route_name, RouteMatchInterface $route_match) {
-  switch ($route_name) {
+function tpedu_help($route_name, RouteMatchInterface $route_match)
+{
+    switch ($route_name) {
     case 'admin/config/people/tpedu':
       $output = '<p>本模組提供兩種不同功能：使用臺北市教育人員單一身分驗證帳號登入、介接學校全域資料。請先向教育局申請介接專案，完成模組設定後，才能啟用模組。</p>';
+
       return $output;
   }
 }
 
-function tpedu_user_load(array $entities) {
+function tpedu_user_load(array $entities)
+{
     $config = \Drupal::config('tpedu.settings');
-    if (!$config->get('enable')) return;
+    if (!$config->get('enable')) {
+        return;
+    }
     foreach ($entities as $account) {
         if ($account->get('init')->value == 'tpedu') {
             $uuid = $account->get('uuid')->value;
@@ -32,23 +35,35 @@ function tpedu_user_load(array $entities) {
     }
 }
 
-function tpedu_user_format_name_alter(&$name, $account) {
+function tpedu_user_format_name_alter(&$name, $account)
+{
     $config = \Drupal::config('tpedu.settings');
-    if (!$config->get('enable')) return;
+    if (!$config->get('enable')) {
+        return;
+    }
     $user = User::load($account->id());
     if (isset($user->tpedu)) {
         if ($user->tpedu->student) {
-            if ($config->get('display_unit') || $config->get('display_title')) $name = $user->tpedu->dept_name.' ';
+            if ($config->get('display_unit') || $config->get('display_title')) {
+                $name = $user->tpedu->dept_name.' ';
+            }
         } else {
             $name = '';
-            if ($config->get('display_unit')) $name = $user->tpedu->dept_name.' ';
-            if ($config->get('display_title')) $name .= $user->tpedu->role_name.' ';
+            if ($config->get('display_unit')) {
+                $name = $user->tpedu->dept_name.' ';
+            }
+            if ($config->get('display_title')) {
+                $name .= $user->tpedu->role_name.' ';
+            }
         }
-        if ($user->tpedu->realname) $name .= $user->tpedu->realname;
+        if ($user->tpedu->realname) {
+            $name .= $user->tpedu->realname;
+        }
     }
 }
 
-function tpedu_form_user_login_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+function tpedu_form_user_login_form_alter(&$form, FormStateInterface $form_state, $form_id)
+{
     $config = \Drupal::config('tpedu.settings');
     if ($config->get('enable')) {
         unset($form['links']);
@@ -59,18 +74,18 @@ function tpedu_form_user_login_form_alter(&$form, FormStateInterface $form_state
         $form['tpedu'] = array(
             '#type' => 'html_tag',
             '#tag' => 'a',
-            '#attributes' => array( 
+            '#attributes' => array(
                 'href' => Url::fromRoute('tpedu.login')->toString(),
                 'style' => 'border-bottom: 0px',
             ),
             [
                 '#type' => 'html_tag',
                 '#tag' => 'img',
-                '#attributes' => array( 
-                    'src' => '//' . $_SERVER['HTTP_HOST'] . '/' . drupal_get_path('module', 'tpedu') . '/tpedusso.png',
+                '#attributes' => array(
+                    'src' => '//'.$_SERVER['HTTP_HOST'].'/'.drupal_get_path('module', 'tpedu').'/tpedusso.png',
                     'style' => 'cursor: pointer; border:none; width:240px;',
                     'alt' => '使用臺北市教育人員單一身分驗證登入',
-                ),    
+                ),
             ],
         );
         if ($config->get('personal_data_notice')) {
@@ -81,11 +96,13 @@ function tpedu_form_user_login_form_alter(&$form, FormStateInterface $form_state
     }
 }
 
-function tpedu_form_user_login_block_alter(&$form, FormStateInterface $form_state, $form_id) {
+function tpedu_form_user_login_block_alter(&$form, FormStateInterface $form_state, $form_id)
+{
     tpedu_form_user_login_form_alter($form, $form_state, $form_id);
 }
 
-function tpedu_form_user_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+function tpedu_form_user_form_alter(&$form, FormStateInterface $form_state, $form_id)
+{
     $config = \Drupal::config('tpedu.settings');
     if ($config->get('enable')) {
         $user = $form_state->getFormObject()->getEntity();
@@ -93,26 +110,29 @@ function tpedu_form_user_form_alter(&$form, FormStateInterface $form_state, $for
             unset($form['account']['current_pass']);
             unset($form['account']['mail']);
             unset($form['account']['name']);
-            unset($form['account']['pass']);    
+            unset($form['account']['pass']);
         }
     }
 }
 
-function tpedu_user_login($account) {
+function tpedu_user_login($account)
+{
     $redirect = \Drupal::config('tpedu.settings')->get('login_goto_url');
     if ($redirect) {
         return new RedirectResponse(Url::fromRoute($redirect));
     }
 }
 
-function tpedu_user_logout($account) {
+function tpedu_user_logout($account)
+{
     $redirect = \Drupal::config('tpedu.settings')->get('logout_goto_url');
     if ($redirect) {
         return new RedirectResponse(Url::fromRoute($redirect));
     }
 }
 
-function tpedu_user_view(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display, $view_mode) {
+function tpedu_user_view(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display, $view_mode)
+{
     $config = \Drupal::config('tpedu.settings');
     if ($config->get('enable') && $entity->get('init')->value == 'tpedu') {
         $build['birthday'] = array(
@@ -168,29 +188,45 @@ function tpedu_user_view(array &$build, EntityInterface $entity, EntityViewDispl
     }
 }
 
-function tpedu_theme($existing, $type, $theme, $path) {
-    return [		
+function tpedu_theme($existing, $type, $theme, $path)
+{
+    return [
         'tpedu_personal_data_notice' => [
             'variables' => [],
         ],
     ];
 }
 
-function tpedu_element_info_alter(array &$info) {
+function tpedu_element_info_alter(array &$info)
+{
     if (isset($info['link'])) {
-        if (empty($info['link']['#title'])) $info['link']['#title'] = 'link';
-        if (empty($info['link']['#attributes']['alt'])) $info['link']['#attributes']['alt'] = $info['link']['#title'];
+        if (empty($info['link']['#title'])) {
+            $info['link']['#title'] = 'link';
+        }
+        if (empty($info['link']['#attributes']['alt'])) {
+            $info['link']['#attributes']['alt'] = $info['link']['#title'];
+        }
     }
     if (isset($info['image_button'])) {
-        if (empty($info['image_button']['#attributes']['alt'])) $info['image_button']['#attributes']['alt'] = '排版用裝飾圖片';
+        if (empty($info['image_button']['#attributes']['alt'])) {
+            $info['image_button']['#attributes']['alt'] = '排版用裝飾圖片';
+        }
     }
     if (isset($info['table'])) {
         if (isset($info['table']['#caption'])) {
-            if (empty($info['table']['#attributes']['title'])) $info['table']['#attributes']['title'] = $caption;
-            if (empty($info['table']['#attributes']['summary'])) $info['table']['#attributes']['summary'] = $caption;
+            if (empty($info['table']['#attributes']['title'])) {
+                $info['table']['#attributes']['title'] = $caption;
+            }
+            if (empty($info['table']['#attributes']['summary'])) {
+                $info['table']['#attributes']['summary'] = $caption;
+            }
         } else {
-            if (empty($info['table']['#attributes']['title'])) $info['table']['#attributes']['title'] = '排版用表格';
-            if (empty($info['table']['#attributes']['summary'])) $info['table']['#attributes']['summary'] = '排版用表格';
+            if (empty($info['table']['#attributes']['title'])) {
+                $info['table']['#attributes']['title'] = '排版用表格';
+            }
+            if (empty($info['table']['#attributes']['summary'])) {
+                $info['table']['#attributes']['summary'] = '排版用表格';
+            }
         }
         if (!empty($info['table']['#header'])) {
             foreach ($info['table']['#header'] as $row) {
@@ -200,25 +236,39 @@ function tpedu_element_info_alter(array &$info) {
     }
     if (isset($info['tableselect'])) {
         if (isset($info['tableselect']['#caption'])) {
-            if (empty($info['tableselect']['#attributes']['title'])) $info['tableselect']['#attributes']['title'] = $caption;
-            if (empty($info['tableselect']['#attributes']['summary'])) $info['tableselect']['#attributes']['summary'] = $caption;
+            if (empty($info['tableselect']['#attributes']['title'])) {
+                $info['tableselect']['#attributes']['title'] = $caption;
+            }
+            if (empty($info['tableselect']['#attributes']['summary'])) {
+                $info['tableselect']['#attributes']['summary'] = $caption;
+            }
         } else {
-            if (empty($info['tableselect']['#attributes']['title'])) $info['tableselect']['#attributes']['title'] = '排版用表格';
-            if (empty($info['tableselect']['#attributes']['summary'])) $info['tableselect']['#attributes']['summary'] = '排版用表格';
+            if (empty($info['tableselect']['#attributes']['title'])) {
+                $info['tableselect']['#attributes']['title'] = '排版用表格';
+            }
+            if (empty($info['tableselect']['#attributes']['summary'])) {
+                $info['tableselect']['#attributes']['summary'] = '排版用表格';
+            }
         }
         if (!empty($info['tableselect']['#header'])) {
             foreach ($info['tableselect']['#header'] as $row) {
                 $info['tableselect'][0][$row]['#attributes']['scope'] = $row;
             }
         }
-    }  
+    }
     if (isset($info['html_tag']) && isset($info['html_tag']['#tag']) && $info['html_tag']['#tag'] == 'img') {
-        if (empty($info['html_tag']['#attributes']['alt'])) $info['html_tag']['#attributes']['alt'] = '排版用裝飾圖片';
+        if (empty($info['html_tag']['#attributes']['alt'])) {
+            $info['html_tag']['#attributes']['alt'] = '排版用裝飾圖片';
+        }
     }
     if (isset($info['html_tag']) && isset($info['html_tag']['#tag']) && $info['html_tag']['#tag'] == 'object') {
-        if (empty($info['html_tag']['#attributes']['alt'])) $info['html_tag']['#attributes']['alt'] = '多媒體互動物件';
+        if (empty($info['html_tag']['#attributes']['alt'])) {
+            $info['html_tag']['#attributes']['alt'] = '多媒體互動物件';
+        }
     }
     if (isset($info['html_tag']) && isset($info['html_tag']['#tag']) && $info['html_tag']['#tag'] == 'applet') {
-        if (empty($info['html_tag']['#attributes']['alt'])) $info['html_tag']['#attributes']['alt'] = '多媒體互動物件';
+        if (empty($info['html_tag']['#attributes']['alt'])) {
+            $info['html_tag']['#attributes']['alt'] = '多媒體互動物件';
+        }
     }
 }
