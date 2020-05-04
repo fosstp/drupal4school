@@ -1,6 +1,6 @@
 tpedu_fields:
-    version: 1.x
-    header: true
-    css:
-        theme:
-            css/options.css: {}
+  version: 1.x
+  header: true
+  css:
+    theme:
+      css/options.css: {}
