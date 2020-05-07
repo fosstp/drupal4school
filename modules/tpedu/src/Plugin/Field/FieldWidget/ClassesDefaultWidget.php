@@ -82,6 +82,45 @@ class ClassesDefaultWidget extends WidgetBase
         );
     }
 
+    public function extractFormValues(FieldItemListInterface $items, array $form, FormStateInterface $form_state)
+    {
+        $field_name = $this->fieldDefinition->getName();
+
+        // Extract the values from $form_state->getValues().
+        $path = array_merge($form['#parents'], [$field_name]);
+        $key_exists = null;
+        $values = NestedArray::getValue($form_state->getValues(), $path, $key_exists);
+
+        if ($key_exists) {
+            // Account for drag-and-drop reordering if needed.
+            if (!$this->handlesMultipleValues()) {
+                // The original delta, before drag-and-drop reordering, is needed to
+                // route errors to the correct form element.
+                foreach ($values as $delta => &$value) {
+                    $value['_original_delta'] = $delta;
+                }
+                usort($values, function ($a, $b) {
+                    return SortArray::sortByKeyInt($a, $b, '_weight');
+                });
+            }
+
+            // Let the widget massage the submitted values.
+            $values = $this->massageFormValues($values, $form, $form_state);
+
+            // Assign the values and remove the empty ones.
+            $items->setValue($values);
+            $items->filterEmptyItems();
+
+            // Put delta mapping in $form_state, so that flagErrors() can use it.
+            $field_state = static::getWidgetState($form['#parents'], $field_name, $form_state);
+            foreach ($items as $delta => $item) {
+                $field_state['original_deltas'][$delta] = isset($item->_original_delta) ? $item->_original_delta : $delta;
+                unset($item->_original_delta, $item->_weight);
+            }
+            static::setWidgetState($form['#parents'], $field_name, $form_state, $field_state);
+        }
+    }
+
     public function formElement(FieldItemListInterface $items, $delta, array $element, array &$form, FormStateInterface $form_state)
     {
         $element['#delta'] = $delta;

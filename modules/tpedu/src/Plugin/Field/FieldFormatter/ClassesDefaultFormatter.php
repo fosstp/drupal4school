@@ -37,7 +37,9 @@ class ClassesDefaultFormatter extends FormatterBase
             $classes = explode(',', $item->class_id);
             foreach ($classes as $c) {
                 $myclass = one_class($c);
-                $myclassname .= $myclass->name.' ';
+                if ($myclass) {
+                    $myclassname .= $myclass->name.' ';
+                }
             }
             $source = array(
                 '#type' => 'inline_template',
