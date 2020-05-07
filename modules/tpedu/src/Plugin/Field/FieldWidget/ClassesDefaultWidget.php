@@ -89,10 +89,7 @@ class ClassesDefaultWidget extends WidgetBase
         $element['#key_column'] = 'class_id';
         $options = $this->getOptions();
         $element['#options'] = $options;
-//        $this->required = $this->fieldDefinition->isRequired();
-        $this->required = $this->fieldDefinition->definition['required'];
-//        $cardinality = $this->fieldDefinition->getFieldStorageDefinition()->getCardinality();
-//        $this->multiple = ($cardinality == -1 || $cardinality > 1) ? true : false;
+        $this->required = $this->fieldDefinition->isRequired();
         $this->multiple = $this->fieldDefinition->getFieldStorageDefinition()->isMultiple();
         if (!$this->multiple && !$this->required) {
             $element['#empty_option'] = '--';
