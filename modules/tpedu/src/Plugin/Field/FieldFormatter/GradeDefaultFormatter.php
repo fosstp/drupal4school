@@ -9,14 +9,14 @@ use Drupal\Core\Field\FieldItemListInterface;
  * Plugin implementation of the 'snippets_default' formatter.
  *
  * @FieldFormatter(
- *   id = "classes_default",
+ *   id = "grade_default",
  *   label = "年級",
  *   field_types = {
  *     "tpedu_grade"
  *   },
  * )
  */
-class ClassesDefaultFormatter extends FormatterBase
+class GradeDefaultFormatter extends FormatterBase
 {
     public function viewElements(FieldItemListInterface $items, $langcode)
     {
