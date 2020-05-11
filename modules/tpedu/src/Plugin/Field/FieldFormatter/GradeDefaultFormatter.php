@@ -9,31 +9,28 @@ use Drupal\Core\Field\FieldItemListInterface;
  * Plugin implementation of the 'snippets_default' formatter.
  *
  * @FieldFormatter(
- *   id = "units_default",
- *   label = "行政單位",
+ *   id = "classes_default",
+ *   label = "年級",
  *   field_types = {
- *     "tpedu_units"
+ *     "tpedu_grade"
  *   },
  * )
  */
-class UnitsDefaultFormatter extends FormatterBase
+class ClassesDefaultFormatter extends FormatterBase
 {
     public function viewElements(FieldItemListInterface $items, $langcode)
     {
         $elements = array();
         foreach ($items as $delta => $item) {
-            $units = explode(',', $item->dept_id);
-            foreach ($units as $o) {
-                $unit = get_unit($o);
-                if ($unit) {
-                    $title .= $unit->name.' ';
-                }
+            $grades = explode(',', $item->grade);
+            foreach ($grades as $g) {
+                $grade_list .= $g.' ';
             }
             $source = array(
                 '#type' => 'inline_template',
-                '#template' => '單位： {{name}}',
+                '#template' => '年級： {{name}}',
                 '#context' => [
-                    'name' => $title,
+                    'name' => $grade_list,
                 ],
             );
             $elements[$delta] = array('#markup' => drupal_render($source));

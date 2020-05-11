@@ -10,7 +10,7 @@ use Drupal\Core\Field\FieldItemListInterface;
  *
  * @FieldFormatter(
  *   id = "classes_default",
- *   label = "選擇班級",
+ *   label = "班級",
  *   field_types = {
  *     "tpedu_classes"
  *   },
