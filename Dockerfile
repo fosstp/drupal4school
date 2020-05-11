@@ -7,6 +7,8 @@ ENV DB_PASSWORD dbpassword
 RUN apt-get update \
     && apt-get -y --no-install-recommends install unzip git apt-utils mc \
     && rm -rf /var/lib/apt/lists/* \
+    && pecl install uploadprogress \
+    && echo "extension = uploadprogress" > /usr/local/etc/php/conf.d/uploadprogress.ini \
     && echo "memory_limit = -1" > /usr/local/etc/php/conf.d/memory.ini \
     && echo "max_execution_time = 300" > /usr/local/etc/php/conf.d/execution_time.ini \
     && docker-php-ext-install mbstring \
