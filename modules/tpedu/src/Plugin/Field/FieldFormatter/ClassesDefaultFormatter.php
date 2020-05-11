@@ -21,7 +21,7 @@ use Drupal\Core\Field\FieldItemListInterface;
  *     "grade" = "",
  *     "filter_by_subject" = false,
  *     "subject" = "",
- *     "inline_columns" = 5,
+ *     "inline_columns" = 10,
  *   },
  *   edit = {
  *      "editor" = "form"
