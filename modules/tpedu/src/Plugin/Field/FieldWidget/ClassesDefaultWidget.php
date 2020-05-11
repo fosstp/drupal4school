@@ -145,7 +145,7 @@ class ClassesDefaultWidget extends WidgetBase
         $this->has_value = isset($items[0]->class_id);
         if (!$this->multiple && !$this->required) {
             $element['#empty_option'] = '--';
-            $element['#empty_value'] = '';
+            $element['#empty_value'] = '_none';
             $element['#required'] = false;
         } else {
             $element['#required'] = true;
