@@ -10,20 +10,20 @@ use Drupal\user\Entity\User;
  * Plugin implementation of the 'classes_default' widget.
  *
  * @FieldWidget(
- *   id = "classes_default",
- *   label = "選擇班級",
+ *   id = "roles_default",
+ *   label = "選擇職務",
  *   field_types = {
- *     "tpedu_classes"
+ *     "tpedu_roles"
  *   }
  * )
  */
-class ClassesDefaultWidget extends TpeduWidgetBase
+class RolesDefaultWidget extends TpeduWidgetBase
 {
     public function formElement(FieldItemListInterface $items, $delta, array $element, array &$form, FormStateInterface $form_state)
     {
         $element = parent::formElement($items, $delta, $element, $form, $form_state);
         if (!$this->multiple && $this->required) {
-            $element['#ajax']['callback'][] = 'reload_class_ajax_callback';
+            $element['#ajax']['callback'][] = 'reload_role_ajax_callback';
         }
 
         return $element;
@@ -31,56 +31,33 @@ class ClassesDefaultWidget extends TpeduWidgetBase
 
     protected function getOptions()
     {
-        $classes = array();
-        if ($this->getFieldSetting('filter_by_subject') && $this->getFieldSetting('subject')) {
-            $classes = get_classes_of_subject($this->getFieldSetting('subject'));
-        }
-        if ($this->getFieldSetting('filter_by_grade') && $this->getFieldSetting('grade')) {
-            $grades = explode(',', $this->getFieldSetting('grade'));
-            foreach ($grades as $g) {
-                foreach (get_classes_of_grade($g) as $c) {
-                    $classes[] = $c;
-                }
-            }
+        $roles = array();
+        if ($this->getFieldSetting('filter_by_unit') && $this->getFieldSetting('unit')) {
+            $roles = get_roles_of_unit($this->getFieldSetting('unit'));
         }
         $account = User::load(\Drupal::currentUser()->id());
         if ($account->get('init')->value == 'tpedu') {
             if ($this->getFieldSetting('filter_by_current_user')) {
-                $classes = get_teach_classes($account->get('uuid')->value);
+                $roles = get_roles_of_jobs($account->get('uuid')->value);
             }
         }
         if (empty($classes)) {
-            $classes = all_classes();
+            $roles = all_roles();
         }
-        usort($classes, function ($a, $b) { return strcmp($a->id, $b->id); });
         $options = array();
-        foreach ($classes as $c) {
-            $options[$c->id] = $c->name;
+        foreach ($roles as $r) {
+            $options[$r->id] = $r->name;
         }
 
         return $options;
     }
 
-    protected function getStudentOptions(array $settings, $myclass)
-    {
-        $values = array();
-        $students = array();
-        if ($settings['filter_by_class'] && $myclass) {
-            $students = get_students_of_class($myclass);
-            foreach ($students as $s) {
-                $values[$s->id] = $s->seat.' '.$s->realname;
-            }
-        }
-
-        return $values;
-    }
-
-    protected function getTeacherOptions(array $settings, $myclass)
+    protected function getTeacherOptions(array $settings, $role)
     {
         $values = array();
         $teachers = array();
-        if ($settings['filter_by_class'] && $myclass) {
-            $teachers = get_teachers_of_class($myclass);
+        if ($settings['filter_by_role'] && $role) {
+            $teachers = get_teachers_of_role($role);
             foreach ($teachers as $t) {
                 $values[$t->id] = $t->role_name.' '.$t->realname;
             }
@@ -89,7 +66,7 @@ class ClassesDefaultWidget extends TpeduWidgetBase
         return $values;
     }
 
-    public function reload_class_ajax_callback(array &$form, FormStateInterface $form_state)
+    public function reload_role_ajax_callback(array &$form, FormStateInterface $form_state)
     {
         $commands = array();
         $element = $form_state['triggering_element'];
@@ -99,26 +76,22 @@ class ClassesDefaultWidget extends TpeduWidgetBase
         $class = $element['#value'];
         foreach ($form_state['field'] as $my_field_name => $parent_field) {
             $my_field = $parent_field[$langcode]['field'];
-            if ($my_field['type'] == 'tpedu_classes') {
+            if ($my_field['type'] == 'tpedu_roles') {
                 $current = $form_state['values'][$my_field_name][$langcode];
             }
         }
         foreach ($form_state['field'] as $my_field_name => $parent_field) {
             $my_field = $parent_field[$langcode]['field'];
             $my_instance = $parent_field[$langcode]['instance'];
-            if ($my_field['type'] == 'tpedu_students' || $my_field['type'] == 'tpedu_teachers') {
-                $filter = $my_instance['settings']['filter_by_class'];
+            if ($my_field['type'] == 'tpedu_teachers') {
+                $filter = $my_instance['settings']['filter_by_role'];
                 if ($filter) {
                     $my_field_name = $my_field['field_name'];
                     $my_element = $form[$my_field_name][$langcode];
                     foreach ($my_element['#options'] as $key => $value) {
                         unset($my_element[$key]);
                     }
-                    if ($my_field['type'] == 'tpedu_students') {
-                        $options = $this->getStudentOptions($my_instance['settings'], $current);
-                    } else {
-                        $options = $this->getTeacherOptions($my_instance['settings'], $current);
-                    }
+                    $options = $this->getTeacherOptions($my_instance['settings'], $current);
                     if ($my_element['#properties']['empty_option']) {
                         $label = theme('options_none', array('instance' => $my_instance, 'option' => $my_element['#properties']['empty_option']));
                         $options = array('_none' => $label) + $options;

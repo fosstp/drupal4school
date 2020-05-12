@@ -443,6 +443,27 @@ function get_unit($ou)
     return false;
 }
 
+function get_units_of_job($uuid)
+{
+    $query = \Drupal::database()->query("select dept_id from {tpedu_jobs} where uuid='$uuid'");
+    $data = $query->fetchAll();
+    if (!$data) {
+        all_teachers();
+        $query = \Drupal::database()->query("select dept_id from {tpedu_jobs} where uuid='$uuid'");
+        $data = $query->fetchAll();
+    }
+    if ($data) {
+        $units = array();
+        foreach ($data as $job) {
+            $units[] = get_unit($job->dept_id);
+        }
+
+        return $units;
+    }
+
+    return false;
+}
+
 function get_teachers_of_unit($ou)
 {
     $query = \Drupal::database()
@@ -517,6 +538,27 @@ function get_roles_of_unit($ou)
     }
     if ($data) {
         return $data;
+    }
+
+    return false;
+}
+
+function get_roles_of_job($uuid)
+{
+    $query = \Drupal::database()->query("select role_id from {tpedu_jobs} where uuid='$uuid'");
+    $data = $query->fetchAll();
+    if (!$data) {
+        all_teachers();
+        $query = \Drupal::database()->query("select role_id from {tpedu_jobs} where uuid='$uuid'");
+        $data = $query->fetchAll();
+    }
+    if ($data) {
+        $roles = array();
+        foreach ($data as $job) {
+            $roles[] = get_unit($job->role_id);
+        }
+
+        return $roles;
     }
 
     return false;

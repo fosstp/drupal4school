@@ -56,10 +56,33 @@ field.field_settings.tpedu_classes:
       subject:
         type: string
         label: '配課科目'
-      filter by current user:
+      filter_by_current_user:
         type: boolean
         label: '依使用者過濾班級'
       inline_columns:
         type: integer
         label: '一行顯示幾個選項'
-  
+field.field_settings.tpedu_units:
+  type: mapping
+  label: '行政單位欄位設定'
+  mapping:
+    filter_by_current_user:
+      type: boolean
+      label: '依使用者過濾行政單位'
+field.field_settings.tpedu_roles:
+  type: mapping
+  label: '職務欄位設定'
+  mapping:
+    filter_by_unit:
+      type: boolean
+      label: '依行政單位欄位過濾職務'
+    unit:
+      type: string
+      label: '行政單位'
+    filter_by_current_user:
+      type: boolean
+      label: '依使用者過濾職務'
+    inline_columns:
+      type: integer
+      label: '一行顯示幾個選項'
+        
