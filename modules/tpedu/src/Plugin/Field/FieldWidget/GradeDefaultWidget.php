@@ -218,11 +218,8 @@ class GradeDefaultWidget extends WidgetBase
 
     public function display_inline(array &$element)
     {
-        $inline = $this->getFieldSetting('inline_columns');
-        if (empty($inline) || $inline < 2) {
-            return $element;
-        }
-        if (count($element['#options']) > 0) {
+        $inline = count($element['#options']);
+        if ($inline > 0) {
             $element['#attached']['library'][] = 'tpedu/tpedu_fields';
             $column = 0;
             foreach ($element['#options'] as $key => $choice) {
