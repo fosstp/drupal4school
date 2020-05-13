@@ -69,14 +69,14 @@ class Classes extends FieldItemBase
         );
         $element['filter_by_grade'] = array(
             '#type' => 'checkbox',
-            '#title' => '依年級欄位過濾班級',
+            '#title' => '依年級欄位過濾班級（注意：若年級欄位為可複選，將不會有作用）',
             '#description' => '若勾選，僅顯示指定年級的所有班級。',
             '#default_value' => $this->getSetting('filter_by_grade'),
         );
         $element['grade'] = array(
             '#type' => 'textfield',
             '#title' => '年級(初始值)',
-            '#description' => '要顯示哪些年級的班級？請使用 , 區隔不同年級。',
+            '#description' => '要顯示哪些年級的班級？',
             '#default_value' => $this->getSetting('grade'),
         );
         $element['filter_by_subject'] = array(

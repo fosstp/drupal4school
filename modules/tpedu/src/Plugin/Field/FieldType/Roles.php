@@ -67,7 +67,7 @@ class Roles extends FieldItemBase
         );
         $element['filter_by_unit'] = array(
             '#type' => 'checkbox',
-            '#title' => '依行政單位欄位過濾職務',
+            '#title' => '依行政單位欄位過濾職務（注意：若行政單位欄位為可複選，將不會有作用）',
             '#description' => '若勾選，僅顯示指定處室的所有職務。',
             '#default_value' => $this->getSetting('filter_by_unit'),
         );

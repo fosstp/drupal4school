@@ -22,8 +22,9 @@ class ClassesDefaultWidget extends TpeduWidgetBase
     public function formElement(FieldItemListInterface $items, $delta, array $element, array &$form, FormStateInterface $form_state)
     {
         $element = parent::formElement($items, $delta, $element, $form, $form_state);
-        if (!$this->multiple && $this->required) {
-            $element['#ajax']['callback'][] = 'reload_class_ajax_callback';
+        if (!$this->multiple) {
+            $element['#ajax']['callback'] = '::reload_class_ajax_callback';
+            $element['#ajax']['event'] = 'change';
         }
 
         return $element;
@@ -91,18 +92,12 @@ class ClassesDefaultWidget extends TpeduWidgetBase
 
     public function reload_class_ajax_callback(array &$form, FormStateInterface $form_state)
     {
-        $commands = array();
-        $element = $form_state['triggering_element'];
+        $renderer = \Drupal::service('renderer');
+        $element = $form_state->getTriggeringElement();
         $field_name = $element['#field_name'];
         $langcode = $element['#language'];
         $delta = $element['#delta'];
-        $class = $element['#value'];
-        foreach ($form_state['field'] as $my_field_name => $parent_field) {
-            $my_field = $parent_field[$langcode]['field'];
-            if ($my_field['type'] == 'tpedu_classes') {
-                $current = $form_state['values'][$my_field_name][$langcode];
-            }
-        }
+        $current = $element['#value'];
         foreach ($form_state['field'] as $my_field_name => $parent_field) {
             $my_field = $parent_field[$langcode]['field'];
             $my_instance = $parent_field[$langcode]['instance'];
@@ -125,7 +120,6 @@ class ClassesDefaultWidget extends TpeduWidgetBase
                     }
                     $my_element['#options'] = $options;
                     if ($my_element['#type'] == 'select') {
-                        $my_element = drupal_render($my_element);
                         foreach ($my_element['#options'] as $key => $value) {
                             if ($key == $my_element['#value']) {
                                 $my_element[$key]['#value'] = $key;
@@ -135,26 +129,24 @@ class ClassesDefaultWidget extends TpeduWidgetBase
                         }
                     } elseif ($my_element['#type'] == 'checkboxes') {
                         $my_element['#inline'] = $my_instance['settings']['inline_columns'];
-                        $my_element = drupal_render($my_element);
                         foreach ($my_element['#options'] as $key => $value) {
                             foreach (array_values((array) $my_element['#value']) as $default_value) {
                                 if ($key == $default_value) {
                                     $my_element[$key]['#value'] = $key;
-                                    $my_element[$key] = drupal_render($my_element[$key]);
                                 } else {
                                     $my_element[$key]['#value'] = false;
-                                    $my_element[$key] = drupal_render($my_element[$key]);
                                 }
                             }
                         }
-                        $my_element = display_inline($my_element, $my_element['#inline']);
+                        $my_element = $this->display_inline($my_element, $my_element['#inline']);
                     }
-                    $element_id = 'edit-'.str_replace('_', '-', $my_field_name);
-                    $commands[] = ajax_command_replace("#$element_id div", drupal_render($my_element));
+                    $element_id = '#edit-'.str_replace('_', '-', $my_field_name);
+                    $response = new AjaxResponse();
+                    $response->addCommand(new ReplaceCommand($element_id, \Drupal::service('renderer')->render($my_element)));
                 }
             }
         }
 
-        return array('#type' => 'ajax', '#commands' => $commands);
+        return $response;
     }
 }
