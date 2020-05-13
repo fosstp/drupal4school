@@ -24,7 +24,7 @@ class GradeDefaultWidget extends TpeduWidgetBase
     {
         $element = parent::formElement($items, $delta, $element, $form, $form_state);
         if (!$this->multiple) {
-            $element['#ajax']['callback'] = '::reload_grade_ajax_callback';
+            $element['#ajax']['callback'] = [$this, 'reload_grade_ajax_callback'];
             $element['#ajax']['event'] = 'change';
         }
 

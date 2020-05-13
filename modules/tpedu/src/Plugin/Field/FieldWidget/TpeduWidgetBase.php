@@ -62,9 +62,9 @@ class TpeduWidgetBase extends WidgetBase
         ));
 
         // Most widgets need their internal structure preserved in submitted values.
-        $elements += array(
-            '#tree' => true,
-        );
+//        $elements += array(
+//            '#tree' => true,
+//        );
 
         return array(
             '#type' => 'container',

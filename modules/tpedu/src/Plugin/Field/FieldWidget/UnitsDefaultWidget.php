@@ -25,7 +25,7 @@ class UnitsDefaultWidget extends TpeduWidgetBase
     {
         $element = parent::formElement($items, $delta, $element, $form, $form_state);
         if (!$this->multiple) {
-            $element['#ajax']['callback'] = '::reload_unit_ajax_callback';
+            $element['#ajax']['callback'] = [$this, 'reload_unit_ajax_callback'];
             $element['#ajax']['event'] = 'change';
         }
 
