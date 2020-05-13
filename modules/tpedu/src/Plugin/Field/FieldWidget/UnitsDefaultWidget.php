@@ -135,10 +135,10 @@ class UnitsDefaultWidget extends TpeduWidgetBase
                     $element_id = '#edit-'.str_replace('_', '-', $my_field_name);
                     $response = new AjaxResponse();
                     $response->addCommand(new ReplaceCommand($element_id, \Drupal::service('renderer')->render($my_element)));
+
+                    return $response;
                 }
             }
         }
-
-        return $response;
     }
 }

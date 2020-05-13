@@ -67,13 +67,12 @@ class GradeDefaultWidget extends TpeduWidgetBase
     public function reload_grade_ajax_callback(array &$form, FormStateInterface $form_state)
     {
         $element = $form_state->getTriggeringElement();
-        $field_name = $element['#field_name'];
-        $delta = $element['#delta'];
         $current = $element['#value'];
-        foreach ($form_state->getCompleteForm() as $field_name => $my_field) {
-            \Drupal::logger('tpedu')->notice(var_export($my_field, true));
-            $my_instance = $my_field['instance'];
-            if ($my_field['type'] == 'tpedu_classes') {
+        $elements = $form_state->getCompleteForm();
+        $langcode = $elements['langcode'];
+        foreach ($elements as $field_name => $my_field) {
+            if (isset($my_field['type']) && $my_field['type'] == 'tpedu_classes') {
+                $my_instance = $my_field['instance'];
                 $filter = $my_instance['settings']['filter_by_grade'];
                 if ($filter) {
                     $my_field_name = $my_field['field_name'];
@@ -111,10 +110,10 @@ class GradeDefaultWidget extends TpeduWidgetBase
                     $element_id = '#edit-'.str_replace('_', '-', $my_field_name);
                     $response = new AjaxResponse();
                     $response->addCommand(new ReplaceCommand($element_id, \Drupal::service('renderer')->render($my_element)));
+
+                    return $response;
                 }
             }
         }
-
-        return $response;
     }
 }
