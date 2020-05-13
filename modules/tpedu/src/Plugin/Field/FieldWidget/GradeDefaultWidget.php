@@ -68,12 +68,11 @@ class GradeDefaultWidget extends TpeduWidgetBase
     {
         $element = $form_state->getTriggeringElement();
         $field_name = $element['#field_name'];
-        $langcode = $element['#language'];
         $delta = $element['#delta'];
         $current = $element['#value'];
-        foreach ($form_state['field'] as $my_field_name => $parent_field) {
-            $my_field = $parent_field[$langcode]['field'];
-            $my_instance = $parent_field[$langcode]['instance'];
+        foreach ($form_state->getCompleteForm() as $field_name => $my_field) {
+            \Drupal::logger('tpedu')->notice(var_export($my_field, true));
+            $my_instance = $my_field['instance'];
             if ($my_field['type'] == 'tpedu_classes') {
                 $filter = $my_instance['settings']['filter_by_grade'];
                 if ($filter) {
