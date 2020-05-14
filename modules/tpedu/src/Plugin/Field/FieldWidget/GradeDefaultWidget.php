@@ -4,7 +4,6 @@ namespace Drupal\tpedu\Plugin\Field\FieldWidget;
 
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\ReplaceCommand;
 
 /**
@@ -66,54 +65,32 @@ class GradeDefaultWidget extends TpeduWidgetBase
 
     public function reload_grade_ajax_callback(array &$form, FormStateInterface $form_state)
     {
+        $response = new AjaxResponse();
+        $langcode = $form['langcode'];
         $element = $form_state->getTriggeringElement();
-        $current = $element['#value'];
-        $elements = $form_state->getCompleteForm();
-        $langcode = $elements['langcode'];
-        foreach ($elements as $field_name => $my_field) {
-            if (isset($my_field['type']) && $my_field['type'] == 'tpedu_classes') {
-                $my_instance = $my_field['instance'];
-                $filter = $my_instance['settings']['filter_by_grade'];
+        $current = $form_state->getValue($element->id());
+        $fields = $form_state->getStorage()['field_storage']['#parents']['#fields'];
+        foreach ($fields as $field_name => $my_field) {
+            if (isset($my_field['field_type']) && $my_field['field_type'] == 'tpedu_classes') {
+                $settings = $my_field['field_settings'];
+                $filter = $settings['filter_by_grade'];
                 if ($filter) {
-                    $my_field_name = $my_field['field_name'];
-                    $my_element = $form[$my_field_name][$langcode];
-                    foreach ($my_element['#options'] as $key => $value) {
-                        unset($my_element[$key]);
+                    $target = $form[$field_name];
+                    foreach ($target['#options'] as $key => $value) {
+                        unset($target[$key]);
                     }
-                    $options = $this->getClassesOptions($my_instance['settings'], $current);
-                    if ($my_element['#properties']['empty_option']) {
-                        $label = theme('options_none', array('instance' => $my_instance, 'option' => $my_element['#properties']['empty_option']));
-                        $options = array('_none' => $label) + $options;
+                    $options = $this->getClassesOptions($settings, $current);
+                    $target['#options'] = $options;
+                    if ($target['#type'] == 'checkboxes') {
+                        $inline = $settings['inline_columns'];
+                        $target = $this->display_inline($target, $inline);
                     }
-                    $my_element['#options'] = $options;
-                    if ($my_element['#type'] == 'select') {
-                        foreach ($my_element['#options'] as $key => $value) {
-                            if ($key == $my_element['#value']) {
-                                $my_element[$key]['#value'] = $key;
-                            } else {
-                                $my_element[$key]['#value'] = false;
-                            }
-                        }
-                    } elseif ($my_element['#type'] == 'checkboxes') {
-                        $inline = $my_instance['settings']['inline_columns'];
-                        foreach ($my_element['#options'] as $key => $value) {
-                            foreach (array_values((array) $my_element['#value']) as $default_value) {
-                                if ($key == $default_value) {
-                                    $my_element[$key]['#value'] = $key;
-                                } else {
-                                    $my_element[$key]['#value'] = false;
-                                }
-                            }
-                        }
-                        $my_element = $this->display_inline($my_element, $inline);
-                    }
-                    $element_id = '#edit-'.str_replace('_', '-', $my_field_name);
-                    $response = new AjaxResponse();
-                    $response->addCommand(new ReplaceCommand($element_id, \Drupal::service('renderer')->render($my_element)));
-
-                    return $response;
+                    $element_id = '#edit-'.str_replace('_', '-', $field_name);
+                    $response->addCommand(new ReplaceCommand($element_id, \Drupal::service('renderer')->render($target)));
                 }
             }
         }
+
+        return $response;
     }
 }

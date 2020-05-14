@@ -28,13 +28,13 @@ class TpeduWidgetBase extends WidgetBase
         $parents = $form['#parents'];
 
         // Store field information in $form_state.
-        if (!static::getWidgetState($parents, $field_name, $form_state)) {
-            $field_state = array(
+        $field_state = array(
             'items_count' => count($items),
             'array_parents' => array(),
-          );
-            static::setWidgetState($parents, $field_name, $form_state, $field_state);
-        }
+            'field_type' => $this->fieldDefinition->getType(),
+            'field_settings' => $this->fieldDefinition->getSettings(),
+        );
+        static::setWidgetState($parents, $field_name, $form_state, $field_state);
 
         // Collect widget elements.
         $elements = array();
@@ -62,9 +62,9 @@ class TpeduWidgetBase extends WidgetBase
         ));
 
         // Most widgets need their internal structure preserved in submitted values.
-//        $elements += array(
-//            '#tree' => true,
-//        );
+        $elements += array(
+            '#tree' => true,
+        );
 
         return array(
             '#type' => 'container',
@@ -111,6 +111,15 @@ class TpeduWidgetBase extends WidgetBase
                 $element['#default_value'] = $value;
             }
         }
+        // Allow modules to alter the field widget form element.
+        $context = [
+              'form' => $form,
+              'widget' => $this,
+              'items' => $items,
+              'delta' => $delta,
+              'default' => $this->isDefaultValueWidget($form_state),
+            ];
+        \Drupal::moduleHandler()->alter(['field_widget_form', 'field_widget_'.$this->getPluginId().'_form'], $element, $form_state, $context);
 
         return $element;
     }

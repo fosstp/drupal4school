@@ -5,7 +5,6 @@ namespace Drupal\tpedu\Plugin\Field\FieldWidget;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\user\Entity\User;
-use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\ReplaceCommand;
 
 /**
@@ -71,6 +70,7 @@ class RolesDefaultWidget extends TpeduWidgetBase
 
     public function reload_role_ajax_callback(array &$form, FormStateInterface $form_state)
     {
+        $response = new AjaxResponse();
         $renderer = \Drupal::service('renderer');
         $element = $form_state->getTriggeringElement();
         $field_name = $element['#field_name'];
@@ -116,12 +116,11 @@ class RolesDefaultWidget extends TpeduWidgetBase
                         $my_element = $this->display_inline($my_element, $my_element['#inline']);
                     }
                     $element_id = '#edit-'.str_replace('_', '-', $my_field_name);
-                    $response = new AjaxResponse();
                     $response->addCommand(new ReplaceCommand($element_id, \Drupal::service('renderer')->render($my_element)));
-
-                    return $response;
                 }
             }
         }
+
+        return $response;
     }
 }
