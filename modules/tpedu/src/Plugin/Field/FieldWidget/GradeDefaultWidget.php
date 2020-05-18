@@ -67,7 +67,6 @@ class GradeDefaultWidget extends TpeduWidgetBase
     public function reload_grade_ajax_callback(array &$form, FormStateInterface $form_state)
     {
         $response = new AjaxResponse();
-        $langcode = $form['langcode'];
         $element = $form_state->getTriggeringElement();
         $current = $element['#value'];
         $fields = $form_state->getStorage()['field_storage']['#parents']['#fields'];
@@ -76,23 +75,32 @@ class GradeDefaultWidget extends TpeduWidgetBase
                 $settings = $my_field['field_settings'];
                 $filter = $settings['filter_by_grade'];
                 if ($filter) {
-                    $target = $form_state->getCompleteForm()[$field_name]['widget'];
-                    unset($target['#id']);
-                    unset($target['#name']);
-                    unset($target['#value']);
-                    unset($target['#cache']);
-                    unset($target['#errors']);
-                    unset($target['#processed']);
-                    unset($target['#ajax_processed']);
-                    unset($target['#sorted']);
-                    unset($target['#after_build_done']);
+                    $target = $form[$field_name]['widget'];
+                    $element_id = 'edit-'.str_replace('_', '-', $field_name);
+                    $target['#id'] = $element_id;
+                    if ($target['#type'] == 'checkboxes') {
+                        foreach ($target['#options'] as $k => $v) {
+                            unset($target[$k]);
+                        }
+                    }
                     $target['#options'] = $this->getClassesOptions($settings, $current);
                     if ($target['#type'] == 'checkboxes') {
+                        foreach ($target['#options'] as $k => $v) {
+                            $target[$k] = array(
+                                '#type' => 'checkbox',
+                                '#title' => $v,
+                                '#return_value' => $k,
+                                '#default_value' => null,
+                                '#attributes' => $target['#attributes'],
+                            );
+                        }
                         $inline = $settings['inline_columns'];
                         $target = $this->display_inline($target, $inline);
+                    } else {
+                        $target['#options'] = ['_none' => '- 選取 -'] + $target['#options'];
                     }
-                    $element_id = '#edit-'.str_replace('_', '-', $field_name);
-                    $response->addCommand(new ReplaceCommand($element_id, \Drupal::service('renderer')->render($target)));
+                    $origin = '.form-item-'.str_replace('_', '-', $field_name);
+                    $response->addCommand(new ReplaceCommand($origin, \Drupal::service('renderer')->render($target)));
                 }
             }
         }

@@ -93,7 +93,7 @@ class TpeduWidgetBase extends WidgetBase
         $this->multiple = $this->fieldDefinition->getFieldStorageDefinition()->isMultiple();
         $this->has_value = isset($items[0]->{$this->column});
         if (!$this->multiple && !$this->required) {
-            $element['#empty_option'] = '--';
+            $element['#empty_option'] = '- 選取 -';
             $element['#empty_value'] = '_none';
             $element['#required'] = false;
         } else {
