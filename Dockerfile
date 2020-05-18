@@ -12,10 +12,10 @@ RUN apt-get update \
     && echo "extension = uploadprogress" > /usr/local/etc/php/conf.d/uploadprogress.ini \
     && echo "memory_limit = -1" > /usr/local/etc/php/conf.d/memory.ini \
     && echo "max_execution_time = 300" > /usr/local/etc/php/conf.d/execution_time.ini \
-    && docker-php-ext-install mbstring \
+#    && docker-php-ext-install mbstring \
     && curl -sS https://getcomposer.org/installer | php \
     && mv composer.phar /usr/local/bin/composer \
-    && mkdir /var/www/html && cd /var/www/html \
+    && cd /var/www/html \
     && composer require google/apiclient:"^2.0" \
     && composer require drupal/console:~1.0 --prefer-dist --optimize-autoloader \
     && curl https://drupalconsole.com/installer -L -o drupal.phar \
