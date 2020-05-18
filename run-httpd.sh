@@ -9,7 +9,7 @@ if [ ! -f "/var/run/apache2/apache2.pid" ]; then
     exec apache2-foreground
 fi
 
-drupal site:mode dev
+drupal cr all
 
 if [ $# -gt 0 ]; then
     exec drush $@
