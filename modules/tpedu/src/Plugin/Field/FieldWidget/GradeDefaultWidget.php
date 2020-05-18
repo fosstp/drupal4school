@@ -69,14 +69,17 @@ class GradeDefaultWidget extends TpeduWidgetBase
         $response = new AjaxResponse();
         $langcode = $form['langcode'];
         $element = $form_state->getTriggeringElement();
-        $current = $form_state->getValue($element->id());
+        $current = $element['#value'];
         $fields = $form_state->getStorage()['field_storage']['#parents']['#fields'];
         foreach ($fields as $field_name => $my_field) {
             if (isset($my_field['field_type']) && $my_field['field_type'] == 'tpedu_classes') {
                 $settings = $my_field['field_settings'];
                 $filter = $settings['filter_by_grade'];
                 if ($filter) {
-                    $target = $form[$field_name];
+                    $target = $form_state->getCompleteForm()[$field_name];
+                    foreach ($target as $k => $v) {
+                        \Drupal::logger('tpedu')->notice($k);
+                    }
                     foreach ($target['#options'] as $key => $value) {
                         unset($target[$key]);
                     }
