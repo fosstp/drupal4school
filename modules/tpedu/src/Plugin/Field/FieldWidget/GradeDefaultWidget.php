@@ -88,6 +88,8 @@ class GradeDefaultWidget extends TpeduWidgetBase
                         foreach ($target['#options'] as $k => $v) {
                             $target[$k] = array(
                                 '#type' => 'checkbox',
+                                '#id' => $target['#id'].'-'.$k,
+                                '#name' => $field_name.'['.$k.']',
                                 '#title' => $v,
                                 '#return_value' => $k,
                                 '#default_value' => null,
@@ -96,10 +98,11 @@ class GradeDefaultWidget extends TpeduWidgetBase
                         }
                         $inline = $settings['inline_columns'];
                         $target = $this->display_inline($target, $inline);
-                    } else {
-                        $target['#options'] = ['_none' => '- 選取 -'] + $target['#options'];
+                        $origin = '#edit-'.str_replace('_', '-', $field_name).'--wrapper';
+                    } elseif (isset($target['#empty_value'])) {
+                        $target['#options'] = [$target['#empty_value'] => $target['#empty_option']] + $target['#options'];
+                        $origin = '.form-item-'.str_replace('_', '-', $field_name);
                     }
-                    $origin = '.form-item-'.str_replace('_', '-', $field_name);
                     $response->addCommand(new ReplaceCommand($origin, \Drupal::service('renderer')->render($target)));
                 }
             }
