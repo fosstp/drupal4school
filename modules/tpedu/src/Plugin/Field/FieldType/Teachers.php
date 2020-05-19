@@ -1,0 +1,187 @@
+<?php
+
+namespace Drupal\tpedu\Plugin\Field\FieldType;
+
+use Drupal\Core\Field\FieldStorageDefinitionInterface;
+use Drupal\Core\TypedData\DataDefinition;
+use Drupal\Core\Field\FieldItemBase;
+use Drupal\Core\Form\FormStateInterface;
+
+/**
+ * Plugin implementation of the 'tpedu_classes' field type.
+ *
+ * @FieldType(
+ *   id = "tpedu_teachers",
+ *   label = "教師",
+ *   description = "教師選單",
+ *   category = "臺北市教育人員",
+ *   default_widget = "teachers_default",
+ *   default_formatter = "teachers_default",
+ * )
+ */
+class Teachers extends FieldItemBase
+{
+    public static function schema(FieldStorageDefinitionInterface $field)
+    {
+        return array(
+          'columns' => array(
+            'uuid' => array(
+                'type' => 'varchar_ascii',
+                'length' => 36,
+                'not null' => true,
+            ),
+          ),
+        );
+    }
+
+    public function isEmpty()
+    {
+        return empty($this->get('uuid')->getValue());
+    }
+
+    public static function propertyDefinitions(FieldStorageDefinitionInterface $field_definition)
+    {
+        $properties['uuid'] = DataDefinition::create('string')->setLabel('人員代號');
+
+        return $properties;
+    }
+
+    public static function defaultFieldSettings()
+    {
+        return [
+            'filter_by_unit' => false,
+            'unit' => '',
+            'filter_by_role' => false,
+            'role' => '',
+            'filter_by_domain' => false,
+            'domain' => '',
+            'filter_by_subject' => false,
+            'subject' => '',
+            'filter_by_grade' => false,
+            'grade' => '',
+            'filter_by_class' => false,
+            'class' => '',
+            'inline_columns' => 10,
+        ] + parent::defaultFieldSettings();
+    }
+
+    public function fieldSettingsForm(array $form, FormStateInterface $form_state)
+    {
+        $element = array();
+        $element['extra_info'] = array(
+            '#markup' => '<p>此欄位可以單獨使用，用於選取全校同仁。也可以選擇多種過濾機制，除了指定預設值外，您也可以配合其它欄位進行動態過濾。</p>',
+        );
+        $element['filter_by_unit'] = array(
+            '#type' => 'checkbox',
+            '#title' => '依行政單位欄位過濾教師（注意：若行政單位欄位為可複選，將不會有作用）',
+            '#description' => '若勾選，僅顯示指定行政單位的所有行政人員。',
+            '#default_value' => $this->getSetting('filter_by_unit'),
+        );
+        $values = array('' => '--');
+        $units = all_units();
+        foreach ($units as $r) {
+            $values[$r->id] = $r->name;
+        }
+        $element['unit'] = array(
+            '#type' => 'select',
+            '#title' => '隸屬行政單位',
+            '#description' => '請選擇預設行政單位',
+            '#default_value' => $this->getSetting('unit'),
+            '#options' => $values,
+        );
+        $element['filter_by_role'] = array(
+            '#type' => 'checkbox',
+            '#title' => '依職務欄位過濾教師（注意：若職務欄位為可複選，將不會有作用）',
+            '#description' => '若勾選，僅顯示指定職務的所有行政人員。',
+            '#default_value' => $this->getSetting('filter_by_role'),
+        );
+        $values = array('' => '--');
+        $roles = all_roles();
+        foreach ($roles as $r) {
+            $values[$r->id] = $r->name;
+        }
+        $element['role'] = array(
+            '#type' => 'select',
+            '#title' => '擔任職務',
+            '#description' => '請選擇預設職務',
+            '#default_value' => $this->getSetting('role'),
+            '#options' => $values,
+        );
+        $element['filter_by_domain'] = array(
+            '#type' => 'checkbox',
+            '#title' => '依領域欄位過濾教師（注意：若領域欄位為可複選，將不會有作用）',
+            '#description' => '若勾選，僅顯示指定領域的所有任教老師。',
+            '#default_value' => $this->getSetting('filter_by_domain'),
+        );
+        $values = array('' => '--');
+        $domains = all_domains();
+        foreach ($domains as $r) {
+            $values[$r->domain] = $r->domain;
+        }
+        $element['domain'] = array(
+            '#type' => 'select',
+            '#title' => '所屬領域',
+            '#description' => '請選擇預設教學領域',
+            '#default_value' => $this->getSetting('domain'),
+            '#options' => $values,
+        );
+        $element['filter_by_subject'] = array(
+            '#type' => 'checkbox',
+            '#title' => '依配課科目過濾教師',
+            '#description' => '若勾選，僅顯示指定科目的所有任教老師。',
+            '#default_value' => $this->getSetting('filter_by_subject'),
+        );
+        $values = array('' => '--');
+        $subjects = all_subjects();
+        foreach ($subjects as $s) {
+            $values[$s->id] = $s->name;
+        }
+        $element['subject'] = array(
+            '#type' => 'select',
+            '#title' => '任教科目',
+            '#description' => '預設的任教科目',
+            '#default_value' => $this->getSetting('subject'),
+            '#options' => $values,
+        );
+        $element['filter_by_grade'] = array(
+            '#type' => 'checkbox',
+            '#title' => '依年級欄位過濾教師（注意：若年級欄位為可複選，將不會有作用）',
+            '#description' => '若勾選，僅顯示指定年級的所有導師。',
+            '#default_value' => $this->getSetting('filter_by_grade'),
+        );
+        $element['grade'] = array(
+            '#type' => 'textfield',
+            '#title' => '預設年級',
+            '#description' => '預設要顯示哪些年級的導師？',
+            '#default_value' => $this->getSetting('grade'),
+        );
+        $element['filter_by_class'] = array(
+            '#type' => 'checkbox',
+            '#title' => '依班級欄位過濾教師（注意：若班級欄位為可複選，將不會有作用）',
+            '#description' => '若勾選，僅顯示指定班級的所有導師及科任教師。',
+            '#default_value' => $this->getSetting('filter_by_class'),
+        );
+        $values = array('' => '--');
+        $classes = all_classes();
+        foreach ($classes as $r) {
+            $values[$r->id] = $r->name;
+        }
+        $element['class'] = array(
+            '#type' => 'select',
+            '#title' => '班級',
+            '#description' => '請選擇預設班級',
+            '#default_value' => $this->getSetting('class'),
+            '#options' => $values,
+        );
+        $element['inline_columns'] = array(
+            '#type' => 'number',
+            '#title' => '每行顯示數量',
+            '#min' => 1,
+            '#max' => 12,
+            '#description' => '當使用核取框（複選）時，您可以指定每一行要顯示的欄位數量。',
+            '#default_value' => $this->getSetting('inline_columns'),
+        );
+
+        return $element;
+    }
+}

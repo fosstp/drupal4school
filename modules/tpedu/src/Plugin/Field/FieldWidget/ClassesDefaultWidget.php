@@ -64,14 +64,29 @@ class ClassesDefaultWidget extends TpeduWidgetBase
         return $options;
     }
 
+    protected function getSubjectsOptions(array $settings, $myclass)
+    {
+        $values = array();
+        $subjects = array();
+        if ($settings['filter_by_class'] && $myclass) {
+            $subjects = get_subjects_of_class($myclass);
+            foreach ($subjects as $s) {
+                $values[$s->id] = $s->name;
+            }
+        }
+
+        return $values;
+    }
+
     protected function getStudentsOptions(array $settings, $myclass)
     {
         $values = array();
         $students = array();
         if ($settings['filter_by_class'] && $myclass) {
             $students = get_students_of_class($myclass);
+            usort($students, function ($a, $b) { return strcmp($a->seat, $b->seat); });
             foreach ($students as $s) {
-                $values[$s->id] = $s->seat.' '.$s->realname;
+                $values[$s->uuid] = $s->seat.' '.$s->realname;
             }
         }
 
@@ -84,8 +99,9 @@ class ClassesDefaultWidget extends TpeduWidgetBase
         $teachers = array();
         if ($settings['filter_by_class'] && $myclass) {
             $teachers = get_teachers_of_class($myclass);
+            usort($teachers, function ($a, $b) { return strcmp($a->realname, $b->realname); });
             foreach ($teachers as $t) {
-                $values[$t->id] = $t->role_name.' '.$t->realname;
+                $values[$t->uuid] = $t->role_name.' '.$t->realname;
             }
         }
 
@@ -99,7 +115,7 @@ class ClassesDefaultWidget extends TpeduWidgetBase
         $current = $element['#value'];
         $fields = $form_state->getStorage()['field_storage']['#parents']['#fields'];
         foreach ($fields as $field_name => $my_field) {
-            if (isset($my_field['field_type']) && ($my_field['field_type'] == 'tpedu_students' || $my_field['field_type'] == 'tpedu_teachers')) {
+            if (isset($my_field['field_type']) && ($my_field['field_type'] == 'tpedu_students' || $my_field['field_type'] == 'tpedu_teachers' || $my_field['field_type'] == 'tpedu_subjects')) {
                 $settings = $my_field['field_settings'];
                 $filter = $settings['filter_by_class'];
                 if ($filter) {
@@ -113,8 +129,10 @@ class ClassesDefaultWidget extends TpeduWidgetBase
                     }
                     if ($my_field['field_type'] == 'tpedu_students') {
                         $target['#options'] = $this->getStudentsOptions($settings, $current);
-                    } else {
+                    } elseif ($my_field['field_type'] == 'tpedu_teachers') {
                         $target['#options'] = $this->getTeachersOptions($settings, $current);
+                    } else {
+                        $target['#options'] = $this->getSubjectsOptions($settings, $current);
                     }
                     if ($target['#type'] == 'checkboxes') {
                         foreach ($target['#options'] as $k => $v) {

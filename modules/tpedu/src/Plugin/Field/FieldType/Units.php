@@ -16,7 +16,7 @@ use Drupal\Core\Form\FormStateInterface;
  *   description = "學校組織部門選單",
  *   category = "臺北市教育人員",
  *   default_widget = "units_default",
- *   default_formatter = "units_default"
+ *   default_formatter = "units_default",
  * )
  */
 class Units extends FieldItemBase
@@ -56,10 +56,13 @@ class Units extends FieldItemBase
     public function fieldSettingsForm(array $form, FormStateInterface $form_state)
     {
         $element = array();
+        $element['extra_info'] = array(
+            '#markup' => '<p>此欄位可以單獨使用或結合職務、教師欄位使用，請選擇是否使用過濾機制。結合職務欄位時，可用於選取不同行政單位的職務；結合教師欄位時，可用於選取不同行政單位的教師！</p>',
+        );
         $element['filter_by_current_user'] = array(
             '#type' => 'checkbox',
-            '#title' => '依使用者過濾職務',
-            '#description' => '若勾選，僅顯示目前使用者擔任的職務。',
+            '#title' => '依使用者過濾行政單位',
+            '#description' => '若勾選，僅顯示登入使用者隸屬的行政單位。',
             '#default_value' => $this->getSetting('filter_by_current_user'),
         );
 

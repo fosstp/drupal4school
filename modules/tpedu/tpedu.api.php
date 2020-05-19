@@ -640,18 +640,91 @@ function all_subjects()
     return false;
 }
 
-function fetch_subject($sub)
+function all_domains()
 {
-    \Drupal::database()->delete('tpedu_subjects')->condition('id', $sub)->execute();
-    $s = api('one_subject', array('sub' => $sub));
-    if ($s) {
-        $fields = array(
-            'id' => $s->tpSubject,
-            'domain' => $s->tpSubjectDomain,
-            'name' => $s->description,
-    );
-        \Drupal::database()->insert('tpedu_subjects')->fields($fields)->execute();
+    $config = \Drupal::config('tpedu.settings');
+    $off = $config->get('refresh_days');
+    $query = \Drupal::database()
+        ->query("select distinct domain from {tpedu_subjects} where fetch_date > DATE_SUB(NOW(), INTERVAL $off DAY) order by id");
+    $data = $query->fetchAll();
+    if (!$data) {
+        fetch_subjects();
+        $query = \Drupal::database()->query('select distinct domain from {tpedu_subjects} order by id');
+        $data = $query->fetchAll();
     }
+    if ($data) {
+        return $data;
+    }
+
+    return false;
+}
+
+function get_subjects_of_domain($domain)
+{
+    $config = \Drupal::config('tpedu.settings');
+    $off = $config->get('refresh_days');
+    $query = \Drupal::database()
+        ->query("select * from {tpedu_subjects} where domain='$domain' and fetch_date > DATE_SUB(NOW(), INTERVAL $off DAY)");
+    $data = $query->fetchAll();
+    if (!$data) {
+        fetch_roles();
+        $query = \Drupal::database()->query("select * from {tpedu_subjects} where domain='$domain'");
+        $data = $query->fetchAll();
+    }
+    if ($data) {
+        return $data;
+    }
+
+    return false;
+}
+
+function get_teachers_of_domain($dom)
+{
+    $subjects = get_subjects_of_domain($dom);
+    foreach ($subjects as $s) {
+        $subs[] = "'$s->id'";
+    }
+    $sub_list = implode(',', $subs);
+    $query = \Drupal::database()
+        ->query("select uuid from {tpedu_assignment} where subject_id in ($sub_list)");
+
+    $data = $query->fetchAll();
+    if (!$data) {
+        all_teachers();
+        $query = \Drupal::database()->query("select uuid from {tpedu_assignment} where subject_id in ($sub_list)");
+        $data = $query->fetchAll();
+    }
+    if ($data) {
+        $users = array();
+        foreach ($data as $assign) {
+            $users[] = get_user($assign->uuid);
+        }
+
+        return $users;
+    }
+
+    return false;
+}
+
+function get_subjects_of_assignment($uuid)
+{
+    $query = \Drupal::database()->query("select * from {tpedu_assignment} where uuid='$uuid'");
+    $data = $query->fetchAll();
+    if (!$data) {
+        all_teachers();
+        $query = \Drupal::database()->query("select * from {tpedu_assignment} where uuid='$uuid'");
+        $data = $query->fetchAll();
+    }
+    if ($data) {
+        $subjects = array();
+        foreach ($data as $assign) {
+            $subjects[] = get_subject($assign->subject_id);
+        }
+
+        return $subjects;
+    }
+
+    return false;
 }
 
 function get_subject($sub)
@@ -662,7 +735,7 @@ function get_subject($sub)
         ->query("select * from {tpedu_subjects} where id='$sub' and fetch_date > DATE_SUB(NOW(), INTERVAL $off DAY)");
     $data = $query->fetchObject();
     if (!$data) {
-        fetch_subject($sub);
+        fetch_subjects();
         $query = \Drupal::database()->query("select * from {tpedu_subjects} where id='$sub'");
         $data = $query->fetchObject();
     }
@@ -784,6 +857,25 @@ function get_classes_of_grade($grade)
     if (!$data) {
         fetch_classes();
         $query = \Drupal::database()->query("select * from {tpedu_classes} where grade='$grade' order by id");
+        $data = $query->fetchAll();
+    }
+    if ($data) {
+        return $data;
+    }
+
+    return false;
+}
+
+function get_teachers_of_grade($grade)
+{
+    $config = \Drupal::config('tpedu.settings');
+    $off = $config->get('refresh_days');
+    $query = \Drupal::database()
+        ->query("select * from {tpedu_people} where student=0 and class like '$grade%' and fetch_date > DATE_SUB(NOW(), INTERVAL $off DAY) order by class");
+    $data = $query->fetchAll();
+    if (!$data) {
+        all_teachers();
+        $query = \Drupal::database()->query("select * from {tpedu_people} where student=0 and class like '$grade%' order by class");
         $data = $query->fetchAll();
     }
     if ($data) {

@@ -44,9 +44,10 @@ class RolesDefaultWidget extends TpeduWidgetBase
                 $roles = get_roles_of_jobs($account->get('uuid')->value);
             }
         }
-        if (empty($classes)) {
+        if (empty($roles)) {
             $roles = all_roles();
         }
+        usort($roles, function ($a, $b) { return strcmp($a->id, $b->id); });
         $options = array();
         foreach ($roles as $r) {
             $options[$r->id] = $r->name;
@@ -61,8 +62,9 @@ class RolesDefaultWidget extends TpeduWidgetBase
         $teachers = array();
         if ($settings['filter_by_role'] && $role) {
             $teachers = get_teachers_of_role($role);
+            usort($teachers, function ($a, $b) { return strcmp($a->realname, $b->realname); });
             foreach ($teachers as $t) {
-                $values[$t->id] = $t->role_name.' '.$t->realname;
+                $values[$t->uuid] = $t->role_name.' '.$t->realname;
             }
         }
 
@@ -78,7 +80,7 @@ class RolesDefaultWidget extends TpeduWidgetBase
         foreach ($fields as $field_name => $my_field) {
             if (isset($my_field['field_type']) && $my_field['field_type'] == 'tpedu_teachers') {
                 $settings = $my_field['field_settings'];
-                $filter = $settings['filter_by_grade'];
+                $filter = $settings['filter_by_role'];
                 if ($filter) {
                     $target = $form[$field_name]['widget'];
                     $element_id = 'edit-'.str_replace('_', '-', $field_name);

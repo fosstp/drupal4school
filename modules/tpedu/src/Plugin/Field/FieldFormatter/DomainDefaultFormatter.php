@@ -9,31 +9,28 @@ use Drupal\Core\Field\FieldItemListInterface;
  * Plugin implementation of the 'snippets_default' formatter.
  *
  * @FieldFormatter(
- *   id = "classes_default",
- *   label = "班級",
+ *   id = "domain_default",
+ *   label = "領域",
  *   field_types = {
- *     "tpedu_classes"
+ *     "tpedu_domain"
  *   },
  * )
  */
-class ClassesDefaultFormatter extends FormatterBase
+class DomainDefaultFormatter extends FormatterBase
 {
     public function viewElements(FieldItemListInterface $items, $langcode)
     {
         $elements = array();
         foreach ($items as $delta => $item) {
-            $classes = explode(',', $item->class_id);
-            foreach ($classes as $c) {
-                $myclass = one_class($c);
-                if ($myclass) {
-                    $myclassname .= $myclass->name.' ';
-                }
+            $domains = explode(',', $item->domain);
+            foreach ($domains as $g) {
+                $domain_list .= $g.' ';
             }
             $source = array(
                 '#type' => 'inline_template',
-                '#template' => '班級： {{name}}',
+                '#template' => '領域： {{name}}',
                 '#context' => [
-                    'name' => $myclassname,
+                    'name' => $domain_list,
                 ],
             );
             $elements[$delta] = array('#markup' => drupal_render($source));

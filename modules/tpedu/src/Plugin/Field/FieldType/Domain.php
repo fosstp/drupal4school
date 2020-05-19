@@ -10,21 +10,21 @@ use Drupal\Core\Field\FieldItemBase;
  * Plugin implementation of the 'tpedu_classes' field type.
  *
  * @FieldType(
- *   id = "tpedu_grade",
- *   label = "年級",
- *   description = "年級選單",
+ *   id = "tpedu_domain",
+ *   label = "領域",
+ *   description = "領域選單",
  *   category = "臺北市教育人員",
- *   default_widget = "grade_default",
- *   default_formatter = "grade_default",
+ *   default_widget = "domain_default",
+ *   default_formatter = "domain_default",
  * )
  */
-class Grade extends FieldItemBase
+class Domain extends FieldItemBase
 {
     public static function schema(FieldStorageDefinitionInterface $field)
     {
         return array(
           'columns' => array(
-            'grade' => array(
+            'domain' => array(
                 'type' => 'varchar_ascii',
                 'length' => 50,
                 'not null' => false,
@@ -35,12 +35,12 @@ class Grade extends FieldItemBase
 
     public function isEmpty()
     {
-        return empty($this->get('grade')->value);
+        return empty($this->get('domain')->value);
     }
 
     public static function propertyDefinitions(FieldStorageDefinitionInterface $field_definition)
     {
-        $properties['grade'] = DataDefinition::create('string')->setLabel('年級');
+        $properties['domain'] = DataDefinition::create('string')->setLabel('領域');
 
         return $properties;
     }
@@ -49,7 +49,7 @@ class Grade extends FieldItemBase
     {
         $element = array();
         $element['extra_info'] = array(
-            '#markup' => '<p>此欄位可以單獨使用或結合班級、教師欄位使用！結合班級欄位時，可用於選取不同年級的班級；結合教師欄位時，可用於選取不同年級的導師！</p>',
+            '#markup' => '<p>此欄位可以單獨使用或結合科目、教師欄位使用！結合科目欄位時，可用於選取不同領域的科目；結合教師欄位時，可用於選取不同領域的教師！</p>',
         );
 
         return $element;

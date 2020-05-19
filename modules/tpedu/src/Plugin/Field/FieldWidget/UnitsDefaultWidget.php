@@ -59,6 +59,7 @@ class UnitsDefaultWidget extends TpeduWidgetBase
         $roles = array();
         if ($settings['filter_by_units'] && $unit) {
             $roles = get_roles_of_unit($unit);
+            usort($roles, function ($a, $b) { return strcmp($a->id, $b->id); });
             foreach ($roles as $r) {
                 $options[$r->id] = $r->name;
             }
@@ -73,8 +74,9 @@ class UnitsDefaultWidget extends TpeduWidgetBase
         $roles = array();
         if ($settings['filter_by_unit'] && $unit) {
             $teachers = get_teachers_of_unit($unit);
+            usort($teachers, function ($a, $b) { return strcmp($a->realname, $b->realname); });
             foreach ($teachers as $t) {
-                $options[$t->id] = $t->role_name.' '.$t->realname;
+                $options[$t->uuid] = $t->role_name.' '.$t->realname;
             }
         }
 

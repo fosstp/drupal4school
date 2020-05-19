@@ -11,20 +11,20 @@ use Drupal\Core\Ajax\ReplaceCommand;
  * Plugin implementation of the 'classes_default' widget.
  *
  * @FieldWidget(
- *   id = "grade_default",
- *   label = "選擇年級",
+ *   id = "domain_default",
+ *   label = "選擇領域",
  *   field_types = {
- *     "tpedu_grade"
+ *     "tpedu_domain"
  *   }
  * )
  */
-class GradeDefaultWidget extends TpeduWidgetBase
+class DomainDefaultWidget extends TpeduWidgetBase
 {
     public function formElement(FieldItemListInterface $items, $delta, array $element, array &$form, FormStateInterface $form_state)
     {
         $element = parent::formElement($items, $delta, $element, $form, $form_state);
         if (!$this->multiple) {
-            $element['#ajax']['callback'] = [$this, 'reload_grade_ajax_callback'];
+            $element['#ajax']['callback'] = [$this, 'reload_domain_ajax_callback'];
             $element['#ajax']['event'] = 'change';
         }
 
@@ -34,10 +34,10 @@ class GradeDefaultWidget extends TpeduWidgetBase
     protected function getOptions(FieldableEntityInterface $entity = null)
     {
         if (!isset($this->options)) {
-            $grades = all_grade();
-            usort($grades, function ($a, $b) { return strcmp($a->grade, $b->grade); });
-            foreach ($grades as $g) {
-                $options[$g->grade] = $g->grade.'年級';
+            $domains = all_domains();
+            usort($domains, function ($a, $b) { return strcmp($a->domain, $b->domain); });
+            foreach ($domains as $g) {
+                $options[$g->domain] = $g->domain.'領域';
             }
             $this->options = $options;
         }
@@ -45,14 +45,14 @@ class GradeDefaultWidget extends TpeduWidgetBase
         return $this->options;
     }
 
-    protected function getClassesOptions(array $settings, $grade)
+    protected function getSubjectsOptions(array $settings, $domain)
     {
         $options = array();
-        $classes = array();
-        if ($settings['filter_by_grade'] && $grade) {
-            $classes = get_classes_of_grade($grade);
-            usort($classes, function ($a, $b) { return strcmp($a->id, $b->id); });
-            foreach ($classes as $c) {
+        $subjects = array();
+        if ($settings['filter_by_domain'] && $domain) {
+            $subjects = get_subjects_of_domain($domain);
+            usort($subjects, function ($a, $b) { return strcmp($a->id, $b->id); });
+            foreach ($subjects as $c) {
                 $options[$c->id] = $c->name;
             }
         }
@@ -60,31 +60,31 @@ class GradeDefaultWidget extends TpeduWidgetBase
         return $options;
     }
 
-    protected function getTeachersOptions(array $settings, $grade)
+    protected function getTeachersOptions(array $settings, $domain)
     {
         $options = array();
         $teachers = array();
-        if ($settings['filter_by_grade'] && $grade) {
-            $teachers = get_teachers_of_grade($grade);
-            usort($teachers, function ($a, $b) { return strcmp($a->class, $b->class); });
-            foreach ($teachers as $c) {
-                $options[$c->uuid] = $c->class.' '.$c->realname;
+        if ($settings['filter_by_domain'] && $domain) {
+            $teachers = get_teachers_of_domain($domain);
+            usort($teachers, function ($a, $b) { return strcmp($a->realname, $b->realname); });
+            foreach ($teachers as $t) {
+                $options[$t->uuid] = $t->role_name.' '.$t->realname;
             }
         }
 
         return $options;
     }
 
-    public function reload_grade_ajax_callback(array &$form, FormStateInterface $form_state)
+    public function reload_domain_ajax_callback(array &$form, FormStateInterface $form_state)
     {
         $response = new AjaxResponse();
         $element = $form_state->getTriggeringElement();
         $current = $element['#value'];
         $fields = $form_state->getStorage()['field_storage']['#parents']['#fields'];
         foreach ($fields as $field_name => $my_field) {
-            if (isset($my_field['field_type']) && ($my_field['field_type'] == 'tpedu_classes' || $my_field['field_type'] == 'tpedu_teachers')) {
+            if (isset($my_field['field_type']) && ($my_field['field_type'] == 'tpedu_subjects' || $my_field['field_type'] == 'tpedu_teachers')) {
                 $settings = $my_field['field_settings'];
-                $filter = $settings['filter_by_grade'];
+                $filter = $settings['filter_by_domain'];
                 if ($filter) {
                     $target = $form[$field_name]['widget'];
                     $element_id = 'edit-'.str_replace('_', '-', $field_name);
@@ -94,8 +94,8 @@ class GradeDefaultWidget extends TpeduWidgetBase
                             unset($target[$k]);
                         }
                     }
-                    if ($my_field['field_type'] == 'tpedu_classes') {
-                        $target['#options'] = $this->getClassesOptions($settings, $current);
+                    if ($my_field['field_type'] == 'tpedu_subjects') {
+                        $target['#options'] = $this->getSubjectsOptions($settings, $current);
                     } else {
                         $target['#options'] = $this->getTeachersOptions($settings, $current);
                     }

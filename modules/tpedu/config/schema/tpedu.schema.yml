@@ -40,28 +40,6 @@ logout_goto_url:
 personal_data_notice:
   type: boolean
   label: '要顯示個資政策連結嗎？'
-field.field_settings.tpedu_classes:
-    type: mapping
-    label: '班級欄位設定'
-    mapping:
-      filter_by_grade:
-        type: boolean
-        label: '依年級欄位過濾班級'
-      grade:
-        type: string
-        label: '年級'
-      filter_by_subject:
-        type: boolean
-        label: '依配課科目過濾班級'
-      subject:
-        type: string
-        label: '配課科目'
-      filter_by_current_user:
-        type: boolean
-        label: '依使用者過濾班級'
-      inline_columns:
-        type: integer
-        label: '一行顯示幾個選項'
 field.field_settings.tpedu_units:
   type: mapping
   label: '行政單位欄位設定'
@@ -85,4 +63,100 @@ field.field_settings.tpedu_roles:
     inline_columns:
       type: integer
       label: '一行顯示幾個選項'
-        
+field.field_settings.tpedu_subjects:
+  type: mapping
+  label: '科目欄位設定'
+  mapping:
+    filter_by_current_user:
+      type: boolean
+      label: '依使用者過濾科目'
+    filter_by_domain:
+      type: boolean
+      label: '依領域欄位過濾科目'
+    domain:
+      type: string
+      label: '領域'
+    inline_columns:
+      type: integer
+      label: '一行顯示幾個選項'
+field.field_settings.tpedu_classes:
+    type: mapping
+    label: '班級欄位設定'
+    mapping:
+      filter_by_grade:
+        type: boolean
+        label: '依年級欄位過濾班級'
+      grade:
+        type: string
+        label: '年級'
+      filter_by_subject:
+        type: boolean
+        label: '依科目欄位過濾班級'
+      subject:
+        type: string
+        label: '配課科目'
+      filter_by_current_user:
+        type: boolean
+        label: '依使用者過濾班級'
+      inline_columns:
+        type: integer
+        label: '一行顯示幾個選項'
+field.field_settings.tpedu_teachers:
+    type: mapping
+    label: '教師欄位設定'
+    mapping:
+      filter_by_unit:
+        type: boolean
+        label: '依行政單位欄位過濾教師'
+      unit:
+        type: string
+        label: '行政單位'
+      filter_by_role:
+        type: boolean
+        label: '依職務欄位過濾教師'
+      role:
+        type: string
+        label: '職務'
+      filter_by_domain:
+        type: boolean
+        label: '依領域欄位過濾教師'
+      domain:
+        type: string
+        label: '教學領域'
+      filter_by_subject:
+        type: boolean
+        label: '依科目欄位過濾教師'
+      subject:
+        type: string
+        label: '配課科目'
+      filter_by_grade:
+        type: boolean
+        label: '依年級欄位過濾導師'
+      grade:
+        type: string
+        label: '年級'
+      filter_by_class:
+        type: boolean
+        label: '依班級欄位過濾教師'
+      class:
+        type: string
+        label: '班級'
+      inline_columns:
+        type: integer
+        label: '一行顯示幾個選項'
+field.field_settings.tpedu_students:
+    type: mapping
+    label: '學生欄位設定'
+    mapping:
+      filter_by_current_user:
+        type: boolean
+        label: '依使用者過濾科目'
+      filter_by_class:
+        type: boolean
+        label: '依班級欄位過濾學生'
+      class:
+        type: string
+        label: '班級'
+      inline_columns:
+        type: integer
+        label: '一行顯示幾個選項'

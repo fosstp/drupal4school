@@ -13,10 +13,10 @@ use Drupal\Core\Form\FormStateInterface;
  * @FieldType(
  *   id = "tpedu_classes",
  *   label = "班級",
- *   description = "班級列表",
+ *   description = "班級選單",
  *   category = "臺北市教育人員",
  *   default_widget = "classes_default",
- *   default_formatter = "classes_default"
+ *   default_formatter = "classes_default",
  * )
  */
 class Classes extends FieldItemBase
@@ -61,6 +61,9 @@ class Classes extends FieldItemBase
     public function fieldSettingsForm(array $form, FormStateInterface $form_state)
     {
         $element = array();
+        $element['extra_info'] = array(
+            '#markup' => '<p>此欄位可以單獨使用或結合科目、教師、學生欄位使用！請選擇是否使用過濾機制，若使用年級或科目進行過濾，除了可以設定預設值外，您也可以使用年級或科目欄位進行動態過濾。結合科目欄位時，可用於選取不同班級的授課科目；結合教師欄位時，可用於選取不同班級的任教老師；結合學生欄位時，可用於選取不同班級的學生！</p>',
+        );
         $element['filter_by_current_user'] = array(
             '#type' => 'checkbox',
             '#title' => '依使用者過濾班級',
@@ -75,8 +78,8 @@ class Classes extends FieldItemBase
         );
         $element['grade'] = array(
             '#type' => 'textfield',
-            '#title' => '年級(初始值)',
-            '#description' => '要顯示哪些年級的班級？',
+            '#title' => '預設年級',
+            '#description' => '預設要顯示哪些年級的班級？',
             '#default_value' => $this->getSetting('grade'),
         );
         $element['filter_by_subject'] = array(
@@ -93,7 +96,7 @@ class Classes extends FieldItemBase
         $element['subject'] = array(
             '#type' => 'select',
             '#title' => '配課科目',
-            '#description' => '請選擇已配課的科目',
+            '#description' => '預設的配課科目',
             '#default_value' => $this->getSetting('subject'),
             '#options' => $values,
         );

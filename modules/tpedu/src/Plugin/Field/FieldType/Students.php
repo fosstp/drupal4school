@@ -11,23 +11,23 @@ use Drupal\Core\Form\FormStateInterface;
  * Plugin implementation of the 'tpedu_classes' field type.
  *
  * @FieldType(
- *   id = "tpedu_roles",
- *   label = "職務",
- *   description = "職務選單",
+ *   id = "tpedu_students",
+ *   label = "學生",
+ *   description = "學生選單",
  *   category = "臺北市教育人員",
- *   default_widget = "roles_default",
- *   default_formatter = "roles_default",
+ *   default_widget = "students_default",
+ *   default_formatter = "students_default",
  * )
  */
-class Roles extends FieldItemBase
+class Students extends FieldItemBase
 {
     public static function schema(FieldStorageDefinitionInterface $field)
     {
         return array(
           'columns' => array(
-            'role_id' => array(
+            'uuid' => array(
                 'type' => 'varchar_ascii',
-                'length' => 50,
+                'length' => 36,
                 'not null' => true,
             ),
           ),
@@ -36,12 +36,12 @@ class Roles extends FieldItemBase
 
     public function isEmpty()
     {
-        return empty($this->get('role_id')->getValue());
+        return empty($this->get('uuid')->getValue());
     }
 
     public static function propertyDefinitions(FieldStorageDefinitionInterface $field_definition)
     {
-        $properties['role_id'] = DataDefinition::create('string')->setLabel('職務代號');
+        $properties['uuid'] = DataDefinition::create('string')->setLabel('人員代號');
 
         return $properties;
     }
@@ -49,10 +49,10 @@ class Roles extends FieldItemBase
     public static function defaultFieldSettings()
     {
         return [
-            'filter_by_current_user' => false,
-            'filter_by_unit' => false,
-            'unit' => '',
-            'inline_columns' => 5,
+            'filter_by_current_user' => true,
+            'filter_by_class' => false,
+            'class' => '',
+            'inline_columns' => 10,
         ] + parent::defaultFieldSettings();
     }
 
@@ -60,30 +60,30 @@ class Roles extends FieldItemBase
     {
         $element = array();
         $element['extra_info'] = array(
-            '#markup' => '<p>此欄位可以單獨使用或結合教師欄位使用！請選擇是否使用過濾機制，若使用行政單位進行過濾，除了可以預先選擇行政單位外，您也可以使用行政單位欄位進行動態過濾。結合教師欄位時，可用於選取不同職務的行政人員！</p>',
+            '#markup' => '<p>此欄位必須選擇使用以下兩種過濾機制的其中一種才會正常運作，若使用班級進行過濾，除了可以指定班級外，您也可以使用班級欄位進行動態過濾。</p>',
         );
         $element['filter_by_current_user'] = array(
             '#type' => 'checkbox',
-            '#title' => '依使用者過濾職務',
-            '#description' => '若勾選，僅顯示目前使用者擔任的職務。',
+            '#title' => '依使用者過濾學生',
+            '#description' => '若勾選，僅顯示目前使用者擔任導師（或就讀）班級的學生。',
             '#default_value' => $this->getSetting('filter_by_current_user'),
         );
-        $element['filter_by_unit'] = array(
+        $element['filter_by_class'] = array(
             '#type' => 'checkbox',
-            '#title' => '依行政單位欄位過濾職務（注意：若行政單位欄位為可複選，將不會有作用）',
-            '#description' => '若勾選，僅顯示指定處室的所有職務。',
-            '#default_value' => $this->getSetting('filter_by_unit'),
+            '#title' => '依班級欄位過濾學生（注意：若班級欄位為可複選，將不會有作用）',
+            '#description' => '若勾選，僅顯示指定班級的所有學生。',
+            '#default_value' => $this->getSetting('filter_by_class'),
         );
         $values = array('' => '--');
-        $units = all_units();
-        foreach ($units as $r) {
+        $classes = all_classes();
+        foreach ($classes as $r) {
             $values[$r->id] = $r->name;
         }
-        $element['unit'] = array(
+        $element['class'] = array(
             '#type' => 'select',
-            '#title' => '行政單位',
-            '#description' => '請選擇預設行政單位',
-            '#default_value' => $this->getSetting('unit'),
+            '#title' => '班級',
+            '#description' => '請選擇預設班級',
+            '#default_value' => $this->getSetting('class'),
             '#options' => $values,
         );
         $element['inline_columns'] = array(
