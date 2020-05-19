@@ -1,14 +1,8 @@
-tpedu.admin:
-  title: '臺北市教育人員單一身分驗證模組設定'
-  description: '請先向教育局申請介接專案，然後完成模組設定。'
-  route_name: tpedu.config
+gsync.admin:
+  title: 'G Suite 帳號同步模組設定'
+  description: '請先向 G Suite 申請介接專案，然後完成模組設定。'
+  route_name: gsync.config
   weight: 20
   parent: user.admin_index
 
-tpedu.cache:
-  title: '清除臺北市教育人員資料庫快取'
-  description: '快取資料如果已經過期，可以從這裡清除快取，以便重新取得正確資料。'
-  route_name: tpedu.purge
-  weight: 30
-  parent: user.admin_index
   

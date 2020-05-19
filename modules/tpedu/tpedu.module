@@ -14,10 +14,10 @@ function tpedu_help($route_name, RouteMatchInterface $route_match)
 {
     switch ($route_name) {
     case 'admin/config/people/tpedu':
-      $output = '<p>本模組提供兩種不同功能：使用臺北市教育人員單一身分驗證帳號登入、介接學校全域資料。請先向教育局申請介接專案，完成模組設定後，才能啟用模組。</p>';
+        $output = '<p>本模組提供兩種不同功能：使用臺北市教育人員單一身分驗證帳號登入、介接學校全域資料。請先向教育局申請介接專案，完成模組設定後，才能啟用模組。</p>';
 
-      return $output;
-  }
+        return $output;
+    }
 }
 
 function tpedu_user_load(array $entities)

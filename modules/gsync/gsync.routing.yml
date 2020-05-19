@@ -1,39 +1,15 @@
-tpedu.config:
-  path: /admin/config/people/tpedu
+gsync.config:
+  path: /admin/config/people/gsync
   defaults:
-    _form: \Drupal\tpedu\Form\tpeduConfigForm
-    _title: '臺北市教育人員單一身分驗證模組設定'
+    _form: \Drupal\gsync\Form\gsyncConfigForm
+    _title: 'G Suite 帳號同步模組設定'
   requirements:
     _permission: 'administer site configuration'
 
-tpedu.school_select:
-  path: /admin/config/people/tpedu/school
+gsync.sync:
+  path: /admin/people/gsync
   defaults:
-    _form: \Drupal\tpedu\Form\tpeduSchoolSelectForm
-    _title: '臺北市教育人員單一身分驗證模組設定'
+    _controller: \Drupal\gsync\Controller\gsyncController::handler
+    _title: 'G Suite 帳號同步'
   requirements:
     _permission: 'administer site configuration'
-    
-tpedu.purge:
-  path: /admin/config/people/tpedu/purge
-  defaults:
-    _controller: \Drupal\tpedu\Controller\tpeduController::purge
-    _title: '清除臺北市教育人員資料庫快取'
-  requirements:
-    _permission: 'administer site configuration'
-    
-tpedu.sso:
-  path: /retrieve
-  defaults:
-    _controller: \Drupal\tpedu\Controller\tpeduController::handle
-    _title: 'OAuth2 login'
-  requirements:
-    _access: 'TRUE'
-
-tpedu.personal:
-  path: /personal_data_notice
-  defaults:
-    _controller: \Drupal\tpedu\Controller\tpeduController::notice
-    _title: '個人資料蒐集政策'
-  requirements:
-    _access: 'TRUE'

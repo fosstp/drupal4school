@@ -4,39 +4,23 @@ use Drupal\Core\Url;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
-use Symfony\Component\HttpFoundation\Session;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use Drupal\user\Entity\User;
 use Drupal\user\UserInterface;
 
-require 'tpedu.api.php';
+require 'gsync.api.php';
 
-function tpedu_help($route_name, RouteMatchInterface $route_match) {
-  switch ($route_name) {
-    case 'admin/config/people/tpedu':
-      $output = '<p>本模組提供兩種不同功能：使用臺北市教育人員單一身分驗證帳號登入、介接學校全域資料。請先向教育局申請介接專案，完成模組設定後，才能啟用模組。</p>';
-      return $output;
-  }
-}
+function gsync_help($route_name, RouteMatchInterface $route_match)
+{
+    switch ($route_name) {
+        case 'admin/config/people/gsync':
+            $output = '<p>本模組提供將臺北市教育人員單一身分驗證師生帳號同步到 G Suite 網域的功能。請先向 Google 申請介接專案，完成模組設定後，才能啟用模組。</p>';
 
-function tpedu_user_load(array $entities) {
-    $config = \Drupal::config('tpedu.settings');
-    if (!$config->get('enable')) return;
-    foreach ($entities as $uid => $account) {
-        if ($account->get("init")->getValue() == 'tpedu') {
-            $uuid = $account->uuid();
-            $user = get_user($uuid);
-            $account->tpedu = $user;
-        }
+            return $output;
     }
 }
 
-function tpedu_user_format_name_alter(&$name, $account) {
-  $account = User::load($account->id());
-  if ($account->get("init")->getValue() == 'tpedu') return $account->tpedu->realname;
-}
-
-function tpedu_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+function tpedu_form_alter(&$form, FormStateInterface $form_state, $form_id)
+{
     $config = \Drupal::config('tpedu.settings');
     if ($config->get('enable') && ($form_id == 'user_login_block' || $form_id == 'user_login_form')) {
         unset($form['links']);
@@ -48,10 +32,10 @@ function tpedu_form_alter(&$form, FormStateInterface $form_state, $form_id) {
             '#type' => 'html_tag',
             '#tag' => 'img',
             '#attributes' => array(
-                'src' => '//'. $_SERVER['HTTP_HOST'] .'/'. drupal_get_path('module', 'tpedu') . '/tpedusso.png',
+                'src' => '//'.$_SERVER['HTTP_HOST'].'/'.drupal_get_path('module', 'tpedu').'/tpedusso.png',
                 'style' => 'cursor: pointer; border:none; width:240px;',
                 'title' => '使用臺北市教育人員單一身分驗證登入',
-                'onclick' => 'tpedussoAuth();'
+                'onclick' => 'tpedussoAuth();',
             ),
         );
         if ($config->get('google_enable')) {
@@ -59,10 +43,10 @@ function tpedu_form_alter(&$form, FormStateInterface $form_state, $form_id) {
                 '#type' => 'html_tag',
                 '#tag' => 'img',
                 '#attributes' => array(
-                    'src' => '//'. $_SERVER['HTTP_HOST'] .'/'. drupal_get_path('module', 'tpedu') . '/google.png',
+                    'src' => '//'.$_SERVER['HTTP_HOST'].'/'.drupal_get_path('module', 'tpedu').'/google.png',
                     'style' => 'cursor: pointer; border:none; width:240px;',
                     'title' => '使用 Google 帳號登入',
-                    'onclick' => 'googleAuth();'
+                    'onclick' => 'googleAuth();',
                 ),
             );
         }
@@ -81,7 +65,8 @@ function tpedu_form_alter(&$form, FormStateInterface $form_state, $form_id) {
     }
 }
 
-function tpedu_user_logout($account) {
+function tpedu_user_logout($account)
+{
     $redirect = \Drupal::config('tpedu.settings')->get('logout_goto_url');
     if ($redirect) {
         $response = new RedirectResponse(Url::fromRoute($redirect));
@@ -89,10 +74,11 @@ function tpedu_user_logout($account) {
     }
 }
 
-function tpedu_user_view(array &$build, UserInterface $account, EntityViewDisplayInterface $display) {
+function tpedu_user_view(array &$build, UserInterface $account, EntityViewDisplayInterface $display)
+{
     $config = \Drupal::config('tpedu.settings');
-    drupal_set_message($account->get("init"));
-    if ($config->get('enable') && $account->get("init")->getValue() == 'tpedu') {
+    drupal_set_message($account->get('init'));
+    if ($config->get('enable') && $account->get('init')->getValue() == 'tpedu') {
         if ($display->getComponent('birthday')) {
             $build['birthday'] = array(
                 '#type' => 'item',
