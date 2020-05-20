@@ -390,7 +390,6 @@ function fetch_units()
     $ous = api('all_units');
     if ($ous) {
         foreach ($ous as $o) {
-            \Drupal::logger('tpedu')->debug($o->description.'strpos='.mb_strpos($o->description, '科任', 0, 'UTF-8'));
             if (mb_strpos($o->description, '科任') !== false) {
                 $config = \Drupal::configFactory()->getEditable('tpedu.settings');
                 $config->set('sub_dept', $o->ou);
@@ -645,11 +644,11 @@ function all_domains()
     $config = \Drupal::config('tpedu.settings');
     $off = $config->get('refresh_days');
     $query = \Drupal::database()
-        ->query("select distinct domain from {tpedu_subjects} where fetch_date > DATE_SUB(NOW(), INTERVAL $off DAY) order by id");
+        ->query("select distinct domain from {tpedu_subjects} where fetch_date > DATE_SUB(NOW(), INTERVAL $off DAY)");
     $data = $query->fetchAll();
     if (!$data) {
         fetch_subjects();
-        $query = \Drupal::database()->query('select distinct domain from {tpedu_subjects} order by id');
+        $query = \Drupal::database()->query('select distinct domain from {tpedu_subjects}');
         $data = $query->fetchAll();
     }
     if ($data) {
