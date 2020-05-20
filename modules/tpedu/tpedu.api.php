@@ -167,6 +167,10 @@ function fetch_user($uuid)
             $account = $user->uid;
         }
         $stu = ($user->employeeType == '學生') ? 1 : 0;
+        $m_dept_id = '';
+        $m_dept_name = '';
+        $m_role_id = '';
+        $m_role_name = '';
         if ($stu == 1) {
             $myclass = $user->tpClass;
             $myseat = $user->tpSeat;
@@ -177,7 +181,7 @@ function fetch_user($uuid)
             }
             $m_role_id = $m_dept_id;
             $m_role_name = $m_dept_name;
-        } else {
+        } elseif (isset($user->ou) && isset($user->title)) {
             $sdept = $config->get('sub_dept');
             if (is_array($user->ou)) {
                 foreach ($user->ou as $ou_pair) {
@@ -209,7 +213,7 @@ function fetch_user($uuid)
                 $a = explode(',', $user->ou);
                 $o = $a[0];
                 $m_dept_id = $a[1];
-                $d = $user->department->$o[0];
+                $d = $user->department->{$o[0]};
                 $m_dept_name = $d->name;
             }
             if (is_array($user->title)) {
