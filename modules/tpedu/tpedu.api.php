@@ -181,71 +181,73 @@ function fetch_user($uuid)
             }
             $m_role_id = $m_dept_id;
             $m_role_name = $m_dept_name;
-        } elseif (isset($user->ou) && isset($user->title)) {
-            $sdept = $config->get('sub_dept');
-            if (is_array($user->ou)) {
-                foreach ($user->ou as $ou_pair) {
-                    $a = explode(',', $ou_pair);
-                    $o = $a[0];
-                    if ($a[1] != $sdept) {
-                        $m_dept_id = $a[1];
-                        $depts = $user->department->$o;
-                        foreach ($depts as $d) {
-                            if ($d->key == $ou_pair) {
-                                $m_dept_name = $d->name;
+        } else {
+            if (isset($user->ou) && isset($user->title)) {
+                $sdept = $config->get('sub_dept');
+                if (is_array($user->ou)) {
+                    foreach ($user->ou as $ou_pair) {
+                        $a = explode(',', $ou_pair);
+                        $o = $a[0];
+                        if ($a[1] != $sdept) {
+                            $m_dept_id = $a[1];
+                            $depts = $user->department->{$o};
+                            foreach ($depts as $d) {
+                                if ($d->key == $ou_pair) {
+                                    $m_dept_name = $d->name;
+                                }
                             }
-                        }
-                    } else {
-                        $s_dept_id = $a[1];
-                        $depts = $user->department->$o;
-                        foreach ($depts as $d) {
-                            if ($d->key == $ou_pair) {
-                                $s_dept_name = $d->name;
-                            }
-                        }
-                    }
-                }
-                if (empty($m_dept_id)) {
-                    $m_dept_id = $s_dept_id;
-                    $m_dept_name = $s_dept_name;
-                }
-            } else {
-                $a = explode(',', $user->ou);
-                $o = $a[0];
-                $m_dept_id = $a[1];
-                $d = $user->department->{$o[0]};
-                $m_dept_name = $d->name;
-            }
-            if (is_array($user->title)) {
-                foreach ($user->title as $ro_pair) {
-                    $a = explode(',', $ro_pair);
-                    $o = $a[0];
-                    if ($a[1] == $m_dept_id) {
-                        $m_role_id = $a[2];
-                        $roles = $user->titleName->$o;
-                        foreach ($roles as $r) {
-                            if ($r->key == $ro_pair) {
-                                $m_role_name = $r->name;
+                        } else {
+                            $s_dept_id = $a[1];
+                            $depts = $user->department->{$o};
+                            foreach ($depts as $d) {
+                                if ($d->key == $ou_pair) {
+                                    $s_dept_name = $d->name;
+                                }
                             }
                         }
                     }
+                    if (empty($m_dept_id)) {
+                        $m_dept_id = $s_dept_id;
+                        $m_dept_name = $s_dept_name;
+                    }
+                } else {
+                    $a = explode(',', $user->ou);
+                    $o = $a[0];
+                    $m_dept_id = $a[1];
+                    $d = $user->department->{$o[0]};
+                    $m_dept_name = $d->name;
+                }
+                if (is_array($user->title)) {
+                    foreach ($user->title as $ro_pair) {
+                        $a = explode(',', $ro_pair);
+                        $o = $a[0];
+                        if ($a[1] == $m_dept_id) {
+                            $m_role_id = $a[2];
+                            $roles = $user->titleName->$o;
+                            foreach ($roles as $r) {
+                                if ($r->key == $ro_pair) {
+                                    $m_role_name = $r->name;
+                                }
+                            }
+                        }
+                        $database->insert('tpedu_jobs')->fields(array(
+                            'uuid' => $uuid,
+                            'dept_id' => $a[1],
+                            'role_id' => $a[2],
+                        ))->execute();
+                    }
+                } else {
+                    $a = explode(',', $user->title);
+                    $o = $a[0];
+                    $m_role_id = $a[1];
+                    $d = $user->titleName->$o[0];
+                    $m_role_name = $d->name;
                     $database->insert('tpedu_jobs')->fields(array(
                         'uuid' => $uuid,
                         'dept_id' => $a[1],
                         'role_id' => $a[2],
                     ))->execute();
                 }
-            } else {
-                $a = explode(',', $user->title);
-                $o = $a[0];
-                $m_role_id = $a[1];
-                $d = $user->titleName->$o[0];
-                $m_role_name = $d->name;
-                $database->insert('tpedu_jobs')->fields(array(
-                    'uuid' => $uuid,
-                    'dept_id' => $a[1],
-                    'role_id' => $a[2],
-                ))->execute();
             }
             if (!empty($user->tpTutorClass)) {
                 $myclass = $user->tpTutorClass;
@@ -364,7 +366,7 @@ function find_user(array $filter)
         foreach ($uuids as $uuid) {
             $users[] = get_user($uuid);
         }
-        usort($users, function ($a, $b) { return strcmp($a->name, $b->name); });
+        usort($users, function ($a, $b) { return strcmp($a->realname, $b->realname); });
 
         return $users;
     }
@@ -380,7 +382,7 @@ function all_teachers()
         foreach ($uuids as $uuid) {
             $users[] = get_user($uuid);
         }
-        usort($users, function ($a, $b) { return strcmp($a->name, $b->name); });
+        usort($users, function ($a, $b) { return strcmp($a->realname, $b->realname); });
 
         return $users;
     }
@@ -955,7 +957,7 @@ function get_students_of_class($cls)
         foreach ($uuids as $uuid) {
             $users[] = get_user($uuid);
         }
-        usort($users, function ($a, $b) { return strcmp($a->name, $b->name); });
+        usort($users, function ($a, $b) { return strcmp($a->realname, $b->realname); });
 
         return $users;
     }
