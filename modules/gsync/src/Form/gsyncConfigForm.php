@@ -11,7 +11,7 @@ use Drupal\Core\Form\ConfirmFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Form\ConfirmFormHelper;
 
-class tpeduConfigForm extends ConfirmFormBase
+class gsyncConfigForm extends ConfirmFormBase
 {
     public function getFormId()
     {
@@ -58,6 +58,19 @@ class tpeduConfigForm extends ConfirmFormBase
             '#type' => 'textfield',
             '#title' => 'G Suite 管理員帳號',
             '#default_value' => $config->get('google_domain_admin'),
+            '#description' => '請設定 G Suite 網域的管理員郵件地址，該管理員必須具備該網域的最高管理權限。Google 服務帳號將以該管理員的身份進行資料操作。',
+        );
+        $form['teacher_orgunit'] = array(
+            '#type' => 'textfield',
+            '#title' => '教師帳號所在的機構',
+            '#default_value' => $config->get('teacher_orgunit'),
+            '#description' => '如果您使用子機構來區分教師與學生帳號，請在這裡輸入教師帳號子機構的階層路徑，最高層級為 <strong>/</strong>，假如您輸入<strong>/小學部/教師帳號</strong>，意味著所有的教師帳號將會同步到第二層級機構<strong>小學部</strong>的子機構<strong>教師帳號</strong>中。由於機構僅用來套用 Google 的相關設定，無法如群組一般擁有郵寄清單和論壇主頁，機構為階層結構，而群組為巢狀結構，所以您不應該使用機構來對教師帳號或學生帳號做進一步的分類，而應該使用群組來進行分類。本模組將依循此法則進行帳號同步作業！',
+        );
+        $form['student_orgunit'] = array(
+            '#type' => 'textfield',
+            '#title' => '學生帳號所在的機構',
+            '#default_value' => $config->get('student_orgunit'),
+            '#description' => '如果您使用子機構來區分教師與學生帳號，請在這裡輸入學生帳號子機構的階層路徑，最高層級為 <strong>/</strong>，假如您輸入<strong>/小學部/學生帳號</strong>，意味著所有的學生帳號將會同步到第二層級機構<strong>小學部</strong>的子機構<strong>學生帳號</strong>中。',
         );
         $form['actions'] = array(
             '#type' => 'actions',
@@ -74,6 +87,7 @@ class tpeduConfigForm extends ConfirmFormBase
     {
         global $base_url;
         $error = '';
+        $message = '';
         $config = \Drupal::configFactory()->getEditable('gsync.settings');
         $form_state->cleanValues();
         foreach ($form_state->getValues() as $key => $value) {
@@ -83,13 +97,27 @@ class tpeduConfigForm extends ConfirmFormBase
                     $file->status = FILE_STATUS_PERMANENT;
                     file_save($file);
                     $config->set($key, $file->filename);
+                    $message = 'Google 服務帳戶的金鑰檔案已經更新。';
                 }
             } else {
                 $config->set($key, $value);
             }
         }
-        $config->set('google_call_back', 'https://'.$_SERVER['HTTP_HOST'].'/gsync');
         $config->save();
-        //test
+        $ok = true;
+        $directory = initGoogleService();
+        if ($directory) {
+            try {
+                $userkey = $config->get('google_domain_admin');
+                $user = $directory->users->get($userkey);
+            } catch (Exception $e) {
+                $ok = false;
+            }
+        } else {
+            $ok = false;
+        }
+        if ($ok) {
+            $config->set('enabled', true);
+        }
     }
 }
