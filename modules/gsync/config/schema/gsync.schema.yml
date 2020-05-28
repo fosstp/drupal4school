@@ -4,3 +4,15 @@ google_service_json:
 google_domain_admin:
   type: string
   label: 'G Suite 管理員帳號'
+google_domain:
+  type: string
+  label: 'G Suite 網域'
+teacher_orgunit:
+  type: string
+  label: '教師帳號所在的 G Suite 子機構'
+student_orgunit:
+  type: string
+  label: '學生帳號所在的 G Suite 子機構'
+enabled:
+  type: boolean
+  label: 'Google API 測試完成'

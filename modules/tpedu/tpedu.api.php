@@ -269,6 +269,8 @@ function fetch_user($uuid)
             'id' => $user->employeeNumber,
             'student' => $stu,
             'account' => $account,
+            'sn' => $user->sn,
+            'gn' => $user->givenName,
             'realname' => $user->displayName,
             'dept_id' => $m_dept_id,
             'dept_name' => $m_dept_name,
@@ -276,6 +278,7 @@ function fetch_user($uuid)
             'role_name' => $m_role_name,
             'birthdate' => date('Y-m-d H:i:s', strtotime($user->birthDate)),
             'gender' => $user->gender,
+            'status' => $user->inetUserStatus,
         );
         if (!empty($user->mobile)) {
             $fields['mobile'] = $user->mobile;

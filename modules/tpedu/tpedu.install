@@ -185,6 +185,16 @@ function tpedu_schema()
                 'length' => 50,
                 'description' => '登入帳號',
             ),
+            'sn' => array(
+                'type' => 'varchar',
+                'length' => 50,
+                'description' => '姓',
+            ),
+            'gn' => array(
+                'type' => 'varchar',
+                'length' => 50,
+                'description' => '名',
+            ),
             'realname' => array(
                 'type' => 'varchar',
                 'length' => 50,
@@ -259,6 +269,11 @@ function tpedu_schema()
                 'type' => 'varchar',
                 'length' => 100,
                 'description' => '特殊身分註記',
+            ),
+            'status' => array(
+                'type' => 'varchar',
+                'length' => 50,
+                'description' => '人員狀態',
             ),
             'fetch_date' => array(
                 'type' => 'varchar',

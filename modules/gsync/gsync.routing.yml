@@ -9,7 +9,7 @@ gsync.config:
 gsync.sync:
   path: /admin/people/gsync
   defaults:
-    _controller: \Drupal\gsync\Controller\gsyncController::handler
+    _form: \Drupal\gsync\Form\gsyncOperationForm
     _title: 'G Suite 帳號同步'
   requirements:
     _permission: 'administer site configuration'

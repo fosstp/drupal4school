@@ -54,6 +54,12 @@ class gsyncConfigForm extends ConfirmFormBase
             '#default_value' => $config->get('google_service_json'),
             '#description' => '請從 Google apis 主控台專案管理頁面下載上述「服務帳戶」所提供的 JSON 檔案並上傳到這裡。',
         );
+        $form['google_domain'] = array(
+            '#type' => 'textfield',
+            '#title' => 'G Suite 網域',
+            '#default_value' => $config->get('google_domain'),
+            '#description' => '請設定 G Suite 網域名稱，通常是貴機構的 DNS 域名。',
+        );
         $form['google_domain_admin'] = array(
             '#type' => 'textfield',
             '#title' => 'G Suite 管理員帳號',
@@ -118,6 +124,7 @@ class gsyncConfigForm extends ConfirmFormBase
         }
         if ($ok) {
             $config->set('enabled', true);
+            $config->save();
         }
     }
 }

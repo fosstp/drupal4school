@@ -30,7 +30,7 @@ function initGoogleService()
     }
 }
 
-function listOrgUnits()
+function gs_listOrgUnits()
 {
     global $directory;
     try {
@@ -42,7 +42,7 @@ function listOrgUnits()
     }
 }
 
-function getOrgUnit($orgPath)
+function gs_getOrgUnit($orgPath)
 {
     global $directory;
     try {
@@ -52,7 +52,7 @@ function getOrgUnit($orgPath)
     }
 }
 
-function createOrgUnit($orgPath, $orgName, $orgDescription)
+function gs_createOrgUnit($orgPath, $orgName, $orgDescription)
 {
     global $directory;
     $org_unit = new \Google_Service_Directory_OrgUnit();
@@ -66,7 +66,7 @@ function createOrgUnit($orgPath, $orgName, $orgDescription)
     }
 }
 
-function updateOrgUnit($orgPath, $orgName)
+function gs_updateOrgUnit($orgPath, $orgName)
 {
     global $directory;
     $org_unit = new \Google_Service_Directory_OrgUnit();
@@ -78,7 +78,7 @@ function updateOrgUnit($orgPath, $orgName)
     }
 }
 
-function deleteOrgUnit($orgPath)
+function gs_deleteOrgUnit($orgPath)
 {
     global $directory;
     try {
@@ -88,7 +88,7 @@ function deleteOrgUnit($orgPath)
     }
 }
 
-function findUsers($filter)
+function gs_findUsers($filter)
 {
     global $directory;
     try {
@@ -101,7 +101,7 @@ function findUsers($filter)
 }
 
 // userKey must be their gmail address.
-function getUser($userKey)
+function gs_getUser($userKey)
 {
     global $directory;
     if (!strpos($userKey, '@')) {
@@ -114,17 +114,25 @@ function getUser($userKey)
     }
 }
 
-function createUser($userObj)
+function gs_createUser($t, $userKey)
 {
     global $directory;
+    $user = new \Google_Service_Directory_User();
+    $user->setChangePasswordAtNextLogin(false);
+    $user->setAgreedToTerms(true);
+    $user->setPrimaryEmail($userKey);
+    $user->setHashFunction('SHA-1');
+    $user->setPassword(sha1(substr($t->idno, -6)));
     try {
-        return $directory->users->insert($userObj);
+        $user = $directory->users->insert($user);
+
+        return gs_syncUser($t, $user);
     } catch (\Google_Service_Exception $e) {
         return false;
     }
 }
 
-function updateUser($userKey, $userObj)
+function gs_updateUser($userKey, $userObj)
 {
     global $directory;
     try {
@@ -134,7 +142,7 @@ function updateUser($userKey, $userObj)
     }
 }
 
-function deleteUser($userKey)
+function gs_deleteUser($userKey)
 {
     global $directory;
     if (!strpos($userKey, '@')) {
@@ -147,50 +155,62 @@ function deleteUser($userKey)
     }
 }
 
-function sync(User $user)
+function gs_syncUser($t, $user)
 {
-    $new_user = false;
-    if ($user->nameID()) {
-        $gmail = $user->nameID().'@'.config('saml.email_domain');
-        $gsuite_user = $this->getUser($gmail);
-        if (!$gsuite_user) {
-            $new_user = true;
-        }
-    } else {
-        $new_user = true;
+    $config = \Drupal::config('gsync.settings');
+    $names = new \Google_Service_Directory_UserName();
+    $names->setFamilyName($t->sn);
+    $names->setGivenName($t->gn);
+    $names->setFullName($t->realname);
+    $user->setName($names);
+    if (!empty($t->email) && $t->email != $user->getPrimaryEmail()) {
+        $user->setRecoveryEmail($t->email);
     }
-    if ($new_user) {
-        $gsuite_user = new \Google_Service_Directory_User();
-        $gsuite_user->setChangePasswordAtNextLogin(false);
-        $gsuite_user->setAgreedToTerms(true);
-        $nameID = $user->account();
-        if (!empty($nameID) && !$user->is_default_account()) {
-            $gmail = $nameID.'@'.config('saml.email_domain');
-            $gsuite_user->setPrimaryEmail($gmail);
-            $gsuite_user->setPassword($user->uuid);
+    if (!empty($t->dept_id) && !empty($t->role_id)) {
+        $myorg = $user->getOrganizations();
+        $neworg = new \Google_Service_Directory_UserOrganization();
+        $neworg->setDepartment($t->dept_name);
+        $neworg->setTitle($t->role_name);
+        $neworg->setPrimary(true);
+        if (is_array($myorg)) {
+            if (!in_array($neworg, $myorg)) {
+                $myorg = array_unshift($myorg, $neworg);
+            }
         } else {
-            return false;
+            $myorg = $neworg;
         }
+        $user->setOrganizations($myorg);
     }
-    if ($user->email) {
-        $gsuite_user->setRecoveryEmail($user->email);
-    }
-    $phone = new \Google_Service_Directory_UserPhone();
-    if ($user->mobile) {
+    if (!empty($t->mobile)) {
+        $phones = $user->getPhones();
+        $phone = new \Google_Service_Directory_UserPhone();
         $phone->setPrimary(true);
         $phone->setType('mobile');
-        $phone->setValue($user->mobile);
-        $phones[] = $phone;
-        $gsuite_user->setPhones($phones);
+        $phone->setValue($t->mobile);
+        if (is_array($phones)) {
+            if (!in_array($phone, $phones)) {
+                $phones = array_unshift($phones, $phone);
+            }
+        }
+        $user->setPhones($phones);
+        $user->setRecoveryPhone($phone);
     }
-    $names = new \Google_Service_Directory_UserName();
-    $names->setFamilyName($user->ldap['sn']);
-    $names->setGivenName($user->ldap['givenName']);
-    $names->setFullName($user->name);
-    $gsuite_user->setName($names);
+    if (!empty($t->telephone)) {
+        $phones = $user->getPhones();
+        $phone = new \Google_Service_Directory_UserPhone();
+        $phone->setPrimary(false);
+        $phone->setValue($t->telephone);
+        if (is_array($phones)) {
+            if (!in_array($phone, $phones)) {
+                $phones = array_unshift($phones, $phone);
+            }
+        }
+        $user->setPhones($phones);
+    }
+
     $gender = new \Google_Service_Directory_UserGender();
-    if (!empty($user->ldap['gender'])) {
-        switch ($user->ldap['gender']) {
+    if (!empty($t->gender)) {
+        switch ($t->gender) {
             case 0:
                 $gender->setType('unknow');
                 break;
@@ -205,71 +225,20 @@ function sync(User $user)
                 break;
         }
     }
-    $gsuite_user->setGender($gender);
-    $gsuite_user->setIsAdmin($user->is_admin ? true : false);
-    if (!empty($user->ldap['o'])) {
-        $orgs = array();
-        $orgIds = array();
-        if (is_array($user->ldap['o'])) {
-            $orgs = $user->ldap['o'];
-        } else {
-            $orgs[] = $user->ldap['o'];
-        }
-        if (is_array($user->ldap['adminSchools'])) {
-            $orgs = array_values(array_unique(array_merge($orgs, $user->ldap['adminSchools'])));
-        }
-        foreach ($orgs as $org) {
-            $org_title = $user->ldap['school'][$org];
-            $org_unit = $this->getOrgUnit($org);
-            if (!$org_unit) {
-                $org_unit = $this->createOrgUnit('/', $org, $org_title);
-                if (!$org_unit) {
-                    return false;
-                }
-            }
-            $orgIds[$org] = substr($org_unit->getOrgUnitId(), 3);
-        }
-        if ($user->ldap['employeeType'] == '學生') {
-            if (!$this->getOrgUnit($orgs[0].'/students')) {
-                if (!$this->createOrgUnit('/'.$orgs[0], 'students', '學生')) {
-                    return false;
-                }
-            }
-            $gsuite_user->setOrgUnitPath('/'.$orgs[0].'/students');
-        } else {
-            $gsuite_user->setOrgUnitPath('/'.$orgs[0]);
-        }
-    }
-    // Google is not support bcrypt yet!! so we can't sync password to g-suite!
-    // $gsuite_user->setPassword($user->password);
-    // $gsuite_user->setHashFunction('bcrypt');
-    if (!$new_user) {
-        $result = $this->updateUser($gmail, $gsuite_user);
+    $user->setGender($gender);
+    if ($t->student) {
+        $user->setOrgUnitPath($config->get('student_orgunit'));
     } else {
-        if ($result = $this->createUser($gsuite_user)) {
-            $gsuite = new Gsuite();
-            $gsuite->idno = $user->idno;
-            $gsuite->nameID = $nameID;
-            $gsuite->primary = true;
-            $gsuite->save();
+        if (!empty($t->class)) {
+            $user->setIsAdmin(true);
         }
-    }
-    if ($result) {
-        if (is_array($user->ldap['adminSchools'])) {
-            $userID = $result->getId();
-            foreach ($user->ldap['adminSchools'] as $org) {
-                $orgID = $orgIds[$org];
-                $this->delegatedAdmin($userID, $orgID);
-            }
-        }
-
-        return true;
+        $user->setOrgUnitPath($config->get('teacher_orgunit'));
     }
 
-    return false;
+    return gs_updateUser($user->getPrimaryEmail(), $user);
 }
 
-function createUserAlias($userKey, $alias)
+function gs_createUserAlias($userKey, $alias)
 {
     global $directory;
     $email_alias = new \Google_Service_Directory_Alias();
@@ -281,7 +250,7 @@ function createUserAlias($userKey, $alias)
     }
 }
 
-function listUserAliases($userKey)
+function gs_listUserAliases($userKey)
 {
     global $directory;
     try {
@@ -291,7 +260,7 @@ function listUserAliases($userKey)
     }
 }
 
-function removeUserAlias($userKey, $alias)
+function gs_removeUserAlias($userKey, $alias)
 {
     global $directory;
     try {
@@ -301,7 +270,7 @@ function removeUserAlias($userKey, $alias)
     }
 }
 
-function listGroups()
+function gs_listGroups()
 {
     global $directory;
     try {
@@ -311,7 +280,21 @@ function listGroups()
     }
 }
 
-function listMembers($groupId)
+function gs_createGroup($groupId, $groupName)
+{
+    global $directory;
+    $group = new Google_Service_Directory_Group();
+    $group->setEmail($groupId);
+    $group->setDescription($groupName);
+    $group->setName($groupName);
+    try {
+        return $directory->groups->insert($group);
+    } catch (\Google_Service_Exception $e) {
+        return false;
+    }
+}
+
+function gs_listMembers($groupId)
 {
     global $directory;
     try {
@@ -321,7 +304,7 @@ function listMembers($groupId)
     }
 }
 
-function addMembers($groupId, $members)
+function gs_addMembers($groupId, $members)
 {
     global $directory;
     $users = array();
@@ -336,4 +319,17 @@ function addMembers($groupId, $members)
     }
 
     return $users;
+}
+
+function gs_removeMembers($groupId, $members)
+{
+    global $directory;
+    $users = array();
+    foreach ($members as $m) {
+        $member = $m->getEmail();
+        try {
+            $directory->members->delete($groupId, $member);
+        } catch (\Google_Service_Exception $e) {
+        }
+    }
 }
