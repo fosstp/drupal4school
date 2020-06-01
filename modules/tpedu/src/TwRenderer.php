@@ -91,7 +91,12 @@ class TwRenderer extends HtmlRenderer
         foreach ($links as $lnk) {
             $mytitle = $lnk->getAttribute('title');
             if (!$mytitle) {
-                $lnk->setAttribute('title', $lnk->nodeValue);
+                if ($lnk->nodeValue) {
+                    $lnk->setAttribute('title', trim($lnk->nodeValue));
+                } else {
+                    $lnk->nodeValue = '::';
+                    $lnk->setAttribute('title', $lnk->getAttribute('id'));
+                }
             }
             $lnk->setAttribute('tabindex', $tab_index);
             ++$tab_index;
