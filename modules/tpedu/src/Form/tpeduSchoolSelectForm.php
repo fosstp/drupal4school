@@ -40,24 +40,24 @@ class tpeduSchoolSelectForm extends ConfirmFormBase
         global $base_url;
         $tempstore = \Drupal::service('user.private_tempstore')->get('tpedu');
         $form['helper'] = array(
-      '#type' => 'markup',
-      '#markup' => '本模組僅能管理單一學校或機構，如果您具備多重機構管理員身分，請從下面選單選取您要管理的機構。如果您要切換不同機構，請先移除重裝模組，然後再變更設定。',
-    );
+            '#type' => 'markup',
+            '#markup' => '本模組僅能管理單一學校或機構，如果您具備多重機構管理員身分，請從下面選單選取您要管理的機構。如果您要切換不同機構，請先移除重裝模組，然後再變更設定。',
+        );
         if ($tempstore->get('organization')) {
             $form['api.dc'] = array(
-        '#type' => 'select',
-        '#title' => '請選擇要管理的學校或機構：',
-        '#options' => $tempstore->get('organization'),
-        '#required' => true,
-      );
+                '#type' => 'select',
+                '#title' => '請選擇要管理的學校或機構：',
+                '#options' => $tempstore->get('organization'),
+                '#required' => true,
+            );
         }
         $form['actions'] = array(
-      '#type' => 'actions',
-      'submit' => array(
-        '#type' => 'submit',
-        '#value' => '選好了！',
-      ),
-    );
+            '#type' => 'actions',
+            'submit' => array(
+                '#type' => 'submit',
+                '#value' => '選好了！',
+            ),
+        );
 
         return $form;
     }

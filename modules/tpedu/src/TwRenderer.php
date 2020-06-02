@@ -24,8 +24,8 @@ class TwRenderer extends HtmlRenderer
         // template, and use the bubbled #attached metadata from $page to ensure we
         // load all attached assets.
         $html = [
-          '#type' => 'html',
-          'page' => $page,
+            '#type' => 'html',
+            'page' => $page,
         ];
 
         // The special page regions will appear directly in html.html.twig, not in
@@ -61,7 +61,7 @@ class TwRenderer extends HtmlRenderer
         // entire render cache, regardless of the cache bin.
         $content['#cache']['tags'][] = 'rendered';
         $response = new HtmlResponse($content, 200, [
-          'Content-Type' => 'text/html; charset=UTF-8',
+            'Content-Type' => 'text/html; charset=UTF-8',
         ]);
 
         return $response;
@@ -71,22 +71,20 @@ class TwRenderer extends HtmlRenderer
     {
         $dom = new \DOMDocument();
         libxml_use_internal_errors(true);
-        $dom->loadHTML('<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />'.$content);
+        $dom->loadHTML('<?xml encoding="utf-8" ?>'.$content);
+        $head = $dom->getElementsByTagName('head')[0];
+        $meta = $dom->createElement('meta');
+        $meta->setAttribute('http-equiv', 'content-type');
+        $meta->setAttribute('content', 'text/html; charset=utf-8');
+        $head->insertBefore($meta, $head->firstChild);
         $images = $dom->getElementsByTagName('img');
-        $links = $dom->getElementsByTagName('a');
-        $objs = $dom->getElementsByTagName('object');
-        $applets = $dom->getElementsByTagName('applet');
-        $img_maps = $dom->getElementsByTagName('area');
-        $ems = $dom->getElementsByTagName('i');
-        $strongs = $dom->getElementsByTagName('b');
-        $tables = $dom->getElementsByTagName('table');
-        $table_headers = $dom->getElementsByTagName('th');
         foreach ($images as $img) {
             $myalt = $img->getAttribute('alt');
             if (!$myalt) {
                 $img->setAttribute('alt', '排版用裝飾圖片');
             }
         }
+        $links = $dom->getElementsByTagName('a');
         $tab_index = 1;
         foreach ($links as $lnk) {
             $mytitle = $lnk->getAttribute('title');
@@ -101,12 +99,14 @@ class TwRenderer extends HtmlRenderer
             $lnk->setAttribute('tabindex', $tab_index);
             ++$tab_index;
         }
+        $objs = $dom->getElementsByTagName('object');
         foreach ($objs as $obj) {
             $myalt = $obj->nodeValue;
             if (!$myalt) {
                 $obj->nodeValue = $obj->getAttribute('data');
             }
         }
+        $applets = $dom->getElementsByTagName('applet');
         foreach ($applets as $app) {
             $myalt = $app->nodeValue;
             if (!$myalt) {
@@ -116,20 +116,24 @@ class TwRenderer extends HtmlRenderer
                 $app->setAttribute('alt', $myalt);
             }
         }
+        $img_maps = $dom->getElementsByTagName('area');
         foreach ($img_maps as $area) {
             $myalt = $area->getAttribute('alt');
             if (!$myalt) {
                 $area->setAttribute('alt', $area->getAttribute('href'));
             }
         }
+        $ems = $dom->getElementsByTagName('i');
         foreach ($ems as $em) {
             $newem = $dom->createElement('em', $em->nodeValue);
             $em->parentNode->replaceChild($newem, $em);
         }
+        $strongs = $dom->getElementsByTagName('b');
         foreach ($strongs as $strong) {
             $newstrong = $dom->createElement('strong', $strong->nodeValue);
             $strong->parentNode->replaceChild($newstrong, $strong);
         }
+        $tables = $dom->getElementsByTagName('table');
         foreach ($tables as $table) {
             $mytitle = $table->getAttribute('title');
             $mysummary = $table->getAttribute('summary');
@@ -149,6 +153,7 @@ class TwRenderer extends HtmlRenderer
                 $table->setAttribute('summary', '排版用表格');
             }
         }
+        $table_headers = $dom->getElementsByTagName('th');
         foreach ($table_headers as $myth) {
             $myscope = $myth->getAttribute('scope');
             $myheaders = $myth->getAttribute('headers');
@@ -157,7 +162,8 @@ class TwRenderer extends HtmlRenderer
             }
         }
         $content = $dom->saveHTML();
-        $content = preg_replace('/<!DOCTYPE .+>/', '', preg_replace('/<meta .+?>/', '', str_replace(array('<html>', '</html>', '<head>', '</head>', '<body>', '</body>'), array('', '', '', '', '', ''), $content)));
+        $content = str_replace('<?xml encoding="utf-8" ?>', '', $content);
+        $content = str_replace('!DOCTYPE html', '!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd"', $content);
 
         return $content;
     }
