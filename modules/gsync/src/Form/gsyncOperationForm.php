@@ -1,11 +1,6 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\tpedu\Form\tpeduConfigForm.
- */
-
-namespace Drupal\tpedu\Form;
+namespace Drupal\gsync\Form;
 
 use Drupal\Core\Form\ConfirmFormBase;
 use Drupal\Core\Form\FormStateInterface;

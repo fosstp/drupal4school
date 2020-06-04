@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\tpedu\Form\tpeduConfigForm.
- */
-
 namespace Drupal\tpedu\Form;
 
 use Drupal\Core\Form\ConfirmFormBase;

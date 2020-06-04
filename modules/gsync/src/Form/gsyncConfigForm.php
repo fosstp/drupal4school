@@ -1,11 +1,6 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\tpedu\Form\tpeduConfigForm.
- */
-
-namespace Drupal\tpedu\Form;
+namespace Drupal\gsync\Form;
 
 use Drupal\Core\Form\ConfirmFormBase;
 use Drupal\Core\Form\FormStateInterface;
@@ -48,7 +43,7 @@ class gsyncConfigForm extends ConfirmFormBase
             '<li>線上測試 OAuth 用戶端 API 資料存取，請連到 <a href="https://developers.google.com/oauthplayground/">OAuth playground</a>。</li>'.
             '</ol>',
         );
-        $form['google_serivce_json'] = array(
+        $form['google_serivce_client'] = array(
             '#type' => 'file',
             '#title' => 'Google 服務帳號授權驗證 JSON 檔',
             '#default_value' => $config->get('google_service_json'),
