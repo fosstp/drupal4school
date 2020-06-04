@@ -71,12 +71,7 @@ class TwRenderer extends HtmlRenderer
     {
         $dom = new \DOMDocument();
         libxml_use_internal_errors(true);
-        $dom->loadHTML('<?xml encoding="utf-8" ?>'.$content);
-        $head = $dom->getElementsByTagName('head')[0];
-        $meta = $dom->createElement('meta');
-        $meta->setAttribute('http-equiv', 'content-type');
-        $meta->setAttribute('content', 'text/html; charset=utf-8');
-        $head->insertBefore($meta, $head->firstChild);
+        $dom->loadHTML(mb_convert_encoding($content, 'HTML-ENTITIES', 'UTF-8'));
         $images = $dom->getElementsByTagName('img');
         foreach ($images as $img) {
             $myalt = $img->getAttribute('alt');
@@ -146,12 +141,6 @@ class TwRenderer extends HtmlRenderer
             if (!$mytitle && $caption) {
                 $table->setAttribute('title', $caption);
             }
-            if (!$mysummary && $caption) {
-                $table->setAttribute('summary', $caption);
-            }
-            if (!$mytitle && !$mysummary && !$caption) {
-                $table->setAttribute('summary', '排版用表格');
-            }
         }
         $table_headers = $dom->getElementsByTagName('th');
         foreach ($table_headers as $myth) {
@@ -162,8 +151,6 @@ class TwRenderer extends HtmlRenderer
             }
         }
         $content = $dom->saveHTML();
-        $content = str_replace('<?xml encoding="utf-8" ?>', '', $content);
-        $content = str_replace('!DOCTYPE html', '!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd"', $content);
 
         return $content;
     }
