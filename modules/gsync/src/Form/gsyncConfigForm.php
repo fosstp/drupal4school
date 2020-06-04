@@ -43,11 +43,11 @@ class gsyncConfigForm extends ConfirmFormBase
             '<li>線上測試 OAuth 用戶端 API 資料存取，請連到 <a href="https://developers.google.com/oauthplayground/">OAuth playground</a>。</li>'.
             '</ol>',
         );
-        $form['google_serivce_client'] = array(
+        $form['google_service_json'] = array(
             '#type' => 'file',
             '#title' => 'Google 服務帳號授權驗證 JSON 檔',
             '#default_value' => $config->get('google_service_json'),
-            '#description' => '請從 Google apis 主控台專案管理頁面下載上述「服務帳戶」所提供的 JSON 檔案並上傳到這裡。',
+            '#description' => $config->get('google_service_json') ? '授權驗證檔案已經上傳，如沒有要變更金鑰，請勿再上傳' : '請從 Google apis 主控台專案管理頁面下載上述「服務帳戶」所提供的 JSON 檔案並上傳到這裡。',
         );
         $form['google_domain'] = array(
             '#type' => 'textfield',
@@ -105,17 +105,20 @@ class gsyncConfigForm extends ConfirmFormBase
             }
         }
         $config->save();
-        $ok = true;
-        $directory = initGoogleService();
-        if ($directory) {
-            try {
-                $userkey = $config->get('google_domain_admin');
-                $user = $directory->users->get($userkey);
-            } catch (Exception $e) {
+        $ok = false;
+        if (!empty($file)) {
+            $ok = true;
+            $directory = initGoogleService();
+            if ($directory) {
+                try {
+                    $userkey = $config->get('google_domain_admin');
+                    $user = $directory->users->get($userkey);
+                } catch (Exception $e) {
+                    $ok = false;
+                }
+            } else {
                 $ok = false;
             }
-        } else {
-            $ok = false;
         }
         if ($ok) {
             $config->set('enabled', true);
