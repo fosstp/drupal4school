@@ -11,12 +11,7 @@ if [ ! -f "/var/run/apache2/apache2.pid" ]; then
     #drupal install drupal4school
 fi
 
-if [ -f "/var/www/html/sites/default/settings.php" ]; then
-    sed -ri \
-        -e 's/^# \$settings\[\'file_private_path\'\] = .*/\$settings\[\'file_private_path\'\] = "/var/www/private"/g' \
-        /var/www/html/sites/default/settings.php
-fi
-
+cd /var/www/html
 drupal cr all
 
 if [ $# -gt 0 ]; then

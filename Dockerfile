@@ -23,10 +23,7 @@ RUN apt-get update \
 ADD profiles /var/www/html/profiles
 ADD modules /var/www/html/modules
 ADD themes /var/www/html/themes
-RUN mkdir /var/www/private \
-    && chown -R root:www-data /var/www/private \
-    && chmod -R 775 /var/www/private \
-    && mkdir /var/www/html/sites/default/files \
+RUN mkdir /var/www/html/sites/default/files \
     && chown -R root:www-data /var/www/html \
     && chmod -R 750 /var/www/html \
     && chmod 770 /var/www/html/sites/default/files
@@ -34,6 +31,6 @@ RUN mkdir /var/www/private \
 ADD run-httpd.sh /usr/sbin/run-httpd.sh
 RUN chmod +x /usr/sbin/run-httpd.sh
 
-VOLUME ["/var/www/private","/var/www/html/sites"]
+VOLUME ["/var/www/html/sites"]
 EXPOSE 80
 ENTRYPOINT ["run-httpd.sh"]

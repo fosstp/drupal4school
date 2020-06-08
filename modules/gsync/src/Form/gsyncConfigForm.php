@@ -47,11 +47,9 @@ class gsyncConfigForm extends ConfirmFormBase
             'file_validate_extensions' => array('json'),
         );
         $form['google_service_json'] = array(
-            '#type' => 'managed_file',
+            '#type' => 'file',
             '#title' => 'Google 服務帳號授權驗證 JSON 檔',
             '#description' => $config->get('google_service_json') ? '授權驗證檔案已經上傳，如沒有要變更金鑰，請勿再上傳' : '請從 Google apis 主控台專案管理頁面下載上述「服務帳戶」所提供的 JSON 檔案並上傳到這裡。',
-            '#upload_validators' => $validators,
-            '#upload_location' => 'private://gsync/',
         );
         $form['google_domain'] = array(
             '#type' => 'textfield',
@@ -90,18 +88,16 @@ class gsyncConfigForm extends ConfirmFormBase
 
     public function submitForm(array &$form, FormStateInterface $form_state)
     {
-        global $base_url;
         $error = '';
         $message = '';
         $config = \Drupal::configFactory()->getEditable('gsync.settings');
         $form_state->cleanValues();
         foreach ($form_state->getValues() as $key => $value) {
             if ($key == 'google_service_json') {
-                $file = file_save_upload('google_service_json', array('file_validate_extensions' => array('json')), '/var/www/html/modules/gsync', 0, FILE_EXISTS_REPLACE);
+                $file = file_save_upload('google_service_json', array('file_validate_extensions' => array('json')), 'public://gsync', 0, FILE_EXISTS_REPLACE);
                 if ($file) {
-                    $file->status = FILE_STATUS_PERMANENT;
-                    file_save($file);
-                    $config->set($key, $file->filename);
+                    $file->setPermanent();
+                    $config->set($key, $file->getFileUri());
                     $message = 'Google 服務帳戶的金鑰檔案已經更新。';
                 }
             } else {

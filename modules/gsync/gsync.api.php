@@ -6,8 +6,7 @@ function initGoogleService()
 {
     global $directory;
     $config = \Drupal::configFactory()->getEditable('gsync.settings');
-    $file = file_load($config->get('google_serivce_json'));
-    $json = file_get_contents(drupal_realpath($file->uri));
+    $realpath = \Drupal::service('file_system')->realpath($config->get('google_serivce_json'));
     $user_to_impersonate = $config->get('google_domain_admin');
     $scopes = array(
         'https://www.googleapis.com/auth/admin.directory.orgunit',
@@ -17,7 +16,7 @@ function initGoogleService()
         'https://www.googleapis.com/auth/admin.directory.user.alias',
     );
     $client = new \Google_Client();
-    $client->setAuthConfig($json);
+    $client->setAuthConfig($realpath);
     $client->setApplicationName('Drupal for School');
     $client->setScopes($scopes);
     $client->setSubject($user_to_impersonate);
