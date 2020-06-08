@@ -43,11 +43,15 @@ class gsyncConfigForm extends ConfirmFormBase
             '<li>線上測試 OAuth 用戶端 API 資料存取，請連到 <a href="https://developers.google.com/oauthplayground/">OAuth playground</a>。</li>'.
             '</ol>',
         );
+        $validators = array(
+            'file_validate_extensions' => array('json'),
+        );
         $form['google_service_json'] = array(
-            '#type' => 'file',
+            '#type' => 'managed_file',
             '#title' => 'Google 服務帳號授權驗證 JSON 檔',
-            '#default_value' => $config->get('google_service_json'),
             '#description' => $config->get('google_service_json') ? '授權驗證檔案已經上傳，如沒有要變更金鑰，請勿再上傳' : '請從 Google apis 主控台專案管理頁面下載上述「服務帳戶」所提供的 JSON 檔案並上傳到這裡。',
+            '#upload_validators' => $validators,
+            '#upload_location' => 'private://gsync/',
         );
         $form['google_domain'] = array(
             '#type' => 'textfield',
@@ -93,7 +97,7 @@ class gsyncConfigForm extends ConfirmFormBase
         $form_state->cleanValues();
         foreach ($form_state->getValues() as $key => $value) {
             if ($key == 'google_service_json') {
-                $file = file_save_upload('google_service_json', array('file_validate_extensions' => array('json')), '/var/www/html/modules/gsync', FILE_EXISTS_REPLACE);
+                $file = file_save_upload('google_service_json', array('file_validate_extensions' => array('json')), '/var/www/html/modules/gsync', 0, FILE_EXISTS_REPLACE);
                 if ($file) {
                     $file->status = FILE_STATUS_PERMANENT;
                     file_save($file);
