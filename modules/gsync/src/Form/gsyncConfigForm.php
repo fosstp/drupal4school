@@ -98,7 +98,7 @@ class gsyncConfigForm extends ConfirmFormBase
                 if ($file) {
                     $file->setPermanent();
                     $config->set($key, $file->getFileUri());
-                    $message = 'Google 服務帳戶的金鑰檔案已經更新。';
+                    $message = 'Google 服務帳戶的金鑰檔案已經更新。<br>';
                 }
             } else {
                 $config->set($key, $value);
@@ -123,6 +123,13 @@ class gsyncConfigForm extends ConfirmFormBase
         if ($ok) {
             $config->set('enabled', true);
             $config->save();
+            $message .= '所有設定已經完成並通過 G Suite API 連線測試，模組已經啟用。';
+            \Drupal::messenger()->addMessage($message, self::TYPE_STATUS);
+        } else {
+            $config->set('enabled', false);
+            $config->save();
+            $message .= 'G Suite API 連線測試失敗，模組無法啟用。';
+            \Drupal::messenger()->addMessage($message, self::TYPE_WARNING);
         }
     }
 }
