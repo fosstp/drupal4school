@@ -19,7 +19,7 @@ services:
     restart: always
 
   drupal:
-    image: dosstp/drupal
+    image: fosstp/drupal
     ports:
       - "80:80"
     environment:
@@ -29,5 +29,4 @@ services:
     volumes:
       - ./modules:/var/www/html/modules
       - ./themes:/var/www/html/themes
-      - ./sites:/var/www/html/sites
     restart: always

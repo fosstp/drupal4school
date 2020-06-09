@@ -18,7 +18,8 @@ RUN apt-get update \
     && composer require google/apiclient:"^2.0" drupal/console:~1.0 --prefer-dist --optimize-autoloader \
     && curl https://drupalconsole.com/installer -L -o drupal.phar \
     && mv drupal.phar /usr/local/bin/drupal \
-    && chmod +x /usr/local/bin/drupal
+    && chmod +x /usr/local/bin/drupal \
+    && composer upgrade
 
 ADD profiles /var/www/html/profiles
 ADD modules /var/www/html/modules
