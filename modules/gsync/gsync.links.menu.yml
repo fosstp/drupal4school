@@ -10,4 +10,4 @@ gsync.admin:
     description: '請先完成模組設定。'
     route_name: gsync.sync
     weight: 20
-    parent: user.admin_index
+    parent: entity.user.collection

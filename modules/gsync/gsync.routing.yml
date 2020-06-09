@@ -12,4 +12,4 @@ gsync.sync:
     _form: \Drupal\gsync\Form\gsyncOperationForm
     _title: 'G Suite 帳號同步'
   requirements:
-    _permission: 'administer site configuration'
+    _permission: 'administer users'
