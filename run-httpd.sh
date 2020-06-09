@@ -2,8 +2,6 @@
 set -e
 
 if [ ! -f "/var/run/apache2/apache2.pid" ]; then
-    chown -R root:www-data /var/www/private
-    chmod -R 770 /var/www/private
     chown -R root:www-data /var/www/html
     chmod -R 750 /var/www/html
     chmod -R 774 /var/www/html/sites/default/files
