@@ -26,13 +26,17 @@ function initGoogleService()
         $client->setApplicationName('Drupal for School');
         $client->setScopes($scopes);
         $client->setSubject($user_to_impersonate);
-        $_SESSION['gsync_access_token'] = $client->getAccessToken();
+        try {
+            $_SESSION['gsync_access_token'] = $client->getAccessToken();
+        } catch (\Google_Service_Exception $e) {
+            \Drupal::logger('google')->debug($e->getMessage());
+        }
         if ($_SESSION['gsync_access_token']) {
             $directory = new \Google_Service_Directory($client);
 
             return $directory;
         } else {
-            return null;
+            return false;
         }
     }
 }
