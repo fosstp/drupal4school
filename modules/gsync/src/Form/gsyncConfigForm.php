@@ -108,13 +108,8 @@ class gsyncConfigForm extends ConfirmFormBase
         $ok = false;
         if ($config->get('google_service_json') && $config->get('google_domain') && $config->get('google_domain_admin')) {
             $directory = initGoogleService();
-            if ($directory) {
-                try {
-                    $userkey = $config->get('google_domain_admin');
-                    $user = $directory->users->get($userkey);
-                    $ok = true;
-                } catch (Exception $e) {
-                }
+            if ($directory && gs_getUser($config->get('google_domain_admin'))) {
+                $ok = true;
             }
         }
         if ($ok) {
