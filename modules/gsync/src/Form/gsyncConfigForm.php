@@ -124,12 +124,12 @@ class gsyncConfigForm extends ConfirmFormBase
             $config->set('enabled', true);
             $config->save();
             $message .= '所有設定已經完成並通過 G Suite API 連線測試，模組已經啟用。';
-            \Drupal::messenger()->addMessage($message, self::TYPE_STATUS);
+            \Drupal::messenger()->addMessage($message, 'status');
         } else {
             $config->set('enabled', false);
             $config->save();
             $message .= 'G Suite API 連線測試失敗，模組無法啟用。';
-            \Drupal::messenger()->addMessage($message, self::TYPE_WARNING);
+            \Drupal::messenger()->addMessage($message, 'warning');
         }
     }
 }

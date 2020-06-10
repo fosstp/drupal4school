@@ -7,6 +7,8 @@ ENV DB_PASSWORD dbpassword
 RUN apt-get update \
     && apt-get -y --no-install-recommends install unzip git apt-utils mc ldap-utils \
     && rm -rf /var/lib/apt/lists/* \
+    && echo 'y' | pecl install apcu \
+    && docker-php-ext-enable apcu \
     && echo 'TLS_REQCERT	never' >> /etc/ldap/ldap.conf \
     && pecl install uploadprogress \
     && echo "extension = uploadprogress" > /usr/local/etc/php/conf.d/uploadprogress.ini \
