@@ -234,12 +234,16 @@ function gs_syncUser($t, $user)
     }
     $user->setGender($gender);
     if ($t->student) {
-        $user->setOrgUnitPath($config->get('student_orgunit'));
+        if ($config->get('student_orgunit')) {
+            $user->setOrgUnitPath($config->get('student_orgunit'));
+        }
     } else {
         if (!empty($t->class)) {
             $user->setIsAdmin(true);
         }
-        $user->setOrgUnitPath($config->get('teacher_orgunit'));
+        if ($config->get('teacher_orgunit')) {
+            $user->setOrgUnitPath($config->get('teacher_orgunit'));
+        }
     }
 
     return gs_updateUser($user->getPrimaryEmail(), $user);
