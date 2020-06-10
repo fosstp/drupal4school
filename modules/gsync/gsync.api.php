@@ -10,6 +10,7 @@ function initGoogleService()
     } else {
         $config = \Drupal::configFactory()->getEditable('gsync.settings');
         $realpath = \Drupal::service('file_system')->realpath($config->get('google_serivce_json'));
+//        $realpath = '/var/www/html/sites/default/files/gsync/'.$config->get('google_serivce_json');
         $user_to_impersonate = $config->get('google_domain_admin');
         $scopes = array(
             \Google_Service_Directory::ADMIN_DIRECTORY_ORGUNIT,
@@ -21,22 +22,18 @@ function initGoogleService()
         );
 
         $client = new \Google_Client();
-        putenv("GOOGLE_APPLICATION_CREDENTIALS=$realpath");
-        $client->useApplicationDefaultCredentials();
+        $client->setAuthConfig($realpath);
         $client->setApplicationName('Drupal for School');
         $client->setScopes($scopes);
         $client->setSubject($user_to_impersonate);
         try {
-            $_SESSION['gsync_access_token'] = $client->getAccessToken();
-        } catch (\Google_Service_Exception $e) {
-            \Drupal::logger('google')->debug($e->getMessage());
-        }
-        if ($_SESSION['gsync_access_token']) {
             $directory = new \Google_Service_Directory($client);
 
             return $directory;
-        } else {
-            return false;
+        } catch (\Google_Service_Exception $e) {
+            \Drupal::logger('google')->debug($e->getMessage());
+
+            return null;
         }
     }
 }
@@ -112,8 +109,9 @@ function gs_deleteOrgUnit($orgPath)
 function gs_findUsers($filter)
 {
     global $directory;
+    $config = \Drupal::configFactory()->getEditable('gsync.settings');
     try {
-        $result = $directory->users->listUsers(array('domain' => config('saml.email_domain'), 'query' => $filter));
+        $result = $directory->users->listUsers(array('domain' => $config->get('google_domain'), 'query' => $filter));
 
         return $result->getUsers();
     } catch (\Google_Service_Exception $e) {

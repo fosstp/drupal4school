@@ -98,6 +98,7 @@ class gsyncConfigForm extends ConfirmFormBase
                 if ($file) {
                     $file->setPermanent();
                     $config->set($key, $file->getFileUri());
+//                    $config->set($key, $file->getFilename());
                     $message = 'Google 服務帳戶的金鑰檔案已經更新。<br>';
                 }
             } else {
