@@ -5,9 +5,9 @@ gsync.admin:
   weight: 20
   parent: user.admin_index
 
-  gsync.people:
-    title: 'G Suite 帳號同步'
-    description: '請先完成模組設定。'
-    route_name: gsync.sync
-    weight: 20
-    parent: entity.user.collection
+gsync.people:
+  title: 'G Suite 帳號同步'
+  description: '請先完成模組設定。'
+  route_name: gsync.sync
+  weight: 20
+  parent: entity.user.collection
