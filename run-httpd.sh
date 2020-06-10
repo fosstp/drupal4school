@@ -12,7 +12,7 @@ if [ ! -f "/var/run/apache2/apache2.pid" ]; then
     done
     chmod 644 /var/www/html/sites/default/settings.php
     exec apache2-foreground
-    #exec drupal install drupal4school
+    exec drupal si drupal4school
 fi
 
 cd /var/www/html
