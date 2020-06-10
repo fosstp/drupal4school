@@ -5,30 +5,35 @@ $directory = null;
 function initGoogleService()
 {
     global $directory;
-    $config = \Drupal::configFactory()->getEditable('gsync.settings');
-    $realpath = \Drupal::service('file_system')->realpath($config->get('google_serivce_json'));
-    $user_to_impersonate = $config->get('google_domain_admin');
-    $scopes = array(
-        \Google_Service_Directory::ADMIN_DIRECTORY_ORGUNIT,
-        \Google_Service_Directory::ADMIN_DIRECTORY_ROLEMANAGEMENT,
-        \Google_Service_Directory::ADMIN_DIRECTORY_USER,
-        \Google_Service_Directory::ADMIN_DIRECTORY_USER_ALIAS,
-        \Google_Service_Directory::ADMIN_DIRECTORY_GROUP,
-        \Google_Service_Directory::ADMIN_DIRECTORY_GROUP_MEMBER,
-    );
-
-    $client = new \Google_Client();
-    putenv("GOOGLE_APPLICATION_CREDENTIALS=$realpath");
-    $client->useApplicationDefaultCredentials();
-    $client->setApplicationName('Drupal for School');
-    $client->setScopes($scopes);
-    $client->setSubject($user_to_impersonate);
-    $directory = new \Google_Service_Directory($client);
-    $_SESSION['gsync_'.$domain.'_access_token'] = $client->getAccessToken();
-    if ($_SESSION['gsync_'.$domain.'_access_token']) {
+    if ($directory instanceof \Google_Service_Directory) {
         return $directory;
     } else {
-        return null;
+        $config = \Drupal::configFactory()->getEditable('gsync.settings');
+        $realpath = \Drupal::service('file_system')->realpath($config->get('google_serivce_json'));
+        $user_to_impersonate = $config->get('google_domain_admin');
+        $scopes = array(
+            \Google_Service_Directory::ADMIN_DIRECTORY_ORGUNIT,
+            \Google_Service_Directory::ADMIN_DIRECTORY_ROLEMANAGEMENT,
+            \Google_Service_Directory::ADMIN_DIRECTORY_USER,
+            \Google_Service_Directory::ADMIN_DIRECTORY_USER_ALIAS,
+            \Google_Service_Directory::ADMIN_DIRECTORY_GROUP,
+            \Google_Service_Directory::ADMIN_DIRECTORY_GROUP_MEMBER,
+        );
+
+        $client = new \Google_Client();
+        putenv("GOOGLE_APPLICATION_CREDENTIALS=$realpath");
+        $client->useApplicationDefaultCredentials();
+        $client->setApplicationName('Drupal for School');
+        $client->setScopes($scopes);
+        $client->setSubject($user_to_impersonate);
+        $_SESSION['gsync_'.$domain.'_access_token'] = $client->getAccessToken();
+        if ($_SESSION['gsync_'.$domain.'_access_token']) {
+            $directory = new \Google_Service_Directory($client);
+
+            return $directory;
+        } else {
+            return null;
+        }
     }
 }
 
