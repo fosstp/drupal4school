@@ -74,7 +74,7 @@ class gsyncOperationForm extends ConfirmFormBase
             }
             $form['dept'] = array(
                 '#type' => 'select',
-                '#title' => '請選擇要同步的行政單位',
+                '#title' => '要同步哪些行政單位？',
                 '#multiple' => true,
                 '#options' => $deplist,
                 '#size' => 15,
@@ -110,7 +110,7 @@ class gsyncOperationForm extends ConfirmFormBase
                 }
                 $form['grade'.$g->grade] = array(
                     '#type' => 'select',
-                    '#title' => '請選擇要同步哪個班級的學生',
+                    '#title' => '要同步哪些班級的學生？',
                     '#multiple' => true,
                     '#options' => $classlist,
                     '#size' => 1,
