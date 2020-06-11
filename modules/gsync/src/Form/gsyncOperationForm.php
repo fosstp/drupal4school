@@ -126,7 +126,7 @@ class gsyncOperationForm extends ConfirmFormBase
                 '#type' => 'button',
                 '#value' => '開始同步',
                 '#ajax' => array(
-                    'callback' => [$this, 'gapps_start'],
+                    'callback' => [$this, 'gsync_start'],
                     'wrapper' => 'edit-log-div',
                 ),
             );
@@ -480,9 +480,5 @@ class gsyncOperationForm extends ConfirmFormBase
         $response->addCommand(new HtmlCommand($detail_log));
 
         return $response;
-    }
-
-    public function submitForm(array &$form, FormStateInterface $form_state)
-    {
     }
 }
