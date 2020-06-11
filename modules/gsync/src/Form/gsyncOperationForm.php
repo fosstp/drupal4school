@@ -481,4 +481,8 @@ class gsyncOperationForm extends ConfirmFormBase
 
         return $response;
     }
+
+    public function submitForm(array &$form, FormStateInterface $form_state)
+    {
+    }
 }
