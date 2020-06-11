@@ -39,7 +39,16 @@ class gsyncConfigForm extends ConfirmFormBase
             '#type' => 'markup',
             '#markup' => '<p>要使用 G Suite 帳號單一簽入功能，您必須建立 Google 開發專案並取得 Google 發給您的<em>網路應用程式憑證</em>，請依照以下步驟取得相關組態值：'.
             '<ol><li>請連結 <a href="https://console.cloud.google.com/apis/dashboard">Google apis 主控台</a>，如果還沒有介接專案，請先建立專案！</li>'.
-            '<li>請進入「憑證」管理頁面，然後建立「服務帳戶」憑證，並且需要從 G Suite 管理主控台進行全域授權，請參考<a href="https://support.google.com/a/answer/162106?hl=zh-Hant">這篇文章</a>。</li>'.
+            '<li>請進入「資料庫」管理頁面，為該專案啟用這兩個 API：Admin SDK、Google Calendar API。至少應包含這兩個 API，如果要自行開發模組的話當然也可以啟用更多 API。</li>'.
+            '<li>請進入「憑證」管理頁面，然後建立「服務帳戶」憑證，並且需要從 G Suite 「管理主控台」->「安全性」->「API 權限」->「全網域委派」進行全域授權，請參考<a href="https://support.google.com/a/answer/162106?hl=zh-Hant">這篇文章</a>。</li>'.
+            '<li>全域授權時，需輸入該專案的服務帳戶用戶端編號，授權範圍至少應包含：<ol>'.
+            '<li>https://www.googleapis.com/auth/admin.directory.orgunit</li>'.
+            '<li>https://www.googleapis.com/auth/admin.directory.user</li>'.
+            '<li>https://www.googleapis.com/auth/admin.directory.group</li>'.
+            '<li>https://www.googleapis.com/auth/admin.directory.group.member</li>'.
+            '<li>https://www.googleapis.com/auth/calendar</li>'.
+            '<li>https://www.googleapis.com/auth/calendar.events</li>'.
+            '</ol></li>'.
             '<li>線上測試 OAuth 用戶端 API 資料存取，請連到 <a href="https://developers.google.com/oauthplayground/">OAuth playground</a>。</li>'.
             '</ol>',
         );

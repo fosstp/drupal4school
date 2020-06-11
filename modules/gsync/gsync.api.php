@@ -8,7 +8,7 @@ function initGoogleService()
     if ($directory instanceof \Google_Service_Directory) {
         return $directory;
     } else {
-        $config = \Drupal::configFactory()->getEditable('gsync.settings');
+        $config = \Drupal::config('gsync.settings');
         $uri = $config->get('google_serivce_json');
         $path = \Drupal::service('file_system')->realpath($uri);
         $user_to_impersonate = $config->get('google_domain_admin');
@@ -109,7 +109,7 @@ function gs_deleteOrgUnit($orgPath)
 function gs_findUsers($filter)
 {
     global $directory;
-    $config = \Drupal::configFactory()->getEditable('gsync.settings');
+    $config = \Drupal::config('gsync.settings');
     try {
         $result = $directory->users->listUsers(array('domain' => $config->get('google_domain'), 'query' => $filter));
 

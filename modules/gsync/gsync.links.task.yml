@@ -1,4 +1,4 @@
-gsync.people:
+gsync.sync:
   title: 'G Suite 帳號同步'
   route_name: gsync.sync
   base_route: entity.user.collection

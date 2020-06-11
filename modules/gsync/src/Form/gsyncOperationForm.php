@@ -27,23 +27,19 @@ class gsyncOperationForm extends ConfirmFormBase
         return ConfirmFormHelper::buildCancelLink($this, $this->getRequest());
     }
 
-    protected function getEditableConfigNames()
-    {
-        return [
-            'gsync.settings',
-        ];
-    }
-
     public function buildForm(array $form, FormStateInterface $form_state)
     {
         global $base_url;
         $config = \Drupal::config('gsync.settings');
 
-        if ($config->get('enable')) {
+        if ($config->get('enabled')) {
             $form['help'] = array(
-                '#type' => 'item',
-                '#title' => '提示訊息：',
-                '#markup' => '進行帳號與密碼同步到 G Suite 時，會花費較久的時間，請耐心等候同步作業完成。未完成前請勿離開此頁面、重新整理頁面或是關閉瀏覽器！同步作業程序：1. 以臺北市教育人員單一身分驗證服務的帳號搜尋 G Suite，帳號相同者使用現有帳號，如果搜尋不到則自動幫您建立帳號。2. 搜尋 G Suite 群組的說明(description)欄位是否與校務行政系統裡的所屬部門名稱相同，若相同則使用該群組，如果找不到則自動幫您建立群組。（如果您已經有一個匹配的 G Suite 群組，請在說明欄輸入所屬部門名稱，以便讓程式可以正確辨識）3. 移除群組裡所有舊的成員。4. 重新將使用者加入到群組裡。同步程式無法同步密碼。',
+                '#markup' => '<p>進行帳號同步到 G Suite 時，會花費較久的時間，請耐心等候同步作業完成。未完成前請勿離開此頁面、重新整理頁面或是關閉瀏覽器！<br>'.
+                '<ol>同步程式無法同步密碼，程序運作流程如下：'.
+                '<li>1. 以臺北市教育人員單一身分驗證服務的帳號搜尋 G Suite，帳號相同者使用現有帳號，如果搜尋不到則自動幫您建立帳號。</li>'.
+                '<li>2. 搜尋 G Suite 群組的說明(description)欄位是否與校務行政系統裡的所屬部門名稱相同，若相同則使用該群組，如果找不到則自動幫您建立群組。（如果您已經有一個匹配的 G Suite 群組，請在說明欄輸入部門名稱，以便讓程式可以正確辨識）</li>'.
+                '<li>3. 移除群組裡所有舊的成員。</li>'.
+                '<li>4. 重新將使用者加入到群組裡。</li></ol></p>',
             );
             $form['password_sync'] = array(
                 '#type' => 'checkbox',
@@ -88,7 +84,7 @@ class gsyncOperationForm extends ConfirmFormBase
                     ),
                 ),
             );
-            $grades = all_grades();
+            $grades = all_grade();
             $gradelist = array();
             foreach ($grades as $g) {
                 $gradelist[$g->grade] = $g->grade.'年級';
@@ -98,6 +94,7 @@ class gsyncOperationForm extends ConfirmFormBase
                 '#title' => '請選擇要同步的年級',
                 '#multiple' => false,
                 '#options' => $gradelist,
+                '#default_value' => 1,
                 '#size' => 1,
                 '#states' => array(
                     'visible' => array(
@@ -165,193 +162,102 @@ class gsyncOperationForm extends ConfirmFormBase
         $log = $form_state->getValue('log');
         initGoogleService();
         if ($domain == 0) {
-            $dept = $form_state->getValue('dept');
-            $teachers = get_teachers_of_unit($dept);
-            foreach ($teachers as $t) {
-                if ($log) {
-                    $detail_log .= "正在處理 $t->dept_name $t->role_name $t->realname ($t->account)......<br>";
-                }
-                $user_key = $t->account.'@'.$config->get('google_domain');
-                $user = gs_getUser($user_key);
-                if ($user) {
-                    if (is_null($t->status) || $t->status == 'active') {
-                        if ($log) {
-                            $detail_log .= '在 G Suite 中找到這位使用者，現在正在更新使用者資訊中......';
-                        }
-                        $user = gs_syncUser($t, $user);
-                        if ($form_state->getValue('password_sync')) {
-                            $user->setHashFunction('SHA-1');
-                            $user->setPassword(sha1(substr($t->idno, -6)));
+            $depts = $form_state->getValue('dept');
+            foreach ($depts as $dept) {
+                $teachers = get_teachers_of_unit($dept);
+                foreach ($teachers as $t) {
+                    if ($log) {
+                        $detail_log .= "正在處理 $t->dept_name $t->role_name $t->realname ($t->account)......<br>";
+                    }
+                    $user_key = $t->account.'@'.$config->get('google_domain');
+                    $user = gs_getUser($user_key);
+                    if ($user) {
+                        if (is_null($t->status) || $t->status == 'active') {
+                            if ($log) {
+                                $detail_log .= '在 G Suite 中找到這位使用者，現在正在更新使用者資訊中......';
+                            }
+                            $user = gs_syncUser($t, $user);
+                            if ($form_state->getValue('password_sync')) {
+                                $user->setHashFunction('SHA-1');
+                                $user->setPassword(sha1(substr($t->idno, -6)));
+                                $user = gs_updateUser($user_key, $user);
+                            }
+                            if ($user && $log) {
+                                $detail_log .= '更新完成！<br>';
+                            } else {
+                                $detail_log .= '更新失敗！<br>';
+                            }
+                        } elseif ($form_state->getValue('disable_nonuse')) {
+                            if ($log) {
+                                $detail_log .= '在 G Suite 中找到這位使用者，現在正在<strong>停用</strong>這個帳號';
+                            }
+                            $user->setSuspended(true);
                             $user = gs_updateUser($user_key, $user);
+                            if ($user && $log) {
+                                $detail_log .= '帳號已停用！<br>';
+                            } else {
+                                $detail_log .= '停用失敗！<br>';
+                            }
+                        } elseif ($form_state->getValue('delete_nonuse')) {
+                            if ($log) {
+                                $detail_log .= '在 G Suite 中找到這位使用者，現在正在<strong>刪除</strong>這個帳號......';
+                            }
+                            $result = gs_deleteUser($user_key);
+                            if ($result && $log) {
+                                $detail_log .= '帳號已刪除！<br>';
+                            } else {
+                                $detail_log .= '刪除失敗！<br>';
+                            }
                         }
+                    } elseif (is_null($t->status) || $t->status == 'active') {
+                        if ($log) {
+                            $detail_log .= '無法在 G Suite 中找到這個使用者，現在正在為使用者建立 Google 帳號......';
+                        }
+                        $user = gs_createUser($t, $user_key);
                         if ($user && $log) {
-                            $detail_log .= '更新完成！<br>';
-                        } else {
-                            $detail_log .= '更新失敗！<br>';
-                        }
-                    } elseif ($form_state->getValue('disable_nonuse')) {
-                        if ($log) {
-                            $detail_log .= '在 G Suite 中找到這位使用者，現在正在<strong>停用</strong>這個帳號';
-                        }
-                        $user->setSuspended(true);
-                        $user = gs_updateUser($user_key, $user);
-                        if ($user && $log) {
-                            $detail_log .= '帳號已停用！<br>';
-                        } else {
-                            $detail_log .= '停用失敗！<br>';
-                        }
-                    } elseif ($form_state->getValue('delete_nonuse')) {
-                        if ($log) {
-                            $detail_log .= '在 G Suite 中找到這位使用者，現在正在<strong>刪除</strong>這個帳號......';
-                        }
-                        $result = gs_deleteUser($user_key);
-                        if ($result && $log) {
-                            $detail_log .= '帳號已刪除！<br>';
-                        } else {
-                            $detail_log .= '刪除失敗！<br>';
-                        }
-                    }
-                } elseif (is_null($t->status) || $t->status == 'active') {
-                    if ($log) {
-                        $detail_log .= '無法在 G Suite 中找到這個使用者，現在正在為使用者建立 Google 帳號......';
-                    }
-                    $user = gs_createUser($t, $user_key);
-                    if ($user && $log) {
-                        $detail_log .= '建立完成！<br>';
-                    } else {
-                        $detail_log .= '建立失敗！<br>';
-                    }
-                }
-                if (!empty($t->dept_id) && !empty($t->role_id)) {
-                    if ($log) {
-                        $detail_log .= "<p>正在處理 $t->dept_name ......<br>";
-                    }
-                    $groups = gs_listGroups();
-                    $found = false;
-                    foreach ($groups as $group) {
-                        if ($group->getDescription() == $t->dept_name) {
-                            $found = true;
-                            break;
-                        }
-                    }
-                    if ($found) {
-                        $group_key = $group->getEmail();
-                        $depgroup = explode('@', $group_key)[0];
-                        if ($log) {
-                            $detail_log .= "$depgroup => 在 G Suite 中找到匹配的使用者群組！<br>";
-                        }
-                        if (!in_array($depgroup, $this->group_reset)) {
-                            $members = gs_listMembers($group_key);
-                            gs_removeMembers($group_key, $members);
-                            if ($log) {
-                                $detail_log .= '已經移除群組裡的所有成員！<br>';
-                            }
-                            $$this->group_reset[] = $depgroup;
-                        }
-                    } else {
-                        if ($log) {
-                            $detail_log .= '無法在 G Suite 中找到匹配的群組，現在正在建立新的 Google 群組......';
-                        }
-                        $depgroup = 'group-A'.$t->dept_id;
-                        $group_key = $depgroup.'@'.$config->get('google_domain');
-                        $group = gs_createGroup($group_key, $t->dept_name);
-                        if ($group && $log) {
-                            $detail_log .= '建立成功！<br>';
+                            $detail_log .= '建立完成！<br>';
                         } else {
                             $detail_log .= '建立失敗！<br>';
                         }
                     }
-                    if ($log) {
-                        $detail_log .= "正在將使用者： $t->account 加入到群組裡......";
-                    }
-                    $members = gs_addMembers($group_key, array($user_key));
-                    if (!empty($members) && $log) {
-                        $detail_log .= '加入成功！<br>';
-                    } else {
-                        $detail_log .= '加入失敗！<br>';
-                    }
-
-                    if ($log) {
-                        $detail_log .= "<p>正在處理 $t->role_name ......<br>";
-                    }
-                    $found = false;
-                    foreach ($groups as $group) {
-                        if ($group->getDescription() == $t->role_name) {
-                            $found = true;
-                            break;
-                        }
-                    }
-                    if ($found) {
-                        $group_key = $group->getEmail();
-                        $posgroup = explode('@', $group_key)[0];
+                    if (!empty($t->dept_id) && !empty($t->role_id)) {
                         if ($log) {
-                            $detail_log .= "$depgroup => 在 G Suite 中找到匹配的使用者群組！";
+                            $detail_log .= "<p>正在處理 $t->dept_name ......<br>";
                         }
-                        if (!in_array($posgroup, $this->group_reset)) {
-                            $members = gs_listMembers($group_key);
-                            gs_removeMembers($group_key, $members);
-                            if ($log) {
-                                $detail_log .= '已經移除群組裡的所有成員！<br>';
+                        $groups = gs_listGroups();
+                        $found = false;
+                        foreach ($groups as $group) {
+                            if ($group->getDescription() == $t->dept_name) {
+                                $found = true;
+                                break;
                             }
-                            $this->group_reset[] = $posgroup;
                         }
-                    } else {
-                        if ($log) {
-                            $detail_log .= '無法在 G Suite 中找到匹配的群組，現在正在建立新的 Google 群組......';
-                        }
-                        $posgroup = 'group-B'.$t->role_id;
-                        $group_key = $posgroup.'@'.$config->get('google_domain');
-                        $group = gs_createGroup($group_key, $t->role_name);
-                        if ($group && $log) {
-                            $detail_log .= '建立成功！<br>';
-                        } else {
-                            $detail_log .= '建立失敗！<br>';
-                        }
-                    }
-                    if ($log) {
-                        $detail_log .= "正在將使用者： $t->account 加入到群組裡......";
-                    }
-                    $members = gs_addMembers($group_key, array($user_key));
-                    if (!empty($members) && $log) {
-                        $detail_log .= '加入成功！<br>';
-                    } else {
-                        $detail_log .= '加入失敗！<br>';
-                    }
-                }
-                if (!empty($t->class)) {
-                    if ($log) {
-                        $detail_log .= "<p>正在處理 substr($t->class, 0, 1) 年級......<br>";
-                    }
-                    $clsgroup = 'group-C'.substr($t->class, 0, 1);
-                    $group_key = $clsgroup.'@'.$config->get('google_domain');
-                    $found = false;
-                    foreach ($groups as $group) {
-                        if ($group->getMail() == $group_key) {
-                            $found = true;
-                            break;
-                        }
-                    }
-                    if ($found) {
-                        if ($log) {
-                            $detail_log .= "$clsgroup => 在 G Suite 中找到匹配的使用者群組！......<br>";
-                        }
-                        if (!in_array($clsgroup, $this->group_reset)) {
-                            $members = gs_listMembers($group_key);
-                            gs_removeMembers($group_key, $members);
+                        if ($found) {
+                            $group_key = $group->getEmail();
+                            $depgroup = explode('@', $group_key)[0];
                             if ($log) {
-                                $detail_log .= '已經移除群組裡的所有成員！<br>';
+                                $detail_log .= "$depgroup => 在 G Suite 中找到匹配的使用者群組！<br>";
                             }
-                            $this->group_reset[] = $clsgroup;
-                        }
-                    } else {
-                        if ($log) {
-                            $detail_log .= '無法在 G Suite 中找到匹配的群組，現在正在建立新的 Google 群組......';
-                        }
-                        $group = gs_createGroup($group_key, substr($t->class, 0, 1).'年級');
-                        if ($group && $log) {
-                            $detail_log .= '建立成功！<br>';
+                            if (!in_array($depgroup, $this->group_reset)) {
+                                $members = gs_listMembers($group_key);
+                                gs_removeMembers($group_key, $members);
+                                if ($log) {
+                                    $detail_log .= '已經移除群組裡的所有成員！<br>';
+                                }
+                                $$this->group_reset[] = $depgroup;
+                            }
                         } else {
-                            $detail_log .= '建立失敗！<br>';
+                            if ($log) {
+                                $detail_log .= '無法在 G Suite 中找到匹配的群組，現在正在建立新的 Google 群組......';
+                            }
+                            $depgroup = 'group-A'.$t->dept_id;
+                            $group_key = $depgroup.'@'.$config->get('google_domain');
+                            $group = gs_createGroup($group_key, $t->dept_name);
+                            if ($group && $log) {
+                                $detail_log .= '建立成功！<br>';
+                            } else {
+                                $detail_log .= '建立失敗！<br>';
+                            }
                         }
                         if ($log) {
                             $detail_log .= "正在將使用者： $t->account 加入到群組裡......";
@@ -361,6 +267,99 @@ class gsyncOperationForm extends ConfirmFormBase
                             $detail_log .= '加入成功！<br>';
                         } else {
                             $detail_log .= '加入失敗！<br>';
+                        }
+
+                        if ($log) {
+                            $detail_log .= "<p>正在處理 $t->role_name ......<br>";
+                        }
+                        $found = false;
+                        foreach ($groups as $group) {
+                            if ($group->getDescription() == $t->role_name) {
+                                $found = true;
+                                break;
+                            }
+                        }
+                        if ($found) {
+                            $group_key = $group->getEmail();
+                            $posgroup = explode('@', $group_key)[0];
+                            if ($log) {
+                                $detail_log .= "$depgroup => 在 G Suite 中找到匹配的使用者群組！";
+                            }
+                            if (!in_array($posgroup, $this->group_reset)) {
+                                $members = gs_listMembers($group_key);
+                                gs_removeMembers($group_key, $members);
+                                if ($log) {
+                                    $detail_log .= '已經移除群組裡的所有成員！<br>';
+                                }
+                                $this->group_reset[] = $posgroup;
+                            }
+                        } else {
+                            if ($log) {
+                                $detail_log .= '無法在 G Suite 中找到匹配的群組，現在正在建立新的 Google 群組......';
+                            }
+                            $posgroup = 'group-B'.$t->role_id;
+                            $group_key = $posgroup.'@'.$config->get('google_domain');
+                            $group = gs_createGroup($group_key, $t->role_name);
+                            if ($group && $log) {
+                                $detail_log .= '建立成功！<br>';
+                            } else {
+                                $detail_log .= '建立失敗！<br>';
+                            }
+                        }
+                        if ($log) {
+                            $detail_log .= "正在將使用者： $t->account 加入到群組裡......";
+                        }
+                        $members = gs_addMembers($group_key, array($user_key));
+                        if (!empty($members) && $log) {
+                            $detail_log .= '加入成功！<br>';
+                        } else {
+                            $detail_log .= '加入失敗！<br>';
+                        }
+                    }
+                    if (!empty($t->class)) {
+                        if ($log) {
+                            $detail_log .= "<p>正在處理 substr($t->class, 0, 1) 年級......<br>";
+                        }
+                        $clsgroup = 'group-C'.substr($t->class, 0, 1);
+                        $group_key = $clsgroup.'@'.$config->get('google_domain');
+                        $found = false;
+                        foreach ($groups as $group) {
+                            if ($group->getMail() == $group_key) {
+                                $found = true;
+                                break;
+                            }
+                        }
+                        if ($found) {
+                            if ($log) {
+                                $detail_log .= "$clsgroup => 在 G Suite 中找到匹配的使用者群組！......<br>";
+                            }
+                            if (!in_array($clsgroup, $this->group_reset)) {
+                                $members = gs_listMembers($group_key);
+                                gs_removeMembers($group_key, $members);
+                                if ($log) {
+                                    $detail_log .= '已經移除群組裡的所有成員！<br>';
+                                }
+                                $this->group_reset[] = $clsgroup;
+                            }
+                        } else {
+                            if ($log) {
+                                $detail_log .= '無法在 G Suite 中找到匹配的群組，現在正在建立新的 Google 群組......';
+                            }
+                            $group = gs_createGroup($group_key, substr($t->class, 0, 1).'年級');
+                            if ($group && $log) {
+                                $detail_log .= '建立成功！<br>';
+                            } else {
+                                $detail_log .= '建立失敗！<br>';
+                            }
+                            if ($log) {
+                                $detail_log .= "正在將使用者： $t->account 加入到群組裡......";
+                            }
+                            $members = gs_addMembers($group_key, array($user_key));
+                            if (!empty($members) && $log) {
+                                $detail_log .= '加入成功！<br>';
+                            } else {
+                                $detail_log .= '加入失敗！<br>';
+                            }
                         }
                     }
                 }
