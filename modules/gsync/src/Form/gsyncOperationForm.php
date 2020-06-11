@@ -111,7 +111,7 @@ class gsyncOperationForm extends ConfirmFormBase
                 $form['grade'.$g->grade] = array(
                     '#type' => 'select',
                     '#title' => '請選擇要同步哪個班級的學生',
-                    '#multiple' => false,
+                    '#multiple' => true,
                     '#options' => $classlist,
                     '#size' => 1,
                     '#states' => array(
@@ -366,107 +366,109 @@ class gsyncOperationForm extends ConfirmFormBase
             }
         } else {
             $grade = $form_state->getValue('grade');
-            $class = $form_state->getValue('grade'.$grade);
-            $students = get_students_of_class($class);
-            foreach ($students as $s) {
-                if ($log) {
-                    $detail_log .= "正在處理 $s->class $s->seat $s->realname ($s->account)......<br>";
-                }
-                $user_key = $s->account.'@'.$config->get('google_domain');
-                $user = gs_getUser($user_key);
-                if ($user) {
-                    if (is_null($s->status) || $s->status == 'active') {
-                        if ($log) {
-                            $detail_log .= '在 G Suite 中找到這位使用者，現在正在更新使用者資訊中......';
-                        }
-                        $user = gs_syncUser($s, $user);
-                        if ($form_state->getValue('password_sync')) {
-                            $user->setHashFunction('SHA-1');
-                            $user->setPassword(sha1(substr($s->idno, -6)));
-                            $user = gs_updateUser($user_key, $user);
-                        }
-                        if ($user && $log) {
-                            $detail_log .= '更新完成！<br>';
-                        } else {
-                            $detail_log .= '更新失敗！<br>';
-                        }
-                    } elseif ($form_state->getValue('disable_nonuse')) {
-                        if ($log) {
-                            $detail_log .= '在 G Suite 中找到這位使用者，現在正在<strong>停用</strong>這個帳號';
-                        }
-                        $user->setSuspended(true);
-                        $user = gs_updateUser($user_key, $user);
-                        if ($user && $log) {
-                            $detail_log .= '帳號已停用！<br>';
-                        } else {
-                            $detail_log .= '停用失敗！<br>';
-                        }
-                    } elseif ($form_state->getValue('delete_nonuse')) {
-                        if ($log) {
-                            $detail_log .= '在 G Suite 中找到這位使用者，現在正在<strong>刪除</strong>這個帳號......';
-                        }
-                        $result = gs_deleteUser($user_key);
-                        if ($result && $log) {
-                            $detail_log .= '帳號已刪除！<br>';
-                        } else {
-                            $detail_log .= '刪除失敗！<br>';
-                        }
-                    }
-                } elseif (is_null($s->status) || $s->status == 'active') {
+            $classes = $form_state->getValue('grade'.$grade);
+            foreach ($classes as $class) {
+                $students = get_students_of_class($class);
+                foreach ($students as $s) {
                     if ($log) {
-                        $detail_log .= '無法在 G Suite 中找到這個使用者，現在正在為使用者建立 Google 帳號......';
+                        $detail_log .= "正在處理 $s->class $s->seat $s->realname ($s->account)......<br>";
                     }
-                    $user = gs_createUser($s, $user_key);
-                    if ($user && $log) {
-                        $detail_log .= '建立完成！<br>';
-                    } else {
-                        $detail_log .= '建立失敗！<br>';
-                    }
-                }
-
-                if (!empty($s->class)) {
-                    if ($log) {
-                        $detail_log .= "<p>正在處理 $s->dept_name......<br>";
-                    }
-                    $stdgroup = 'class-'.$s->class;
-                    $group_key = $stdgroup.'@'.$config->get('google_domain');
-                    $found = false;
-                    foreach ($groups as $group) {
-                        if ($group->getMail() == $group_key) {
-                            $found = true;
-                            break;
-                        }
-                    }
-                    if ($found) {
-                        if ($log) {
-                            $detail_log .= "$stdgroup => 在 G Suite 中找到匹配的使用者群組！......<br>";
-                        }
-                        if (!in_array($stdgroup, $this->group_reset)) {
-                            $members = gs_listMembers($group_key);
-                            gs_removeMembers($group_key, $members);
+                    $user_key = $s->account.'@'.$config->get('google_domain');
+                    $user = gs_getUser($user_key);
+                    if ($user) {
+                        if (is_null($s->status) || $s->status == 'active') {
                             if ($log) {
-                                $detail_log .= '已經移除群組裡的所有成員！<br>';
+                                $detail_log .= '在 G Suite 中找到這位使用者，現在正在更新使用者資訊中......';
                             }
-                            $this->group_reset[] = $stdgroup;
+                            $user = gs_syncUser($s, $user);
+                            if ($form_state->getValue('password_sync')) {
+                                $user->setHashFunction('SHA-1');
+                                $user->setPassword(sha1(substr($s->idno, -6)));
+                                $user = gs_updateUser($user_key, $user);
+                            }
+                            if ($user && $log) {
+                                $detail_log .= '更新完成！<br>';
+                            } else {
+                                $detail_log .= '更新失敗！<br>';
+                            }
+                        } elseif ($form_state->getValue('disable_nonuse')) {
+                            if ($log) {
+                                $detail_log .= '在 G Suite 中找到這位使用者，現在正在<strong>停用</strong>這個帳號';
+                            }
+                            $user->setSuspended(true);
+                            $user = gs_updateUser($user_key, $user);
+                            if ($user && $log) {
+                                $detail_log .= '帳號已停用！<br>';
+                            } else {
+                                $detail_log .= '停用失敗！<br>';
+                            }
+                        } elseif ($form_state->getValue('delete_nonuse')) {
+                            if ($log) {
+                                $detail_log .= '在 G Suite 中找到這位使用者，現在正在<strong>刪除</strong>這個帳號......';
+                            }
+                            $result = gs_deleteUser($user_key);
+                            if ($result && $log) {
+                                $detail_log .= '帳號已刪除！<br>';
+                            } else {
+                                $detail_log .= '刪除失敗！<br>';
+                            }
                         }
-                    } else {
+                    } elseif (is_null($s->status) || $s->status == 'active') {
                         if ($log) {
-                            $detail_log .= '無法在 G Suite 中找到匹配的群組，現在正在建立新的 Google 群組......';
+                            $detail_log .= '無法在 G Suite 中找到這個使用者，現在正在為使用者建立 Google 帳號......';
                         }
-                        $group = gs_createGroup($group_key, $s->dept_name);
-                        if ($group && $log) {
-                            $detail_log .= '建立成功！<br>';
+                        $user = gs_createUser($s, $user_key);
+                        if ($user && $log) {
+                            $detail_log .= '建立完成！<br>';
                         } else {
                             $detail_log .= '建立失敗！<br>';
                         }
+                    }
+
+                    if (!empty($s->class)) {
                         if ($log) {
-                            $detail_log .= "正在將使用者： $s->account 加入到群組裡......";
+                            $detail_log .= "<p>正在處理 $s->dept_name......<br>";
                         }
-                        $members = gs_addMembers($group_key, array($user_key));
-                        if (!empty($members) && $log) {
-                            $detail_log .= '加入成功！<br>';
+                        $stdgroup = 'class-'.$s->class;
+                        $group_key = $stdgroup.'@'.$config->get('google_domain');
+                        $found = false;
+                        foreach ($groups as $group) {
+                            if ($group->getMail() == $group_key) {
+                                $found = true;
+                                break;
+                            }
+                        }
+                        if ($found) {
+                            if ($log) {
+                                $detail_log .= "$stdgroup => 在 G Suite 中找到匹配的使用者群組！......<br>";
+                            }
+                            if (!in_array($stdgroup, $this->group_reset)) {
+                                $members = gs_listMembers($group_key);
+                                gs_removeMembers($group_key, $members);
+                                if ($log) {
+                                    $detail_log .= '已經移除群組裡的所有成員！<br>';
+                                }
+                                $this->group_reset[] = $stdgroup;
+                            }
                         } else {
-                            $detail_log .= '加入失敗！<br>';
+                            if ($log) {
+                                $detail_log .= '無法在 G Suite 中找到匹配的群組，現在正在建立新的 Google 群組......';
+                            }
+                            $group = gs_createGroup($group_key, $s->dept_name);
+                            if ($group && $log) {
+                                $detail_log .= '建立成功！<br>';
+                            } else {
+                                $detail_log .= '建立失敗！<br>';
+                            }
+                            if ($log) {
+                                $detail_log .= "正在將使用者： $s->account 加入到群組裡......";
+                            }
+                            $members = gs_addMembers($group_key, array($user_key));
+                            if (!empty($members) && $log) {
+                                $detail_log .= '加入成功！<br>';
+                            } else {
+                                $detail_log .= '加入失敗！<br>';
+                            }
                         }
                     }
                 }
