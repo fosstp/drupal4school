@@ -14,11 +14,11 @@ function initGoogleService()
         $user_to_impersonate = $config->get('google_domain_admin');
         $scopes = array(
             \Google_Service_Directory::ADMIN_DIRECTORY_ORGUNIT,
-            \Google_Service_Directory::ADMIN_DIRECTORY_ROLEMANAGEMENT,
             \Google_Service_Directory::ADMIN_DIRECTORY_USER,
-            \Google_Service_Directory::ADMIN_DIRECTORY_USER_ALIAS,
             \Google_Service_Directory::ADMIN_DIRECTORY_GROUP,
             \Google_Service_Directory::ADMIN_DIRECTORY_GROUP_MEMBER,
+            \Google_Service_Calendar::CALENDAR,
+            \Google_Service_Calendar::CALENDAR_EVENT,
         );
 
         $client = new \Google_Client();
