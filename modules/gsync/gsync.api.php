@@ -9,8 +9,8 @@ function initGoogleService()
         return $directory;
     } else {
         $config = \Drupal::configFactory()->getEditable('gsync.settings');
-        $realpath = \Drupal::service('file_system')->realpath($config->get('google_serivce_json'));
-//        $realpath = '/var/www/html/sites/default/files/gsync/'.$config->get('google_serivce_json');
+        $uri = $config->get('google_serivce_json');
+        $path = \Drupal::service('file_system')->realpath($uri);
         $user_to_impersonate = $config->get('google_domain_admin');
         $scopes = array(
             \Google_Service_Directory::ADMIN_DIRECTORY_ORGUNIT,
@@ -22,7 +22,7 @@ function initGoogleService()
         );
 
         $client = new \Google_Client();
-        $client->setAuthConfig($realpath);
+        $client->setAuthConfig($path);
         $client->setApplicationName('Drupal for School');
         $client->setScopes($scopes);
         $client->setSubject($user_to_impersonate);
