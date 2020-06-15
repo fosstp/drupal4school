@@ -75,6 +75,7 @@ function tpedu_form_user_login_form_alter(&$form, FormStateInterface $form_state
             '#type' => 'html_tag',
             '#tag' => 'a',
             '#attributes' => array(
+                'title' => '使用臺北市教育人員單一身分驗證登入',
                 'href' => Url::fromRoute('tpedu.login')->toString(),
                 'style' => 'border-bottom: 0px',
             ),

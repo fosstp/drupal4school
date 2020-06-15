@@ -31,7 +31,6 @@ install:
   - views_ui
   - editor
   - ckeditor
-  - tpedu
 
 # Required modules
 # Note that any dependencies of the modules listed here will be installed automatically.

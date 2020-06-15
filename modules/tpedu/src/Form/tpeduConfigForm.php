@@ -2,25 +2,14 @@
 
 namespace Drupal\tpedu\Form;
 
-use Drupal\Core\Form\ConfirmFormBase;
+use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Form\ConfirmFormHelper;
 
-class tpeduConfigForm extends ConfirmFormBase
+class tpeduConfigForm extends ConfigFormBase
 {
     public function getFormId()
     {
         return 'tpedu_settings_form';
-    }
-
-    public function getQuestion()
-    {
-        return '臺北市教育人員單一身分驗證模組設定';
-    }
-
-    public function getCancelUrl()
-    {
-        return ConfirmFormHelper::buildCancelLink($this, $this->getRequest());
     }
 
     protected function getEditableConfigNames()
@@ -33,7 +22,7 @@ class tpeduConfigForm extends ConfirmFormBase
     public function buildForm(array $form, FormStateInterface $form_state)
     {
         global $base_url;
-        $config = \Drupal::config('tpedu.settings');
+        $config = $this->config('tpedu.settings');
 
         $form['helper'] = array(
             '#type' => 'markup',
@@ -123,9 +112,7 @@ class tpeduConfigForm extends ConfirmFormBase
 
     public function submitForm(array &$form, FormStateInterface $form_state)
     {
-        global $base_url;
-        $error = '';
-        $config = \Drupal::configFactory()->getEditable('tpedu.settings');
+        $config = $this->config('tpedu.settings');
         $form_state->cleanValues();
         foreach ($form_state->getValues() as $key => $value) {
             $config->set($key, $value);
