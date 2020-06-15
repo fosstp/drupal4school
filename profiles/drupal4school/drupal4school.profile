@@ -32,6 +32,12 @@ function system_form_install_settings_form_alter(&$form, $form_state)
  */
 function drupal4school_form_install_configure_form_alter(&$form, $form_state)
 {
+    $form['site_infomation']['site_name']['#default_value'] = $_ENV['SITE_NAME'];
+    $form['site_infomation']['site_mail']['#default_value'] = $_ENV['SITE_MAIL'];
+    $form['admin_account']['account_name']['#default_value'] = $_ENV['SITE_ADMIN'];
+    $form['admin_account']['account_pass']['account_pass_pass1']['#default_value'] = $_ENV['SITE_PASSWORD'];
+    $form['admin_account']['account_pass']['account_pass_pass2']['#default_value'] = $_ENV['SITE_PASSWORD'];
+    $form['admin_account']['account_mail']['#default_value'] = $_ENV['SITE_ADMIN_MAIL'];
     $form['regional_settings']['site_default_country']['#default_value'] = 'TW';
     $form['regional_settings']['date_default_timezone']['#default_value'] = 'Asia/Taipei';
 }

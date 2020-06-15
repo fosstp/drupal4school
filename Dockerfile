@@ -1,5 +1,10 @@
 FROM drupal
 
+ENV SITE_NAME default
+ENV SITE_MAIL webmaster@xxps.edu.tw
+ENV SITE_ADMIN admin
+ENV SITE_PASSWORD sitepassword
+ENV SITE_ADMIN_MAIL your_mail@xxps.tp.edu.tw
 ENV DB_HOST mysql
 ENV DB_USER root
 ENV DB_PASSWORD dbpassword
