@@ -18,7 +18,7 @@ function initGoogleService()
             \Google_Service_Directory::ADMIN_DIRECTORY_GROUP,
             \Google_Service_Directory::ADMIN_DIRECTORY_GROUP_MEMBER,
             \Google_Service_Calendar::CALENDAR,
-            \Google_Service_Calendar::CALENDAR_EVENT,
+            \Google_Service_Calendar::CALENDAR_EVENTS,
         );
 
         $client = new \Google_Client();

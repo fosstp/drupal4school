@@ -2,25 +2,14 @@
 
 namespace Drupal\gsync\Form;
 
-use Drupal\Core\Form\ConfirmFormBase;
+use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Form\ConfirmFormHelper;
 
-class gsyncConfigForm extends ConfirmFormBase
+class gsyncConfigForm extends ConfigFormBase
 {
     public function getFormId()
     {
         return 'gsync_settings_form';
-    }
-
-    public function getQuestion()
-    {
-        return 'G Suite 帳號同步模組設定';
-    }
-
-    public function getCancelUrl()
-    {
-        return ConfirmFormHelper::buildCancelLink($this, $this->getRequest());
     }
 
     protected function getEditableConfigNames()
@@ -32,9 +21,7 @@ class gsyncConfigForm extends ConfirmFormBase
 
     public function buildForm(array $form, FormStateInterface $form_state)
     {
-        global $base_url;
-        $config = \Drupal::config('gsync.settings');
-
+        $config = $this->config('gsync.settings');
         $form['helper'] = array(
             '#type' => 'markup',
             '#markup' => '<p>要使用 G Suite 帳號單一簽入功能，您必須建立 Google 開發專案並取得 Google 發給您的<em>網路應用程式憑證</em>，請依照以下步驟取得相關組態值：'.
@@ -99,7 +86,7 @@ class gsyncConfigForm extends ConfirmFormBase
     {
         $error = '';
         $message = '';
-        $config = \Drupal::configFactory()->getEditable('gsync.settings');
+        $config = $this->config('gsync.settings');
         $form_state->cleanValues();
         foreach ($form_state->getValues() as $key => $value) {
             if ($key == 'google_service_json') {

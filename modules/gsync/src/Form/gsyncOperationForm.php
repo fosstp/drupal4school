@@ -2,29 +2,18 @@
 
 namespace Drupal\gsync\Form;
 
-use Drupal\Core\Form\ConfirmFormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Form\ConfirmFormHelper;
+use Drupal\Core\Form\FormBase;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\HtmlCommand;
 
-class gsyncOperationForm extends ConfirmFormBase
+class gsyncOperationForm extends FormBase
 {
     private $group_reset = array();
 
     public function getFormId()
     {
         return 'gsync_operation_form';
-    }
-
-    public function getQuestion()
-    {
-        return 'G Suite 帳號同步';
-    }
-
-    public function getCancelUrl()
-    {
-        return ConfirmFormHelper::buildCancelLink($this, $this->getRequest());
     }
 
     public function buildForm(array $form, FormStateInterface $form_state)
@@ -125,6 +114,7 @@ class gsyncOperationForm extends ConfirmFormBase
             $form['start'] = array(
                 '#type' => 'button',
                 '#value' => '開始同步',
+                '#executes_submit_callback' => false,
                 '#ajax' => array(
                     'callback' => [$this, 'gsync_start'],
                     'wrapper' => 'edit-log-div',
