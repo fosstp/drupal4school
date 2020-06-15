@@ -32,9 +32,6 @@ function system_form_install_settings_form_alter(&$form, $form_state)
  */
 function drupal4school_form_install_configure_form_alter(&$form, $form_state)
 {
-    $form['admin_account']['account']['name']['#default_value'] = 'admin';
-    $form['server_settings']['site_default_country']['#default_value'] = 'TW';
-    $javascript = &drupal_static('drupal_add_js', array());
-    unset($javascript['misc/timezone.js']);
-    $form['server_settings']['date_default_timezone']['#default_value'] = 'Asia/Taipei';
+    $form['regional_settings']['site_default_country']['#default_value'] = 'TW';
+    $form['regional_settings']['date_default_timezone']['#default_value'] = 'Asia/Taipei';
 }
