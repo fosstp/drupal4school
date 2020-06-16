@@ -25,7 +25,7 @@ do
 done
 chmod 644 /var/www/html/sites/default/settings.php
 drupal moup
-drupal cr all
+drupal cc
 
 if [ $# -gt 0 ]; then
     drupal $@
