@@ -1,7 +1,10 @@
 FROM drupal
 
+ENV SITE_NAME "drupal 8"
+ENV SITE_MAIL webmaster@xxps.tp.edu.tw
 ENV SITE_ADMIN admin
 ENV SITE_ADMIN_MAIL your_mail@xxps.tp.edu.tw
+ENV SITE_PASSWORD your_password
 ENV DB_HOST mysql
 ENV DB_USER root
 ENV DB_PASSWORD dbpassword
