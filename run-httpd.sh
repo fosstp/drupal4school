@@ -24,6 +24,7 @@ do
     find $d -type f -exec chmod 664 '{}' \;
 done
 chmod 644 /var/www/html/sites/default/settings.php
+drupal moup
 drupal cr all
 
 if [ $# -gt 0 ]; then
