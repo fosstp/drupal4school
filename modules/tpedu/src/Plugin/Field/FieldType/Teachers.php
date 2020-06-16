@@ -79,8 +79,10 @@ class Teachers extends FieldItemBase
         );
         $values = array('' => '--');
         $units = all_units();
-        foreach ($units as $r) {
-            $values[$r->id] = $r->name;
+        if ($units) {
+            foreach ($units as $r) {
+                $values[$r->id] = $r->name;
+            }
         }
         $element['unit'] = array(
             '#type' => 'select',
@@ -97,8 +99,10 @@ class Teachers extends FieldItemBase
         );
         $values = array('' => '--');
         $roles = all_roles();
-        foreach ($roles as $r) {
-            $values[$r->id] = $r->name;
+        if ($roles) {
+            foreach ($roles as $r) {
+                $values[$r->id] = $r->name;
+            }
         }
         $element['role'] = array(
             '#type' => 'select',
@@ -115,8 +119,10 @@ class Teachers extends FieldItemBase
         );
         $values = array('' => '--');
         $domains = all_domains();
-        foreach ($domains as $r) {
-            $values[$r->domain] = $r->domain;
+        if ($domains) {
+            foreach ($domains as $r) {
+                $values[$r->domain] = $r->domain;
+            }
         }
         $element['domain'] = array(
             '#type' => 'select',
@@ -133,8 +139,10 @@ class Teachers extends FieldItemBase
         );
         $values = array('' => '--');
         $subjects = all_subjects();
-        foreach ($subjects as $s) {
-            $values[$s->id] = $s->name;
+        if ($subjects) {
+            foreach ($subjects as $s) {
+                $values[$s->id] = $s->name;
+            }
         }
         $element['subject'] = array(
             '#type' => 'select',
@@ -163,8 +171,10 @@ class Teachers extends FieldItemBase
         );
         $values = array('' => '--');
         $classes = all_classes();
-        foreach ($classes as $r) {
-            $values[$r->id] = $r->name;
+        if ($classes) {
+            foreach ($classes as $r) {
+                $values[$r->id] = $r->name;
+            }
         }
         $element['class'] = array(
             '#type' => 'select',

@@ -87,8 +87,8 @@ class gsyncConfigForm extends ConfigFormBase
         $error = '';
         $message = '';
         $config = $this->config('gsync.settings');
-        $form_state->cleanValues();
-        foreach ($form_state->getValues() as $key => $value) {
+        $values = $form_state->cleanValues()->getValues();
+        foreach ($values as $key => $value) {
             if ($key == 'google_service_json') {
                 $file = file_save_upload('google_service_json', array('file_validate_extensions' => array('json')), 'public://gsync', 0, FILE_EXISTS_REPLACE);
                 if ($file) {

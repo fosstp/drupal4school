@@ -353,6 +353,9 @@ function gs_addMembers($groupId, $members)
 {
     global $directory;
     $users = array();
+    if (!is_array($members)) {
+        $members[] = $members;
+    }
     foreach ($members as $m) {
         $member = new \Google_Service_Directory_Member();
         $member->setEmail($m);
@@ -373,6 +376,9 @@ function gs_removeMembers($groupId, $members)
 {
     global $directory;
     $users = array();
+    if (!is_array($members)) {
+        $members[] = $members;
+    }
     foreach ($members as $m) {
         $member = $m->getEmail();
         try {

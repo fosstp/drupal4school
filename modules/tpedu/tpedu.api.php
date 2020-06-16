@@ -501,13 +501,15 @@ function fetch_roles()
     if ($ous) {
         foreach ($ous as $o) {
             $roles = api('roles_of_unit', array('ou' => $o->ou));
-            foreach ($roles as $r) {
-                $fields = array(
-                    'id' => $r->cn,
-                    'unit' => $o->ou,
-                    'name' => $r->description,
-                );
-                \Drupal::database()->insert('tpedu_roles')->fields($fields)->execute();
+            if ($roles) {
+                foreach ($roles as $r) {
+                    $fields = array(
+                        'id' => $r->cn,
+                        'unit' => $o->ou,
+                        'name' => $r->description,
+                    );
+                    \Drupal::database()->insert('tpedu_roles')->fields($fields)->execute();
+                }
             }
         }
     }
@@ -689,8 +691,10 @@ function get_subjects_of_domain($domain)
 function get_teachers_of_domain($dom)
 {
     $subjects = get_subjects_of_domain($dom);
-    foreach ($subjects as $s) {
-        $subs[] = "'$s->id'";
+    if ($subjects) {
+        foreach ($subjects as $s) {
+            $subs[] = "'$s->id'";
+        }
     }
     $sub_list = implode(',', $subs);
     $query = \Drupal::database()

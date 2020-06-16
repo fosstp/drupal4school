@@ -41,8 +41,11 @@ class ClassesDefaultWidget extends TpeduWidgetBase
         if ($this->getFieldSetting('filter_by_grade') && $this->getFieldSetting('grade')) {
             $grades = explode(',', $this->getFieldSetting('grade'));
             foreach ($grades as $g) {
-                foreach (get_classes_of_grade($g) as $c) {
-                    $classes[] = $c;
+                $classes = get_classes_of_grade($g);
+                if ($classes) {
+                    foreach ($classes as $c) {
+                        $classes[] = $c;
+                    }
                 }
             }
         }

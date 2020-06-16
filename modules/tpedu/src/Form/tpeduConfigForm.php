@@ -113,8 +113,8 @@ class tpeduConfigForm extends ConfigFormBase
     public function submitForm(array &$form, FormStateInterface $form_state)
     {
         $config = $this->config('tpedu.settings');
-        $form_state->cleanValues();
-        foreach ($form_state->getValues() as $key => $value) {
+        $values = $form_state->cleanValues()->getValues();
+        foreach ($values as $key => $value) {
             $config->set($key, $value);
         }
         $config->set('call_back', 'https://'.$_SERVER['HTTP_HOST'].'/retrieve');

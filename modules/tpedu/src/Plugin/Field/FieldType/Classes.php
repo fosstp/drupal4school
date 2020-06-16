@@ -90,8 +90,10 @@ class Classes extends FieldItemBase
         );
         $values = array('' => '--');
         $subjects = all_subjects();
-        foreach ($subjects as $s) {
-            $values[$s->id] = $s->name;
+        if ($subjects) {
+            foreach ($subjects as $s) {
+                $values[$s->id] = $s->name;
+            }
         }
         $element['subject'] = array(
             '#type' => 'select',

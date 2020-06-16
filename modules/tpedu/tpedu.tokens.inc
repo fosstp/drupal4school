@@ -60,7 +60,6 @@ function tpedu_tokens($type, $tokens, array $data, array $options, BubbleableMet
     if ($type == 'user' && !empty($data['user'])) {
         /** @var \Drupal\user\UserInterface $account */
         $account = $data['user'];
-        \Drupal::logger('tpedu')->debug(var_export($account, true));
         foreach ($tokens as $name => $original) {
             switch ($name) {
             case 'gender':

@@ -76,8 +76,10 @@ class Subjects extends FieldItemBase
         );
         $values = array('' => '--');
         $domains = all_domains();
-        foreach ($domains as $r) {
-            $values[$r->domain] = $r->domain;
+        if ($domains) {
+            foreach ($domains as $r) {
+                $values[$r->domain] = $r->domain;
+            }
         }
         $element['domain'] = array(
             '#type' => 'select',
@@ -94,8 +96,10 @@ class Subjects extends FieldItemBase
         );
         $values = array('' => '--');
         $classes = all_classes();
-        foreach ($classes as $c) {
-            $values[$c->id] = $c->name;
+        if ($classes) {
+            foreach ($classes as $c) {
+                $values[$c->id] = $c->name;
+            }
         }
         $element['class'] = array(
             '#type' => 'select',

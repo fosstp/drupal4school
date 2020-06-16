@@ -76,8 +76,10 @@ class Roles extends FieldItemBase
         );
         $values = array('' => '--');
         $units = all_units();
-        foreach ($units as $r) {
-            $values[$r->id] = $r->name;
+        if ($units) {
+            foreach ($units as $r) {
+                $values[$r->id] = $r->name;
+            }
         }
         $element['unit'] = array(
             '#type' => 'select',

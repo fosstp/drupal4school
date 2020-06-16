@@ -76,8 +76,10 @@ class Students extends FieldItemBase
         );
         $values = array('' => '--');
         $classes = all_classes();
-        foreach ($classes as $r) {
-            $values[$r->id] = $r->name;
+        if ($classes) {
+            foreach ($classes as $r) {
+                $values[$r->id] = $r->name;
+            }
         }
         $element['class'] = array(
             '#type' => 'select',
