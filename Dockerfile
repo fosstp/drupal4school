@@ -1,16 +1,13 @@
 FROM drupal
 
-ENV SITE_NAME default
-ENV SITE_MAIL webmaster@xxps.edu.tw
 ENV SITE_ADMIN admin
-ENV SITE_PASSWORD sitepassword
 ENV SITE_ADMIN_MAIL your_mail@xxps.tp.edu.tw
 ENV DB_HOST mysql
 ENV DB_USER root
 ENV DB_PASSWORD dbpassword
 
 RUN apt-get update \
-    && apt-get -y --no-install-recommends install unzip git apt-utils mc ldap-utils \
+    && apt-get -y --no-install-recommends install unzip git apt-utils mc ldap-utils mariadb-client \
     && rm -rf /var/lib/apt/lists/* \
     && echo 'y' | pecl install apcu \
     && docker-php-ext-enable apcu \
@@ -28,13 +25,11 @@ RUN apt-get update \
     && chmod +x /usr/local/bin/drupal \
     && composer upgrade
 
-ADD profiles /var/www/html/profiles
 ADD modules /var/www/html/modules
-ADD themes /var/www/html/themes
 RUN mkdir /var/www/html/sites/default/files \
     && chown -R root:www-data /var/www/html \
     && chmod -R 750 /var/www/html \
-    && chmod 770 /var/www/html/sites/default/files
+    && chmod -R 777 /var/www/html/sites
 
 ADD run-httpd.sh /usr/sbin/run-httpd.sh
 RUN chmod +x /usr/sbin/run-httpd.sh
