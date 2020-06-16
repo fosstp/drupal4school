@@ -30,7 +30,6 @@ class tpeduController extends ControllerBase
             throw new AccessDeniedHttpException();
         }
         $auth_code = $request->query->get('code');
-        $user_email = $request->query->get('user');
         if ($auth_code) {
             get_tokens($auth_code);
             $uuid = who();
