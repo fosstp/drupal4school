@@ -9,7 +9,7 @@ function initGoogleService()
         return $directory;
     } else {
         $config = \Drupal::config('gsync.settings');
-        $uri = $config->get('google_serivce_json');
+        $uri = $config->get('google_service_json');
         $path = \Drupal::service('file_system')->realpath($uri);
         $user_to_impersonate = $config->get('google_domain_admin');
         $scopes = array(
