@@ -12,8 +12,8 @@ fi
 if [ ! -f "/var/run/apache2/apache2.pid" ]; then
     chown -R root:www-data /var/www/html
     chmod -R 750 /var/www/html
-    chmod 2775 /var/www/html/sites/default/files
-    for d in /var/www/html/sites/default/files
+    chmod 2775 /var/www/html/sites
+    for d in /var/www/html/sites
     do
         find $d -type d -exec chmod 2775 '{}' \;
         find $d -type f -exec chmod 664 '{}' \;
