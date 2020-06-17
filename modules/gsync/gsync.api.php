@@ -188,8 +188,12 @@ function gs_syncUser($t, $user)
 {
     $config = \Drupal::config('gsync.settings');
     $names = new \Google_Service_Directory_UserName();
-    $names->setFamilyName($t->sn);
-    $names->setGivenName($t->gn);
+    if ($t->sn) {
+        $names->setFamilyName($t->sn);
+    }
+    if ($t->gn) {
+        $names->setGivenName($t->gn);
+    }
     $names->setFullName($t->realname);
     $user->setName($names);
     if (!empty($t->email) && $t->email != $user->getPrimaryEmail()) {

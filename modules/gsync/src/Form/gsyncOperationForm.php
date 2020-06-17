@@ -330,7 +330,7 @@ class gsyncOperationForm extends FormBase
                             $found = false;
                             if ($groups) {
                                 foreach ($groups as $group) {
-                                    if ($group->getMail() == $group_key) {
+                                    if ($group->getEmail() == $group_key) {
                                         $found = true;
                                         break;
                                     }
@@ -444,7 +444,7 @@ class gsyncOperationForm extends FormBase
                             $found = false;
                             if ($groups) {
                                 foreach ($groups as $group) {
-                                    if ($group->getMail() == $group_key) {
+                                    if ($group->getEmail() == $group_key) {
                                         $found = true;
                                         break;
                                     }
