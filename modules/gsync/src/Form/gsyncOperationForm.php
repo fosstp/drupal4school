@@ -188,7 +188,7 @@ class gsyncOperationForm extends FormBase
                                 if ($user && $log) {
                                     $detail_log .= '更新完成！<br>';
                                 } else {
-                                    $detail_log .= '更新失敗！<br>';
+                                    $detail_log .= "$t->rolename $t->realname 更新失敗！<br>";
                                 }
                             } elseif ($form_state->getValue('disable_nonuse')) {
                                 if ($log) {
@@ -199,7 +199,7 @@ class gsyncOperationForm extends FormBase
                                 if ($user && $log) {
                                     $detail_log .= '帳號已停用！<br>';
                                 } else {
-                                    $detail_log .= '停用失敗！<br>';
+                                    $detail_log .= "$t->rolename $t->realname 停用失敗！<br>";
                                 }
                             } elseif ($form_state->getValue('delete_nonuse')) {
                                 if ($log) {
@@ -209,7 +209,7 @@ class gsyncOperationForm extends FormBase
                                 if ($result && $log) {
                                     $detail_log .= '帳號已刪除！<br>';
                                 } else {
-                                    $detail_log .= '刪除失敗！<br>';
+                                    $detail_log .= "$t->rolename $t->realname 刪除失敗！<br>";
                                 }
                             }
                         } elseif (is_null($t->status) || $t->status == 'active') {
@@ -220,7 +220,7 @@ class gsyncOperationForm extends FormBase
                             if ($user && $log) {
                                 $detail_log .= '建立完成！<br>';
                             } else {
-                                $detail_log .= '建立失敗！<br>';
+                                $detail_log .= "$t->rolename $t->realname 建立失敗！<br>";
                             }
                         }
                         if (!empty($t->dept_id) && !empty($t->role_id)) {
@@ -259,7 +259,7 @@ class gsyncOperationForm extends FormBase
                                 if ($group && $log) {
                                     $detail_log .= '建立成功！<br>';
                                 } else {
-                                    $detail_log .= '建立失敗！<br>';
+                                    $detail_log .= "$t->dept_name 群組建立失敗！<br>";
                                 }
                             }
                             if ($log) {
@@ -269,7 +269,7 @@ class gsyncOperationForm extends FormBase
                             if (!empty($members) && $log) {
                                 $detail_log .= '加入成功！<br>';
                             } else {
-                                $detail_log .= '加入失敗！<br>';
+                                $detail_log .= "無法將使用者 $t->role_name $t->realname 加入 $t->dept_name 群組！<br>";
                             }
 
                             if ($log) {
@@ -307,7 +307,7 @@ class gsyncOperationForm extends FormBase
                                 if ($group && $log) {
                                     $detail_log .= '建立成功！<br>';
                                 } else {
-                                    $detail_log .= '建立失敗！<br>';
+                                    $detail_log .= "$t->role_name 群組建立失敗！<br>";
                                 }
                             }
                             if ($log) {
@@ -317,7 +317,7 @@ class gsyncOperationForm extends FormBase
                             if (!empty($members) && $log) {
                                 $detail_log .= '加入成功！<br>';
                             } else {
-                                $detail_log .= '加入失敗！<br>';
+                                $detail_log .= "無法將使用者 $t->role_name $t->realname 加入 $t->role_name 群組！<br>";
                             }
                         }
                         if (!empty($t->class)) {
@@ -354,7 +354,7 @@ class gsyncOperationForm extends FormBase
                                 if ($group && $log) {
                                     $detail_log .= '建立成功！<br>';
                                 } else {
-                                    $detail_log .= '建立失敗！<br>';
+                                    $detail_log .= substr($t->class, 0, 1).'年級群組建立失敗！<br>';
                                 }
                                 if ($log) {
                                     $detail_log .= "正在將使用者： $t->account 加入到群組裡......";
@@ -363,7 +363,7 @@ class gsyncOperationForm extends FormBase
                                 if (!empty($members) && $log) {
                                     $detail_log .= '加入成功！<br>';
                                 } else {
-                                    $detail_log .= '加入失敗！<br>';
+                                    $detail_log .= "無法將使用者 $t->role_name $t->realname 加入 ".substr($t->class, 0, 1).'年級群組！<br>';
                                 }
                             }
                         }
@@ -396,7 +396,7 @@ class gsyncOperationForm extends FormBase
                                 if ($user && $log) {
                                     $detail_log .= '更新完成！<br>';
                                 } else {
-                                    $detail_log .= '更新失敗！<br>';
+                                    $detail_log .= "$s->class $s->seat $s->realname 更新失敗！<br>";
                                 }
                             } elseif ($form_state->getValue('disable_nonuse')) {
                                 if ($log) {
@@ -407,7 +407,7 @@ class gsyncOperationForm extends FormBase
                                 if ($user && $log) {
                                     $detail_log .= '帳號已停用！<br>';
                                 } else {
-                                    $detail_log .= '停用失敗！<br>';
+                                    $detail_log .= "$s->id $s->realname 停用失敗！<br>";
                                 }
                             } elseif ($form_state->getValue('delete_nonuse')) {
                                 if ($log) {
@@ -417,7 +417,7 @@ class gsyncOperationForm extends FormBase
                                 if ($result && $log) {
                                     $detail_log .= '帳號已刪除！<br>';
                                 } else {
-                                    $detail_log .= '刪除失敗！<br>';
+                                    $detail_log .= "$s->id $s->realname 刪除失敗！<br>";
                                 }
                             }
                         } elseif (is_null($s->status) || $s->status == 'active') {
@@ -428,7 +428,7 @@ class gsyncOperationForm extends FormBase
                             if ($user && $log) {
                                 $detail_log .= '建立完成！<br>';
                             } else {
-                                $detail_log .= '建立失敗！<br>';
+                                $detail_log .= "$s->class $s->seat $s->realname 建立失敗！<br>";
                             }
                         }
 
@@ -466,7 +466,7 @@ class gsyncOperationForm extends FormBase
                                 if ($group && $log) {
                                     $detail_log .= '建立成功！<br>';
                                 } else {
-                                    $detail_log .= '建立失敗！<br>';
+                                    $detail_log .= "$s->dept_name 群組建立失敗！<br>";
                                 }
                                 if ($log) {
                                     $detail_log .= "正在將使用者： $s->account 加入到群組裡......";
@@ -475,7 +475,7 @@ class gsyncOperationForm extends FormBase
                                 if (!empty($members) && $log) {
                                     $detail_log .= '加入成功！<br>';
                                 } else {
-                                    $detail_log .= '加入失敗！<br>';
+                                    $detail_log .= "將 $s->class $s->seat $s->realname 加入 $s->dept_name 群組失敗！<br>";
                                 }
                             }
                         }
