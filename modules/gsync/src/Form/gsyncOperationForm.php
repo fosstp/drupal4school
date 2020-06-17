@@ -245,7 +245,7 @@ class gsyncOperationForm extends FormBase
                                     if ($log) {
                                         $detail_log .= '已經移除群組裡的所有成員！<br>';
                                     }
-                                    $$this->group_reset[] = $depgroup;
+                                    $this->group_reset[] = $depgroup;
                                 }
                             } else {
                                 if ($log) {
@@ -323,7 +323,7 @@ class gsyncOperationForm extends FormBase
                         }
                         if (!empty($t->class)) {
                             if ($log) {
-                                $detail_log .= "<p>正在處理 substr($t->class, 0, 1) 年級......<br>";
+                                $detail_log .= '<p>正在處理 '.substr($t->class, 0, 1).'年級......<br>';
                             }
                             $clsgroup = 'group-C'.substr($t->class, 0, 1);
                             $group_key = $clsgroup.'@'.$config->get('google_domain');
@@ -491,7 +491,7 @@ class gsyncOperationForm extends FormBase
         $time_end = microtime(true);
         $time_spend = $time_end - $time_start;
         $detail_log .= "<br>總共花費 $time_spend 秒";
-        $response->addCommand(new HtmlCommand('#edit-log-div', $detail_log));
+        $response->addCommand(new HtmlCommand('edit-log-div', $detail_log));
 
         return $response;
     }

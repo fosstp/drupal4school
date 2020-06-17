@@ -31,7 +31,7 @@ function initGoogleService()
 
             return $directory;
         } catch (\Google_Service_Exception $e) {
-            \Drupal::logger('google')->debug($e->getMessage());
+            \Drupal::logger('google')->debug('directory:'.$e->getMessage());
 
             return null;
         }
@@ -46,7 +46,7 @@ function gs_listOrgUnits()
 
         return $result->getOrganizationUnits();
     } catch (\Google_Service_Exception $e) {
-        \Drupal::logger('google')->debug($e->getMessage());
+        \Drupal::logger('google')->debug('gs_listOrgUnits:'.$e->getMessage());
 
         return false;
     }
@@ -58,7 +58,7 @@ function gs_getOrgUnit($orgPath)
     try {
         return $directory->orgunits->get('my_customer', $orgPath);
     } catch (\Google_Service_Exception $e) {
-        \Drupal::logger('google')->debug($e->getMessage());
+        \Drupal::logger('google')->debug('gs_getOrgUnit:'.$e->getMessage());
 
         return false;
     }
@@ -74,7 +74,7 @@ function gs_createOrgUnit($orgPath, $orgName, $orgDescription)
     try {
         return $directory->orgunits->insert('my_customer', $org_unit);
     } catch (\Google_Service_Exception $e) {
-        \Drupal::logger('google')->debug($e->getMessage());
+        \Drupal::logger('google')->debug('gs_createOrgUnit:'.$e->getMessage());
 
         return false;
     }
@@ -88,7 +88,7 @@ function gs_updateOrgUnit($orgPath, $orgName)
     try {
         return $directory->orgunits->update('my_customer', $orgPath, $org_unit);
     } catch (\Google_Service_Exception $e) {
-        \Drupal::logger('google')->debug($e->getMessage());
+        \Drupal::logger('google')->debug('gs_updateOrgUnit:'.$e->getMessage());
 
         return false;
     }
@@ -100,7 +100,7 @@ function gs_deleteOrgUnit($orgPath)
     try {
         return $directory->orgunits->delete('my_customer', $orgPath);
     } catch (\Google_Service_Exception $e) {
-        \Drupal::logger('google')->debug($e->getMessage());
+        \Drupal::logger('google')->debug('gs_deleteOrgUnit:'.$e->getMessage());
 
         return false;
     }
@@ -115,7 +115,7 @@ function gs_findUsers($filter)
 
         return $result->getUsers();
     } catch (\Google_Service_Exception $e) {
-        \Drupal::logger('google')->debug($e->getMessage());
+        \Drupal::logger('google')->debug('gs_findUsers:'.$e->getMessage());
 
         return false;
     }
@@ -131,7 +131,7 @@ function gs_getUser($userKey)
     try {
         return $directory->users->get($userKey);
     } catch (\Google_Service_Exception $e) {
-        \Drupal::logger('google')->debug($e->getMessage());
+        \Drupal::logger('google')->debug('gs_getUser:'.$e->getMessage());
 
         return false;
     }
@@ -151,7 +151,7 @@ function gs_createUser($t, $userKey)
 
         return gs_syncUser($t, $user);
     } catch (\Google_Service_Exception $e) {
-        \Drupal::logger('google')->debug($e->getMessage());
+        \Drupal::logger('google')->debug('gs_createUser:'.$e->getMessage());
 
         return false;
     }
@@ -163,7 +163,7 @@ function gs_updateUser($userKey, $userObj)
     try {
         return $directory->users->update($userKey, $userObj);
     } catch (\Google_Service_Exception $e) {
-        \Drupal::logger('google')->debug($e->getMessage());
+        \Drupal::logger('google')->debug('gs_updateUser:'.$e->getMessage());
 
         return false;
     }
@@ -178,7 +178,7 @@ function gs_deleteUser($userKey)
     try {
         return $directory->users->delete($userKey);
     } catch (\Google_Service_Exception $e) {
-        \Drupal::logger('google')->debug($e->getMessage());
+        \Drupal::logger('google')->debug('gs_deleteUser:'.$e->getMessage());
 
         return false;
     }
@@ -279,7 +279,7 @@ function gs_createUserAlias($userKey, $alias)
     try {
         return $directory->users_aliases->insert($userKey, $email_alias);
     } catch (\Google_Service_Exception $e) {
-        \Drupal::logger('google')->debug($e->getMessage());
+        \Drupal::logger('google')->debug('gs_createUserAlias:'.$e->getMessage());
 
         return false;
     }
@@ -291,7 +291,7 @@ function gs_listUserAliases($userKey)
     try {
         return $directory->users_aliases->listUsersAliases($userKey);
     } catch (\Google_Service_Exception $e) {
-        \Drupal::logger('google')->debug($e->getMessage());
+        \Drupal::logger('google')->debug('gs_listUserAliases:'.$e->getMessage());
 
         return false;
     }
@@ -303,7 +303,7 @@ function gs_removeUserAlias($userKey, $alias)
     try {
         return $directory->users_aliases->delete($userKey, $alias);
     } catch (\Google_Service_Exception $e) {
-        \Drupal::logger('google')->debug($e->getMessage());
+        \Drupal::logger('google')->debug('gs_removeUserAlias:'.$e->getMessage());
 
         return false;
     }
@@ -312,10 +312,11 @@ function gs_removeUserAlias($userKey, $alias)
 function gs_listGroups()
 {
     global $directory;
+    $config = \Drupal::config('gsync.settings');
     try {
-        return $directory->groups->listGroups();
+        return $directory->groups->listGroups(array('domain' => $config->get('google_domain')))->getGroups();
     } catch (\Google_Service_Exception $e) {
-        \Drupal::logger('google')->debug($e->getMessage());
+        \Drupal::logger('google')->debug('gs_listGroups:'.$e->getMessage());
 
         return false;
     }
@@ -331,7 +332,7 @@ function gs_createGroup($groupId, $groupName)
     try {
         return $directory->groups->insert($group);
     } catch (\Google_Service_Exception $e) {
-        \Drupal::logger('google')->debug($e->getMessage());
+        \Drupal::logger('google')->debug('gs_createGroup:'.$e->getMessage());
 
         return false;
     }
@@ -343,7 +344,7 @@ function gs_listMembers($groupId)
     try {
         return $directory->members->listMembers($groupId);
     } catch (\Google_Service_Exception $e) {
-        \Drupal::logger('google')->debug($e->getMessage());
+        \Drupal::logger('google')->debug('gs_listMembers:'.$e->getMessage());
 
         return false;
     }
@@ -363,7 +364,7 @@ function gs_addMembers($groupId, $members)
         try {
             $users[] = $directory->members->insert($groupId, $member);
         } catch (\Google_Service_Exception $e) {
-            \Drupal::logger('google')->debug($e->getMessage());
+            \Drupal::logger('google')->debug('gs_addMembers:'.$e->getMessage());
 
             return false;
         }
@@ -384,7 +385,7 @@ function gs_removeMembers($groupId, $members)
         try {
             $directory->members->delete($groupId, $member);
         } catch (\Google_Service_Exception $e) {
-            \Drupal::logger('google')->debug($e->getMessage());
+            \Drupal::logger('google')->debug('gs_removeMembers'.$e->getMessage());
         }
     }
 }

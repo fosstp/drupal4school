@@ -1,5 +1,6 @@
 FROM drupal
 
+ENV TZ Asia/Taipei
 ENV SITE_NAME "drupal 8"
 ENV SITE_MAIL webmaster@xxps.tp.edu.tw
 ENV SITE_ADMIN admin
