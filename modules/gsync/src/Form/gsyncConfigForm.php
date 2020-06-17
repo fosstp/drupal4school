@@ -93,6 +93,7 @@ class gsyncConfigForm extends ConfigFormBase
                 $file = file_save_upload('google_service_json', array('file_validate_extensions' => array('json')), 'public://gsync', 0, FILE_EXISTS_REPLACE);
                 if ($file) {
                     $file->setPermanent();
+                    $file->save();
                     $config->set($key, $file->getFileUri());
                     $message = 'Google 服務帳戶的金鑰檔案已經更新。';
                 }

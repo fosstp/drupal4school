@@ -214,7 +214,7 @@ function fetch_user($uuid)
                     $a = explode(',', $user->ou);
                     $o = $a[0];
                     $m_dept_id = $a[1];
-                    $d = $user->department->{$o[0]};
+                    $d = $user->department->{$o}[0];
                     $m_dept_name = $d->name;
                 }
                 if (is_array($user->title)) {

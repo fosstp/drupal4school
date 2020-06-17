@@ -160,6 +160,10 @@ class gsyncOperationForm extends FormBase
         $log = $form_state->getValue('log');
         initGoogleService();
         if ($domain == 0) {
+            $groups = gs_listGroups();
+            if (!$groups) {
+                $groups = array();
+            }
             $depts = $form_state->getValue('dept');
             foreach ($depts as $dept) {
                 $teachers = get_teachers_of_unit($dept);
@@ -223,10 +227,6 @@ class gsyncOperationForm extends FormBase
                             if ($log) {
                                 $detail_log .= "<p>正在處理 $t->dept_name ......<br>";
                             }
-                            $groups = gs_listGroups();
-                            if (!$groups) {
-                                $groups = array();
-                            }
                             $found = false;
                             foreach ($groups as $group) {
                                 if ($group->getDescription() == $t->dept_name) {
@@ -255,6 +255,7 @@ class gsyncOperationForm extends FormBase
                                 $depgroup = 'group-A'.$t->dept_id;
                                 $group_key = $depgroup.'@'.$config->get('google_domain');
                                 $group = gs_createGroup($group_key, $t->dept_name);
+                                $groups[] = $group;
                                 if ($group && $log) {
                                     $detail_log .= '建立成功！<br>';
                                 } else {
@@ -302,6 +303,7 @@ class gsyncOperationForm extends FormBase
                                 $posgroup = 'group-B'.$t->role_id;
                                 $group_key = $posgroup.'@'.$config->get('google_domain');
                                 $group = gs_createGroup($group_key, $t->role_name);
+                                $groups[] = $group;
                                 if ($group && $log) {
                                     $detail_log .= '建立成功！<br>';
                                 } else {
@@ -348,6 +350,7 @@ class gsyncOperationForm extends FormBase
                                     $detail_log .= '無法在 G Suite 中找到匹配的群組，現在正在建立新的 Google 群組......';
                                 }
                                 $group = gs_createGroup($group_key, substr($t->class, 0, 1).'年級');
+                                $groups[] = $group;
                                 if ($group && $log) {
                                     $detail_log .= '建立成功！<br>';
                                 } else {
@@ -459,6 +462,7 @@ class gsyncOperationForm extends FormBase
                                     $detail_log .= '無法在 G Suite 中找到匹配的群組，現在正在建立新的 Google 群組......';
                                 }
                                 $group = gs_createGroup($group_key, $s->dept_name);
+                                $groups[] = $group;
                                 if ($group && $log) {
                                     $detail_log .= '建立成功！<br>';
                                 } else {
