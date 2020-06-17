@@ -22,11 +22,30 @@ services:
     image: fosstp/drupal
     ports:
       - "80:80"
+#容器啟動時會自動依據以下設定為您安裝網站，請務必修改以下設定
     environment:
+      SITE_NAME: 快樂國小官方網站
+      SITE_MAIL: webmaster@xxps.tp.edu.tw
+      SITE_ADMIN: admin
+      SITE_ADMIN_MAIL: your_mail@xxps.tp.edu.tw
+      SITE_PASSWORD: your_password
       DB_HOST: mysql
       DB_USER: root
       DB_PASSWORD: dbpassword
     volumes:
-      - ./modules:/var/www/html/modules
-      - ./themes:/var/www/html/themes
+      - ./sites:/var/www/html/sites
     restart: always
+#底下為 traefik 設定稿範本，如果您未啟用 traefik 容器，以下設定將不會有任何作用。如果您想使用 traefik 請務必修改 Host() 內的網址 
+    deploy:
+      labels:
+        traefik.enable: "true"
+        traefik.http.services.drupal.loadbalancer.server.port: "80"
+        traefik.http.services.drupal.loadbalancer.server.scheme: "http"
+        traefik.http.middlewares.https_redirect.redirectscheme.scheme: "https"
+        traefik.http.routers.drupal_http.entrypoints: "web"
+        traefik.http.routers.drupal_http.rule: "Host(`www.xxps.tp.edu.tw`)"
+        traefik.http.routers.drupal_http.middlewares: "https_redirect"
+        traefik.http.routers.drupal_https.entrypoints: "web-secure"
+        traefik.http.routers.drupal_https.rule: "Host(`www.xxps.tp.edu.tw`)"
+        traefik.http.routers.drupal_https.tls: "true"
+        traefik.http.routers.drupal_https.tls.certresolver: "letsencrypt"
