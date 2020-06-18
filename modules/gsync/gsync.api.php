@@ -191,6 +191,10 @@ function gs_syncUser($t, $user)
     if ($t->sn && $t->gn) {
         $names->setFamilyName($t->sn);
         $names->setGivenName($t->gn);
+    } else {
+        $myname = guess_name($t->realname);
+        $names->setFamilyName($myname[0]);
+        $names->setGivenName($myname[1]);
     }
     $names->setFullName($t->realname);
     $user->setName($names);
@@ -389,5 +393,15 @@ function gs_removeMembers($groupId, $members)
         } catch (\Google_Service_Exception $e) {
             \Drupal::logger('google')->debug("gs_removeMembers($groupId,".print_r($members).'):'.$e->getMessage());
         }
+    }
+}
+
+function guess_name($myname)
+{
+    $len = mb_strlen($myname, 'UTF-8');
+    if ($len > 3) {
+        return array(mb_substr($myname, 0, 2, 'UTF-8'), mb_substr($myname, 2, null, 'UTF-8'));
+    } else {
+        return array(mb_substr($myname, 0, 1, 'UTF-8'), mb_substr($myname, 1, null, 'UTF-8'));
     }
 }
