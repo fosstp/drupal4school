@@ -185,8 +185,10 @@ class gsyncOperationForm extends FormBase
                                     $user->setPassword(sha1(substr($t->idno, -6)));
                                     $user = gs_updateUser($user_key, $user);
                                 }
-                                if ($user && $log) {
-                                    $detail_log .= '更新完成！<br>';
+                                if ($user) {
+                                    if ($log) {
+                                        $detail_log .= '更新完成！<br>';
+                                    }
                                 } else {
                                     $detail_log .= "$t->role_name $t->realname 更新失敗！<br>";
                                 }
@@ -196,8 +198,10 @@ class gsyncOperationForm extends FormBase
                                 }
                                 $user->setSuspended(true);
                                 $user = gs_updateUser($user_key, $user);
-                                if ($user && $log) {
-                                    $detail_log .= '帳號已停用！<br>';
+                                if ($user) {
+                                    if ($log) {
+                                        $detail_log .= '帳號已停用！<br>';
+                                    }
                                 } else {
                                     $detail_log .= "$t->role_name $t->realname 停用失敗！<br>";
                                 }
@@ -206,8 +210,10 @@ class gsyncOperationForm extends FormBase
                                     $detail_log .= '在 G Suite 中找到這位使用者，現在正在<strong>刪除</strong>這個帳號......';
                                 }
                                 $result = gs_deleteUser($user_key);
-                                if ($result && $log) {
-                                    $detail_log .= '帳號已刪除！<br>';
+                                if ($user) {
+                                    if ($log) {
+                                        $detail_log .= '帳號已刪除！<br>';
+                                    }
                                 } else {
                                     $detail_log .= "$t->role_name $t->realname 刪除失敗！<br>";
                                 }
@@ -217,8 +223,10 @@ class gsyncOperationForm extends FormBase
                                 $detail_log .= '無法在 G Suite 中找到這個使用者，現在正在為使用者建立 Google 帳號......';
                             }
                             $user = gs_createUser($t, $user_key);
-                            if ($user && $log) {
-                                $detail_log .= '建立完成！<br>';
+                            if ($user) {
+                                if ($log) {
+                                    $detail_log .= '建立完成！<br>';
+                                }
                             } else {
                                 $detail_log .= "$t->role_name $t->realname 建立失敗！<br>";
                             }
@@ -257,9 +265,11 @@ class gsyncOperationForm extends FormBase
                                 $depgroup = 'group-A'.$t->dept_id;
                                 $group_key = $depgroup.'@'.$config->get('google_domain');
                                 $group = gs_createGroup($group_key, $t->dept_name);
-                                if ($group && $log) {
-                                    $detail_log .= '建立成功！<br>';
+                                if ($group) {
                                     $groups[] = $group;
+                                    if ($log) {
+                                        $detail_log .= '建立成功！<br>';
+                                    }
                                 } else {
                                     $detail_log .= "$t->dept_name 群組建立失敗！<br>";
                                 }
@@ -268,8 +278,10 @@ class gsyncOperationForm extends FormBase
                                 $detail_log .= "正在將使用者： $t->account 加入到群組裡......";
                             }
                             $members = gs_addMembers($group_key, array($user_key));
-                            if (!empty($members) && $log) {
-                                $detail_log .= '加入成功！<br>';
+                            if (!empty($members)) {
+                                if ($log) {
+                                    $detail_log .= '加入成功！<br>';
+                                }
                             } else {
                                 $detail_log .= "無法將使用者 $t->role_name $t->realname 加入 $t->dept_name 群組！<br>";
                             }
@@ -307,8 +319,10 @@ class gsyncOperationForm extends FormBase
                                 $posgroup = 'group-B'.$t->role_id;
                                 $group_key = $posgroup.'@'.$config->get('google_domain');
                                 $group = gs_createGroup($group_key, $t->role_name);
-                                if ($group && $log) {
-                                    $detail_log .= '建立成功！<br>';
+                                if ($group) {
+                                    if ($log) {
+                                        $detail_log .= '建立成功！<br>';
+                                    }
                                     $groups[] = $group;
                                 } else {
                                     $detail_log .= "$t->role_name 群組建立失敗！<br>";
@@ -318,8 +332,10 @@ class gsyncOperationForm extends FormBase
                                 $detail_log .= "正在將使用者： $t->account 加入到群組裡......";
                             }
                             $members = gs_addMembers($group_key, array($user_key));
-                            if (!empty($members) && $log) {
-                                $detail_log .= '加入成功！<br>';
+                            if (!empty($members)) {
+                                if ($log) {
+                                    $detail_log .= '加入成功！<br>';
+                                }
                             } else {
                                 $detail_log .= "無法將使用者 $t->role_name $t->realname 加入 $t->role_name 群組！<br>";
                             }
@@ -377,9 +393,11 @@ class gsyncOperationForm extends FormBase
                                     $detail_log .= '無法在 G Suite 中找到匹配的群組，現在正在建立新的 Google 群組......';
                                 }
                                 $group = gs_createGroup($group_key, substr($t->class, 0, 1).'年級');
-                                if ($group && $log) {
-                                    $detail_log .= '建立成功！<br>';
+                                if ($group) {
                                     $groups[] = $group;
+                                    if ($log) {
+                                        $detail_log .= '建立成功！<br>';
+                                    }
                                 } else {
                                     $detail_log .= substr($t->class, 0, 1).'年級群組建立失敗！<br>';
                                 }
@@ -387,8 +405,10 @@ class gsyncOperationForm extends FormBase
                                     $detail_log .= "正在將使用者： $t->account 加入到群組裡......";
                                 }
                                 $members = gs_addMembers($group_key, array($user_key));
-                                if (!empty($members) && $log) {
-                                    $detail_log .= '加入成功！<br>';
+                                if (!empty($members)) {
+                                    if ($log) {
+                                        $detail_log .= '加入成功！<br>';
+                                    }
                                 } else {
                                     $detail_log .= "無法將使用者 $t->role_name $t->realname 加入 ".substr($t->class, 0, 1).'年級群組！<br>';
                                 }
