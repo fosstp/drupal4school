@@ -10,7 +10,7 @@ ENV DB_HOST mysql
 ENV DB_USER root
 ENV DB_PASSWORD dbpassword
 
-RUN echo -e "4\n43\n1\n" | tzselect \
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
     && apt-get update \
     && apt-get -y --no-install-recommends install unzip git apt-utils mc ldap-utils mariadb-client \
     && rm -rf /var/lib/apt/lists/* \
