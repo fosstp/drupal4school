@@ -159,8 +159,8 @@ class gsyncOperationForm extends FormBase
         $domain = $form_state->getValue('domain');
         $log = $form_state->getValue('log');
         initGoogleService();
+        $groups = gs_listGroups();
         if ($domain == 0) {
-            $groups = gs_listGroups();
             $depts = $form_state->getValue('dept');
             foreach ($depts as $dept) {
                 $teachers = get_teachers_of_unit($dept);
