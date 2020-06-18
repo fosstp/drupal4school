@@ -169,7 +169,10 @@ class gsyncOperationForm extends FormBase
                         if ($log) {
                             $detail_log .= "正在處理 $t->dept_name $t->role_name $t->realname ($t->account)......<br>";
                         }
-                        $user_key = $t->account.'@'.$config->get('google_domain');
+                        $user_key = $t->email;
+                        if (!strpos($user_key, 'tc.meps.tp.edu.tw')) {
+                            $user_key = $t->account.'@'.$config->get('google_domain');
+                        }
                         $user = gs_getUser($user_key);
                         if ($user) {
                             if (is_null($t->status) || $t->status == 'active') {
@@ -325,7 +328,28 @@ class gsyncOperationForm extends FormBase
                             if ($log) {
                                 $detail_log .= '<p>正在處理 '.substr($t->class, 0, 1).'年級......<br>';
                             }
-                            $clsgroup = 'group-C'.substr($t->class, 0, 1);
+                            switch (substr($t->class, 0, 1)) {
+                                case 1:
+                                    $clsgroup = 'group-ca';
+                                    break;
+                                case 2:
+                                    $clsgroup = 'group-cb';
+                                    break;
+                                case 3:
+                                    $clsgroup = 'group-cc';
+                                    break;
+                                case 4:
+                                    $clsgroup = 'group-cd';
+                                    break;
+                                case 5:
+                                    $clsgroup = 'group-ce';
+                                    break;
+                                case 6:
+                                    $clsgroup = 'group-cf';
+                                    break;
+                                default:
+                                    $clsgroup = 'group-C'.substr($t->class, 0, 1);
+                            }
                             $group_key = $clsgroup.'@'.$config->get('google_domain');
                             $found = false;
                             if ($groups) {
