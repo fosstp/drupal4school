@@ -515,7 +515,7 @@ class gsyncOperationForm extends FormBase
         $time_end = microtime(true);
         $time_spend = $time_end - $time_start;
         $detail_log .= "<br>總共花費 $time_spend 秒";
-        $response->addCommand(new HtmlCommand('edit-log-div', $detail_log));
+        $response->addCommand(new HtmlCommand('#edit-log-div', $detail_log));
 
         return $response;
     }
