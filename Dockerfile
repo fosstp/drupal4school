@@ -10,9 +10,9 @@ ENV DB_HOST mysql
 ENV DB_USER root
 ENV DB_PASSWORD dbpassword
 
-RUN echo -e '4\n43\n1\n' | tzselect \
+RUN echo -e "4\n43\n1\n" | tzselect \
     && apt-get update \
-    && apt-get -y install unzip git apt-utils mc ldap-utils mariadb-client \
+    && apt-get -y --no-install-recommends install unzip git apt-utils mc ldap-utils mariadb-client \
     && rm -rf /var/lib/apt/lists/* \
     && echo 'y' | pecl install apcu \
     && docker-php-ext-enable apcu \
