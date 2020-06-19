@@ -26,7 +26,7 @@ class tpeduConfigForm extends ConfigFormBase
 
         $form['helper'] = array(
             '#type' => 'markup',
-            '#markup' => '<p>有關臺北市教育人員單一身分驗證服務，說明如下：<ol>'.
+            '#markup' => '<p>有關臺北市校園單一身分驗證服務，說明如下：<ol>'.
                 '<li>該服務網址為 <a href="https://ldap.tp.edu.tw">https://ldap.tp.edu.tw</a></li>'.
                 '<li>該服務採用開源模式開發，所有文件可以從 <a href="https://github.com/leejoneshane/tpeduSSO">Github 專案</a>取得。</li>'.
                 '<li>請從右方連結<a href="https://ldap.tp.edu.tw/3party">線上申請介接專案</a>，申請表單中之「SSO 認證後重導向 URL」欄位請填寫 https://'.$_SERVER['HTTP_HOST'].'/retrieve。</li>'.
@@ -38,7 +38,7 @@ class tpeduConfigForm extends ConfigFormBase
             '#type' => 'textfield',
             '#title' => '介接專案編號',
             '#default_value' => $config->get('client_id'),
-            '#description' => '請向臺北市教育局申請臺北市教育人員單一身分驗證介接專案，並將申請通過後所核發之專案編號填寫在這個欄位。',
+            '#description' => '請向臺北市教育局申請臺北市校園單一身分驗證介接專案，並將申請通過後所核發之專案編號填寫在這個欄位。',
             '#required' => true,
         );
         $form['client_secret'] = array(

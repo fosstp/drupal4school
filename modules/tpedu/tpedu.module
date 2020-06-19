@@ -14,7 +14,7 @@ function tpedu_help($route_name, RouteMatchInterface $route_match)
 {
     switch ($route_name) {
     case 'admin/config/people/tpedu':
-        $output = '<p>本模組提供右列功能：使用臺北市教育人員單一身分驗證帳號登入、介接學校全域資料、台灣無障礙網頁標章、校務行政關聯式欄位。請先向教育局申請介接專案，完成模組設定後，才能啟用模組。</p>';
+        $output = '<p>本模組提供右列功能：使用臺北市校園單一身分驗證帳號登入、介接學校全域資料、台灣無障礙網頁標章、校務行政關聯式欄位。請先向教育局申請介接專案，完成模組設定後，才能啟用模組。</p>';
 
         return $output;
     }
@@ -75,7 +75,7 @@ function tpedu_form_user_login_form_alter(&$form, FormStateInterface $form_state
             '#type' => 'html_tag',
             '#tag' => 'a',
             '#attributes' => array(
-                'title' => '使用臺北市教育人員單一身分驗證登入',
+                'title' => '使用臺北市校園單一身分驗證登入',
                 'href' => Url::fromRoute('tpedu.login')->toString(),
                 'style' => 'border-bottom: 0px',
             ),
@@ -85,7 +85,7 @@ function tpedu_form_user_login_form_alter(&$form, FormStateInterface $form_state
                 '#attributes' => array(
                     'src' => '//'.$_SERVER['HTTP_HOST'].'/'.drupal_get_path('module', 'tpedu').'/tpedusso.png',
                     'style' => 'cursor: pointer; border:none; width:240px;',
-                    'alt' => '使用臺北市教育人員單一身分驗證登入',
+                    'alt' => '使用臺北市校園單一身分驗證登入',
                 ),
             ],
         );

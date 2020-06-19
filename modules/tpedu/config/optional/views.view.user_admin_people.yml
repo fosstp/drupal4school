@@ -1195,7 +1195,7 @@ display:
           field: tpedu_people
           relationship: none
           group_type: group
-          admin_label: 臺北市教育人員
+          admin_label: 臺北市校園
           required: false
           entity_type: user
           plugin_id: standard

@@ -328,6 +328,19 @@ function gs_listGroups()
     }
 }
 
+function gs_listUserGroups($user_key)
+{
+    global $directory;
+    $config = \Drupal::config('gsync.settings');
+    try {
+        return $directory->groups->listGroups(array('domain' => $config->get('google_domain'), 'userKey' => $user_key))->getGroups();
+    } catch (\Google_Service_Exception $e) {
+        \Drupal::logger('google')->debug('gs_listGroups:'.$e->getMessage());
+
+        return false;
+    }
+}
+
 function gs_createGroup($groupId, $groupName)
 {
     global $directory;
@@ -348,7 +361,7 @@ function gs_listMembers($groupId)
 {
     global $directory;
     try {
-        return $directory->members->listMembers($groupId);
+        return $directory->members->listMembers($groupId)->getMembers();
     } catch (\Google_Service_Exception $e) {
         \Drupal::logger('google')->debug("gs_listMembers($groupId):".$e->getMessage());
 
@@ -387,9 +400,8 @@ function gs_removeMembers($groupId, $members)
         $members[] = $members;
     }
     foreach ($members as $m) {
-        $member = $m->getEmail();
         try {
-            $directory->members->delete($groupId, $member);
+            $directory->members->delete($groupId, $m);
         } catch (\Google_Service_Exception $e) {
             \Drupal::logger('google')->debug("gs_removeMembers($groupId,".print_r($members).'):'.$e->getMessage());
         }

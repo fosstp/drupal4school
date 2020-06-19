@@ -14,7 +14,7 @@ use Drupal\Core\Form\FormStateInterface;
  *   id = "tpedu_units",
  *   label = "行政單位",
  *   description = "學校組織部門選單",
- *   category = "臺北市教育人員",
+ *   category = "臺北市校園",
  *   default_widget = "units_default",
  *   default_formatter = "units_default",
  * )

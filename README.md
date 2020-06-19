@@ -1,5 +1,5 @@
 # Drupal學校架站包計劃
-這是一個 [docker](https://www.docker.com/) 映像檔，此映像檔內容包含：debian 10.2(buster-slim) + php 7.3 + apache 2.4 + drupal 8.8 + 臺北市教育人員單一身份驗證模組。
+這是一個 [docker](https://www.docker.com/) 映像檔，此映像檔內容包含：debian 10.2(buster-slim) + php 7.3 + apache 2.4 + drupal 8.8 + 臺北市校園單一身份驗證模組。
 
 ## docker-compose
 要架設一個 drupal 網站最簡單的方法就是使用以下指令：

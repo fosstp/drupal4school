@@ -14,7 +14,7 @@ use Drupal\Core\Form\FormStateInterface;
  *   id = "tpedu_roles",
  *   label = "職務",
  *   description = "職務選單",
- *   category = "臺北市教育人員",
+ *   category = "臺北市校園",
  *   default_widget = "roles_default",
  *   default_formatter = "roles_default",
  * )

@@ -281,13 +281,13 @@ function tpedu_views_data_alter(&$data)
     $config = \Drupal::config('tpedu.settings');
     if ($config->get('enable')) {
         $data['users']['tpedu_people']['relationship'] = array(
-            'title' => '臺北市教育人員',
+            'title' => '臺北市校園',
             'help' => '來自 ldap.tp.edu.tw 的人員資料',
             'base' => 'tpedu_people',
             'base field' => 'uuid',
             'relationship field' => 'uuid',
             'id' => 'standard',
-            'label' => '臺北市教育人員',
+            'label' => '臺北市校園',
         );
     }
 }

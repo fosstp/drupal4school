@@ -14,7 +14,7 @@ use Drupal\Core\Form\FormStateInterface;
  *   id = "tpedu_grade",
  *   label = "年級",
  *   description = "年級選單",
- *   category = "臺北市教育人員",
+ *   category = "臺北市校園",
  *   default_widget = "grade_default",
  *   default_formatter = "grade_default",
  * )

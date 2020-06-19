@@ -934,6 +934,16 @@ function one_class($ou)
     return false;
 }
 
+function get_class_name($ou)
+{
+    $class = one_class($ou);
+    if ($class) {
+        return $class->name;
+    } else {
+        return false;
+    }
+}
+
 function get_teachers_of_class($cls)
 {
     $query = \Drupal::database()

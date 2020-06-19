@@ -14,7 +14,7 @@ use Drupal\Core\Form\FormStateInterface;
  *   id = "tpedu_domain",
  *   label = "領域",
  *   description = "領域選單",
- *   category = "臺北市教育人員",
+ *   category = "臺北市校園",
  *   default_widget = "domain_default",
  *   default_formatter = "domain_default",
  * )

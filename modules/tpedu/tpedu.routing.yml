@@ -2,7 +2,7 @@ tpedu.config:
   path: /admin/config/people/tpedu
   defaults:
     _form: \Drupal\tpedu\Form\tpeduConfigForm
-    _title: '臺北市教育人員單一身分驗證模組設定'
+    _title: '臺北市校園單一身分驗證模組設定'
   requirements:
     _permission: 'administer site configuration'
 
@@ -10,7 +10,7 @@ tpedu.school_select:
   path: /admin/config/people/tpedu/school
   defaults:
     _form: \Drupal\tpedu\Form\tpeduSchoolSelectForm
-    _title: '臺北市教育人員單一身分驗證模組設定'
+    _title: '臺北市校園單一身分驗證模組設定'
   requirements:
     _permission: 'administer site configuration'
     
@@ -18,7 +18,7 @@ tpedu.purge:
   path: /admin/config/people/tpedu/purge
   defaults:
     _controller: \Drupal\tpedu\Controller\tpeduController::purge
-    _title: '清除臺北市教育人員資料庫快取'
+    _title: '清除臺北市校園資料庫快取'
   requirements:
     _permission: 'administer site configuration'
     

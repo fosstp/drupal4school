@@ -1,21 +1,21 @@
 api.dc:
   type: string
-  label: '臺北市教育人員單一身分驗證學校代碼'
+  label: '臺北市校園單一身分驗證學校代碼'
 enable:
   type: boolean
-  label: '已啟用臺北市教育人員單一身分驗證模組'
+  label: '已啟用臺北市校園單一身分驗證模組'
 client_id:
   type: string
-  label: '臺北市教育人員單一身分驗證介接專案編號'
+  label: '臺北市校園單一身分驗證介接專案編號'
 client_secret:
   type: string
-  label: '臺北市教育人員單一身分驗證介接專案密鑰'
+  label: '臺北市校園單一身分驗證介接專案密鑰'
 admin_token:
   type: string
-  label: '臺北市教育人員單一身分驗證學校管理員預存令牌'
+  label: '臺北市校園單一身分驗證學校管理員預存令牌'
 call_back:
   type: string
-  label: '臺北市教育人員單一身分驗證學校管理員授權回呼網址'
+  label: '臺北市校園單一身分驗證學校管理員授權回呼網址'
 sub_dept:
   type: boolean
   label: '科任教師部門代號（未兼行政職務應出現之職稱）'
