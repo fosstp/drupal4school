@@ -179,7 +179,7 @@ class gsyncOperationForm extends FormBase
                             $data = gs_listUserGroups($user_key);
                             if ($data) {
                                 foreach ($data as $g) {
-                                    $groups[] = $g->getEmail(); 
+                                    $groups[] = $g->getEmail();
                                 }
                             }
                             if (is_null($t->status) || $t->status == 'active') {
@@ -409,6 +409,9 @@ class gsyncOperationForm extends FormBase
                             } else {
                                 unset($groups[$k]);
                             }
+                        }
+                        foreach ($groups as $g) {
+                            gs_removeMembers($g, array($user_key));
                         }
                     }
                 }
