@@ -383,7 +383,7 @@ function gs_addMembers($groupId, $members)
         try {
             $users[] = $directory->members->insert($groupId, $member);
         } catch (\Google_Service_Exception $e) {
-            \Drupal::logger('google')->debug("gs_addMembers($groupId,".var_export($members, true).'):'.$e->getMessage());
+            \Drupal::logger('google')->debug("gs_addMembers($groupId,".print_r($members).'):'.$e->getMessage());
 
             return false;
         }
@@ -403,7 +403,7 @@ function gs_removeMembers($groupId, $members)
         try {
             $directory->members->delete($groupId, $m);
         } catch (\Google_Service_Exception $e) {
-            \Drupal::logger('google')->debug("gs_removeMembers($groupId,".var_export($members, true).'):'.$e->getMessage());
+            \Drupal::logger('google')->debug("gs_removeMembers($groupId,".print_r($members).'):'.$e->getMessage());
         }
     }
 }

@@ -128,12 +128,12 @@ class gsyncOperationForm extends FormBase
             );
             $form['viewport'] = array(
                 '#type' => 'fieldset',
+                '#title' => '詳細處理紀錄',
                 '#collapsible' => false,
                 '#collapsed' => false,
             );
             $form['viewport']['log_div'] = array(
                 '#type' => 'item',
-                '#title' => '詳細處理紀錄',
             );
         } else {
             $form['help'] = array(
@@ -166,12 +166,12 @@ class gsyncOperationForm extends FormBase
                 $teachers = get_teachers_of_unit($dept);
                 if ($teachers) {
                     foreach ($teachers as $t) {
+                        if ($log) {
+                            $detail_log .= "正在處理 $t->dept_name $t->role_name $t->realname ($t->account)......<br>";
+                        }
                         $user_key = $t->email;
                         if (!strpos($user_key, 'tc.meps.tp.edu.tw')) {
                             $user_key = $t->account.'@'.$config->get('google_domain');
-                        }
-                        if ($log) {
-                            $detail_log .= "正在處理 $t->dept_name $t->role_name $t->realname ($user_key)......<br>";
                         }
                         $user = gs_getUser($user_key);
                         if ($user) {
@@ -181,13 +181,6 @@ class gsyncOperationForm extends FormBase
                                 foreach ($data as $g) {
                                     $groups[] = $g->getEmail();
                                 }
-                            }
-                            if ($log) {
-                                $detail_log .= '使用者先前已加入以下群組：<ul>';
-                                foreach ($groups as $g) {
-                                    $detail_log .= "<li>$g</li>";
-                                }
-                                $detail_log .= '</ul>';
                             }
                             if (is_null($t->status) || $t->status == 'active') {
                                 if ($log) {
@@ -311,7 +304,7 @@ class gsyncOperationForm extends FormBase
                                 $group_key = $group->getEmail();
                                 $posgroup = explode('@', $group_key)[0];
                                 if ($log) {
-                                    $detail_log .= "$posgroup => 在 G Suite 中找到匹配的使用者群組！<br>";
+                                    $detail_log .= "$depgroup => 在 G Suite 中找到匹配的使用者群組！";
                                 }
                             } else {
                                 if ($log) {

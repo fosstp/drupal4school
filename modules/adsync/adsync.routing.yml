@@ -1,0 +1,15 @@
+gsync.config:
+  path: /admin/config/people/gsync
+  defaults:
+    _form: \Drupal\gsync\Form\gsyncConfigForm
+    _title: 'G Suite 帳號同步模組設定'
+  requirements:
+    _permission: 'administer site configuration'
+
+gsync.sync:
+  path: /admin/people/gsync
+  defaults:
+    _form: \Drupal\gsync\Form\gsyncOperationForm
+    _title: 'G Suite 帳號同步'
+  requirements:
+    _permission: 'administer users'

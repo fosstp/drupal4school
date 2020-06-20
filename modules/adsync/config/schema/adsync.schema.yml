@@ -1,0 +1,18 @@
+ad_server:
+  type: string
+  label: 'AD 伺服器'
+ad_admin:
+  type: string
+  label: 'AD 管理員帳號'
+ad_password:
+  type: string
+  label: 'AD 管理員密碼'
+base_dn:
+  type: string
+  label: 'AD 根目錄名稱'
+users_dn:
+  type: string
+  label: '使用者帳號所在的目錄名稱'
+enabled:
+  type: boolean
+  label: 'AD 連線測試完成'
