@@ -280,7 +280,10 @@ class gsyncOperationForm extends FormBase
                                     $detail_log .= "$t->dept_name 群組建立失敗！<br>";
                                 }
                             }
-                            if (!($k = array_search($group_key, $groups))) {
+                            $k = array_search($group_key, $groups);
+                            if ($k) {
+                                unset($groups[$k]);
+                            } else {
                                 if ($log) {
                                     $detail_log .= "正在將使用者： $t->role_name $t->realname 加入到群組裡......";
                                 }
@@ -292,8 +295,6 @@ class gsyncOperationForm extends FormBase
                                 } else {
                                     $detail_log .= "無法將使用者 $t->role_name $t->realname 加入 $t->dept_name 群組！<br>";
                                 }
-                            } else {
-                                unset($groups[$k]);
                             }
                             if ($log) {
                                 $detail_log .= "<p>正在處理 $t->role_name ......<br>";
@@ -330,7 +331,10 @@ class gsyncOperationForm extends FormBase
                                     $detail_log .= "$t->role_name 群組建立失敗！<br>";
                                 }
                             }
-                            if (!($k = array_search($group_key, $groups))) {
+                            $k = array_search($group_key, $groups);
+                            if ($k) {
+                                unset($groups[$k]);
+                            } else {
                                 if ($log) {
                                     $detail_log .= "正在將使用者： $t->role_name $t->realname 加入到群組裡......";
                                 }
@@ -342,8 +346,6 @@ class gsyncOperationForm extends FormBase
                                 } else {
                                     $detail_log .= "無法將使用者 $t->role_name $t->realname 加入 $t->role_name 群組！<br>";
                                 }
-                            } else {
-                                unset($groups[$k]);
                             }
                         }
                         if (!empty($t->class)) {
@@ -401,7 +403,10 @@ class gsyncOperationForm extends FormBase
                                     $detail_log .= "$grade 年級群組建立失敗！<br>";
                                 }
                             }
-                            if (!($k = array_search($group_key, $groups))) {
+                            $k = array_search($group_key, $groups);
+                            if ($k) {
+                                unset($groups[$k]);
+                            } else {
                                 if ($log) {
                                     $detail_log .= "正在將使用者： $t->role_name $t->realname 加入到群組裡......";
                                 }
@@ -413,8 +418,6 @@ class gsyncOperationForm extends FormBase
                                 } else {
                                     $detail_log .= "無法將使用者 $t->role_name $t->realname 加入 $grade 年級群組！<br>";
                                 }
-                            } else {
-                                unset($groups[$k]);
                             }
                         }
                         foreach ($groups as $g) {
