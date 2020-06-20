@@ -5,7 +5,7 @@ namespace Drupal\gsync\Form;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Ajax\AjaxResponse;
-use Drupal\Core\Ajax\HtmlCommand;
+use Drupal\Core\Ajax\ReplaceCommand;
 
 class gsyncOperationForm extends FormBase
 {
@@ -123,7 +123,6 @@ class gsyncOperationForm extends FormBase
                 '#executes_submit_callback' => false,
                 '#ajax' => array(
                     'callback' => [$this, 'gsync_start'],
-                    'wrapper' => 'edit-log-div',
                 ),
             );
             $form['viewport'] = array(
@@ -547,8 +546,8 @@ class gsyncOperationForm extends FormBase
         }
         $time_end = microtime(true);
         $time_spend = $time_end - $time_start;
-        $detail_log .= "<br>總共花費 $time_spend 秒";
-        $response->addCommand(new HtmlCommand('#edit-log-div', $detail_log));
+        $detail_log = '<div id="edit-log-div" class="form-item">'.$detail_log.'<p>總共花費 $time_spend 秒</p></div>';
+        $response->addCommand(new ReplaceCommand('#edit-log-div', $detail_log));
 
         return $response;
     }
