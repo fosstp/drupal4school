@@ -1,5 +1,11 @@
 # Drupal學校架站包計劃
-這是一個 [docker](https://www.docker.com/) 映像檔，此映像檔內容包含：debian 10.2(buster-slim) + php 7.3 + apache 2.4 + drupal 8.8 + 臺北市校園單一身份驗證模組。
+這是一個 [docker](https://www.docker.com/) 映像檔，此映像檔內容包含：debian 10.2(buster-slim) + php 7.3 + apache 2.4 + drupal 8.9.1 + 臺北市校園單一身份驗證模組。
+
+目前已經完成的模組和功能概述如下：
+tpedu 模組：使用臺北市校園單一身分驗證帳號登入、介接學校全域資料、通過台灣無障礙網頁標章 2.0、校務行政關聯式欄位。
+gsync 模組：將臺北市校園單一身分驗證師生帳號同步到 G Suite 網域指定的子機構中。
+
+還在開發的模組有：AD 同步模組、行事曆（與 G Suite 線上同步功能）、最新消息（包含局端的 RSS 新聞聯播）
 
 ## docker-compose
 要架設一個 drupal 網站最簡單的方法就是使用以下指令：
