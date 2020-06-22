@@ -279,8 +279,7 @@ class gsyncOperationForm extends FormBase
                                     $detail_log .= "$t->dept_name 群組建立失敗！<br>";
                                 }
                             }
-                            $k = array_search($group_key, $groups);
-                            if ($k) {
+                            if (($k = array_search($group_key, $groups)) !== false) {
                                 unset($groups[$k]);
                             } else {
                                 if ($log) {
@@ -330,8 +329,7 @@ class gsyncOperationForm extends FormBase
                                     $detail_log .= "$t->role_name 群組建立失敗！<br>";
                                 }
                             }
-                            $k = array_search($group_key, $groups);
-                            if ($k) {
+                            if (($k = array_search($group_key, $groups)) !== false) {
                                 unset($groups[$k]);
                             } else {
                                 if ($log) {
@@ -402,8 +400,7 @@ class gsyncOperationForm extends FormBase
                                     $detail_log .= "$grade 年級群組建立失敗！<br>";
                                 }
                             }
-                            $k = array_search($group_key, $groups);
-                            if ($k) {
+                            if (($k = array_search($group_key, $groups)) !== false) {
                                 unset($groups[$k]);
                             } else {
                                 if ($log) {
@@ -546,7 +543,7 @@ class gsyncOperationForm extends FormBase
         }
         $time_end = microtime(true);
         $time_spend = $time_end - $time_start;
-        $detail_log = '<div id="edit-log-div" class="form-item">'.$detail_log.'<p>總共花費 $time_spend 秒</p></div>';
+        $detail_log = '<div id="edit-log-div" class="form-item">'.$detail_log."<p>總共花費 $time_spend 秒</p></div>";
         $response->addCommand(new ReplaceCommand('#edit-log-div', $detail_log));
 
         return $response;
