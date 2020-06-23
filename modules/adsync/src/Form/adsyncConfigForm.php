@@ -45,7 +45,7 @@ class adsyncConfigForm extends ConfigFormBase
         $form['ad_admin'] = array(
             '#type' => 'textfield',
             '#title' => '網域管理員帳號',
-            '#default_value' => $config->get('ad_admin', 'administrator'),
+            '#default_value' => $config->get('ad_admin') ?: 'administrator',
             '#description' => '請輸入網域管理員帳號，該管理員必須具備 Windows 網域最高管理權限。',
         );
         $form['ad_password'] = array(

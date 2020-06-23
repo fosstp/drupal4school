@@ -14,11 +14,20 @@ if [ ! -f "/var/run/apache2/apache2.pid" ]; then
     exec apache2-foreground
 fi
 
+if [ ! -d "/var/www/html/sites/default/files/adsync" ]; then
+    mkdir -p /var/www/html/sites/default/files/adsync
+fi
+
+if [ ! -d "/var/www/html/sites/default/files/gsync" ]; then
+    mkdir -p /var/www/html/sites/default/files/gsync
+fi
+
 cd /var/www/html
 chown -R root:www-data /var/www/html
 chmod -R 750 /var/www/html
 chmod 2775 /var/www/html/sites
-for d in /var/www/html/sites
+chmod 2755 /var/www/html/sites/default
+for d in /var/www/html/sites/default/files
 do
     find $d -type d -exec chmod 2775 '{}' \;
     find $d -type f -exec chmod 664 '{}' \;

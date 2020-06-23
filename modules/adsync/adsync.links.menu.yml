@@ -1,4 +1,4 @@
-gsync.admin:
+adsync.admin:
   title: 'AD 帳號同步模組設定'
   description: '完成模組設定後，模組才會真正啟用。'
   route_name: adsync.config
