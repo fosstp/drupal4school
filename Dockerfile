@@ -12,8 +12,10 @@ ENV DB_PASSWORD dbpassword
 
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
     && apt-get update \
-    && apt-get -y --no-install-recommends install unzip git apt-utils mc ldap-utils mariadb-client \
+    && apt-get -y --no-install-recommends install unzip git apt-utils mc libldap2-dev mariadb-client \
     && rm -rf /var/lib/apt/lists/* \
+    && docker-php-ext-install ldap \
+    && docker-php-ext-enable ldap \
     && echo 'y' | pecl install apcu \
     && docker-php-ext-enable apcu \
     && echo "TLS_REQCERT never\nTLS_CACERT /var/www/html/sites/default/files/adsync\n" >> /etc/ldap/ldap.conf \
