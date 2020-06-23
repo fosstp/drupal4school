@@ -5,7 +5,7 @@ namespace Drupal\adsync\Form;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Ajax\AjaxResponse;
-use Drupal\Core\Ajax\HtmlCommand;
+use Drupal\Core\Ajax\ReplaceCommand;
 
 class adsyncOperationForm extends FormBase
 {
@@ -161,7 +161,7 @@ class adsyncOperationForm extends FormBase
                         }
                     } elseif (is_null($t->status) || $t->status == 'active') {
                         if ($log) {
-                            $detail_log .= '無法在 AD 中找到這個使用者，現在正在為使用者建立使用者帳號......';
+                            $detail_log .= '無法在 AD 中找到這個使用者，現在正在為使用者建立帳號......';
                         }
                         $user_dn = 'cn='.$t->account.",$base_dn";
                         $result = ad_createUser($t, $user_dn);
@@ -170,7 +170,7 @@ class adsyncOperationForm extends FormBase
                                 $detail_log .= '建立完成！<br>';
                             }
                         } else {
-                            $detail_log .= "$t->role_name $t->realname 建立失敗！<br>";
+                            $detail_log .= "$t->role_name $t->realname 建立失敗！".ad_error().'<br>';
                         }
                     }
                     if (!empty($t->dept_id) && !empty($t->role_id)) {
@@ -196,7 +196,7 @@ class adsyncOperationForm extends FormBase
                                     $detail_log .= '建立成功！<br>';
                                 }
                             } else {
-                                $detail_log .= "$t->dept_name 群組建立失敗！<br>";
+                                $detail_log .= "$t->dept_name 群組建立失敗！".ad_error().'<br>';
                             }
                         }
                         if (($k = array_search($depgroup, $groups)) !== false) {
@@ -209,7 +209,7 @@ class adsyncOperationForm extends FormBase
                                     $detail_log .= '加入成功！<br>';
                                 }
                             } else {
-                                $detail_log .= "無法將使用者 $t->role_name $t->realname 加入 $t->dept_name 群組！<br>";
+                                $detail_log .= "無法將使用者 $t->role_name $t->realname 加入 $t->dept_name 群組！".ad_error().'<br>';
                             }
                         } else {
                             unset($groups[$k]);
@@ -236,7 +236,7 @@ class adsyncOperationForm extends FormBase
                                     $detail_log .= '建立成功！<br>';
                                 }
                             } else {
-                                $detail_log .= "$t->role_name 群組建立失敗！<br>";
+                                $detail_log .= "$t->role_name 群組建立失敗！".ad_error().'<br>';
                             }
                         }
                         if (($k = array_search($posgroup, $groups)) !== false) {
@@ -249,7 +249,7 @@ class adsyncOperationForm extends FormBase
                                     $detail_log .= '加入成功！<br>';
                                 }
                             } else {
-                                $detail_log .= "無法將使用者 $t->role_name $t->realname 加入 $t->role_name 群組！<br>";
+                                $detail_log .= "無法將使用者 $t->role_name $t->realname 加入 $t->role_name 群組！".ad_error().'<br>';
                             }
                         } else {
                             unset($groups[$k]);
@@ -286,11 +286,11 @@ class adsyncOperationForm extends FormBase
                         $group = ad_getGroup($clsgroup);
                         if ($group) {
                             if ($log) {
-                                $detail_log .= "$clsgroup => 在 G Suite 中找到匹配的使用者群組！......<br>";
+                                $detail_log .= "$clsgroup => 在 AD 中找到匹配的使用者群組！......<br>";
                             }
                         } else {
                             if ($log) {
-                                $detail_log .= '無法在 G Suite 中找到匹配的群組，現在正在建立新的 Google 群組......';
+                                $detail_log .= '無法在 AD 中找到匹配的群組，現在正在建立新的使用者群組......';
                             }
                             $result = ad_createGroup($clsgroup, $group_key, "$grade年級");
                             if ($result) {
@@ -298,7 +298,7 @@ class adsyncOperationForm extends FormBase
                                     $detail_log .= '建立成功！<br>';
                                 }
                             } else {
-                                $detail_log .= "$grade 年級群組建立失敗！<br>";
+                                $detail_log .= "$grade 年級群組建立失敗！".ad_error().'<br>';
                             }
                         }
                         if (($k = array_search($clsgroup, $groups)) !== false) {
@@ -311,7 +311,7 @@ class adsyncOperationForm extends FormBase
                                     $detail_log .= '加入成功！<br>';
                                 }
                             } else {
-                                $detail_log .= "無法將使用者 $t->role_name $t->realname 加入 $grade 年級群組！<br>";
+                                $detail_log .= "無法將使用者 $t->role_name $t->realname 加入 $grade 年級群組！".ad_error().'<br>';
                             }
                         } else {
                             unset($groups[$k]);
@@ -326,8 +326,8 @@ class adsyncOperationForm extends FormBase
         }
         $time_end = microtime(true);
         $time_spend = $time_end - $time_start;
-        $detail_log .= "<br>總共花費 $time_spend 秒";
-        $response->addCommand(new HtmlCommand('#edit-log-div', $detail_log));
+        $detail_log = '<div id="edit-log-div" class="form-item">'.$detail_log."<p>總共花費 $time_spend 秒</p></div>";
+        $response->addCommand(new ReplaceCommand('#edit-log-div', $detail_log));
 
         return $response;
     }

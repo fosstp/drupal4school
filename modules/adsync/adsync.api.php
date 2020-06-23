@@ -58,6 +58,13 @@ function ad_admin()
     return null;
 }
 
+function ad_error()
+{
+    global $ad_conn;
+
+    return ldap_error($ad_conn);
+}
+
 function ad_findGroup($desc)
 {
     $ad_conn = ad_admin();
