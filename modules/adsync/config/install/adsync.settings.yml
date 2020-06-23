@@ -1,6 +1,6 @@
 ad_server: ''
+ca_cert: ''
 ad_admin: ''
 ad_password: ''
-base_dn: ''
 users_dn: ''
 enabled: false

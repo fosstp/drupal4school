@@ -1,18 +1,18 @@
 ad_server:
   type: string
-  label: 'AD 伺服器'
+  label: '網域主控站'
+ca_cert:
+  type: string
+  label: '根憑證檔案'
 ad_admin:
   type: string
-  label: 'AD 管理員帳號'
+  label: '網域管理員帳號'
 ad_password:
   type: string
-  label: 'AD 管理員密碼'
-base_dn:
-  type: string
-  label: 'AD 根目錄名稱'
+  label: '網域管理員密碼'
 users_dn:
   type: string
-  label: '使用者帳號所在的目錄名稱'
+  label: '使用者命名空間'
 enabled:
   type: boolean
   label: 'AD 連線測試完成'

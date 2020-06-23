@@ -1,6 +1,6 @@
 gsync.admin:
-  title: 'G Suite 帳號同步模組設定'
-  description: '請先向 G Suite 申請介接專案，然後完成模組設定。'
-  route_name: gsync.config
+  title: 'AD 帳號同步模組設定'
+  description: '完成模組設定後，模組才會真正啟用。'
+  route_name: adsync.config
   weight: 20
   parent: user.admin_index

@@ -7,4 +7,4 @@ core: 8.x
 dependencies:
   - user
   - tpedu
-configure: gsuite.config
+configure: gsync.config

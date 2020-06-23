@@ -1,419 +1,307 @@
 <?php
 
-$directory = null;
+$ad_conn = null;
 
-function initGoogleService()
+function ad_test()
 {
-    global $directory;
-    if ($directory instanceof \Google_Service_Directory) {
-        return $directory;
-    } else {
-        $config = \Drupal::config('gsync.settings');
-        $uri = $config->get('google_service_json');
-        $path = \Drupal::service('file_system')->realpath($uri);
-        $user_to_impersonate = $config->get('google_domain_admin');
-        $scopes = array(
-            \Google_Service_Directory::ADMIN_DIRECTORY_ORGUNIT,
-            \Google_Service_Directory::ADMIN_DIRECTORY_USER,
-            \Google_Service_Directory::ADMIN_DIRECTORY_GROUP,
-            \Google_Service_Directory::ADMIN_DIRECTORY_GROUP_MEMBER,
-            \Google_Service_Calendar::CALENDAR,
-            \Google_Service_Calendar::CALENDAR_EVENTS,
-        );
+    $config = \Drupal::config('adsync.settings');
+    $ad_host = $config->get('ad_server');
+    $ad_conn = @ldap_connect($ad_host, 389);
+    ldap_set_option($ad_conn, LDAP_OPT_PROTOCOL_VERSION, 3);
+    ldap_set_option($ad_conn, LDAP_OPT_REFERRALS, 0);
+    if ($ad_conn) {
+        $ad_user = $config->get('ad_admin');
+        $ad_pass = $config->get('ad_password');
+        $ad_bind = @ldap_bind($ad_conn, $ad_user, $ad_pass);
+        if ($ad_bind) {
+            @ldap_close($ad_conn);
+            $ad_conn = @ldap_connect('ldaps://'.$ad_host, 636);
+            if (empty($ad_conn)) {
+                \Drupal::logger('adsync')->notice('無法使用 LDAPS 通訊協定連接 AD 伺服器，請在 AD 伺服器上安裝企業級憑證服務，以便提供 LDAPS 連線功能。');
 
-        $client = new \Google_Client();
-        $client->setAuthConfig($path);
-        $client->setApplicationName('Drupal for School');
-        $client->setScopes($scopes);
-        $client->setSubject($user_to_impersonate);
-        try {
-            $directory = new \Google_Service_Directory($client);
-
-            return $directory;
-        } catch (\Google_Service_Exception $e) {
-            \Drupal::logger('google')->debug('directory:'.$e->getMessage());
-
-            return null;
-        }
-    }
-}
-
-function gs_listOrgUnits()
-{
-    global $directory;
-    try {
-        $result = $directory->orgunits->listOrgunits('my_customer');
-
-        return $result->getOrganizationUnits();
-    } catch (\Google_Service_Exception $e) {
-        \Drupal::logger('google')->debug('gs_listOrgUnits:'.$e->getMessage());
-
-        return false;
-    }
-}
-
-function gs_getOrgUnit($orgPath)
-{
-    global $directory;
-    try {
-        return $directory->orgunits->get('my_customer', $orgPath);
-    } catch (\Google_Service_Exception $e) {
-        \Drupal::logger('google')->debug("gs_getOrgUnit($orgPath):".$e->getMessage());
-
-        return false;
-    }
-}
-
-function gs_createOrgUnit($orgPath, $orgName, $orgDescription)
-{
-    global $directory;
-    $org_unit = new \Google_Service_Directory_OrgUnit();
-    $org_unit->setName($orgName);
-    $org_unit->setDescription($orgDescription);
-    $org_unit->setParentOrgUnitPath($orgPath);
-    try {
-        return $directory->orgunits->insert('my_customer', $org_unit);
-    } catch (\Google_Service_Exception $e) {
-        \Drupal::logger('google')->debug("gs_createOrgUnit($orgPath,$orgName,$orgDescription):".$e->getMessage());
-
-        return false;
-    }
-}
-
-function gs_updateOrgUnit($orgPath, $orgName)
-{
-    global $directory;
-    $org_unit = new \Google_Service_Directory_OrgUnit();
-    $org_unit->setDescription($orgName);
-    try {
-        return $directory->orgunits->update('my_customer', $orgPath, $org_unit);
-    } catch (\Google_Service_Exception $e) {
-        \Drupal::logger('google')->debug("gs_updateOrgUnit($orgPath,$orgName):".$e->getMessage());
-
-        return false;
-    }
-}
-
-function gs_deleteOrgUnit($orgPath)
-{
-    global $directory;
-    try {
-        return $directory->orgunits->delete('my_customer', $orgPath);
-    } catch (\Google_Service_Exception $e) {
-        \Drupal::logger('google')->debug("gs_deleteOrgUnit($orgPath):".$e->getMessage());
-
-        return false;
-    }
-}
-
-function gs_findUsers($filter)
-{
-    global $directory;
-    $config = \Drupal::config('gsync.settings');
-    try {
-        $result = $directory->users->listUsers(array('domain' => $config->get('google_domain'), 'query' => $filter));
-
-        return $result->getUsers();
-    } catch (\Google_Service_Exception $e) {
-        \Drupal::logger('google')->debug("gs_findUsers($filter):".$e->getMessage());
-
-        return false;
-    }
-}
-
-// userKey must be their gmail address.
-function gs_getUser($userKey)
-{
-    global $directory;
-    if (!strpos($userKey, '@')) {
-        return false;
-    }
-    try {
-        return $directory->users->get($userKey);
-    } catch (\Google_Service_Exception $e) {
-        \Drupal::logger('google')->debug("gs_getUser($userKey):".$e->getMessage());
-
-        return false;
-    }
-}
-
-function gs_createUser($t, $userKey)
-{
-    global $directory;
-    $user = new \Google_Service_Directory_User();
-    $user->setChangePasswordAtNextLogin(false);
-    $user->setAgreedToTerms(true);
-    $user->setPrimaryEmail($userKey);
-    $user->setHashFunction('SHA-1');
-    $user->setPassword(sha1(substr($t->idno, -6)));
-    try {
-        $user = $directory->users->insert($user);
-
-        return gs_syncUser($t, $user);
-    } catch (\Google_Service_Exception $e) {
-        \Drupal::logger('google')->debug("gs_createUser:($userKey,".var_export($t, true).')'.$e->getMessage());
-
-        return false;
-    }
-}
-
-function gs_updateUser($userKey, $userObj)
-{
-    global $directory;
-    try {
-        return $directory->users->update($userKey, $userObj);
-    } catch (\Google_Service_Exception $e) {
-        \Drupal::logger('google')->debug("gs_updateUser($userKey,".var_export($userObj, true).'):'.$e->getMessage());
-
-        return false;
-    }
-}
-
-function gs_deleteUser($userKey)
-{
-    global $directory;
-    if (!strpos($userKey, '@')) {
-        return false;
-    }
-    try {
-        return $directory->users->delete($userKey);
-    } catch (\Google_Service_Exception $e) {
-        \Drupal::logger('google')->debug("gs_deleteUser($userKey):".$e->getMessage());
-
-        return false;
-    }
-}
-
-function gs_syncUser($t, $user)
-{
-    $config = \Drupal::config('gsync.settings');
-    $names = new \Google_Service_Directory_UserName();
-    if ($t->sn && $t->gn) {
-        $names->setFamilyName($t->sn);
-        $names->setGivenName($t->gn);
-    } else {
-        $myname = guess_name($t->realname);
-        $names->setFamilyName($myname[0]);
-        $names->setGivenName($myname[1]);
-    }
-    $names->setFullName($t->realname);
-    $user->setName($names);
-    if (!empty($t->email) && $t->email != $user->getPrimaryEmail()) {
-        $user->setRecoveryEmail($t->email);
-    }
-    if (!empty($t->dept_id) && !empty($t->role_id)) {
-        $myorg = $user->getOrganizations();
-        $neworg = new \Google_Service_Directory_UserOrganization();
-        $neworg->setDepartment($t->dept_name);
-        $neworg->setTitle($t->role_name);
-        $neworg->setPrimary(true);
-        if (is_array($myorg)) {
-            if (!in_array($neworg, $myorg)) {
-                $myorg = array_unshift($myorg, $neworg);
+                return 3;
+            } else {
+                return 0;
             }
         } else {
-            $myorg = $neworg;
-        }
-        $user->setOrganizations($myorg);
-    }
-    if (!empty($t->mobile)) {
-        $phones = $user->getPhones();
-        $phone = new \Google_Service_Directory_UserPhone();
-        $phone->setPrimary(true);
-        $phone->setType('mobile');
-        $phone->setValue($t->mobile);
-        if (is_array($phones)) {
-            if (!in_array($phone, $phones)) {
-                $phones = array_unshift($phones, $phone);
-            }
-        }
-        $user->setPhones($phones);
-        $user->setRecoveryPhone($phone);
-    }
-    if (!empty($t->telephone)) {
-        $phones = $user->getPhones();
-        $phone = new \Google_Service_Directory_UserPhone();
-        $phone->setPrimary(false);
-        $phone->setValue($t->telephone);
-        if (is_array($phones)) {
-            if (!in_array($phone, $phones)) {
-                $phones = array_unshift($phones, $phone);
-            }
-        }
-        $user->setPhones($phones);
-    }
+            \Drupal::logger('adsync')->notice('已經連線到 AD 伺服器，但是無法成功登入。請檢查管理員帳號密碼是否正確！');
 
-    $gender = new \Google_Service_Directory_UserGender();
-    if (!empty($t->gender)) {
-        switch ($t->gender) {
-            case 0:
-                $gender->setType('unknow');
-                break;
-            case 1:
-                $gender->setType('male');
-                break;
-            case 2:
-                $gender->setType('female');
-                break;
-            case 9:
-                $gender->setType('other');
-                break;
-        }
-    }
-    $user->setGender($gender);
-    if ($t->student) {
-        if ($config->get('student_orgunit')) {
-            $user->setOrgUnitPath($config->get('student_orgunit'));
+            return 2;
         }
     } else {
-        if (!empty($t->class)) {
-            $user->setIsAdmin(true);
+        \Drupal::logger('adsync')->notice('連線 AD 伺服器失敗。請檢查伺服器名稱或 IP 是否正確！');
+
+        return 1;
+    }
+}
+
+function ad_admin()
+{
+    global $ad_conn;
+    if (!$ad_conn) {
+        $config = \Drupal::config('adsync.settings');
+        $ad_host = $config->get('ad_server');
+        $ad_conn = @ldap_connect('ldaps://'.$ad_host, 636);
+        @ldap_set_option($ad_conn, LDAP_OPT_PROTOCOL_VERSION, 3);
+        @ldap_set_option($ad_conn, LDAP_OPT_REFERRALS, 0);
+    }
+    if ($ad_conn) {
+        $ad_user = $config->get('ad_admin');
+        $ad_pass = $config->get('ad_password');
+        $ad_bind = @ldap_bind($ad_conn, $ad_user, $ad_pass);
+        if ($ad_bind) {
+            return $ad_conn;
         }
-        if ($config->get('teacher_orgunit')) {
-            $user->setOrgUnitPath($config->get('teacher_orgunit'));
-        }
     }
 
-    return gs_updateUser($user->getPrimaryEmail(), $user);
+    return null;
 }
 
-function gs_createUserAlias($userKey, $alias)
+function ad_findGroup($desc)
 {
-    global $directory;
-    $email_alias = new \Google_Service_Directory_Alias();
-    $email_alias->setAlias($alias);
-    try {
-        return $directory->users_aliases->insert($userKey, $email_alias);
-    } catch (\Google_Service_Exception $e) {
-        \Drupal::logger('google')->debug("gs_createUserAlias($userKey, $alias):".$e->getMessage());
-
-        return false;
-    }
-}
-
-function gs_listUserAliases($userKey)
-{
-    global $directory;
-    try {
-        return $directory->users_aliases->listUsersAliases($userKey);
-    } catch (\Google_Service_Exception $e) {
-        \Drupal::logger('google')->debug("gs_listUserAliases($userKey):".$e->getMessage());
-
-        return false;
-    }
-}
-
-function gs_removeUserAlias($userKey, $alias)
-{
-    global $directory;
-    try {
-        return $directory->users_aliases->delete($userKey, $alias);
-    } catch (\Google_Service_Exception $e) {
-        \Drupal::logger('google')->debug("gs_removeUserAlias($userKey,$alias):".$e->getMessage());
-
-        return false;
-    }
-}
-
-function gs_listGroups()
-{
-    global $directory;
+    $ad_conn = ad_admin();
     $config = \Drupal::config('gsync.settings');
-    try {
-        return $directory->groups->listGroups(array('domain' => $config->get('google_domain')))->getGroups();
-    } catch (\Google_Service_Exception $e) {
-        \Drupal::logger('google')->debug('gs_listGroups:'.$e->getMessage());
-
-        return false;
-    }
-}
-
-function gs_listUserGroups($user_key)
-{
-    global $directory;
-    $config = \Drupal::config('gsync.settings');
-    try {
-        return $directory->groups->listGroups(array('domain' => $config->get('google_domain'), 'userKey' => $user_key))->getGroups();
-    } catch (\Google_Service_Exception $e) {
-        \Drupal::logger('google')->debug('gs_listGroups:'.$e->getMessage());
-
-        return false;
-    }
-}
-
-function gs_createGroup($groupId, $groupName)
-{
-    global $directory;
-    $group = new Google_Service_Directory_Group();
-    $group->setEmail($groupId);
-    $group->setDescription($groupName);
-    $group->setName($groupName);
-    try {
-        return $directory->groups->insert($group);
-    } catch (\Google_Service_Exception $e) {
-        \Drupal::logger('google')->debug("gs_createGroup($groupId,$groupName):".$e->getMessage());
-
-        return false;
-    }
-}
-
-function gs_listMembers($groupId)
-{
-    global $directory;
-    try {
-        return $directory->members->listMembers($groupId)->getMembers();
-    } catch (\Google_Service_Exception $e) {
-        \Drupal::logger('google')->debug("gs_listMembers($groupId):".$e->getMessage());
-
-        return false;
-    }
-}
-
-function gs_addMembers($groupId, $members)
-{
-    global $directory;
-    $users = array();
-    if (!is_array($members)) {
-        $members[] = $members;
-    }
-    foreach ($members as $m) {
-        $member = new \Google_Service_Directory_Member();
-        $member->setEmail($m);
-        $member->setRole('MEMBER');
-        try {
-            $users[] = $directory->members->insert($groupId, $member);
-        } catch (\Google_Service_Exception $e) {
-            \Drupal::logger('google')->debug("gs_addMembers($groupId,".print_r($members).'):'.$e->getMessage());
-
-            return false;
+    $base_dn = $config->get('users_dn');
+    $filter = "(&(objectClass=group)(description=$department))";
+    $result = @ldap_search($ad_conn, $base_dn, $filter);
+    if ($result) {
+        $infos = @ldap_get_entries($ad_conn, $result);
+        if ($infos['count'] > 0) {
+            $data = $infos[0];
         }
-    }
 
-    return $users;
-}
-
-function gs_removeMembers($groupId, $members)
-{
-    global $directory;
-    $users = array();
-    if (!is_array($members)) {
-        $members[] = $members;
-    }
-    foreach ($members as $m) {
-        try {
-            $directory->members->delete($groupId, $m);
-        } catch (\Google_Service_Exception $e) {
-            \Drupal::logger('google')->debug("gs_removeMembers($groupId,".print_r($members).'):'.$e->getMessage());
-        }
-    }
-}
-
-function guess_name($myname)
-{
-    $len = mb_strlen($myname, 'UTF-8');
-    if ($len > 3) {
-        return array(mb_substr($myname, 0, 2, 'UTF-8'), mb_substr($myname, 2, null, 'UTF-8'));
+        return $data;
     } else {
-        return array(mb_substr($myname, 0, 1, 'UTF-8'), mb_substr($myname, 1, null, 'UTF-8'));
+        return false;
     }
+}
+
+function ad_getGroup($group)
+{
+    $ad_conn = ad_admin();
+    $config = \Drupal::config('gsync.settings');
+    $base_dn = $config->get('users_dn');
+    $filter = "(&(objectClass=group)(cn=$group))";
+    $result = @ldap_search($ad_conn, $base_dn, $filter);
+    $data = array();
+    if ($result) {
+        $infos = @ldap_get_entries($ad_conn, $result);
+        if ($infos['count'] > 0) {
+            $data = $infos[0];
+        }
+
+        return $data;
+    } else {
+        return false;
+    }
+}
+
+function ad_getUserGroups($dn)
+{
+    $ad_conn = ad_admin();
+    $config = \Drupal::config('gsync.settings');
+    $base_dn = $config->get('users_dn');
+    $filter = '(objectClass=group)';
+    $result = @ldap_search($ad_conn, $base_dn, $filter);
+    $groups = @ldap_get_entries($ad_conn, $result);
+    $data = array();
+    if ($groups['count'] > 0) {
+        unset($groups['count']);
+        foreach ($groups as $g) {
+            if ($g['member']['count'] > 0 && in_array($dn, $g['member'])) {
+                $data[] = $g;
+            }
+        }
+    }
+
+    return $data;
+}
+
+function ad_createGroup($group, $dn, $group_name)
+{
+    $ad_conn = ad_admin();
+    $groupinfo = array();
+    $groupinfo['objectClass'] = 'group';
+    $groupinfo['sAMAccountName'] = $group;
+    $groupinfo['displayName'] = $group_name;
+    $groupinfo['description'] = $group_name;
+    $result = ldap_add($ad_conn, $dn, $groupinfo);
+    if ($result) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+function ad_addMember($dn, $userDn)
+{
+    $ad_conn = ad_admin();
+    $result = ldap_mod_add($ad_conn, $dn, array('member' => $userDn));
+    if ($result) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+function ad_removeMember($dn, $userDn)
+{
+    $ad_conn = ad_admin();
+    $result = ldap_mod_del($ad_conn, $dn, array('member' => $userDn));
+    if ($result) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+function ad_getUser($account)
+{
+    $ad_conn = ad_admin();
+    $config = \Drupal::config('gsync.settings');
+    $base_dn = $config->get('users_dn');
+    $filter = "(sAMAccountName=$account)";
+    $result = @ldap_search($ad_conn, $base_dn, $filter);
+    $data = array();
+    if ($result) {
+        $infos = @ldap_get_entries($ad_conn, $result);
+        if ($infos['count'] > 0) {
+            $data = $infos[0];
+        }
+    }
+
+    return $data;
+}
+
+function ad_createUser($user, $dn)
+{
+    $ad_conn = ad_admin();
+    $userinfo = array();
+    $userinfo['objectClass'] = array('top', 'person', 'organizationalPerson', 'user');
+    $userinfo['cn'] = $user->account;
+    $userinfo['sAMAccountName'] = $user->account;
+    $userinfo['accountExpires'] = 0;
+    $userinfo['userAccountControl'] = '0x10220';
+    $userinfo['userPassword'] = substr($user->idno, -6);
+    $userinfo['unicodePwd'] = pwd_encryption(substr($user->idno, -6));
+    if ($user->sn && $user->gn) {
+        $userinfo['sn'] = $user->sn;
+        $userinfo['givenName'] = $user->gn;
+    }
+    $userinfo['displayName'] = $user->realname;
+    $userinfo['description'] = $user->idno;
+    $userinfo['department'] = $user->dept_name;
+    $userinfo['title'] = $user->role_name;
+    if ($user->email) {
+        $userinfo['mail'] = $user->email;
+        $userinfo['userPrincipalName'] = $user->email;
+    }
+    if ($user->telphone) {
+        $userinfo['telephoneNumber'] = $user->telphone;
+    }
+    $result = @ldap_add($ad_conn, $dn, $userinfo);
+    if ($result) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+function ad_syncUser($user, $dn)
+{
+    $ad_conn = ad_admin();
+    $userinfo = array();
+    if ($user->sn && $user->gn) {
+        $userinfo['sn'] = $user->sn;
+        $userinfo['givenName'] = $user->gn;
+    }
+    $userinfo['displayName'] = $user->realname;
+    $userinfo['description'] = $user->idno;
+    $userinfo['department'] = $user->dept_name;
+    $userinfo['title'] = $user->role_name;
+    if ($user->email) {
+        $userinfo['mail'] = $user->email;
+        $userinfo['userPrincipalName'] = $user->email;
+    }
+    if ($user->telphone) {
+        $userinfo['telephoneNumber'] = $user->telphone;
+    }
+    $result = @ldap_mod_replace($ad_conn, $dn, $userinfo);
+    if ($result) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+function ad_lockUser($dn)
+{
+    $ad_conn = ad_admin();
+    $userdata['userAccountControl'] = '0x10222';
+    $result = @ldap_mod_replace($ad_conn, $dn, $userdata);
+    if ($result) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+function ad_unlockUser($dn)
+{
+    $ad_conn = ad_admin();
+    $userdata['userAccountControl'] = '0x10220';
+    $result = @ldap_mod_replace($ad_conn, $dn, $userdata);
+    if ($result) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+function ad_deleteUser($dn)
+{
+    $ad_conn = ad_admin();
+    $result = @ldap_delete($ad_conn, $dn);
+    if ($result) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+function ad_changeAccount($dn, $new_account)
+{
+    $ad_conn = ad_admin();
+    $result = @ldap_mod_replace($ad_conn, $dn, array('sAMAccountName' => $new_account));
+    if ($result) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+function ad_changePass($dn, $password)
+{
+    $ad_conn = ad_admin();
+    $userdata = array();
+    $userdata['userPassword'] = $password;
+    $userdata['unicodePwd'] = pwd_encryption($password);
+    $result = @ldap_mod_replace($ad_conn, $dn, $userdata);
+    if ($result) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+function pwd_encryption($newPassword)
+{
+    $newPassword = '"'.$newPassword.'"';
+    $len = strlen($newPassword);
+    $newPassw = '';
+    for ($i = 0; $i < $len; ++$i) {
+        $newPassw .= "{$newPassword[$i]}\000";
+    }
+
+    return $newPassw;
 }

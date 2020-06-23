@@ -24,52 +24,41 @@ class adsyncConfigForm extends ConfigFormBase
         $config = $this->config('adsync.settings');
         $form['helper'] = array(
             '#type' => 'markup',
-            '#markup' => '<p>要使用 G Suite 帳號單一簽入功能，您必須建立 Google 開發專案並取得 Google 發給您的<em>網路應用程式憑證</em>，請依照以下步驟取得相關組態值：'.
-            '<ol><li>請連結 <a href="https://console.cloud.google.com/apis/dashboard">Google apis 主控台</a>，如果還沒有介接專案，請先建立專案！</li>'.
-            '<li>請進入「資料庫」管理頁面，為該專案啟用這兩個 API：Admin SDK、Google Calendar API。至少應包含這兩個 API，如果要自行開發模組的話當然也可以啟用更多 API。</li>'.
-            '<li>請進入「憑證」管理頁面，然後建立「服務帳戶」憑證，並且需要從 G Suite 「管理主控台」->「安全性」->「API 權限」->「全網域委派」進行全域授權，請參考<a href="https://support.google.com/a/answer/162106?hl=zh-Hant">這篇文章</a>。</li>'.
-            '<li>全域授權時，需輸入該專案的服務帳戶用戶端編號，授權範圍至少應包含：<ul>'.
-            '<li>https://www.googleapis.com/auth/admin.directory.orgunit</li>'.
-            '<li>https://www.googleapis.com/auth/admin.directory.user</li>'.
-            '<li>https://www.googleapis.com/auth/admin.directory.group</li>'.
-            '<li>https://www.googleapis.com/auth/admin.directory.group.member</li>'.
-            '<li>https://www.googleapis.com/auth/calendar</li>'.
-            '<li>https://www.googleapis.com/auth/calendar.events</li>'.
-            '</ul></li>'.
-            '<li>線上測試 OAuth 用戶端 API 資料存取，請連到 <a href="https://developers.google.com/oauthplayground/">OAuth playground</a>。</li>'.
-            '</ol>',
+            '#markup' => '<p>微軟網域主控站僅允許透過 LDAPS 通訊協定來變更密碼或增刪帳號，但預設不會開啟此項功能。'.
+            '要開啟此項功能，您必須在網域主控站上安裝憑證伺服器，並將該憑證伺服器於安裝階段設定為<em>企業</em>憑證，而非<em>獨立</em>伺服器，'.
+            '安裝完成後，您必須將網域主控站的根憑證檔案匯出後，透過底下表單上傳到 Drupal 網站中。</p>',
+        );
+        $form['ad_server'] = array(
+            '#type' => 'textfield',
+            '#title' => '網域主控站',
+            '#default_value' => $config->get('ad_server'),
+            '#description' => '請輸入微軟網域主控站的 DNS 名稱，不建議使用 IP。',
         );
         $validators = array(
-            'file_validate_extensions' => array('json'),
+            'file_validate_extensions' => array('cer'),
         );
-        $form['google_service_json'] = array(
+        $form['ca_cert'] = array(
             '#type' => 'file',
-            '#title' => 'Google 服務帳號授權驗證 JSON 檔',
-            '#description' => $config->get('google_service_json') ? '授權驗證檔案已經上傳，如沒有要變更金鑰，請勿再上傳' : '請從 Google apis 主控台專案管理頁面下載上述「服務帳戶」所提供的 JSON 檔案並上傳到這裡。',
+            '#title' => '根憑證檔案',
+            '#description' => $config->get('ca_cert') ? '根憑證檔案已經上傳，如沒有要變更金鑰，請勿再上傳！' : '請從網域主控站將根憑證檔案匯出後，上傳到這裡。',
         );
-        $form['google_domain'] = array(
+        $form['ad_admin'] = array(
             '#type' => 'textfield',
-            '#title' => 'G Suite 網域',
-            '#default_value' => $config->get('google_domain'),
-            '#description' => '請設定 G Suite 網域名稱，通常是貴機構的 DNS 域名。',
+            '#title' => '網域管理員帳號',
+            '#default_value' => $config->get('ad_admin', 'administrator'),
+            '#description' => '請輸入網域管理員帳號，該管理員必須具備 Windows 網域最高管理權限。',
         );
-        $form['google_domain_admin'] = array(
+        $form['ad_password'] = array(
             '#type' => 'textfield',
-            '#title' => 'G Suite 管理員帳號',
-            '#default_value' => $config->get('google_domain_admin'),
-            '#description' => '請設定 G Suite 網域的管理員郵件地址，該管理員必須具備該網域的最高管理權限。Google 服務帳號將以該管理員的身份進行資料操作。',
+            '#title' => '網域管理員密碼',
+            '#default_value' => $config->get('ad_password'),
+            '#description' => '請輸入網域管理員密碼。',
         );
-        $form['teacher_orgunit'] = array(
+        $form['users_dn'] = array(
             '#type' => 'textfield',
-            '#title' => '教師帳號所在的機構',
-            '#default_value' => $config->get('teacher_orgunit'),
-            '#description' => '如果您使用子機構來區分教師與學生帳號，請在這裡輸入教師帳號子機構的階層路徑，最高層級為 <strong>/</strong>，假如您輸入<strong>/小學部/教師帳號</strong>，意味著所有的教師帳號將會同步到第二層級機構<strong>小學部</strong>的子機構<strong>教師帳號</strong>中。由於機構僅用來套用 Google 的相關設定，無法如群組一般擁有郵寄清單和論壇主頁，機構為階層結構，而群組為巢狀結構，所以您不應該使用機構來對教師帳號或學生帳號做進一步的分類，而應該使用群組來進行分類。本模組將依循此法則進行帳號同步作業！',
-        );
-        $form['student_orgunit'] = array(
-            '#type' => 'textfield',
-            '#title' => '學生帳號所在的機構',
-            '#default_value' => $config->get('student_orgunit'),
-            '#description' => '如果您使用子機構來區分教師與學生帳號，請在這裡輸入學生帳號子機構的階層路徑，最高層級為 <strong>/</strong>，假如您輸入<strong>/小學部/學生帳號</strong>，意味著所有的學生帳號將會同步到第二層級機構<strong>小學部</strong>的子機構<strong>學生帳號</strong>中。',
+            '#title' => '使用者命名空間',
+            '#default_value' => $config->get('users_dn'),
+            '#description' => '請輸入儲存使用者的命名空間，如果貴校未使用組織（OU）的話，預設是 CN=Users,DC=貴校的網域 DN，例如：CN=Users,DC=xxps,DC=tp,DC=edu,DC=tw。',
         );
         $form['actions'] = array(
             '#type' => 'actions',
@@ -86,16 +75,16 @@ class adsyncConfigForm extends ConfigFormBase
     {
         $error = '';
         $message = '';
-        $config = $this->config('gsync.settings');
+        $config = $this->config('adsync.settings');
         $values = $form_state->cleanValues()->getValues();
         foreach ($values as $key => $value) {
-            if ($key == 'google_service_json') {
-                $file = file_save_upload('google_service_json', array('file_validate_extensions' => array('json')), 'public://gsync', 0, FILE_EXISTS_REPLACE);
+            if ($key == 'ca_cert') {
+                $file = file_save_upload('ca_cert', array('file_validate_extensions' => array('cer')), 'public://adsync', 0, FILE_EXISTS_REPLACE);
                 if ($file) {
                     $file->setPermanent();
                     $file->save();
                     $config->set($key, $file->getFileUri());
-                    $message = 'Google 服務帳戶的金鑰檔案已經更新。';
+                    $message = '網域主控站的根憑證檔案已經更新。';
                 }
             } else {
                 $config->set($key, $value);
@@ -103,21 +92,31 @@ class adsyncConfigForm extends ConfigFormBase
         }
         $config->save();
         $ok = false;
-        if ($config->get('google_service_json') && $config->get('google_domain') && $config->get('google_domain_admin')) {
-            $directory = initGoogleService();
-            if ($directory && gs_getUser($config->get('google_domain_admin'))) {
+        if ($config->get('ca_cert') && $config->get('ad_admin') && $config->get('ad_password')) {
+            $result = ad_test();
+            if ($result == 0) {
                 $ok = true;
             }
         }
         if ($ok) {
             $config->set('enabled', true);
             $config->save();
-            $message .= '所有設定已經完成並通過 G Suite API 連線測試，模組已經啟用。';
+            $message .= '所有設定已經完成並通過 AD 連線測試，模組已經啟用。';
             \Drupal::messenger()->addMessage($message, 'status');
         } else {
             $config->set('enabled', false);
             $config->save();
-            $message .= 'G Suite API 連線測試失敗，模組無法啟用。';
+            switch ($result) {
+                case 1:
+                    $message .= '連線網域主控站失敗。請檢查伺服器 DNS 名稱或 IP 是否正確！';
+                    break;
+                case 2:
+                    $message .= '已經連線到網域主控站，但是無法成功登入。請檢查管理員帳號密碼是否正確！';
+                    break;
+                case 3:
+                    $message .= '無法使用 LDAPS 通訊協定連接網域主控站，請在網域主控站上安裝企業級憑證服務，以便提供 LDAPS 連線功能。';
+                    break;
+            }
             \Drupal::messenger()->addMessage($message, 'warning');
         }
     }
