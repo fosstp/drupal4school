@@ -26,7 +26,7 @@ class adsyncConfigForm extends ConfigFormBase
             '#type' => 'markup',
             '#markup' => '<p>微軟網域主控站僅允許透過 LDAPS 通訊協定來變更密碼或增刪帳號，但預設不會開啟此項功能。'.
             '要開啟此項功能，您必須在網域主控站上安裝憑證伺服器，並將該憑證伺服器於安裝階段設定為<em>企業</em>憑證，而非<em>獨立</em>伺服器，'.
-            '安裝完成後，您必須將網域主控站的根憑證檔案匯出後，透過底下表單上傳到 Drupal 網站中。</p>',
+            '安裝完成後，您必須將網域主控站的根憑證檔案匯出後（可使用 certutil -ca.cert 檔名.cer 指令匯出），透過底下表單上傳到 Drupal 網站中。</p>',
         );
         $form['ad_server'] = array(
             '#type' => 'textfield',

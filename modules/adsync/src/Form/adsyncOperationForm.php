@@ -16,7 +16,7 @@ class adsyncOperationForm extends FormBase
 
     public function buildForm(array $form, FormStateInterface $form_state)
     {
-        $config = \Drupal::config('gsync.settings');
+        $config = \Drupal::config('adsync.settings');
         if ($config->get('enabled')) {
             $form['help'] = array(
                 '#markup' => '<p>將臺北市校園單一身分驗證服務中的<strong>教師帳號</strong>同步到 AD，作業流程需要花費較久的時間，請耐心等候同步作業完成。未完成前請勿離開此頁面、重新整理頁面或是關閉瀏覽器！<br>'.
@@ -106,10 +106,10 @@ class adsyncOperationForm extends FormBase
                     if ($log) {
                         $detail_log .= "正在處理 $t->dept_name $t->role_name $t->realname ($t->account)......<br>";
                     }
+                    $groups = array();
                     $user = ad_getUser($t->account);
                     if ($user) {
                         $user_dn = $user['distinguishedname'];
-                        $groups = array();
                         $resources = ad_getUserGroups($user_dn);
                         if ($log) {
                             $detail_log .= '使用者先前已加入以下群組：<ul>';

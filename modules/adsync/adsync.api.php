@@ -4,6 +4,7 @@ $ad_conn = null;
 
 function ad_test()
 {
+    global $ad_conn;
     $config = \Drupal::config('adsync.settings');
     $ad_host = $config->get('ad_server');
     $ad_conn = @ldap_connect($ad_host, 389);
@@ -38,8 +39,8 @@ function ad_test()
 function ad_admin()
 {
     global $ad_conn;
+    $config = \Drupal::config('adsync.settings');
     if (!$ad_conn) {
-        $config = \Drupal::config('adsync.settings');
         $ad_host = $config->get('ad_server');
         $ad_conn = @ldap_connect('ldaps://'.$ad_host, 636);
         @ldap_set_option($ad_conn, LDAP_OPT_PROTOCOL_VERSION, 3);
@@ -62,7 +63,7 @@ function ad_findGroup($desc)
     $ad_conn = ad_admin();
     $config = \Drupal::config('gsync.settings');
     $base_dn = $config->get('users_dn');
-    $filter = "(&(objectClass=group)(description=$department))";
+    $filter = "(&(objectClass=group)(description=$desc))";
     $result = @ldap_search($ad_conn, $base_dn, $filter);
     if ($result) {
         $infos = @ldap_get_entries($ad_conn, $result);
@@ -196,8 +197,8 @@ function ad_createUser($user, $dn)
         $userinfo['mail'] = $user->email;
         $userinfo['userPrincipalName'] = $user->email;
     }
-    if ($user->telphone) {
-        $userinfo['telephoneNumber'] = $user->telphone;
+    if ($user->telephone) {
+        $userinfo['telephoneNumber'] = $user->telephone;
     }
     $result = @ldap_add($ad_conn, $dn, $userinfo);
     if ($result) {
