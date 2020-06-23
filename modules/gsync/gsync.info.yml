@@ -1,7 +1,7 @@
 name: G Suite 帳號同步
 description: 本模組提供將臺北市校園單一身分驗證師生帳號同步到 G Suite 網域的功能。
 type: module
-package: School Information Management System
+package: D4S
 version: 1.0
 core: 8.x
 dependencies:

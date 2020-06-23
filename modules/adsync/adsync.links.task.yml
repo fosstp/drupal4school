@@ -1,5 +1,5 @@
 gsync.sync:
-  title: 'AD' 帳號同步'
+  title: 'AD 帳號同步'
   route_name: adsync.sync
   base_route: entity.user.collection
   weight: 30

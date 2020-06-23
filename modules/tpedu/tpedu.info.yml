@@ -1,7 +1,7 @@
 name: 臺北市校園單一身分驗證模組
 description: 本模組提供右列功能：使用臺北市校園單一身分驗證帳號登入、介接學校全域資料、台灣無障礙網頁標章、校務行政關聯式欄位。請先向教育局申請介接專案，完成模組設定後，才能啟用模組。
 type: module
-package: School Information Management System
+package: D4S
 version: 1.0
 core: 8.x
 dependencies:
