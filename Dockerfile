@@ -18,7 +18,7 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
     && docker-php-ext-enable ldap \
     && echo 'y' | pecl install apcu \
     && docker-php-ext-enable apcu \
-    && echo "TLS_REQCERT never\nTLS_CACERT /var/www/html/sites/default/files/adsync\n" >> /etc/ldap/ldap.conf \
+    && echo "TLS_REQCERT never\nTLS_CACERTDIR /var/www/html/sites/default/files/adsync\n" >> /etc/ldap/ldap.conf \
     && pecl install uploadprogress \
     && echo "extension = uploadprogress" > /usr/local/etc/php/conf.d/uploadprogress.ini \
     && echo "memory_limit = -1" > /usr/local/etc/php/conf.d/memory.ini \

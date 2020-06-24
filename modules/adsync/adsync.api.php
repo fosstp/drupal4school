@@ -17,7 +17,10 @@ function ad_test()
         if ($ad_bind) {
             @ldap_close($ad_conn);
             $ad_conn = @ldap_connect('ldaps://'.$ad_host, 636);
-            if (empty($ad_conn)) {
+            ldap_set_option($ad_conn, LDAP_OPT_PROTOCOL_VERSION, 3);
+            ldap_set_option($ad_conn, LDAP_OPT_REFERRALS, 0);
+            $ad_bind = @ldap_bind($ad_conn, $ad_user, $ad_pass);
+            if ($ad_bind) {
                 \Drupal::logger('adsync')->notice('無法使用 LDAPS 通訊協定連接 AD 伺服器，請在 AD 伺服器上安裝企業級憑證服務，以便提供 LDAPS 連線功能。');
 
                 return 3;
@@ -40,12 +43,10 @@ function ad_admin()
 {
     global $ad_conn;
     $config = \Drupal::config('adsync.settings');
-    if (!$ad_conn) {
-        $ad_host = $config->get('ad_server');
-        $ad_conn = @ldap_connect('ldaps://'.$ad_host, 636);
-        @ldap_set_option($ad_conn, LDAP_OPT_PROTOCOL_VERSION, 3);
-        @ldap_set_option($ad_conn, LDAP_OPT_REFERRALS, 0);
-    }
+    $ad_host = $config->get('ad_server');
+    $ad_conn = @ldap_connect('ldaps://'.$ad_host, 636);
+    @ldap_set_option($ad_conn, LDAP_OPT_PROTOCOL_VERSION, 3);
+    @ldap_set_option($ad_conn, LDAP_OPT_REFERRALS, 0);
     if ($ad_conn) {
         $ad_user = $config->get('ad_admin');
         $ad_pass = $config->get('ad_password');
@@ -104,36 +105,18 @@ function ad_getGroup($group)
     }
 }
 
-function ad_getUserGroups($dn)
-{
-    $ad_conn = ad_admin();
-    $config = \Drupal::config('gsync.settings');
-    $base_dn = $config->get('users_dn');
-    $filter = '(objectClass=group)';
-    $result = @ldap_search($ad_conn, $base_dn, $filter);
-    $groups = @ldap_get_entries($ad_conn, $result);
-    $data = array();
-    if ($groups['count'] > 0) {
-        unset($groups['count']);
-        foreach ($groups as $g) {
-            if ($g['member']['count'] > 0 && in_array($dn, $g['member'])) {
-                $data[] = $g;
-            }
-        }
-    }
-
-    return $data;
-}
-
 function ad_createGroup($group, $dn, $group_name)
 {
     $ad_conn = ad_admin();
     $groupinfo = array();
+    $groupinfo['objectClass'] = 'top';
     $groupinfo['objectClass'] = 'group';
+    $groupinfo['cn'] = $group;
     $groupinfo['sAMAccountName'] = $group;
     $groupinfo['displayName'] = $group_name;
     $groupinfo['description'] = $group_name;
-    $result = ldap_add($ad_conn, $dn, $groupinfo);
+    $groupinfo['mail'] = "$group@tc.meps.tp.edu.tw";
+    $result = @ldap_add($ad_conn, $dn, $groupinfo);
     if ($result) {
         return true;
     } else {
@@ -144,7 +127,7 @@ function ad_createGroup($group, $dn, $group_name)
 function ad_addMember($dn, $userDn)
 {
     $ad_conn = ad_admin();
-    $result = ldap_mod_add($ad_conn, $dn, array('member' => $userDn));
+    $result = @ldap_mod_add($ad_conn, $dn, array('member' => $userDn));
     if ($result) {
         return true;
     } else {
@@ -155,7 +138,7 @@ function ad_addMember($dn, $userDn)
 function ad_removeMember($dn, $userDn)
 {
     $ad_conn = ad_admin();
-    $result = ldap_mod_del($ad_conn, $dn, array('member' => $userDn));
+    $result = @ldap_mod_del($ad_conn, $dn, array('member' => $userDn));
     if ($result) {
         return true;
     } else {

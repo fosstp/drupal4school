@@ -110,12 +110,16 @@ class adsyncOperationForm extends FormBase
                     $user = ad_getUser($t->account);
                     if ($user) {
                         $user_dn = $user['distinguishedname'];
-                        $resources = ad_getUserGroups($user_dn);
+                        $groups = $user['memberOf'];
+                        foreach ($groups as $k => $g) {
+                            if (substr($g, 0, 9) != 'CN=group-') {
+                                unset($groups[$k]);
+                            }
+                        }
                         if ($log) {
                             $detail_log .= '使用者先前已加入以下群組：<ul>';
-                            foreach ($resources as $g) {
-                                $detail_log .= '<li>'.$g['displayName'].'</li>';
-                                $groups[] = $g['sAMAccountName'];
+                            foreach ($groups as $g) {
+                                $detail_log .= '<li>'.$g.'</li>';
                             }
                             $detail_log .= '</ul>';
                         }
@@ -199,7 +203,7 @@ class adsyncOperationForm extends FormBase
                                 $detail_log .= "$t->dept_name 群組建立失敗！".ad_error().'<br>';
                             }
                         }
-                        if (($k = array_search($depgroup, $groups)) !== false) {
+                        if (($k = array_search($group_dn, $groups)) !== false) {
                             if ($log) {
                                 $detail_log .= "正在將使用者： $t->role_name $t->realname 加入到群組裡......";
                             }
@@ -239,7 +243,7 @@ class adsyncOperationForm extends FormBase
                                 $detail_log .= "$t->role_name 群組建立失敗！".ad_error().'<br>';
                             }
                         }
-                        if (($k = array_search($posgroup, $groups)) !== false) {
+                        if (($k = array_search($group_dn, $groups)) !== false) {
                             if ($log) {
                                 $detail_log .= "正在將使用者： $t->role_name $t->realname 加入到群組裡......";
                             }
@@ -301,7 +305,7 @@ class adsyncOperationForm extends FormBase
                                 $detail_log .= "$grade 年級群組建立失敗！".ad_error().'<br>';
                             }
                         }
-                        if (($k = array_search($clsgroup, $groups)) !== false) {
+                        if (($k = array_search($group_dn, $groups)) !== false) {
                             if ($log) {
                                 $detail_log .= "正在將使用者： $t->role_name $t->realname 加入到群組裡......";
                             }
