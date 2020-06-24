@@ -110,7 +110,7 @@ class adsyncOperationForm extends FormBase
                     $user = ad_getUser($t->account);
                     if ($user) {
                         $user_dn = $user['distinguishedname'];
-                        $groups = $user['memberOf'];
+                        $groups = $user['memberof'];
                         foreach ($groups as $k => $g) {
                             if (substr($g, 0, 9) != 'CN=group-') {
                                 unset($groups[$k]);
@@ -127,9 +127,9 @@ class adsyncOperationForm extends FormBase
                             if ($log) {
                                 $detail_log .= '在 AD 中找到這位使用者，現在正在更新使用者資訊中......';
                             }
-                            ad_syncUser($t, $user_dn);
+                            $result = ad_syncUser($t, $user_dn);
                             if ($form_state->getValue('password_sync')) {
-                                $result = ad_changePass($user_dn, substr($t->idno, -6));
+                                ad_changePass($user_dn, substr($t->idno, -6));
                             }
                             if ($result) {
                                 if ($log) {
@@ -184,7 +184,7 @@ class adsyncOperationForm extends FormBase
                         $group = ad_findGroup($t->dept_name);
                         if ($group) {
                             $group_dn = $group['distinguishedname'];
-                            $depgroup = $group['sAMAccountName'];
+                            $depgroup = $group['samaccountname'];
                             if ($log) {
                                 $detail_log .= "$group_dn => 在 AD 中找到匹配的使用者群組！<br>";
                             }
@@ -224,7 +224,7 @@ class adsyncOperationForm extends FormBase
                         $group = ad_findGroup($t->role_name);
                         if ($group) {
                             $group_dn = $group['distinguishedname'];
-                            $posgroup = $group['sAMAccountName'];
+                            $posgroup = $group['samaccountname'];
                             if ($log) {
                                 $detail_log .= "$group_dn => 在 AD 中找到匹配的使用者群組！";
                             }

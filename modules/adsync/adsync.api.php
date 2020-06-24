@@ -69,7 +69,7 @@ function ad_error()
 function ad_findGroup($desc)
 {
     $ad_conn = ad_admin();
-    $config = \Drupal::config('gsync.settings');
+    $config = \Drupal::config('adsync.settings');
     $base_dn = $config->get('users_dn');
     $filter = "(&(objectClass=group)(description=$desc))";
     $result = @ldap_search($ad_conn, $base_dn, $filter);
@@ -88,7 +88,7 @@ function ad_findGroup($desc)
 function ad_getGroup($group)
 {
     $ad_conn = ad_admin();
-    $config = \Drupal::config('gsync.settings');
+    $config = \Drupal::config('adsync.settings');
     $base_dn = $config->get('users_dn');
     $filter = "(&(objectClass=group)(cn=$group))";
     $result = @ldap_search($ad_conn, $base_dn, $filter);
@@ -149,7 +149,7 @@ function ad_removeMember($dn, $userDn)
 function ad_getUser($account)
 {
     $ad_conn = ad_admin();
-    $config = \Drupal::config('gsync.settings');
+    $config = \Drupal::config('adsync.settings');
     $base_dn = $config->get('users_dn');
     $filter = "(sAMAccountName=$account)";
     $result = @ldap_search($ad_conn, $base_dn, $filter);
@@ -214,8 +214,8 @@ function ad_syncUser($user, $dn)
         $userinfo['mail'] = $user->email;
         $userinfo['userPrincipalName'] = $user->email;
     }
-    if ($user->telphone) {
-        $userinfo['telephoneNumber'] = $user->telphone;
+    if ($user->telephone) {
+        $userinfo['telephoneNumber'] = $user->telephone;
     }
     $result = @ldap_mod_replace($ad_conn, $dn, $userinfo);
     if ($result) {
