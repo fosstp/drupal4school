@@ -224,7 +224,9 @@ function gs_syncUser($t, $user_key, $user = null, $recover = false)
             $neworg->setType('work');
             $neworg->setDepartment($job->dept_name);
             $neworg->setTitle($job->role_name);
-            $neworg->setPrimary(true);
+            if ($job->role_id == $t->role_id) {
+                $neworg->setPrimary(true);
+            }
             $orgs[] = $neworg;
         }
     }

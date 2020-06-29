@@ -988,11 +988,11 @@ function get_jobs($uuid)
     $query = \Drupal::database()->query("select * from {tpedu_jobs} where uuid='$uuid'");
     $jobs = $query->fetchAll();
     if ($jobs) {
-        foreach ($jobs as $k => $j) {
+        foreach ($jobs as $j) {
             $unit = get_unit($j->dept_id);
             $role = get_role($j->role_id);
-            $jobs[$k]['dept_name'] = $unit->name;
-            $jobs[$k]['role_name'] = $role->name;
+            $j->dept_name = $unit->name;
+            $j->role_name = $role->name;
         }
 
         return $jobs;
