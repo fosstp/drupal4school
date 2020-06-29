@@ -109,7 +109,7 @@ class adsyncOperationForm extends FormBase
                     $groups = array();
                     $user = ad_getUser($t->account);
                     if ($user) {
-                        $user_dn = $user['distinguishedname'];
+                        $user_dn = $user['distinguishedname'][0];
                         $groups = $user['memberof'];
                         foreach ($groups as $k => $g) {
                             if (substr($g, 0, 9) != 'CN=group-') {
@@ -136,7 +136,7 @@ class adsyncOperationForm extends FormBase
                                     $detail_log .= '更新完成！<br>';
                                 }
                             } else {
-                                $detail_log .= "$t->role_name $t->realname 更新失敗！<br>";
+                                $detail_log .= "$t->role_name $t->realname 更新失敗！".ad_error().'<br>';
                             }
                         } elseif ($form_state->getValue('disable_nonuse')) {
                             if ($log) {
@@ -183,8 +183,8 @@ class adsyncOperationForm extends FormBase
                         }
                         $group = ad_findGroup($t->dept_name);
                         if ($group) {
-                            $group_dn = $group['distinguishedname'];
-                            $depgroup = $group['samaccountname'];
+                            $group_dn = $group['distinguishedname'][0];
+                            $depgroup = $group['samaccountname'][0];
                             if ($log) {
                                 $detail_log .= "$group_dn => 在 AD 中找到匹配的使用者群組！<br>";
                             }
@@ -204,6 +204,8 @@ class adsyncOperationForm extends FormBase
                             }
                         }
                         if (($k = array_search($group_dn, $groups)) !== false) {
+                            unset($groups[$k]);
+                        } else {
                             if ($log) {
                                 $detail_log .= "正在將使用者： $t->role_name $t->realname 加入到群組裡......";
                             }
@@ -215,16 +217,14 @@ class adsyncOperationForm extends FormBase
                             } else {
                                 $detail_log .= "無法將使用者 $t->role_name $t->realname 加入 $t->dept_name 群組！".ad_error().'<br>';
                             }
-                        } else {
-                            unset($groups[$k]);
                         }
                         if ($log) {
                             $detail_log .= "<p>正在處理 $t->role_name ......<br>";
                         }
                         $group = ad_findGroup($t->role_name);
                         if ($group) {
-                            $group_dn = $group['distinguishedname'];
-                            $posgroup = $group['samaccountname'];
+                            $group_dn = $group['distinguishedname'][0];
+                            $posgroup = $group['samaccountname'][0];
                             if ($log) {
                                 $detail_log .= "$group_dn => 在 AD 中找到匹配的使用者群組！";
                             }
@@ -244,6 +244,8 @@ class adsyncOperationForm extends FormBase
                             }
                         }
                         if (($k = array_search($group_dn, $groups)) !== false) {
+                            unset($groups[$k]);
+                        } else {
                             if ($log) {
                                 $detail_log .= "正在將使用者： $t->role_name $t->realname 加入到群組裡......";
                             }
@@ -255,8 +257,6 @@ class adsyncOperationForm extends FormBase
                             } else {
                                 $detail_log .= "無法將使用者 $t->role_name $t->realname 加入 $t->role_name 群組！".ad_error().'<br>';
                             }
-                        } else {
-                            unset($groups[$k]);
                         }
                     }
                     if (!empty($t->class)) {
@@ -306,6 +306,8 @@ class adsyncOperationForm extends FormBase
                             }
                         }
                         if (($k = array_search($group_dn, $groups)) !== false) {
+                            unset($groups[$k]);
+                        } else {
                             if ($log) {
                                 $detail_log .= "正在將使用者： $t->role_name $t->realname 加入到群組裡......";
                             }
@@ -317,8 +319,6 @@ class adsyncOperationForm extends FormBase
                             } else {
                                 $detail_log .= "無法將使用者 $t->role_name $t->realname 加入 $grade 年級群組！".ad_error().'<br>';
                             }
-                        } else {
-                            unset($groups[$k]);
                         }
                     }
                     foreach ($groups as $g) {

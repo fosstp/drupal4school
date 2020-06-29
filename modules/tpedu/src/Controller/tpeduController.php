@@ -43,6 +43,7 @@ class tpeduController extends ControllerBase
                         'mail' => $user->email,
                         'init' => 'tpedu',
                         'pass' => substr($user->idno, -6),
+                        'timezone' => 'Asia/Taipei',
                         'status' => 1,
                     ];
                     $account = User::create($new_user);

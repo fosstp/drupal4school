@@ -163,6 +163,7 @@ class gsyncOperationForm extends FormBase
                 $teachers = get_teachers_of_unit($dept);
                 if ($teachers) {
                     foreach ($teachers as $t) {
+                        $groups = array();
                         $user_key = $t->email;
                         if (!strpos($user_key, 'tc.meps.tp.edu.tw')) {
                             $user_key = $t->account.'@'.$config->get('google_domain');
@@ -172,7 +173,6 @@ class gsyncOperationForm extends FormBase
                         }
                         $user = gs_getUser($user_key);
                         if ($user) {
-                            $groups = array();
                             $data = gs_listUserGroups($user_key);
                             if ($data) {
                                 foreach ($data as $g) {
