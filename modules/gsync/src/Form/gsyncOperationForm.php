@@ -284,7 +284,7 @@ class gsyncOperationForm extends FormBase
                                 if ($log) {
                                     $detail_log .= "正在將使用者： $t->role_name $t->realname 加入到群組裡......";
                                 }
-                                $members = gs_addMembers($group_key, array($user_key));
+                                $members = gs_addMember($group_key, $user_key);
                                 if (!empty($members)) {
                                     if ($log) {
                                         $detail_log .= '加入成功！<br>';
@@ -334,7 +334,7 @@ class gsyncOperationForm extends FormBase
                                 if ($log) {
                                     $detail_log .= "正在將使用者： $t->role_name $t->realname 加入到群組裡......";
                                 }
-                                $members = gs_addMembers($group_key, array($user_key));
+                                $members = gs_addMember($group_key, $user_key);
                                 if (!empty($members)) {
                                     if ($log) {
                                         $detail_log .= '加入成功！<br>';
@@ -405,7 +405,7 @@ class gsyncOperationForm extends FormBase
                                 if ($log) {
                                     $detail_log .= "正在將使用者： $t->role_name $t->realname 加入到群組裡......";
                                 }
-                                $members = gs_addMembers($group_key, array($user_key));
+                                $members = gs_addMember($group_key, $user_key);
                                 if (!empty($members)) {
                                     if ($log) {
                                         $detail_log .= '加入成功！<br>';
@@ -445,7 +445,9 @@ class gsyncOperationForm extends FormBase
                         $detail_log .= "$stdgroup => 在 G Suite 中找到匹配的使用者群組！......<br>";
                     }
                     $members = gs_listMembers($group_key);
-                    gs_removeMembers($group_key, $members);
+                    foreach ($members as $u) {
+                        gs_removeMember($group_key, $u->getEmail());
+                    }
                     if ($log) {
                         $detail_log .= '已經移除群組裡的所有成員！<br>';
                     }
@@ -527,7 +529,7 @@ class gsyncOperationForm extends FormBase
                         if ($log) {
                             $detail_log .= "正在將使用者： $s->class $s->seat $s->realname 加入到 $class_name 群組裡......";
                         }
-                        $members = gs_addMembers($group_key, array($user_key));
+                        $members = gs_addMember($group_key, $user_key);
                         if (!empty($members)) {
                             if ($log) {
                                 $detail_log .= '加入成功！<br>';

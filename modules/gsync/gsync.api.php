@@ -378,42 +378,32 @@ function gs_listMembers($groupId)
     }
 }
 
-function gs_addMembers($groupId, $members)
+function gs_addMember($groupId, $member)
 {
     global $directory;
-    $users = array();
-    if (!is_array($members)) {
-        $members[] = $members;
-    }
-    foreach ($members as $m) {
-        $member = new \Google_Service_Directory_Member();
-        $member->setEmail($m);
-        $member->setRole('MEMBER');
-        try {
-            $users[] = $directory->members->insert($groupId, $member);
-        } catch (\Google_Service_Exception $e) {
-            \Drupal::logger('google')->debug("gs_addMembers($groupId,".var_export($members, true).'):'.$e->getMessage());
+    $memberObj = new \Google_Service_Directory_Member();
+    $memberObj->setEmail($member);
+    $memberObj->setRole('MEMBER');
+    $memberObj->setType('USER');
+    $memberObj->setStatus('ACTIVE');
+    try {
+        return $directory->members->insert($groupId, $memberObj);
+    } catch (\Google_Service_Exception $e) {
+        \Drupal::logger('google')->debug("gs_addMember($groupId,$member):".$e->getMessage());
 
-            return false;
-        }
+        return false;
     }
-
-    return $users;
 }
 
-function gs_removeMembers($groupId, $members)
+function gs_removeMember($groupId, $member)
 {
     global $directory;
-    $users = array();
-    if (!is_array($members)) {
-        $members[] = $members;
-    }
-    foreach ($members as $m) {
-        try {
-            $directory->members->delete($groupId, $m);
-        } catch (\Google_Service_Exception $e) {
-            \Drupal::logger('google')->debug("gs_removeMembers($groupId,".var_export($members, true).'):'.$e->getMessage());
-        }
+    try {
+        return $directory->members->delete($groupId, $member);
+    } catch (\Google_Service_Exception $e) {
+        \Drupal::logger('google')->debug("gs_removeMember($groupId,$member):".$e->getMessage());
+
+        return false;
     }
 }
 
