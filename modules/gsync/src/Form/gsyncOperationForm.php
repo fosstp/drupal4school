@@ -463,13 +463,13 @@ class gsyncOperationForm extends FormBase
                 $students = get_students_of_class($class);
                 if ($students) {
                     foreach ($students as $s) {
-                        if ($log) {
-                            $detail_log .= "正在處理 $s->class $s->seat $s->realname ($s->account)......<br>";
-                        }
                         if ($std_account == 'id') {
                             $user_key = $s->id.'@'.$config->get('google_domain');
                         } else {
                             $user_key = $s->account.'@'.$config->get('google_domain');
+                        }
+                        if ($log) {
+                            $detail_log .= "正在處理 $s->class $s->seat $s->realname ($user_key)......<br>";
                         }
                         $user = gs_getUser($user_key);
                         if ($user) {
