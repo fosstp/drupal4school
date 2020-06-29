@@ -105,7 +105,7 @@ class gsyncOperationForm extends FormBase
                         '#title' => '要同步哪些班級的學生？',
                         '#multiple' => true,
                         '#options' => $classlist,
-                        '#size' => 1,
+                        '#size' => 10,
                         '#states' => array(
                             'visible' => array(
                                 ':input[name="domain"]' => array('value' => 1),
