@@ -196,7 +196,6 @@ function gs_syncUser($t, $user)
         $names->setFamilyName($myname[0]);
         $names->setGivenName($myname[1]);
     }
-    $names->setFullName($t->realname);
     $user->setName($names);
     if (!empty($t->email) && $t->email != $user->getPrimaryEmail()) {
         $user->setRecoveryEmail($t->email);
