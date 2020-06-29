@@ -184,7 +184,7 @@ function gs_syncUser($t, $user_key, $user = null, $recover = false)
         $user = new \Google_Service_Directory_User();
         $user->setChangePasswordAtNextLogin(false);
         $user->setAgreedToTerms(true);
-        $user->setPrimaryEmail($userKey);
+        $user->setPrimaryEmail($user_key);
         $user->setHashFunction('SHA-1');
         $user->setPassword(sha1(substr($t->idno, -6)));
     } else {
@@ -204,6 +204,7 @@ function gs_syncUser($t, $user_key, $user = null, $recover = false)
         $names->setFamilyName($myname[0]);
         $names->setGivenName($myname[1]);
     }
+    $names->setFullName($t->realname);
     $user->setName($names);
     if (!empty($t->email) && $t->email != $user->getPrimaryEmail()) {
         $user->setRecoveryEmail($t->email);
