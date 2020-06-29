@@ -137,21 +137,13 @@ function gs_getUser($userKey)
     }
 }
 
-function gs_createUser($t, $userKey)
+function gs_createUser($userObj)
 {
     global $directory;
-    $user = new \Google_Service_Directory_User();
-    $user->setChangePasswordAtNextLogin(false);
-    $user->setAgreedToTerms(true);
-    $user->setPrimaryEmail($userKey);
-    $user->setHashFunction('SHA-1');
-    $user->setPassword(sha1(substr($t->idno, -6)));
     try {
-        $user = $directory->users->insert($user);
-
-        return gs_syncUser($t, $user);
+        return $directory->users->insert($userObj);
     } catch (\Google_Service_Exception $e) {
-        \Drupal::logger('google')->debug("gs_createUser:($userKey,".var_export($t, true).')'.$e->getMessage());
+        \Drupal::logger('google')->debug('gs_createUser('.var_export($userObj, true).'):'.$e->getMessage());
 
         return false;
     }
@@ -184,9 +176,25 @@ function gs_deleteUser($userKey)
     }
 }
 
-function gs_syncUser($t, $user)
+function gs_syncUser($t, $user_key, $user = null, $recover = false)
 {
     $config = \Drupal::config('gsync.settings');
+    if (is_null($user)) {
+        $create = true;
+        $user = new \Google_Service_Directory_User();
+        $user->setChangePasswordAtNextLogin(false);
+        $user->setAgreedToTerms(true);
+        $user->setPrimaryEmail($userKey);
+        $user->setHashFunction('SHA-1');
+        $user->setPassword(sha1(substr($t->idno, -6)));
+    } else {
+        $create = false;
+        $user_key = $user->getPrimaryEmail();
+        if ($recover) {
+            $user->setHashFunction('SHA-1');
+            $user->setPassword(sha1(substr($t->idno, -6)));
+        }
+    }
     $names = new \Google_Service_Directory_UserName();
     if ($t->sn && $t->gn) {
         $names->setFamilyName($t->sn);
@@ -272,8 +280,11 @@ function gs_syncUser($t, $user)
             $user->setOrgUnitPath($config->get('teacher_orgunit'));
         }
     }
-
-    return gs_updateUser($user->getPrimaryEmail(), $user);
+    if ($create) {
+        return gs_createUser($user);
+    } else {
+        return gs_updateUser($user_key, $user);
+    }
 }
 
 function gs_createUserAlias($userKey, $alias)

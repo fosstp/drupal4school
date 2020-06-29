@@ -477,12 +477,7 @@ class gsyncOperationForm extends FormBase
                                 if ($log) {
                                     $detail_log .= '在 G Suite 中找到這位使用者，現在正在更新使用者資訊中......';
                                 }
-                                $user = gs_syncUser($s, $user);
-                                if ($form_state->getValue('password_sync')) {
-                                    $user->setHashFunction('SHA-1');
-                                    $user->setPassword(sha1(substr($s->idno, -6)));
-                                    $user = gs_updateUser($user_key, $user);
-                                }
+                                $user = gs_syncUser($s, $user_key, $user, $form_state->getValue('password_sync'));
                                 if ($user) {
                                     if ($log) {
                                         $detail_log .= '更新完成！<br>';
@@ -520,7 +515,7 @@ class gsyncOperationForm extends FormBase
                             if ($log) {
                                 $detail_log .= '無法在 G Suite 中找到這個使用者，現在正在為使用者建立 Google 帳號......';
                             }
-                            $user = gs_createUser($s, $user_key);
+                            $user = gs_syncUser($s, $user_key);
                             if ($user) {
                                 if ($log) {
                                     $detail_log .= '建立完成！<br>';
