@@ -209,19 +209,28 @@ function gs_syncUser($t, $user_key, $user = null, $recover = false)
     if (!empty($t->email) && $t->email != $user->getPrimaryEmail()) {
         $user->setRecoveryEmail($t->email);
     }
-    $neworg = new \Google_Service_Directory_UserOrganization();
-    $neworg->setType('school');
-    if (!empty($_ENV['SITE_NAME'])) {
-        $neworg->setName($_ENV['SITE_NAME']);
-    }
-    $neworg->setDepartment($t->dept_name);
+    $orgs = array();
     if ($t->student) {
+        $neworg = new \Google_Service_Directory_UserOrganization();
+        $neworg->setType('school');
+        $neworg->setDepartment($t->dept_name);
         $neworg->setTitle($t->seat);
+        $neworg->setPrimary(true);
+        $orgs[] = $neworg;
     } else {
-        $neworg->setTitle($t->role_name);
+        $jobs = get_jobs($t->uuid);
+        foreach ($jobs as $job) {
+            $neworg = new \Google_Service_Directory_UserOrganization();
+            $neworg->setType('work');
+            $neworg->setDepartment($job->dept_name);
+            $neworg->setTitle($job->role_name);
+            $neworg->setPrimary(true);
+            $orgs[] = $neworg;
+        }
     }
-    $neworg->setPrimary(true);
-    $user->setOrganizations($neworg);
+    if (!empty($orgs)) {
+        $user->setOrganizations($orgs);
+    }
     if (!empty($t->mobile)) {
         $phones = $user->getPhones();
         $phone = new \Google_Service_Directory_UserPhone();
