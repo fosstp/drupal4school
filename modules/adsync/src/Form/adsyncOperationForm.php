@@ -226,7 +226,7 @@ class adsyncOperationForm extends FormBase
                             $group_dn = $group['distinguishedname'][0];
                             $posgroup = $group['samaccountname'][0];
                             if ($log) {
-                                $detail_log .= "$group_dn => 在 AD 中找到匹配的使用者群組！";
+                                $detail_log .= "$group_dn => 在 AD 中找到匹配的使用者群組！<br>";
                             }
                         } else {
                             if ($log) {
