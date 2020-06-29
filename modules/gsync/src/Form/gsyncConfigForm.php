@@ -71,6 +71,18 @@ class gsyncConfigForm extends ConfigFormBase
             '#default_value' => $config->get('student_orgunit'),
             '#description' => '如果您使用子機構來區分教師與學生帳號，請在這裡輸入學生帳號子機構的階層路徑，最高層級為 <strong>/</strong>，假如您輸入<strong>/小學部/學生帳號</strong>，意味著所有的學生帳號將會同步到第二層級機構<strong>小學部</strong>的子機構<strong>學生帳號</strong>中。',
         );
+        $form['student_account'] = array(
+            '#type' => 'select',
+            '#title' => '學生帳號的樣式',
+            '#multiple' => false,
+            '#options' => array(
+                'id' => '學號',
+                'account' => '臺北市校園單一身分驗證登入帳號',
+            ),
+            '#size' => 1,
+            '#default_value' => $config->get('student_account') ?: 'id',
+            '#description' => '如果您使用子機構來區分教師與學生帳號，請在這裡輸入學生帳號子機構的階層路徑，最高層級為 <strong>/</strong>，假如您輸入<strong>/小學部/學生帳號</strong>，意味著所有的學生帳號將會同步到第二層級機構<strong>小學部</strong>的子機構<strong>學生帳號</strong>中。',
+        );
         $form['actions'] = array(
             '#type' => 'actions',
             'submit' => array(

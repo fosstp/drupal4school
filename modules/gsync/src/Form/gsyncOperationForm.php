@@ -147,6 +147,7 @@ class gsyncOperationForm extends FormBase
     {
         $response = new AjaxResponse();
         $config = \Drupal::config('gsync.settings');
+        $std_account = $config->get('student_account');
         $detail_log = '';
         set_time_limit(0);
         $time_start = microtime(true);
@@ -465,7 +466,11 @@ class gsyncOperationForm extends FormBase
                         if ($log) {
                             $detail_log .= "正在處理 $s->class $s->seat $s->realname ($s->account)......<br>";
                         }
-                        $user_key = $s->account.'@'.$config->get('google_domain');
+                        if ($std_account == 'id') {
+                            $user_key = $s->id.'@'.$config->get('google_domain');
+                        } else {
+                            $user_key = $s->account.'@'.$config->get('google_domain');
+                        }
                         $user = gs_getUser($user_key);
                         if ($user) {
                             if (is_null($s->status) || $s->status == 'active') {

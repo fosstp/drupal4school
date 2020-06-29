@@ -3,4 +3,5 @@ google_domain_admin: ''
 google_domain: ''
 teacher_orgunit: ''
 student_orgunit: ''
+student_account: 'id'
 enabled: false

@@ -13,6 +13,9 @@ teacher_orgunit:
 student_orgunit:
   type: string
   label: '學生帳號所在的 G Suite 子機構'
+student_account:
+  type: string
+  label: '學生帳號的樣式'
 enabled:
   type: boolean
   label: 'Google API 測試完成'
