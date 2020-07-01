@@ -7,7 +7,7 @@ require 'adsync.api.php';
 function adsync_help($route_name, RouteMatchInterface $route_match)
 {
     switch ($route_name) {
-        case 'admin/config/d4s/gsync':
+        case 'help.page.adsync':
             $output = '<p>本模組提供將臺北市校園單一身分驗證教師帳號同步到 Windows AD 網域的功能。完成模組設定後，才會真正啟用模組。</p>';
 
             return $output;
