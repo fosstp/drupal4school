@@ -9,7 +9,6 @@ dependencies:
   module:
     - image
     - link
-    - user
   enforced:
     module:
       - thumblink
