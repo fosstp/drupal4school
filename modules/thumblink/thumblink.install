@@ -1,0 +1,42 @@
+<?php
+
+use Drupal\taxonomy\Entity\Vocabulary;
+use Drupal\taxonomy\Entity\Term;
+
+function thumblink_install()
+{
+    $vocabularies = Vocabulary::loadMultiple();
+    if (!isset($vocabularies['websites'])) {
+        $vocabulary = Vocabulary::create(array(
+            'vid' => 'websites',
+            'description' => '用於縮圖連結的網站分類',
+            'name' => '網站分類',
+        ));
+        $vocabulary->save();
+    }
+
+    $terms = \Drupal::service('entity_type.manager')->getStorage('taxonomy_term');
+    $tree = $terms->loadTree('websites', $parent = 0, $max_depth = null, $load_entities = false);
+    if (count($tree) == 0) {
+        Term::create(array(
+            'parent' => [0],
+            'name' => '教育行政',
+            'vid' => 'websites',
+        ))->save();
+        Term::create(array(
+            'parent' => [0],
+            'name' => '教學資源',
+            'vid' => 'websites',
+        ))->save();
+        Term::create(array(
+            'parent' => [0],
+            'name' => '學生園地',
+            'vid' => 'websites',
+        ))->save();
+        Term::create(array(
+            'parent' => [0],
+            'name' => '其它網站',
+            'vid' => 'websites',
+        ))->save();
+    }
+}

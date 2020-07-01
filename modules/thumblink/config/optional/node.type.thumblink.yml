@@ -1,0 +1,13 @@
+langcode: zh-hant
+status: true
+dependencies:
+  enforced:
+    module:
+      - thumblink
+name: '縮圖連結'
+type: thumblink
+description: '連結到相關網站，輸入站台名稱、超連結並上傳網站縮圖。'
+help: ''
+new_revision: false
+preview_mode: 1
+display_submitted: true

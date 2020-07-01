@@ -1,12 +1,9 @@
-uuid: 097e5439-f0c5-450f-8161-8af3beac7617
 langcode: zh-hant
 status: true
 dependencies:
   module:
     - tpedu
     - user
-_core:
-  default_config_hash: wTJRNzsLVTenCALONNlVfgm_pBOlqucSPuVFLOD56ck
 id: user_admin_people
 label: 使用者
 module: user

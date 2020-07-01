@@ -1,5 +1,13 @@
+d4s.admin_index:
+  path: '/admin/config/d4s'
+  defaults:
+    _controller: '\Drupal\system\Controller\SystemController::systemAdminMenuBlockPage'
+    _title: 'D4S'
+  requirements:
+    _permission: 'access administration pages'
+
 tpedu.config:
-  path: /admin/config/people/tpedu
+  path: /admin/config/d4s/tpedu
   defaults:
     _form: \Drupal\tpedu\Form\tpeduConfigForm
     _title: '臺北市校園單一身分驗證模組設定'
@@ -7,7 +15,7 @@ tpedu.config:
     _permission: 'administer site configuration'
 
 tpedu.school_select:
-  path: /admin/config/people/tpedu/school
+  path: /admin/config/d4s/tpedu/school
   defaults:
     _form: \Drupal\tpedu\Form\tpeduSchoolSelectForm
     _title: '臺北市校園單一身分驗證模組設定'
@@ -15,7 +23,7 @@ tpedu.school_select:
     _permission: 'administer site configuration'
     
 tpedu.purge:
-  path: /admin/config/people/tpedu/purge
+  path: /admin/config/d4s/tpedu/purge
   defaults:
     _controller: \Drupal\tpedu\Controller\tpeduController::purge
     _title: '清除臺北市校園資料庫快取'

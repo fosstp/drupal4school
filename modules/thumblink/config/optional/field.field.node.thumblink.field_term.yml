@@ -1,0 +1,31 @@
+langcode: zh-hant
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_term
+    - node.type.thumblink
+    - taxonomy.vocabulary.websites
+  enforced:
+    module:
+      - thumblink
+id: node.thumblink.field_term
+field_name: field_term
+entity_type: node
+bundle: thumblink
+label: 網站分類
+description: 這個網站屬於哪一種站台？
+required: true
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      websites: websites
+    sort:
+      field: name
+      direction: asc
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

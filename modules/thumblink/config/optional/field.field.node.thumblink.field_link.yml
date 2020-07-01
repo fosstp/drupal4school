@@ -1,0 +1,25 @@
+langcode: zh-hant
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_link
+    - node.type.thumblink
+  module:
+    - link
+  enforced:
+    module:
+      - thumblink
+id: node.thumblink.field_link
+field_name: field_link
+entity_type: node
+bundle: thumblink
+label: 網站超連結
+description: ''
+required: true
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  link_type: 16
+  title: 0
+field_type: link

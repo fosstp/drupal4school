@@ -1,5 +1,5 @@
 gsync.config:
-  path: /admin/config/people/gsync
+  path: /admin/config/d4s/gsync
   defaults:
     _form: \Drupal\gsync\Form\gsyncConfigForm
     _title: 'G Suite 帳號同步模組設定'

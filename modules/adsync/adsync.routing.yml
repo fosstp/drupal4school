@@ -1,5 +1,5 @@
 adsync.config:
-  path: /admin/config/people/adsync
+  path: /admin/config/d4s/adsync
   defaults:
     _form: \Drupal\adsync\Form\adsyncConfigForm
     _title: 'AD 帳號同步模組設定'
