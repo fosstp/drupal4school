@@ -5,8 +5,8 @@ use Drupal\taxonomy\Entity\Term;
 
 function thumblink_install()
 {
-    $vocabularies = Vocabulary::loadMultiple();
-    if (!isset($vocabularies['websites'])) {
+    $vocabulary = Vocabulary::load('websites');
+    if (!$vocabulary) {
         $vocabulary = Vocabulary::create(array(
             'vid' => 'websites',
             'description' => '用於縮圖連結的網站分類',
@@ -38,5 +38,13 @@ function thumblink_install()
             'name' => '其它網站',
             'vid' => 'websites',
         ))->save();
+    }
+}
+
+function thumblink_uninstall()
+{
+    $vocabulary = Vocabulary::load('websites');
+    if ($vocabulary) {
+        $vocabulary->delete();
     }
 }
