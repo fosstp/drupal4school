@@ -1,7 +1,7 @@
 d4s.admin_index:
-  path: '/admin/config/d4s'
+  path: /admin/config/d4s
   defaults:
-    _controller: '\Drupal\system\Controller\SystemController::systemAdminMenuBlockPage'
+    _controller: \Drupal\system\Controller\SystemController::systemAdminMenuBlockPage
     _title: 'D4S'
   requirements:
     _permission: 'access administration pages'

@@ -1,14 +1,22 @@
+d4s.admin_index:
+  title: 'D4S'
+  route_name: d4s.admin_index
+  parent: system.admin_config
+  description: '設定 D4S 模組'
+  position: left
+  weight: -20
+
 tpedu.admin:
   title: '臺北市校園單一身分驗證模組設定'
   description: '請先向教育局申請介接專案，然後完成模組設定。'
   route_name: tpedu.config
-  weight: 20
+  weight: 0
   parent: d4s.admin_index
 
 tpedu.cache:
   title: '清除臺北市校園資料庫快取'
   description: '快取資料如果已經過期，可以從這裡清除快取，以便重新取得正確資料。'
   route_name: tpedu.purge
-  weight: 30
+  weight: 10
   parent: d4s.admin_index
   

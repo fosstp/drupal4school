@@ -13,7 +13,7 @@ id: node.thumblink.field_thumbnail
 field_name: field_thumbnail
 entity_type: node
 bundle: thumblink
-label: 網站縮圖
+label: '網站縮圖'
 description: ''
 required: true
 translatable: false

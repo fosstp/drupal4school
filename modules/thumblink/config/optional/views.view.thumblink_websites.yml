@@ -13,7 +13,7 @@ dependencies:
     - responsive_image
     - user
 id: thumblink_websites
-label: 相關網站
+label: '相關網站'
 module: views
 description: ''
 tag: ''
@@ -44,13 +44,13 @@ display:
       exposed_form:
         type: basic
         options:
-          submit_button: 套用
+          submit_button: '套用'
           reset_button: false
-          reset_button_label: 重設
-          exposed_sorts_label: 排序依據
+          reset_button_label: '重設'
+          exposed_sorts_label: '排序依據'
           expose_sort_order: true
-          sort_asc_label: 遞增
-          sort_desc_label: 遞減
+          sort_asc_label: '遞增'
+          sort_desc_label: '遞減'
       pager:
         type: some
         options:

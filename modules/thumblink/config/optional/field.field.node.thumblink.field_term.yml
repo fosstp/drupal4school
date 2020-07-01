@@ -12,8 +12,8 @@ id: node.thumblink.field_term
 field_name: field_term
 entity_type: node
 bundle: thumblink
-label: 網站分類
-description: 這個網站屬於哪一種站台？
+label: '網站分類'
+description: '這個網站屬於哪一種站台？'
 required: true
 translatable: false
 default_value: {  }

@@ -5,11 +5,8 @@ dependencies:
     - field.field.node.thumblink.field_link
     - field.field.node.thumblink.field_term
     - field.field.node.thumblink.field_thumbnail
-    - image.style.thumbnail
     - node.type.thumblink
   module:
-    - image
-    - link
     - path
   enforced:
     module:
@@ -25,14 +22,6 @@ content:
     region: content
     settings: {  }
     third_party_settings: {  }
-  field_link:
-    weight: 123
-    settings:
-      placeholder_url: ''
-      placeholder_title: ''
-    third_party_settings: {  }
-    type: link_default
-    region: content
   field_term:
     weight: 121
     settings:
@@ -42,6 +31,14 @@ content:
       placeholder: ''
     third_party_settings: {  }
     type: entity_reference_autocomplete
+    region: content
+  field_link:
+    weight: 123
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings: {  }
+    type: link_default
     region: content
   field_thumbnail:
     weight: 124
