@@ -14,7 +14,7 @@ dependencies:
 id: thumblink_websites
 label: '相關網站'
 module: views
-description: ''
+description: '顯示所有相關網站的縮圖連結'
 tag: ''
 base_table: node_field_data
 base_field: nid
@@ -376,7 +376,7 @@ display:
           entity_type: node
           entity_field: created
           plugin_id: date
-      title: 相關網站
+      title: '相關網站'
       header: {  }
       footer: {  }
       empty: {  }
@@ -385,7 +385,7 @@ display:
       display_extenders: {  }
       use_more: false
       use_more_always: false
-      use_more_text: 更多
+      use_more_text:  '更多'
       link_url: /thumblink/more
       link_display: '0'
       use_ajax: true
@@ -404,7 +404,7 @@ display:
   block_1:
     display_plugin: block
     id: block_1
-    display_title: Block
+    display_title: '區塊'
     position: 1
     display_options:
       display_extenders: {  }
