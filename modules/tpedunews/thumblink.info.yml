@@ -1,0 +1,9 @@
+name: 縮圖連結
+description: 本模組將提供一個新的內容類型和一個區塊，用於處理縮圖連結。
+type: module
+package: D4S
+version: 1.0
+core: 8.x
+dependencies:
+  - image
+  - taxonomy

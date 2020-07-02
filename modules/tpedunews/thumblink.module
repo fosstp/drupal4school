@@ -1,0 +1,13 @@
+<?php
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+function thumblink_help($route_name, RouteMatchInterface $route_match)
+{
+    switch ($route_name) {
+        case 'admin/config/d4s/thumblink':
+            $output = '<p>本模組將提供一個新的內容類型和一個區塊，用於處理縮圖連結。</p>';
+
+            return $output;
+    }
+}
