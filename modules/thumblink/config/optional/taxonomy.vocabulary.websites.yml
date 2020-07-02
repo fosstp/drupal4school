@@ -1,0 +1,7 @@
+langcode: zh-hant
+status: true
+dependencies: {  }
+name: '網站分類'
+vid: websites
+description: '用於縮圖連結的網站分類'
+weight: 0
