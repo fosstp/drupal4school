@@ -411,7 +411,7 @@ class gsyncOperationForm extends FormBase
                             }
                         }
                         foreach ($groups as $g) {
-                            gs_removeMembers($g, array($user_key));
+                            gs_removeMember($g, $user_key);
                         }
                     }
                 }
