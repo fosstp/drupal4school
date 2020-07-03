@@ -2,11 +2,11 @@
 
 use Drupal\Core\Routing\RouteMatchInterface;
 
-function thumblink_help($route_name, RouteMatchInterface $route_match)
+function tpedunews_help($route_name, RouteMatchInterface $route_match)
 {
     switch ($route_name) {
-        case 'admin/config/d4s/thumblink':
-            $output = '<p>本模組將提供一個新的內容類型和一個區塊，用於處理縮圖連結。</p>';
+        case 'help.page.tpedunews':
+            $output = '<p>本模組將為您新增教育局最新消息新聞聯播，並在主導覽選單為您新增「教育局最新消息」項目。</p>';
 
             return $output;
     }
