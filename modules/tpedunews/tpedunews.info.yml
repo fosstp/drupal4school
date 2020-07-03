@@ -1,0 +1,8 @@
+name: 教育局最新消息
+description: 本模組將為您新增教育局最新消息新聞聯播，用於處理縮圖連結。
+type: module
+package: D4S
+version: 1.0
+core: 8.x
+dependencies:
+  - aggregator

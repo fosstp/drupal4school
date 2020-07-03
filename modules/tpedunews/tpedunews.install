@@ -1,0 +1,92 @@
+<?php
+
+use Drupal\aggregator\Entity\Feed;
+
+function tpedunews_install()
+{
+    $aggregator_settings = \Drupal::configFactory()->getEditable('aggregator.settings');
+    $aggregator_settings->set('items.teaser_length', 600);
+    $aggregator_settings->set('items.expire', 9676800);
+    $aggregator_settings->set('source.list_max', 10);
+    $aggregator_settings->save();
+
+    $feeds = \Drupal::service('entity_type.manager')->getStorage('aggregator_feed')->loadMultiple();
+    $notfound = array();
+    for ($i = 0; $i < 6; ++$i) {
+        $notfound[$i] = true;
+    }
+    foreach ($feeds as $feed) {
+        switch ($feed->label()) {
+            case '教育局一般公告':
+                $notfound[0] = false;
+                break;
+            case '教育局幼兒園公告':
+                $notfound[1] = false;
+                break;
+            case '教育局國小公告':
+                $notfound[2] = false;
+                break;
+            case '教育局國中公告':
+                $notfound[3] = false;
+                break;
+            case '教育局高中職公告':
+                $notfound[4] = false;
+                break;
+            case '教育局終身教育公告':
+                $notfound[5] = false;
+                break;
+            }
+    }
+    if ($notfound[0]) {
+        Feed::create(array(
+            'title' => '教育局一般公告',
+            'url' => 'https://www.doe.gov.taipei/OpenData.aspx?SN=747C7FE30FB85D12',
+            'refresh' => 86400,
+        ))->save()->refreshItems();
+    }
+    if ($notfound[1]) {
+        Feed::create(array(
+            'title' => '教育局幼兒園公告',
+            'url' => 'https://www.doe.gov.taipei/OpenData.aspx?SN=E20A501306E87CC8',
+            'refresh' => 86400,
+        ))->save()->refreshItems();
+    }
+    if ($notfound[2]) {
+        Feed::create(array(
+            'title' => '教育局國小公告',
+            'url' => 'https://www.doe.gov.taipei/OpenData.aspx?SN=E02A813B076CA0B2',
+            'refresh' => 86400,
+        ))->save()->refreshItems();
+    }
+    if ($notfound[3]) {
+        Feed::create(array(
+            'title' => '教育局國中公告',
+            'url' => 'https://www.doe.gov.taipei/OpenData.aspx?SN=8A3B3293C269E096',
+            'refresh' => 86400,
+        ))->save()->refreshItems();
+    }
+    if ($notfound[4]) {
+        Feed::create(array(
+            'title' => '教育局高中職公告',
+            'url' => 'https://www.doe.gov.taipei/OpenData.aspx?SN=B9AA8B48AE218D8F',
+            'refresh' => 86400,
+        ))->save()->refreshItems();
+    }
+    if ($notfound[5]) {
+        Feed::create(array(
+            'title' => '教育局終身教育公告',
+            'url' => 'https://www.doe.gov.taipei/OpenData.aspx?SN=91C62694654C9EE3',
+            'refresh' => 86400,
+        ))->save()->refreshItems();
+    }
+}
+
+function tpedunews_uninstall()
+{
+    $feeds = \Drupal::service('entity_type.manager')->getStorage('aggregator_feed')->loadMultiple();
+    foreach ($feeds as $feed) {
+        if (mb_substr($feed->label(), 0, 3) == '教育局') {
+            $feed->delete();
+        }
+    }
+}
