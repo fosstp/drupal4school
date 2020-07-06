@@ -74,50 +74,48 @@ class TpedunewsBlock extends BlockBase implements ContainerFactoryPluginInterfac
 
     public function build()
     {
+        $build['feed'] = array(
+            '#type' => 'horizontal_tabs',
+            '#tree' => true,
+            '#prefix' => '<div id="unique-wrapper">',
+            '#suffix' => '</div>',
+        );
         $feeds = $this->feedStorage->loadMultiple();
-        $options = [];
+        $news = [];
         foreach ($feeds as $feed) {
             if (mb_substr($feed->label(), 0, 3) == '教育局') {
-                $options[$feed->id()] = $feed->label();
+                $news[] = $feed;
             }
         }
-        $build['feed'] = array(
-            '#type' => 'select',
-            '#title' => '消息分類',
-            '#multiple' => false,
-            '#options' => $options,
-            '#size' => 1,
-        );
-        if ($options) {
-            foreach (array_keys($options) as $fid) {
-                $result = $this->itemStorage->getQuery()
-                    ->condition('fid', $fid)
-                    ->range(0, $this->configuration['block_count'])
-                    ->sort('timestamp', 'DESC')
-                    ->sort('iid', 'DESC')
-                    ->execute();
-                if ($result) {
-                    $items = $this->itemStorage->loadMultiple($result);
-                    $build['feed'.$fid] = array(
-                        '#type' => 'markup',
-                        '#theme' => 'tpedunews_block',
-                        '#items' => $items,
-                        '#states' => array(
-                            'visible' => array(
-                                ':input[name="feed"]' => array('value' => $fid),
-                            ),
-                        ),
-                    );
-                }
-                $build['more_link'] = [
+        foreach ($news as $feed) {
+            $options[$feed->id()] = $feed->label();
+            $form['feed']['stuff'][$feed->id()] = array(
+                '#type' => 'details',
+                '#title' => $feed->label(),
+                '#collapsible' => true,
+                '#collapsed' => true,
+            );
+            $result = $this->itemStorage->getQuery()
+                ->condition('fid', $feed->id())
+                ->range(0, $this->configuration['block_count'])
+                ->sort('timestamp', 'DESC')
+                ->sort('iid', 'DESC')
+                ->execute();
+            if ($result) {
+                $items = $this->itemStorage->loadMultiple($result);
+                $build['feed']['stuff'][$feed->id()]['form'] = array(
+                    '#theme' => 'tpedunews_block',
+                    '#items' => $items,
+                );
+                $build['more_link'] = array(
                     '#type' => 'more_link',
                     '#url' => $feed->toUrl(),
                     '#attributes' => ['title' => $this->t("View this feed's recent news.")],
-                ];
-
-                return $build;
+                );
             }
         }
+
+        return $build;
     }
 
     public function getCacheTags()
