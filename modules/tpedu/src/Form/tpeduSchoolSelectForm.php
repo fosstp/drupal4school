@@ -5,7 +5,7 @@ namespace Drupal\tpedu\Form;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 
-class tpeduSchoolSelectForm extends ConfigFormBase
+class TpeduSchoolSelectForm extends ConfigFormBase
 {
     public function getFormId()
     {

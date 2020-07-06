@@ -5,7 +5,7 @@ namespace Drupal\adsync\Form;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 
-class adsyncConfigForm extends ConfigFormBase
+class AdsyncConfigForm extends ConfigFormBase
 {
     public function getFormId()
     {

@@ -1,0 +1,28 @@
+
+<table class="table table-hover">
+	<thead>
+		<tr>
+			<th>主旨</th>
+			<th>發布日期</th>
+		</tr>
+	</thead>
+	<tbody>
+		@if ($items)
+			@foreach ($items as $item)
+				<tr>
+					<td>
+						<span>{{ $item->lebel() }}</span>
+					</td>
+					<td>
+						<span>{{ $item->getPostedTime() }}</span>
+					</td>
+				</tr>
+        <tr>
+          <td colspan=2>
+            <p>{{ $items->getDescription() }}</p>
+          </td>
+        </tr>
+		  @endforeach
+    @endif
+	</tbody>
+</table>

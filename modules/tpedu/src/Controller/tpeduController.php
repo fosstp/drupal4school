@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
-class tpeduController extends ControllerBase
+class TpeduController extends ControllerBase
 {
     public function login(Request $request)
     {

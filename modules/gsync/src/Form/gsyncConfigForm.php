@@ -5,7 +5,7 @@ namespace Drupal\gsync\Form;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 
-class gsyncConfigForm extends ConfigFormBase
+class GsyncConfigForm extends ConfigFormBase
 {
     public function getFormId()
     {

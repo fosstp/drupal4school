@@ -7,7 +7,7 @@ use Drupal\Core\Form\FormBase;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\ReplaceCommand;
 
-class adsyncOperationForm extends FormBase
+class AdsyncOperationForm extends FormBase
 {
     public function getFormId()
     {

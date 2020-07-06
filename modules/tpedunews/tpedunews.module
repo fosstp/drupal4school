@@ -11,3 +11,14 @@ function tpedunews_help($route_name, RouteMatchInterface $route_match)
             return $output;
     }
 }
+
+function tpedunews_theme()
+{
+    return [
+        'tpedunews_block' => [
+            'variables' => [
+                'items' => array(),
+            ],
+        ],
+    ];
+}
