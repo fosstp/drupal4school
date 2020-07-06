@@ -13,11 +13,9 @@ use Drupal\Core\Session\AccountInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Provides an 'Aggregator feed' block with the latest items from the feed.
- *
  * @Block(
- *   id = "aggregator_feed_block",
- *   admin_label = @Translation("Aggregator feed"),
+ *   id = "tpedunews_block",
+ *   admin_label = "教育局最新消息",
  *   category = @Translation("Lists (Views)")
  * )
  */
