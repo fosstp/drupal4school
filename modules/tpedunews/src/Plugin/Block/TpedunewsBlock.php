@@ -99,6 +99,7 @@ class TpedunewsBlock extends BlockBase implements ContainerFactoryPluginInterfac
                 if ($result) {
                     $items = $this->itemStorage->loadMultiple($result);
                     $build['feed'.$fid] = array(
+                        '#type' => 'markup',
                         '#theme' => 'tpedunews_block',
                         '#items' => $items,
                         '#states' => array(
@@ -122,8 +123,12 @@ class TpedunewsBlock extends BlockBase implements ContainerFactoryPluginInterfac
     public function getCacheTags()
     {
         $cache_tags = parent::getCacheTags();
-        foreach ($this->configuration['feeds'] as $fid) {
-            if ($feed = $this->feedStorage->load($fid)) {
+        $feeds = $this->feedStorage->loadMultiple();
+        $options = [];
+        foreach ($feeds as $feed) {
+        }
+        foreach ($feeds as $feed) {
+            if (mb_substr($feed->label(), 0, 3) == '教育局') {
                 $cache_tags = Cache::mergeTags($cache_tags, $feed->getCacheTags());
             }
         }

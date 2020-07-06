@@ -7,19 +7,19 @@
 		</tr>
 	</thead>
 	<tbody>
-		@if ($items)
-			@foreach ($items as $item)
+		@if (items)
+			@foreach (items as item)
 				<tr>
 					<td>
-						<span>{{ $item->lebel() }}</span>
+						<span>{{ item.lebel() }}</span>
 					</td>
 					<td>
-						<span>{{ $item->getPostedTime() }}</span>
+						<span>{{ item.getPostedTime() }}</span>
 					</td>
 				</tr>
         <tr>
           <td colspan=2>
-            <p>{{ $items->getDescription() }}</p>
+            <p>{{ item.getDescription() }}</p>
           </td>
         </tr>
 		  @endforeach
