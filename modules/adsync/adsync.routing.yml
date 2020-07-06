@@ -1,7 +1,7 @@
 adsync.config:
   path: /admin/config/d4s/adsync
   defaults:
-    _form: \Drupal\adsync\Form\adsyncConfigForm
+    _form: \Drupal\adsync\Form\AdsyncConfigForm
     _title: 'AD 帳號同步模組設定'
   requirements:
     _permission: 'administer site configuration'
@@ -9,7 +9,7 @@ adsync.config:
 adsync.sync:
   path: /admin/people/adsync
   defaults:
-    _form: \Drupal\adsync\Form\adsyncOperationForm
+    _form: \Drupal\adsync\Form\AdsyncOperationForm
     _title: 'AD 帳號同步'
   requirements:
     _permission: 'administer users'
