@@ -1,0 +1,15 @@
+{#
+/**
+ * @file
+ * Default theme implementation for horizontal tabs.
+ *
+ * Available variables
+ * - attributes: A list of HTML attributes for the wrapper element.
+ * - children: The rendered tabs.
+ *
+ * @see template_preprocess_horizontal_tabs()
+ *
+ * @ingroup themeable
+ */
+#}
+<div{{ attributes.setAttribute('data-horizontal-tabs-panes', TRUE) }}>{{ children }}</div>

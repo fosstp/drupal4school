@@ -1,3 +1,4 @@
+<div id="items">
 <table>
 	{% if (items) %}
 		{% for item in items %}
@@ -17,3 +18,7 @@
 		{% endfor %}
     {% endif %}
 </table>
+{% if (more) %}
+	<a href="{{ more }}">更多...</a>
+{% endif %}
+</div>

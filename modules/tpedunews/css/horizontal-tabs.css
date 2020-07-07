@@ -1,0 +1,81 @@
+/**
+ * @file
+ * Horizontal Tabs.
+ */
+
+.horizontal-tabs {
+  margin: 0 0 1em 0; /* LTR */
+  padding: 0;
+  border: 1px solid #ccc;
+}
+[dir="rtl"] .horizontal-tabs {
+  margin: 0 0 1em 0;
+}
+.horizontal-tabs__menu {
+  display: inline-block;
+  margin: 0;
+  border: 0;
+  padding: 0px;
+  list-style: none;
+  background-color: #dedede;
+  border-right: 1px solid #dedede; /* LTR */
+  width: 100%;
+  height: auto;
+  clear: both;
+}
+[dir="rtl"] .horizontal-tabs__menu {
+  border-right: 0;
+  border-left: 1px solid #dedede;
+}
+.horizontal-tabs__pane {
+  padding: 0 1em;
+  border: 0;
+}
+.horizontal-tabs__pane > summary {
+  display: none;
+}
+
+/* Layout of each tab. */
+.horizontal-tabs__menu-item {
+  background: #eee;
+  border-right: 1px solid #ccc; /* LTR */
+  padding: 1px;
+  padding-top: 0;
+  margin: 0;
+  min-width: 5em; /* IE7 */
+  float: left; /* LTR */
+}
+[dir="rtl"] .horizontal-tabs__menu-item {
+  border-right: 0;
+  border-left: 1px solid #ccc;
+  float: right;
+}
+.horizontal-tabs__menu-item a {
+  display: block;
+  padding: 0.5em 0.6em;
+  text-decoration: none;
+}
+.horizontal-tabs__menu-item a:focus .horizontal-tabs__menu-item-title,
+.horizontal-tabs__menu-item a:active .horizontal-tabs__menu-item-title,
+.horizontal-tabs__menu-item a:hover .horizontal-tabs__menu-item-title {
+  text-decoration: underline;
+}
+.horizontal-tabs__menu-item a:hover {
+  outline: 1px dotted;
+}
+.horizontal-tabs__menu-item.is-selected {
+  border-right-width: 0; /* LTR */
+  background-color: #fff;
+}
+[dir="rtl"] .horizontal-tabs__menu-item.is-selected {
+  border-left-width: 0;
+  border-right-width: 1px;
+}
+.horizontal-tabs__menu-item.is-selected .horizontal-tabs__menu-item-title {
+  color: #000;
+}
+.horizontal-tabs__menu-item-summary {
+  display: block;
+  margin-bottom: 0;
+  line-height: normal;
+}

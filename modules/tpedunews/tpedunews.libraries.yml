@@ -1,0 +1,15 @@
+horizontal-tabs:
+  version: 1.0
+  js:
+    # Load before core/drupal.collapse.
+    js/horizontal-tabs.js: { weight: -1 }
+  css:
+    component:
+      css/horizontal-tabs.css: {}
+  dependencies:
+    - core/jquery
+    - core/jquery.once
+    - core/drupal
+    - core/drupalSettings
+    - core/drupal.form
+    - core/matchmedia

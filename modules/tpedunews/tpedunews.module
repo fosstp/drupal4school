@@ -18,7 +18,17 @@ function tpedunews_theme()
         'tpedunews_block' => [
             'variables' => [
                 'items' => array(),
+                'more' => '',
             ],
         ],
+        'horizontal_tabs' => [
+            'render element' => 'element',
+        ],
     ];
+}
+
+function template_preprocess_horizontal_tabs(&$variables)
+{
+    $element = $variables['element'];
+    $variables['children'] = (!empty($element['#children'])) ? $element['#children'] : '';
 }
