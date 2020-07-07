@@ -74,12 +74,6 @@ class TpedunewsBlock extends BlockBase implements ContainerFactoryPluginInterfac
 
     public function build()
     {
-        $build['feed'] = array(
-            '#type' => 'horizontal_tabs',
-            '#tree' => true,
-            '#prefix' => '<div id="unique-wrapper">',
-            '#suffix' => '</div>',
-        );
         $feeds = $this->feedStorage->loadMultiple();
         $news = [];
         foreach ($feeds as $feed) {
@@ -87,13 +81,15 @@ class TpedunewsBlock extends BlockBase implements ContainerFactoryPluginInterfac
                 $news[] = $feed;
             }
         }
+        $build['feed'] = array(
+            '#type' => 'vertical_tabs',
+            '#default_tab' => 'edit-'.$news[0]->label(),
+        );
         foreach ($news as $feed) {
-            $options[$feed->id()] = $feed->label();
-            $form['feed']['stuff'][$feed->id()] = array(
+            $form[$feed->label()] = array(
                 '#type' => 'details',
                 '#title' => $feed->label(),
-                '#collapsible' => true,
-                '#collapsed' => true,
+                '#group' => 'feed',
             );
             $result = $this->itemStorage->getQuery()
                 ->condition('fid', $feed->id())
@@ -103,11 +99,11 @@ class TpedunewsBlock extends BlockBase implements ContainerFactoryPluginInterfac
                 ->execute();
             if ($result) {
                 $items = $this->itemStorage->loadMultiple($result);
-                $build['feed']['stuff'][$feed->id()]['form'] = array(
+                $build[$feed->label()]['form'] = array(
                     '#theme' => 'tpedunews_block',
                     '#items' => $items,
                 );
-                $build['more_link'] = array(
+                $build[$feed->label()]['more_link'] = array(
                     '#type' => 'more_link',
                     '#url' => $feed->toUrl(),
                     '#attributes' => ['title' => $this->t("View this feed's recent news.")],
