@@ -6,7 +6,7 @@ function tpedunews_help($route_name, RouteMatchInterface $route_match)
 {
     switch ($route_name) {
         case 'help.page.tpedunews':
-            $output = '<p>本模組將為您新增教育局最新消息新聞聯播，並在主導覽選單為您新增「教育局最新消息」項目。</p>';
+            $output = '<p>本模組將為您新增教育局最新消息新聞聯播，並提供「教育局最新消息」區塊，您也可以使用 aggregator 模組提供的「FEED聯播」區塊。</p>';
 
             return $output;
     }

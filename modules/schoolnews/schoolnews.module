@@ -1,0 +1,13 @@
+<?php
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+function schoolnews_help($route_name, RouteMatchInterface $route_match)
+{
+    switch ($route_name) {
+        case 'help.page.schoolnews':
+            $output = '<p>本模組將為您新增「最新消息」內容類型，並提供「教育局最新消息」頁面。</p>';
+
+            return $output;
+    }
+}

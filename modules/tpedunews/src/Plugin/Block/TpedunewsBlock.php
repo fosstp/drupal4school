@@ -11,6 +11,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Session\AccountInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Core\Ajax\AjaxResponse;
 
 /**
  * @Block(
@@ -75,52 +76,54 @@ class TpedunewsBlock extends BlockBase implements ContainerFactoryPluginInterfac
     public function build()
     {
         $feeds = $this->feedStorage->loadMultiple();
-        $news = [];
+        $options = [];
         foreach ($feeds as $feed) {
             if (mb_substr($feed->label(), 0, 3) == '教育局') {
-                $news[] = $feed;
+                $options[$feed->id()] = $feed->label();
+                if (!$default) {
+                    $default = $feed;
+                }
             }
         }
         $build['feed'] = array(
-            '#type' => 'vertical_tabs',
-            '#default_tab' => 'edit-'.$news[0]->label(),
+            '#type' => 'select',
+            '#title' => '消息分類',
+            '#multiple' => false,
+            '#options' => $options,
+            '#size' => 1,
+            '#ajax' => array(
+                'callback' => [$this, 'reload_feed_items'],
+                'event' => 'change',
+            ),
         );
-        foreach ($news as $feed) {
-            $form[$feed->label()] = array(
-                '#type' => 'details',
-                '#title' => $feed->label(),
-                '#group' => 'feed',
-            );
+        if ($default) {
             $result = $this->itemStorage->getQuery()
-                ->condition('fid', $feed->id())
-                ->range(0, $this->configuration['block_count'])
-                ->sort('timestamp', 'DESC')
-                ->sort('iid', 'DESC')
-                ->execute();
+                    ->condition('fid', $default->id())
+                    ->range(0, $this->configuration['block_count'])
+                    ->sort('timestamp', 'DESC')
+                    ->sort('iid', 'DESC')
+                    ->execute();
             if ($result) {
                 $items = $this->itemStorage->loadMultiple($result);
-                $build[$feed->label()]['form'] = array(
+                $build['items'] = array(
                     '#theme' => 'tpedunews_block',
                     '#items' => $items,
                 );
-                $build[$feed->label()]['more_link'] = array(
-                    '#type' => 'more_link',
-                    '#url' => $feed->toUrl(),
-                    '#attributes' => ['title' => $this->t("View this feed's recent news.")],
-                );
             }
-        }
+            $build['items']['more_link'] = [
+                '#type' => 'more_link',
+                '#url' => $default->toUrl(),
+                '#attributes' => ['title' => $this->t("View this feed's recent news.")],
+            ];
 
-        return $build;
+            return $build;
+        }
     }
 
     public function getCacheTags()
     {
         $cache_tags = parent::getCacheTags();
         $feeds = $this->feedStorage->loadMultiple();
-        $options = [];
-        foreach ($feeds as $feed) {
-        }
         foreach ($feeds as $feed) {
             if (mb_substr($feed->label(), 0, 3) == '教育局') {
                 $cache_tags = Cache::mergeTags($cache_tags, $feed->getCacheTags());
@@ -128,5 +131,34 @@ class TpedunewsBlock extends BlockBase implements ContainerFactoryPluginInterfac
         }
 
         return $cache_tags;
+    }
+
+    public function reload_feed_items(array &$form, FormStateInterface $form_state)
+    {
+        $response = new AjaxResponse();
+        $element = $form_state->getTriggeringElement();
+        $current = $element['#value'];
+        $feed = $this->feedStorage->load($current);
+        $result = $this->itemStorage->getQuery()
+            ->condition('fid', $current)
+            ->range(0, $this->configuration['block_count'])
+            ->sort('timestamp', 'DESC')
+            ->sort('iid', 'DESC')
+            ->execute();
+        if ($result) {
+            $items = $this->itemStorage->loadMultiple($result);
+            $build['items'] = array(
+                '#theme' => 'tpedunews_block',
+                '#items' => $items,
+            );
+        }
+        $build['items']['more_link'] = [
+            '#type' => 'more_link',
+            '#url' => $feed->toUrl(),
+            '#attributes' => ['title' => $this->t("View this feed's recent news.")],
+        ];
+        $response->addCommand(new ReplaceCommand('#edit-items', \Drupal::service('renderer')->render($build)));
+
+        return $response;
     }
 }

@@ -1,0 +1,52 @@
+<?php
+
+function schoolnews_install()
+{
+    $vocabulary = Vocabulary::load('news');
+    if (!$vocabulary) {
+        $vocabulary = Vocabulary::create(array(
+            'vid' => 'news',
+            'description' => '用於最新消息的分類',
+            'name' => '最新消息分類',
+        ));
+        $vocabulary->save();
+    }
+
+    $terms = \Drupal::service('entity_type.manager')->getStorage('taxonomy_term');
+    $tree = $terms->loadTree('news', $parent = 0, $max_depth = null, $load_entities = false);
+    if (count($tree) == 0) {
+        Term::create(array(
+            'parent' => [0],
+            'name' => '行政公告',
+            'vid' => 'news',
+        ))->save();
+        Term::create(array(
+            'parent' => [0],
+            'name' => '校內公告',
+            'vid' => 'news',
+        ))->save();
+        Term::create(array(
+            'parent' => [0],
+            'name' => '研習資訊',
+            'vid' => 'news',
+        ))->save();
+        Term::create(array(
+            'parent' => [0],
+            'name' => '活動資訊',
+            'vid' => 'news',
+        ))->save();
+        Term::create(array(
+            'parent' => [0],
+            'name' => '榮譽榜',
+            'vid' => 'news',
+        ))->save();
+    }
+}
+
+function tpedunews_uninstall()
+{
+    $vocabulary = Vocabulary::load('news');
+    if ($vocabulary) {
+        $vocabulary->delete();
+    }
+}
