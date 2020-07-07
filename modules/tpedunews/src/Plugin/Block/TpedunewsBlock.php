@@ -75,7 +75,7 @@ class TpedunewsBlock extends BlockBase implements ContainerFactoryPluginInterfac
     public function feeds()
     {
         return $this->feedStorage->getQuery()
-            ->condition('title', 'like', '教育局%')
+            ->condition('title', '教育局%', 'like')
             ->execute();
     }
 
@@ -87,7 +87,7 @@ class TpedunewsBlock extends BlockBase implements ContainerFactoryPluginInterfac
             '#default_tab' => 'edit-feed'.$feeds[0]->id(),
         );
         foreach ($feeds as $feed) {
-            $build['feed'.$feed->id()] = array(
+            $build['feed']['feed'.$feed->id()] = array(
                 '#type' => 'details',
                 '#title' => $feed->label(),
                 '#group' => 'feed',
@@ -100,7 +100,7 @@ class TpedunewsBlock extends BlockBase implements ContainerFactoryPluginInterfac
                     ->execute();
             if ($result) {
                 $items = $this->itemStorage->loadMultiple($result);
-                $build['feed'.$feed->id()]['items'] = array(
+                $build['feed']['feed'.$feed->id()]['items'] = array(
                     '#theme' => 'tpedunews_block',
                     '#items' => $items,
                     '#more' => $feed->toUrl(),
