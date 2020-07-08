@@ -16,7 +16,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * @Block(
  *   id = "tpedunews_block",
  *   admin_label = "教育局最新消息",
- *   category = @Translation("Lists (Views)")
+ *   category = @Translation("Custom Block")
  * )
  */
 class TpedunewsBlock extends BlockBase implements ContainerFactoryPluginInterface
@@ -74,23 +74,29 @@ class TpedunewsBlock extends BlockBase implements ContainerFactoryPluginInterfac
 
     public function feeds()
     {
-        return $this->feedStorage->getQuery()
+        $result = $this->feedStorage->getQuery()
             ->condition('title', '教育局%', 'like')
             ->execute();
+
+        return $this->feedStorage->loadMultiple($result);
     }
 
     public function build()
     {
         $feeds = $this->feeds();
-        $build['feed'] = array(
+        $k = (array_keys($feeds))[0];
+        $build['tpedunews'] = array(
             '#type' => 'horizontal_tabs',
-            '#default_tab' => 'edit-feed'.$feeds[0]->id(),
+            '#default_tab' => 'feed'.$k,
         );
         foreach ($feeds as $feed) {
-            $build['feed']['feed'.$feed->id()] = array(
+            $build['tpedunews']['feed'.$feed->id()] = array(
                 '#type' => 'details',
                 '#title' => $feed->label(),
                 '#group' => 'feed',
+                '#attributes' => array(
+                    'id' => 'feed'.$feed->id(),
+                ),
             );
             $result = $this->itemStorage->getQuery()
                     ->condition('fid', $feed->id())
@@ -100,7 +106,7 @@ class TpedunewsBlock extends BlockBase implements ContainerFactoryPluginInterfac
                     ->execute();
             if ($result) {
                 $items = $this->itemStorage->loadMultiple($result);
-                $build['feed']['feed'.$feed->id()]['items'] = array(
+                $build['tpedunews']['feed'.$feed->id()]['items'] = array(
                     '#theme' => 'tpedunews_block',
                     '#items' => $items,
                     '#more' => $feed->toUrl(),
