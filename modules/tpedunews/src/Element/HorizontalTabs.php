@@ -70,16 +70,6 @@ class HorizontalTabs extends RenderElement
         ];
     }
 
-    /**
-     * Prepares a horizontal_tabs element for rendering.
-     *
-     * @param array $element
-     *                       An associative array containing the properties and children of the
-     *                       horizontal tabs element
-     *
-     * @return array
-     *               The modified element
-     */
     public static function preRenderHorizontalTabs(array $element)
     {
         // Do not render the horizontal tabs element if it is empty.
@@ -91,20 +81,6 @@ class HorizontalTabs extends RenderElement
         return $element;
     }
 
-    /**
-     * Creates a group formatted as horizontal tabs.
-     *
-     * @param array                                $element
-     *                                                            An associative array containing the properties and children of the
-     *                                                            details element
-     * @param \Drupal\Core\Form\FormStateInterface $form_state
-     *                                                            The current state of the form
-     * @param array                                $complete_form
-     *                                                            The complete form structure
-     *
-     * @return array
-     *               The processed element
-     */
     public static function processHorizontalTabs(array &$element, FormStateInterface $form_state, array &$complete_form)
     {
         if (isset($element['#access']) && !$element['#access']) {

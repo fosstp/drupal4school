@@ -1,13 +1,13 @@
-<div id="items">
+<div>
 <table>
 	{% if (items) %}
 		{% for item in items %}
 			<tr>
 				<th>
-					<span>主旨：{{ item.getTitle() }}</span>
+					<span>{{ item.getTitle() }}</span>
 				</th>
 				<th>
-					<span>公告日期：{{ item.getPostedTime() | date('Y/m/d') }}</span>
+					<span>{{ item.getPostedTime() | date('Y/m/d') }}</span>
 				</th>
 			</tr>
         	<tr>

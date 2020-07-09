@@ -88,9 +88,10 @@ class TpedunewsBlock extends BlockBase implements ContainerFactoryPluginInterfac
         $build['tpedunews'] = array(
             '#type' => 'horizontal_tabs',
             '#default_tab' => 'feed'.$k,
+            '#parents' => ['block', 'tpedunews'],
         );
         foreach ($feeds as $feed) {
-            $build['tpedunews']['feed'.$feed->id()] = array(
+            $build['feed'.$feed->id()] = array(
                 '#type' => 'details',
                 '#title' => $feed->label(),
                 '#group' => 'feed',
@@ -106,7 +107,7 @@ class TpedunewsBlock extends BlockBase implements ContainerFactoryPluginInterfac
                     ->execute();
             if ($result) {
                 $items = $this->itemStorage->loadMultiple($result);
-                $build['tpedunews']['feed'.$feed->id()]['items'] = array(
+                $build['feed'.$feed->id()]['items'] = array(
                     '#theme' => 'tpedunews_block',
                     '#items' => $items,
                     '#more' => $feed->toUrl(),
