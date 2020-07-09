@@ -63,22 +63,8 @@ class HorizontalTabs extends RenderElement
             '#process' => [
                 [$class, 'processHorizontalTabs'],
             ],
-            '#pre_render' => [
-                [$class, 'preRenderHorizontalTabs'],
-            ],
             '#theme_wrappers' => ['horizontal_tabs', 'form_element'],
         ];
-    }
-
-    public static function preRenderHorizontalTabs(array $element)
-    {
-        // Do not render the horizontal tabs element if it is empty.
-        $group = implode('][', $element['#parents']);
-        if (!Element::getVisibleChildren($element['group']['#groups'][$group])) {
-            $element['#printed'] = true;
-        }
-
-        return $element;
     }
 
     public static function processHorizontalTabs(array &$element, FormStateInterface $form_state, array &$complete_form)
