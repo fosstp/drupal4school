@@ -88,7 +88,6 @@ class TpedunewsBlock extends BlockBase implements ContainerFactoryPluginInterfac
         $build['tpedunews'] = array(
             '#type' => 'horizontal_tabs',
             '#default_tab' => 'feed'.$k,
-            '#parents' => ['block', 'tpedunews'],
         );
         foreach ($feeds as $feed) {
             $build['feed'.$feed->id()] = array(
