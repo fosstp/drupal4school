@@ -13,6 +13,7 @@ use Drupal\Core\Form\FormStateInterface;
  * @FieldType(
  *   id = "tpedu_students",
  *   label = "學生",
+ *   module ="tpedu",
  *   description = "學生選單",
  *   category = "臺北市校園",
  *   default_widget = "students_default",

@@ -13,6 +13,7 @@ use Drupal\Core\Form\FormStateInterface;
  * @FieldType(
  *   id = "tpedu_grade",
  *   label = "年級",
+ *   module ="tpedu",
  *   description = "年級選單",
  *   category = "臺北市校園",
  *   default_widget = "grade_default",

@@ -13,6 +13,7 @@ use Drupal\Core\Form\FormStateInterface;
  * @FieldType(
  *   id = "tpedu_units",
  *   label = "行政單位",
+ *   module ="tpedu",
  *   description = "學校組織部門選單",
  *   category = "臺北市校園",
  *   default_widget = "units_default",
