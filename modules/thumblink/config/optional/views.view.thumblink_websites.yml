@@ -11,10 +11,11 @@ dependencies:
     - link
     - node
     - responsive_image
+    - user
 id: thumblink_websites
-label: '相關網站'
+label: 相關網站
 module: views
-description: '顯示所有相關網站的縮圖連結'
+description: 顯示所有相關網站的縮圖連結
 tag: ''
 base_table: node_field_data
 base_field: nid
@@ -43,13 +44,13 @@ display:
       exposed_form:
         type: basic
         options:
-          submit_button: '套用'
+          submit_button: 套用
           reset_button: false
-          reset_button_label: '重設'
-          exposed_sorts_label: '排序依據'
+          reset_button_label: 重設
+          exposed_sorts_label: 排序依據
           expose_sort_order: true
-          sort_asc_label: '遞增'
-          sort_desc_label: '遞減'
+          sort_asc_label: 遞增
+          sort_desc_label: 遞減
       pager:
         type: some
         options:
@@ -72,10 +73,12 @@ display:
           row_class_default: true
           row_class_custom: ''
       row:
-        type: 'entity:node'
+        type: fields
         options:
-          relationship: none
-          view_mode: default
+          default_field_elements: true
+          inline: {  }
+          separator: ''
+          hide_empty: false
       fields:
         title:
           id: title
@@ -376,7 +379,7 @@ display:
           entity_type: node
           entity_field: created
           plugin_id: date
-      title: '相關網站'
+      title: 相關網站
       header: {  }
       footer: {  }
       empty: {  }
@@ -385,11 +388,12 @@ display:
       display_extenders: {  }
       use_more: false
       use_more_always: false
-      use_more_text:  '更多'
+      use_more_text: 更多
       link_url: /thumblink/more
       link_display: '0'
       use_ajax: true
       group_by: false
+      show_admin_links: false
     cache_metadata:
       max-age: -1
       contexts:
@@ -404,7 +408,7 @@ display:
   block_1:
     display_plugin: block
     id: block_1
-    display_title: '區塊'
+    display_title: 區塊
     position: 1
     display_options:
       display_extenders: {  }
