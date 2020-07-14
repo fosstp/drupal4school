@@ -1,0 +1,21 @@
+langcode: zh-hant
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_department
+    - node.type.school_news
+  module:
+    - tpedu
+id: node.school_news.field_department
+field_name: field_department
+entity_type: node
+bundle: school_news
+label: 公告單位
+description: ''
+required: true
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  filter_by_current_user: true
+field_type: tpedu_units

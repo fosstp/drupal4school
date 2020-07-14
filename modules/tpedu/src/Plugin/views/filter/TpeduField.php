@@ -2,6 +2,7 @@
 
 namespace Drupal\tpedu\Plugin\views\filter;
 
+use Drupal\views\FieldAPIHandlerTrait;
 use Drupal\views\Plugin\views\display\DisplayPluginBase;
 use Drupal\views\Plugin\views\filter\ManyToOne;
 use Drupal\views\ViewExecutable;

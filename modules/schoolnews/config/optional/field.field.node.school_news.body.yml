@@ -1,0 +1,22 @@
+langcode: zh-hant
+status: true
+dependencies:
+  config:
+    - field.storage.node.body
+    - node.type.school_news
+  module:
+    - text
+id: node.school_news.body
+field_name: body
+entity_type: node
+bundle: school_news
+label: Body
+description: '請在此輸入最新消息內容，可以使用 HTML 語法。'
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  display_summary: true
+  required_summary: false
+field_type: text_with_summary

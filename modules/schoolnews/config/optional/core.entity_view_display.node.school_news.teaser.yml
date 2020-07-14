@@ -1,0 +1,34 @@
+langcode: zh-hant
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.teaser
+    - field.field.node.school_news.body
+    - field.field.node.school_news.field_department
+    - field.field.node.school_news.field_news_category
+    - node.type.school_news
+  module:
+    - text
+    - user
+id: node.school_news.teaser
+targetEntityType: node
+bundle: school_news
+mode: teaser
+content:
+  body:
+    label: hidden
+    type: text_summary_or_trimmed
+    weight: 101
+    settings:
+      trim_length: 600
+    third_party_settings: {  }
+    region: content
+  links:
+    weight: 100
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+hidden:
+  field_department: true
+  field_news_category: true
+  langcode: true

@@ -1,13 +1,13 @@
 langcode: zh-hant
 status: true
 dependencies:
+  enforced:
+    module:
+      - thumblink
   module:
     - file
     - image
     - node
-  enforced:
-    module:
-      - thumblink
 id: node.field_thumbnail
 field_name: field_thumbnail
 entity_type: node

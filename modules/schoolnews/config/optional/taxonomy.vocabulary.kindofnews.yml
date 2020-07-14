@@ -1,0 +1,7 @@
+langcode: zh-hant
+status: true
+dependencies: {  }
+name: 最新消息類別
+vid: kindofnews
+description: 最新消息分類項目
+weight: 0

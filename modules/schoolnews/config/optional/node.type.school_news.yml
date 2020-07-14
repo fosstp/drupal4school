@@ -1,0 +1,17 @@
+langcode: zh-hant
+status: true
+dependencies:
+  module:
+    - menu_ui
+third_party_settings:
+  menu_ui:
+    available_menus:
+      - main
+    parent: 'main:'
+name: 最新消息
+type: school_news
+description: 學校公告
+help: ''
+new_revision: true
+preview_mode: 1
+display_submitted: true

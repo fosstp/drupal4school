@@ -4,16 +4,16 @@ dependencies:
   config:
     - field.storage.node.field_thumbnail
     - node.type.thumblink
-  module:
-    - image
   enforced:
     module:
       - thumblink
+  module:
+    - image
 id: node.thumblink.field_thumbnail
 field_name: field_thumbnail
 entity_type: node
 bundle: thumblink
-label: '網站縮圖'
+label: 網站縮圖
 description: ''
 required: true
 translatable: false
@@ -23,8 +23,8 @@ settings:
   file_directory: thumblink
   file_extensions: 'png gif jpg jpeg'
   max_filesize: ''
-  max_resolution: 300x300
-  min_resolution: 150x150
+  max_resolution: 300x150
+  min_resolution: 120x60
   alt_field: false
   alt_field_required: false
   title_field: false
