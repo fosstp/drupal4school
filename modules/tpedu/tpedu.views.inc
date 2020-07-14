@@ -296,16 +296,14 @@ function tpedu_views_data_alter(&$data)
 
 function tpedu_field_views_data(FieldStorageConfigInterface $field)
 {
+    $fields = array('tpedu_grade', 'tpedu_units', 'tpedu_roles', 'tpedu_domain', 'tpedu_subjects', 'tpedu_classes');
     $type = $field->getType();
-    if (substr($type, 0, 6) == 'tpedu_') {
+    if (in_array($type, $fields)) {
         $data = views_field_default_views_data($field);
         foreach ($data as $table_name => $table_data) {
             foreach ($table_data as $field_name => $field_data) {
                 if (isset($field_data['filter']) && $field_name != 'delta') {
-                    $data[$table_name][$field_name]['filter']['id'] = 'list_field';
-                }
-                if (isset($field_data['argument']) && $field_name != 'delta') {
-                    $data[$table_name][$field_name]['argument']['id'] = 'string_list_field';
+                    $data[$table_name][$field_name]['filter']['id'] = 'tpedu_field';
                 }
             }
         }

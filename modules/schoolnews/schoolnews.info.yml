@@ -1,5 +1,5 @@
 name: 校園最新消息
-description: 本模組將為您新增「最新消息」內容類型，並提供「教育局最新消息」頁面。
+description: 本模組將為您新增「最新消息」內容類型，並提供「校園最新消息」頁面。
 type: module
 package: D4S
 version: 1.0
