@@ -1,5 +1,5 @@
 # Drupal學校架站包計劃（D4S: Drupal for School）
-這是一個 [docker](https://www.docker.com/) 映像檔，此映像檔內容包含：debian 10.2(buster-slim) + php 7.3 + apache 2.4 + drupal 8.9.1 + D4S 專案模組。
+這是一個 [docker](https://www.docker.com/) 映像檔，此映像檔內容包含：debian 10.2(buster-slim) + php 7.3 + apache 2.4 + drupal 8.9.1 + drupal console + D4S 專案模組。
 目前已納入臺北市校園單一身分驗證服務的各級學程所有學校都可以使用，不再受限於各別校務行政系統的開放性。
 
 目前已經完成的模組和功能概述如下：
@@ -21,7 +21,22 @@ $ docker-compose up -d
 
 $ docker-compose down
 
-當然，您應該要先修改 docker-compose.yml 組態檔中的網路埠號、資料庫密碼、磁碟掛載路徑...等等參數，然後再建立容器。或者，您也可以依照以下步驟，手動建立所有必要的容器。
+當然，您應該要先修改 [docker-compose.yml](https://github.com/fosstp/drupal4school/blob/master/docker-compose.yml) 組態檔中的網路埠號、資料庫密碼、磁碟掛載路徑...等等參數，然後再建立容器。或者，您也可以依照以下步驟，手動建立所有必要的容器。
+
+環境變數說明如下：
+* DB_HOST: 資料庫容器名稱，請直接使用預設值「mysql」，除非您要使用獨立資料庫（例如：已存在之容器、獨立主機、Vmware 虛擬機或其它線上資料庫）。
+* DB_USER: 資料庫連線帳號，預設為「root」
+* DB_PASSWORD: 資料庫連線密碼，預設為「dbpassword」，請務必修改。
+
+資料庫名稱預設為 drupal，容器啟動時會自動為您建立。
+
+* SITE_NAME: 網站名稱，預設為「快樂國小官方網站」
+* SITE_MAIL: 網站聯絡信箱，預設為「webmaster@xxps.tp.edu.tw」
+* SITE_ADMIN: 網站管理帳號，預設為「admin」
+* SITE_ADMIN_MAIL: 網站管理員的電子郵件，your_mail@xxps.tp.edu.tw
+* SITE_PASSWORD: 網站管理員密碼，預設為「your_password」，請務必修改密碼
+
+以上環境變數將透過 drupal console 自動為您安裝網站，無需透過網頁進行任何設定，網站將直接啟用。如有變更以上參數，必須將舊容器移除重新啟動（請參考前面介紹的兩個指令）。
 
 ## Drupal
 使用此映像檔的基本語法如下：
