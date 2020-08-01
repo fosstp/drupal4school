@@ -32,7 +32,6 @@ do
     find $d -type f -exec chmod 664 '{}' \;
 done
 chmod 644 /var/www/html/sites/default/settings.php
-drupal moup
 drupal cc
 
 if [ ! -f "/var/run/apache2/apache2.pid" ]; then
