@@ -6,8 +6,6 @@ services:
     environment:
       MYSQL_DATABASE: drupal
       MYSQL_ROOT_PASSWORD: dbpassword
-    depends_on: 
-      - mysql
     restart: always
 
   phpmyadmin:
@@ -18,6 +16,8 @@ services:
       PMA_HOST: mysql
       PMA_USER: root
       PMA_PASSWORD: dbpassword
+    depends_on: 
+      - mysql
     restart: always
 
   drupal:
