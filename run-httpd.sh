@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 
-if [ $(mysql --host=${DB_HOST} --user=${DB_USER} --password=${DB_PASSWORD} -e "use drupal; select * from users;") ]; then
+if [ $(mysql --host=${DB_HOST} --user=${DB_USER} --password=${DB_PASSWORD} -e "select count(*) from information_schema.tables where table_schema='drupal' and table_name='users';") -eq 1 ]; then
     echo "database exist!"
 else
     echo "CREATE DATABASE drupal CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;" | mysql --host=${DB_HOST} --user=${DB_USER} --password=${DB_PASSWORD}
