@@ -1,17 +1,20 @@
 #!/bin/sh
 set -e
 
-if [ $(mysql --host=${DB_HOST} --user=${DB_USER} --password=${DB_PASSWORD} -e "select count(*) from information_schema.tables where table_schema='drupal' and table_name='users';") -eq 1 ]; then
+if mysqlshow --host=${DB_HOST} --user=${DB_USER} --password=${DB_PASSWORD} drupal; then
     echo "database exist!"
 else
     echo "CREATE DATABASE drupal CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;" | mysql --host=${DB_HOST} --user=${DB_USER} --password=${DB_PASSWORD}
-    cd /var/www/html
-    drupal si standard mysql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}/drupal -n --langcode="zh-hant" --site-name="${SITE_NAME}" --site-mail="${SITE_MAIL}" --account-name="${SITE_ADMIN}" --account-mail="${SITE_ADMIN_MAIL}" --account-pass="${SITE_PASSWORD}" --force --no-ansi --no-interaction
-    drupal moi tpedu
 fi
 
 if [ ! -f "/var/run/apache2/apache2.pid" ]; then
     exec apache2-foreground
+fi
+
+if [ ! -f "/var/www/html/sites/default/settings.php" ]; then
+    cd /var/www/html
+    drupal si standard mysql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}/drupal -n --langcode="zh-hant" --site-name="${SITE_NAME}" --site-mail="${SITE_MAIL}" --account-name="${SITE_ADMIN}" --account-mail="${SITE_ADMIN_MAIL}" --account-pass="${SITE_PASSWORD}" --force --no-ansi --no-interaction
+    drupal moi tpedu
 fi
 
 if [ ! -d "/var/www/html/sites/default/files/adsync" ]; then
