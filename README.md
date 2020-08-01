@@ -19,15 +19,13 @@
 請依照 docker 官方文件安裝 [docker engine](https://docs.docker.com/engine/install/)和[docker compose](https://docs.docker.com/compose/install/)，然後在文字模式執行底下介紹的 docker-compose 指令。
 
 ## docker-compose
-要架設一個 drupal 網站最簡單的方法就是使用以下指令：
+要架設一個 drupal 網站最簡單的方法就是使 docker-compose 指令。請先下載 [docker-compose.yml 範例檔](https://github.com/fosstp/drupal4school/blob/master/docker-compose.yml)，下載完成後請修改檔案中的環境變數、磁碟掛載路徑...等等參數，然後再執行底下的指令：
 
 $ docker-compose up -d
 
 要移除所有啟動的容器則使用以下指令：
 
 $ docker-compose down
-
-當然，您應該要先修改 [docker-compose.yml](https://github.com/fosstp/drupal4school/blob/master/docker-compose.yml) 組態檔中的網路埠號、資料庫密碼、磁碟掛載路徑...等等參數，然後再建立容器。
 
 環境變數說明如下：
 * DB_HOST: 資料庫容器名稱，請直接使用預設值「mysql」，除非您要使用獨立資料庫（例如：已存在之容器、獨立主機、Vmware 虛擬機或其它線上資料庫）。
