@@ -1,4 +1,4 @@
-FROM drupal
+FROM drupal:8
 
 ENV TZ Asia/Taipei
 ENV SITE_NAME "drupal 8"
