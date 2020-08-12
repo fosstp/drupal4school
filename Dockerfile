@@ -1,4 +1,4 @@
-FROM drupal:8
+FROM drupal
 
 ENV TZ Asia/Taipei
 ENV SITE_NAME "drupal 8"
@@ -27,7 +27,7 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
     && curl -sS https://getcomposer.org/installer | php \
     && mv composer.phar /usr/local/bin/composer \
     && cd /var/www/html \
-    && composer require google/apiclient:"^2.0" drupal/console:~1.0 --prefer-dist --optimize-autoloader \
+    && composer require google/apiclient:"^2.0" drupal/console:~1.0 drupal/core-composer-scaffold drupal/core-recommended --prefer-dist --optimize-autoloader \
     && curl https://drupalconsole.com/installer -L -o drupal.phar \
     && mv drupal.phar /usr/local/bin/drupal \
     && chmod +x /usr/local/bin/drupal \
@@ -42,6 +42,7 @@ RUN mkdir /var/www/html/sites/default/files \
 ADD run-httpd.sh /usr/sbin/run-httpd.sh
 RUN chmod +x /usr/sbin/run-httpd.sh
 
+WORKDIR /var/www/html
 VOLUME ["/var/www/html/sites"]
 EXPOSE 80
 ENTRYPOINT ["run-httpd.sh"]
