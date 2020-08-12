@@ -44,4 +44,4 @@ RUN chmod +x /usr/sbin/run-httpd.sh
 
 VOLUME ["/var/www/html/sites"]
 EXPOSE 80
-ENTRYPOINT ["run-httpd.sh"]
+#ENTRYPOINT ["run-httpd.sh"]
