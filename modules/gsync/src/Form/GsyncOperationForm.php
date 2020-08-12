@@ -469,6 +469,9 @@ class GsyncOperationForm extends FormBase
                             $detail_log .= "正在處理 $s->class $s->seat $s->realname ($user_key)......<br>";
                         }
                         $user = gs_getUser($user_key);
+                        if (!$user) {
+                            $user = gs_findUsers('externalId='.$s->id)[0];
+                        }
                         if ($user) {
                             if (is_null($s->status) || $s->status == 'active') {
                                 if ($log) {

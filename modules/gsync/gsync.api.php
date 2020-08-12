@@ -195,6 +195,10 @@ function gs_syncUser($t, $user_key, $user = null, $recover = false)
             $user->setPassword(sha1(substr($t->idno, -6)));
         }
     }
+    $sysid = new \Google_Service_Directory_UserExternalId();
+    $sysid->setType('organization');
+    $sysid->setValue($t->id);
+    $user->setExternalIds([$sysid]);
     $names = new \Google_Service_Directory_UserName();
     if ($t->sn && $t->gn) {
         $names->setFamilyName($t->sn);
