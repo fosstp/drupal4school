@@ -27,7 +27,7 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
     && curl -sS https://getcomposer.org/installer | php \
     && mv composer.phar /usr/local/bin/composer \
     && cd /var/www/html \
-    && composer require google/apiclient:"^2.0" drupal/console:~1.0 drupal/core-composer-scaffold drupal/core-recommended --prefer-dist --optimize-autoloader \
+    && composer require google/apiclient:"^2.0" drupal/console:1.9.3 drupal/core-composer-scaffold drupal/core-recommended --prefer-dist --optimize-autoloader \
     && curl https://drupalconsole.com/installer -L -o drupal.phar \
     && mv drupal.phar /usr/local/bin/drupal \
     && chmod +x /usr/local/bin/drupal \
