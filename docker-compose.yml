@@ -21,7 +21,7 @@ services:
     restart: always
 
   drupal:
-    image: fosstp/drupal
+    image: fosstp/drupal:8
     ports:
       - "80:80"
 #容器啟動時會自動依據以下設定為您安裝網站，請務必修改以下設定
