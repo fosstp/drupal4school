@@ -26,8 +26,8 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
     && echo "max_execution_time = 300" > /usr/local/etc/php/conf.d/execution_time.ini \
     && curl -sS https://getcomposer.org/installer | php \
     && mv composer.phar /usr/local/bin/composer \
-    && cd /var/www/html \
-    && composer require google/apiclient:^2.0 drupal/console:~1.0 --prefer-dist --optimize-autoloader --update-with-all-dependencies \
+    && cd /opt/drupal \
+    && composer require google/apiclient:^2.0 drupal/console:~1.0 --no-dev --prefer-dist --optimize-autoloader --update-with-all-dependencies \
     && curl https://drupalconsole.com/installer -L -o drupal.phar \
     && mv drupal.phar /usr/local/bin/drupal \
     && chmod +x /usr/local/bin/drupal \
