@@ -25,11 +25,16 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
     && echo "memory_limit = -1" > /usr/local/etc/php/conf.d/memory.ini \
     && echo "max_execution_time = 300" > /usr/local/etc/php/conf.d/execution_time.ini \
     && cd /opt/drupal \
-    && composer require google/apiclient:^2.0 drupal/console:1.9.4 --prefer-dist --optimize-autoloader --update-with-all-dependencies \
-    && curl https://drupalconsole.com/installer -L -o drupal.phar \
-    && mv drupal.phar /usr/local/bin/drupal \
-    && chmod +x /usr/local/bin/drupal \
-    && echo "0" | drupal init
+#    && composer require google/apiclient:^2.0 drupal/console:~1.0 --prefer-dist --optimize-autoloader \
+#    && curl https://drupalconsole.com/installer -L -o drupal.phar \
+#    && mv drupal.phar /usr/local/bin/drupal \
+#    && chmod +x /usr/local/bin/drupal \
+#    && echo "0" | drupal init
+    && composer require google/apiclient:^2.0 --prefer-dist --optimize-autoloader \
+    && composer global require drush/drush:^10 \
+    && curl https://github.com/drush-ops/drush-launcher/releases/latest/download/drush.phar -L -o drush.phar \
+    && mv drush.phar /usr/local/bin/drush \
+    && chmod +x /usr/local/bin/drush
 
 ADD modules /var/www/html/modules
 RUN mkdir /var/www/html/sites/default/files \
