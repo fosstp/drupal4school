@@ -24,8 +24,6 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
     && echo "extension = uploadprogress" > /usr/local/etc/php/conf.d/uploadprogress.ini \
     && echo "memory_limit = -1" > /usr/local/etc/php/conf.d/memory.ini \
     && echo "max_execution_time = 300" > /usr/local/etc/php/conf.d/execution_time.ini \
-    && curl -sS https://getcomposer.org/installer | php \
-    && mv composer.phar /usr/local/bin/composer \
     && cd /opt/drupal \
     && composer require google/apiclient:^2.0 drupal/console:1.9.4 --prefer-dist --optimize-autoloader --update-with-all-dependencies \
     && curl https://drupalconsole.com/installer -L -o drupal.phar \
