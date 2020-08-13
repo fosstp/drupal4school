@@ -9,8 +9,8 @@ fi
 
 if [ ! -f "/var/www/html/sites/default/settings.php" ]; then
     cd /var/www/html
-    drupal --root=/var/www/html si standard mysql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}/drupal -n --langcode="zh-hant" --site-name="${SITE_NAME}" --site-mail="${SITE_MAIL}" --account-name="${SITE_ADMIN}" --account-mail="${SITE_ADMIN_MAIL}" --account-pass="${SITE_PASSWORD}" --force --no-ansi --no-interaction
-    drupal --root=/var/www/html moi tpedu
+    drupal si standard mysql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}/drupal -n --langcode="zh-hant" --site-name="${SITE_NAME}" --site-mail="${SITE_MAIL}" --account-name="${SITE_ADMIN}" --account-mail="${SITE_ADMIN_MAIL}" --account-pass="${SITE_PASSWORD}" --force --no-ansi --no-interaction
+    drupal moi tpedu
 fi
 
 if [ ! -d "/var/www/html/sites/default/files/adsync" ]; then
@@ -22,7 +22,7 @@ if [ ! -d "/var/www/html/sites/default/files/gsync" ]; then
 fi
 
 cd /var/www/html
-chown -R root:www-data /var/www/html
+chown -R www-data:www-data /var/www/html
 chmod -R 750 /var/www/html
 chmod 2775 /var/www/html/sites
 chmod 2755 /var/www/html/sites/default
@@ -32,7 +32,7 @@ do
     find $d -type f -exec chmod 664 '{}' \;
 done
 chmod 644 /var/www/html/sites/default/settings.php
-drupal --root=/var/www/html cc
+drupal cc
 
 if [ ! -f "/var/run/apache2/apache2.pid" ]; then
     exec apache2-foreground

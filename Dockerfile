@@ -35,7 +35,7 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
 
 ADD modules /var/www/html/modules
 RUN mkdir /var/www/html/sites/default/files \
-    && chown -R root:www-data /var/www/html \
+    && chown -R www-data:www-data /var/www/html \
     && chmod -R 750 /var/www/html \
     && chmod -R 777 /var/www/html/sites
 
