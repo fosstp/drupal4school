@@ -1,6 +1,8 @@
 # Drupal學校架站包計劃（D4S: Drupal for School）
-這是一個 [docker](https://www.docker.com/) 映像檔，此映像檔內容包含：debian 10.2(buster-slim) + php 7.3 + apache 2.4 + drupal 8.9.3 + drupal console + D4S 專案模組。
+這是一個 [docker](https://www.docker.com/) 映像檔，此映像檔內容包含：debian 10.2(buster-slim) + php 7.3 + apache 2.4 + drupal 9.0.3 + drush 10 + D4S 專案模組。
 目前已納入臺北市校園單一身分驗證服務的各級學程所有學校都可以使用，不再受限於各別校務行政系統的開放性。
+
+由於 drupal/console 尚未支援 drupal 9，因此改用老牌的命令列管理工具 drush 10，兩者的差別請看[這篇文章](https://www.cmsdrupal.com/blog/drupal-console-vs-drush-should-you-run-both-or-stick-one-each-cli-tools-most-powerful-commands)。
 
 目前已經完成的模組和功能概述如下：
 * tpedu 模組：使用臺北市校園單一身分驗證帳號登入、介接學校全域資料、通過台灣無障礙網頁標章 2.0、校務行政關聯式欄位。
@@ -45,7 +47,15 @@ $ docker-compose down
 ## 手動建立 Drupal 容器
 您可以依照以下步驟，手動建立所有必要的容器。 使用此映像檔的基本語法如下：
 
+$ docker run --name drupal -p 80:80 -d fosstp/drupal
+
+要建立舊版的 drupal 環境，請在最後面加上版序，例如：
+
 $ docker run --name drupal -p 80:80 -d fosstp/drupal:8
+
+或
+
+$ docker run --name drupal -p 80:80 -d fosstp/drupal:7
 
 其中 --name 為容器名稱，範例為 drupal， -p 指定對外連線埠號，範例為 80， -d 指定來源映像檔，範例為本專案所建立的映像檔 fosstp/drupal。
 
