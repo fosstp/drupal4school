@@ -30,8 +30,7 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
 #    && mv drupal.phar /usr/local/bin/drupal \
 #    && chmod +x /usr/local/bin/drupal \
 #    && echo "0" | drupal init
-    && composer require google/apiclient:^2.0 --prefer-dist --optimize-autoloader \
-    && composer global require drush/drush:^10 \
+    && composer require cache/filesystem-adapter google/apiclient:^2.0 drush/drush:^10 --prefer-dist --optimize-autoloader \
     && curl https://github.com/drush-ops/drush-launcher/releases/latest/download/drush.phar -L -o drush.phar \
     && mv drush.phar /usr/local/bin/drush \
     && chmod +x /usr/local/bin/drush
