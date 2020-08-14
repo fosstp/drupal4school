@@ -3,7 +3,7 @@ description: 本模組提供將臺北市校園單一身分驗證師生帳號同�
 type: module
 package: D4S
 version: 1.0
-core: 8.x
+core: 9.x
 dependencies:
   - user
   - tpedu

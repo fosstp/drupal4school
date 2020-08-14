@@ -3,7 +3,7 @@ description: 本模組提供右列功能：使用臺北市校園單一身分驗�
 type: module
 package: D4S
 version: 1.0
-core: 8.x
+core: 9.x
 dependencies:
   - user
 configure: tpedu.config

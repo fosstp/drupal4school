@@ -3,6 +3,6 @@ description: 本模組將為您新增教育局最新消息新聞聯播，並提�
 type: module
 package: D4S
 version: 1.0
-core: 8.x
+core: 9.x
 dependencies:
   - aggregator
