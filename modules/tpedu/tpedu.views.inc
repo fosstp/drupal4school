@@ -10,6 +10,9 @@ function tpedu_views_data()
         $data['tpedu_people'] = array();
         $data['tpedu_people']['table'] = array();
         $data['tpedu_people']['table']['provider'] = 'tpedu';
+        $data['tpedu_people']['table']['base'] = 'tpedu_people';
+        $data['tpedu_people']['table']['base']['title'] = '臺北市校園';
+        $data['tpedu_people']['table']['base']['help'] = '來自 ldap.tp.edu.tw 的人員資料';
         $data['tpedu_people']['table']['join']['users'] = array(
             'left_field' => 'uuid',
             'field' => 'uuid',
