@@ -9,6 +9,7 @@ function tpedu_views_data()
         $data = array();
         $data['tpedu_people'] = array();
         $data['tpedu_people']['table'] = array();
+        $data['tpedu_people']['table']['group'] = 'tpedu';
         $data['tpedu_people']['table']['provider'] = 'tpedu';
         $data['tpedu_people']['table']['base']['field'] = 'uuid';
         $data['tpedu_people']['table']['base']['title'] = '臺北市校園';
@@ -16,6 +17,17 @@ function tpedu_views_data()
         $data['tpedu_people']['table']['join']['users'] = array(
             'left_field' => 'uuid',
             'field' => 'uuid',
+        );
+        $data['tpedu_people']['uuid'] = array(
+            'group' => '使用者',
+            'title' => 'UUID',
+            'help' => '教育人員的唯一編號對應到系統使用者帳號，若該教育人員未登入過系統，則對應到空值',
+            'relationship' => array(
+                'base' => 'users',
+                'base_field' => 'uuid',
+                'id' => 'standard',
+                'label' => '教育人員對應的使用者帳號',
+            ),
         );
         $data['tpedu_people']['idno'] = array(
             'group' => '使用者',
