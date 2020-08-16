@@ -3,6 +3,7 @@ description: 本模組將為您新增「最新消息」內容類型，並提供�
 type: module
 package: D4S
 version: 1.0
-core: 9.x
+core: 8.x
+core_version_requirement: ^8 || ^9
 dependencies:
   - tpedu

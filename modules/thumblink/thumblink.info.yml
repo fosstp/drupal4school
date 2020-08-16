@@ -3,7 +3,8 @@ description: 本模組將提供一個新的內容類型和一個區塊，用於�
 type: module
 package: D4S
 version: 1.0
-core: 9.x
+core: 8.x
+core_version_requirement: ^8 || ^9
 dependencies:
   - node
   - image
