@@ -3,7 +3,7 @@
 function tpedu_install()
 {
     $user_settings = \Drupal::configFactory()->getEditable('user.settings');
-    $user_settings->set('register', USER_REGISTER_ADMINISTRATORS_ONLY)->save(true);
+    $user_settings->set('register', \Drupal\user\UserInterface::REGISTER_ADMINISTRATORS_ONLY)->save(true);
 }
 
 function tpedu_uninstall()
@@ -36,9 +36,9 @@ function tpedu_schema()
                 'description' => '部門名稱',
             ),
             'fetch_date' => array(
-                'type' => 'varchar',
                 'mysql_type' => 'timestamp',
-                'mysql_default' => CURRENT_TIMESTAMP,
+                'not null' => true,
+                'mysql_default' => 'CURRENT_TIMESTAMP',
                 'description' => '取得資料日期',
             ),
         ),
@@ -69,7 +69,8 @@ function tpedu_schema()
             'fetch_date' => array(
                 'type' => 'varchar',
                 'mysql_type' => 'timestamp',
-                'mysql_default' => CURRENT_TIMESTAMP,
+                'not null' => true,
+                'mysql_default' => 'CURRENT_TIMESTAMP',
                 'description' => '取得資料日期',
             ),
         ),
@@ -108,7 +109,8 @@ function tpedu_schema()
             'fetch_date' => array(
                 'type' => 'varchar',
                 'mysql_type' => 'timestamp',
-                'mysql_default' => CURRENT_TIMESTAMP,
+                'not null' => true,
+                'mysql_default' => 'CURRENT_TIMESTAMP',
                 'description' => '取得資料日期',
             ),
         ),
@@ -143,7 +145,8 @@ function tpedu_schema()
             'fetch_date' => array(
                 'type' => 'varchar',
                 'mysql_type' => 'timestamp',
-                'mysql_default' => CURRENT_TIMESTAMP,
+                'not null' => true,
+                'mysql_default' => 'CURRENT_TIMESTAMP',
                 'description' => '取得資料日期',
             ),
         ),
@@ -278,7 +281,8 @@ function tpedu_schema()
             'fetch_date' => array(
                 'type' => 'varchar',
                 'mysql_type' => 'timestamp',
-                'mysql_default' => CURRENT_TIMESTAMP,
+                'not null' => true,
+                'mysql_default' => 'CURRENT_TIMESTAMP',
                 'description' => '取得資料日期',
             ),
         ),

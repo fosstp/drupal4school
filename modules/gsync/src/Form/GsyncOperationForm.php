@@ -173,6 +173,9 @@ class GsyncOperationForm extends FormBase
                             $detail_log .= "正在處理 $t->dept_name $t->role_name $t->realname ($user_key)......<br>";
                         }
                         $user = gs_getUser($user_key);
+                        if (!$user) {
+                            $user = gs_findUsers('externalId='.$t->id)[0];
+                        }
                         if ($user) {
                             $data = gs_listUserGroups($user_key);
                             if ($data) {
