@@ -35,11 +35,11 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
     && mv drush.phar /usr/local/bin/drush \
     && chmod +x /usr/local/bin/drush
 
-ADD modules /var/www/html/modules
-RUN mkdir /var/www/html/sites/default/files \
-    && chown -R www-data:www-data /var/www/html \
-    && chmod -R 750 /var/www/html \
-    && chmod -R 777 /var/www/html/sites
+ADD modules /opt/drupal/web/modules
+RUN mkdir -p /opt/drupal/web/sites/default/files \
+    && chown -R www-data:www-data /opt/drupal/web \
+    && chmod -R 750 /opt/drupal/web \
+    && chmod -R 777 /opt/drupal/web/sites
 
 ADD run-httpd.sh /usr/sbin/run-httpd.sh
 RUN chmod +x /usr/sbin/run-httpd.sh

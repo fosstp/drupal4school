@@ -25,16 +25,16 @@ if [ ! -d "/var/www/html/sites/default/files/gsync" ]; then
 fi
 
 cd /var/www/html
-chown -R www-data:www-data /var/www/html
-chmod -R 750 /var/www/html
-chmod 2775 /var/www/html/sites
-chmod 2755 /var/www/html/sites/default
-for d in /var/www/html/sites/default/files
+chown -R www-data:www-data ./
+chmod -R 750 ./
+chmod 2775 sites
+chmod 2755 sites/default
+for d in sites/default/files
 do
     find $d -type d -exec chmod 2775 '{}' \;
     find $d -type f -exec chmod 664 '{}' \;
 done
-chmod 644 /var/www/html/sites/default/settings.php
+chmod 644 sites/default/settings.php
 #drupal cc
 drush cr
 
