@@ -9,10 +9,9 @@ fi
 
 if [ ! -f "/var/www/html/sites/default/settings.php" ]; then
     cd /var/www/html
+    cp sites/default/default.settings.php sites/default/settings.php
     drupal si standard mysql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}/drupal -n --langcode="zh-hant" --site-name="${SITE_NAME}" --site-mail="${SITE_MAIL}" --account-name="${SITE_ADMIN}" --account-mail="${SITE_ADMIN_MAIL}" --account-pass="${SITE_PASSWORD}" --force --no-ansi --no-interaction
     drupal moi tpedu
-#    drush si standard --db-url=mysql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}/drupal --locale="zh-hant" --site-name="${SITE_NAME}" --site-mail="${SITE_MAIL}" --account-name="${SITE_ADMIN}" --account-mail="${SITE_ADMIN_MAIL}" --account-pass="${SITE_PASSWORD}"
-#    drush en tpedu
 fi
 
 if [ ! -d "/var/www/html/sites/default/files/adsync" ]; then
@@ -35,7 +34,6 @@ do
 done
 chmod 644 /var/www/html/sites/default/settings.php
 drupal cc
-#drush cr
 
 if [ ! -f "/var/run/apache2/apache2.pid" ]; then
     exec apache2-foreground
