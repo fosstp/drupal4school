@@ -319,7 +319,7 @@ class GsyncOperationForm extends FormBase
                                     $detail_log .= '無法在 G Suite 中找到匹配的群組，現在正在建立新的 Google 群組......';
                                 }
                                 $posgroup = 'group-B'.$t->role_id;
-                                $group_key = $posgroup.'@'.$config->get('google_domain');
+                                $group_key = $posgroup.'@'.$google_domain;
                                 $group = gs_createGroup($group_key, $t->role_name);
                                 if ($group) {
                                     $all_groups[] = $group;
@@ -374,7 +374,7 @@ class GsyncOperationForm extends FormBase
                                 default:
                                     $clsgroup = 'group-C'.$grade;
                             }
-                            $group_key = $clsgroup.'@'.$config->get('google_domain');
+                            $group_key = $clsgroup.'@'.$google_domain;
                             $found = false;
                             if ($all_groups) {
                                 foreach ($all_groups as $group) {
