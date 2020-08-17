@@ -217,17 +217,17 @@ function gs_syncUser($t, $user_key, $user = null, $recover = false)
     if ($t->student) {
         $neworg = new \Google_Service_Directory_UserOrganization();
         $neworg->setType('school');
-        $neworg->setDepartment($t->dept_name);
-        $neworg->setTitle($t->seat);
+        $newOrg->setDescription('學生');
+        $neworg->setTitle($t->dept_name.$t->seat.'號');
         $neworg->setPrimary(true);
         $orgs[] = $neworg;
     } else {
         $jobs = get_jobs($t->uuid);
         foreach ($jobs as $job) {
             $neworg = new \Google_Service_Directory_UserOrganization();
-            $neworg->setType('work');
-            $neworg->setDepartment($job->dept_name);
-            $neworg->setTitle($job->role_name);
+            $neworg->setType('school');
+            $newOrg->setDescription('教師');
+            $neworg->setTitle($job->dept_name.$job->role_name);
             if ($job->role_id == $t->role_id) {
                 $neworg->setPrimary(true);
             }
@@ -249,7 +249,6 @@ function gs_syncUser($t, $user_key, $user = null, $recover = false)
             }
         }
         $user->setPhones($phones);
-        $user->setRecoveryPhone($phone);
     }
     if (!empty($t->telephone)) {
         $phones = $user->getPhones();
