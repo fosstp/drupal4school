@@ -146,7 +146,9 @@ class GsyncOperationForm extends FormBase
     public function gsync_start(array &$form, FormStateInterface $form_state)
     {
         $response = new AjaxResponse();
+        $dc = \Drupal::config('tpedu.settings')->get('api.dc');
         $config = \Drupal::config('gsync.settings');
+        $google_domain = $config->get('google_domain');
         $std_account = $config->get('student_account');
         $detail_log = '';
         set_time_limit(0);
@@ -166,8 +168,8 @@ class GsyncOperationForm extends FormBase
                     foreach ($teachers as $t) {
                         $groups = array();
                         $user_key = $t->email;
-                        if (!strpos($user_key, 'tc.meps.tp.edu.tw')) {
-                            $user_key = $t->account.'@'.$config->get('google_domain');
+                        if (!strpos($user_key, $google_domain)) {
+                            $user_key = $t->account.'@'.$google_domain;
                         }
                         if ($log) {
                             $detail_log .= "正在處理 $t->dept_name $t->role_name $t->realname ($user_key)......<br>";
@@ -268,7 +270,7 @@ class GsyncOperationForm extends FormBase
                                     $detail_log .= '無法在 G Suite 中找到匹配的群組，現在正在建立新的 Google 群組......';
                                 }
                                 $depgroup = 'group-A'.$t->dept_id;
-                                $group_key = $depgroup.'@'.$config->get('google_domain');
+                                $group_key = $depgroup.'@'.$google_domain;
                                 $group = gs_createGroup($group_key, $t->dept_name);
                                 if ($group) {
                                     $all_groups[] = $group;
@@ -431,7 +433,7 @@ class GsyncOperationForm extends FormBase
                     $detail_log .= "<p>正在處理 $class_name......<br>";
                 }
                 $stdgroup = 'class-'.$class;
-                $group_key = $stdgroup.'@'.$config->get('google_domain');
+                $group_key = $stdgroup.'@'.$google_domain;
                 $found = false;
                 if ($all_groups) {
                     foreach ($all_groups as $group) {
@@ -466,10 +468,14 @@ class GsyncOperationForm extends FormBase
                 $students = get_students_of_class($class);
                 if ($students) {
                     foreach ($students as $s) {
-                        if ($std_account == 'id' || empty($s->account)) {
-                            $user_key = $s->id.'@'.$config->get('google_domain');
+                        if ($std_account == 'id') {
+                            $user_key = $s->id.'@'.$google_domain;
                         } else {
-                            $user_key = $s->account.'@'.$config->get('google_domain');
+                            if (empty($s->account)) {
+                                $user_key = $dc.$s->id.'@'.$google_domain;
+                            } else {
+                                $user_key = $s->account.'@'.$google_domain;
+                            }
                         }
                         if ($log) {
                             $detail_log .= "正在處理 $s->class $s->seat $s->realname ($user_key)......<br>";
