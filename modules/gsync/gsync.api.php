@@ -249,7 +249,6 @@ function gs_syncUser($t, $user_key, $user = null, $recover = false)
             }
         }
         $user->setPhones($phones);
-        $user->setRecoveryPhone($t->mobile);
     }
     if (!empty($t->telephone)) {
         $phones = $user->getPhones();
