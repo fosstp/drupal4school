@@ -173,6 +173,12 @@ class GsyncOperationForm extends FormBase
                             $detail_log .= "正在處理 $t->dept_name $t->role_name $t->realname ($user_key)......<br>";
                         }
                         $user = gs_getUser($user_key);
+                        if (!$user) {
+                            $result = gs_findUsers('externalId='.$t->id);
+                            if ($result) {
+                                $user = $result[0];
+                            }
+                        }
                         if ($user) {
                             $data = gs_listUserGroups($user_key);
                             if ($data) {
@@ -460,7 +466,7 @@ class GsyncOperationForm extends FormBase
                 $students = get_students_of_class($class);
                 if ($students) {
                     foreach ($students as $s) {
-                        if ($std_account == 'id') {
+                        if ($std_account == 'id' || empty($s->account)) {
                             $user_key = $s->id.'@'.$config->get('google_domain');
                         } else {
                             $user_key = $s->account.'@'.$config->get('google_domain');
@@ -470,7 +476,10 @@ class GsyncOperationForm extends FormBase
                         }
                         $user = gs_getUser($user_key);
                         if (!$user) {
-                            $user = gs_findUsers('externalId='.$s->id)[0];
+                            $result = gs_findUsers('externalId='.$s->id);
+                            if ($result) {
+                                $user = $result[0];
+                            }
                         }
                         if ($user) {
                             if (is_null($s->status) || $s->status == 'active') {
