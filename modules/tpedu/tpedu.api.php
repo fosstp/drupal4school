@@ -296,7 +296,7 @@ function fetch_user($uuid)
             $fields['address'] = $user->homePostalAddress;
         }
         if (!empty($user->mail)) {
-            $fields['email'] = $user->mail;
+            $fields['email'] = preg_replace('/\s(?=)/', '', $user->mail);
         }
         if (!empty($user->wWWHomePage)) {
             $fields['www'] = $user->wWWHomePage;
