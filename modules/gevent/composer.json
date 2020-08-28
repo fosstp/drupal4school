@@ -1,6 +1,6 @@
 {
     "name": "d4s/gevent",
-    "description": "本模組提供將臺北市校園單一身分驗證師生帳號同步到 G Suite 網域的功能。",
+    "description": "本模組將為您新增「行事曆事件」內容類型，編輯事件時會自動同步到 G Suite，並提供「學校行事曆」頁面",
     "type": "project",
     "license": "GPL-2.0-or-later",
     "repositories": [

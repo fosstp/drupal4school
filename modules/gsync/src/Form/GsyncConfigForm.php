@@ -22,7 +22,7 @@ class GsyncConfigForm extends ConfigFormBase
     public function buildForm(array $form, FormStateInterface $form_state)
     {
         $config = $this->config('gsync.settings');
-        $form['helper'] = array(
+        $form['helper'] = [
             '#type' => 'markup',
             '#markup' => '<p>要使用 G Suite 帳號單一簽入功能，您必須建立 Google 開發專案並取得 Google 發給您的<em>網路應用程式憑證</em>，請依照以下步驟取得相關組態值：'.
             '<ol><li>請連結 <a href="https://console.cloud.google.com/apis/dashboard">Google apis 主控台</a>，如果還沒有介接專案，請先建立專案！</li>'.
@@ -38,58 +38,58 @@ class GsyncConfigForm extends ConfigFormBase
             '</ul></li>'.
             '<li>線上測試 OAuth 用戶端 API 資料存取，請連到 <a href="https://developers.google.com/oauthplayground/">OAuth playground</a>。</li>'.
             '</ol>',
-        );
-        $validators = array(
-            'file_validate_extensions' => array('json'),
-        );
-        $form['google_service_json'] = array(
+        ];
+        $validators = [
+            'file_validate_extensions' => ['json'],
+        ];
+        $form['google_service_json'] = [
             '#type' => 'file',
             '#title' => 'Google 服務帳號授權驗證 JSON 檔',
             '#description' => $config->get('google_service_json') ? '授權驗證檔案已經上傳，如沒有要變更金鑰，請勿再上傳' : '請從 Google apis 主控台專案管理頁面下載上述「服務帳戶」所提供的 JSON 檔案並上傳到這裡。',
-        );
-        $form['google_domain'] = array(
+        ];
+        $form['google_domain'] = [
             '#type' => 'textfield',
             '#title' => 'G Suite 網域',
             '#default_value' => $config->get('google_domain'),
             '#description' => '請設定 G Suite 網域名稱，通常是貴機構的 DNS 域名。',
-        );
-        $form['google_domain_admin'] = array(
+        ];
+        $form['google_domain_admin'] = [
             '#type' => 'textfield',
             '#title' => 'G Suite 管理員帳號',
             '#default_value' => $config->get('google_domain_admin'),
             '#description' => '請設定 G Suite 網域的管理員郵件地址，該管理員必須具備該網域的最高管理權限。Google 服務帳號將以該管理員的身份進行資料操作。',
-        );
-        $form['teacher_orgunit'] = array(
+        ];
+        $form['teacher_orgunit'] = [
             '#type' => 'textfield',
             '#title' => '教師帳號所在的機構',
             '#default_value' => $config->get('teacher_orgunit'),
             '#description' => '如果您使用子機構來區分教師與學生帳號，請在這裡輸入教師帳號子機構的階層路徑，最高層級為 <strong>/</strong>，假如您輸入<strong>/小學部/教師帳號</strong>，意味著所有的教師帳號將會同步到第二層級機構<strong>小學部</strong>的子機構<strong>教師帳號</strong>中。由於機構僅用來套用 Google 的相關設定，無法如群組一般擁有郵寄清單和論壇主頁，機構為階層結構，而群組為巢狀結構，所以您不應該使用機構來對教師帳號或學生帳號做進一步的分類，而應該使用群組來進行分類。本模組將依循此法則進行帳號同步作業！',
-        );
-        $form['student_orgunit'] = array(
+        ];
+        $form['student_orgunit'] = [
             '#type' => 'textfield',
             '#title' => '學生帳號所在的機構',
             '#default_value' => $config->get('student_orgunit'),
             '#description' => '如果您使用子機構來區分教師與學生帳號，請在這裡輸入學生帳號子機構的階層路徑，最高層級為 <strong>/</strong>，假如您輸入<strong>/小學部/學生帳號</strong>，意味著所有的學生帳號將會同步到第二層級機構<strong>小學部</strong>的子機構<strong>學生帳號</strong>中。',
-        );
-        $form['student_account'] = array(
+        ];
+        $form['student_account'] = [
             '#type' => 'select',
             '#title' => '學生帳號的樣式',
             '#multiple' => false,
-            '#options' => array(
+            '#options' => [
                 'id' => '學號',
                 'account' => '臺北市校園單一身分驗證登入帳號',
-            ),
+            ],
             '#size' => 1,
             '#default_value' => $config->get('student_account') ?: 'id',
             '#description' => '建立學生帳號時，要以什麼資料當作預設帳號？',
-        );
-        $form['actions'] = array(
+        ];
+        $form['actions'] = [
             '#type' => 'actions',
-            'submit' => array(
+            'submit' => [
                 '#type' => 'submit',
                 '#value' => '儲存組態',
-            ),
-        );
+            ],
+        ];
 
         return $form;
     }
@@ -102,7 +102,7 @@ class GsyncConfigForm extends ConfigFormBase
         $values = $form_state->cleanValues()->getValues();
         foreach ($values as $key => $value) {
             if ($key == 'google_service_json') {
-                $file = file_save_upload('google_service_json', array('file_validate_extensions' => array('json')), 'public://gsync', 0, FILE_EXISTS_REPLACE);
+                $file = file_save_upload('google_service_json', ['file_validate_extensions' => ['json']], 'public://gsync', 0, FILE_EXISTS_REPLACE);
                 if ($file) {
                     $file->setPermanent();
                     $file->save();
@@ -116,7 +116,7 @@ class GsyncConfigForm extends ConfigFormBase
         $config->save();
         $ok = false;
         if ($config->get('google_service_json') && $config->get('google_domain') && $config->get('google_domain_admin')) {
-            $directory = initGoogleService();
+            $directory = initGoogleDirectory();
             if ($directory && gs_getUser($config->get('google_domain_admin'))) {
                 $ok = true;
             }

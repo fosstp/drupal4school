@@ -2,7 +2,7 @@
 
 $directory = null;
 
-function initGoogleService()
+function initGoogleDirectory()
 {
     global $directory;
     if ($directory instanceof \Google_Service_Directory) {
@@ -12,14 +12,14 @@ function initGoogleService()
         $uri = $config->get('google_service_json');
         $path = \Drupal::service('file_system')->realpath($uri);
         $user_to_impersonate = $config->get('google_domain_admin');
-        $scopes = array(
+        $scopes = [
             \Google_Service_Directory::ADMIN_DIRECTORY_ORGUNIT,
             \Google_Service_Directory::ADMIN_DIRECTORY_USER,
             \Google_Service_Directory::ADMIN_DIRECTORY_GROUP,
             \Google_Service_Directory::ADMIN_DIRECTORY_GROUP_MEMBER,
             \Google_Service_Calendar::CALENDAR,
             \Google_Service_Calendar::CALENDAR_EVENTS,
-        );
+        ];
 
         $client = new \Google_Client();
         $client->setAuthConfig($path);
@@ -111,7 +111,7 @@ function gs_findUsers($filter)
     global $directory;
     $config = \Drupal::config('gsync.settings');
     try {
-        $result = $directory->users->listUsers(array('domain' => $config->get('google_domain'), 'query' => $filter));
+        $result = $directory->users->listUsers(['domain' => $config->get('google_domain'), 'query' => $filter]);
 
         return $result->getUsers();
     } catch (\Google_Service_Exception $e) {
@@ -213,7 +213,7 @@ function gs_syncUser($t, $user_key, $user = null, $recover = false)
     if (!empty($t->email) && $t->email != $user->getPrimaryEmail()) {
         $user->setRecoveryEmail($t->email);
     }
-    $orgs = array();
+    $orgs = [];
     if ($t->student) {
         $neworg = new \Google_Service_Directory_UserOrganization();
         $neworg->setType('school');
@@ -343,7 +343,7 @@ function gs_listGroups()
     global $directory;
     $config = \Drupal::config('gsync.settings');
     try {
-        return $directory->groups->listGroups(array('domain' => $config->get('google_domain')))->getGroups();
+        return $directory->groups->listGroups(['domain' => $config->get('google_domain')])->getGroups();
     } catch (\Google_Service_Exception $e) {
         \Drupal::logger('google')->debug('gs_listGroups:'.$e->getMessage());
 
@@ -356,7 +356,7 @@ function gs_listUserGroups($user_key)
     global $directory;
     $config = \Drupal::config('gsync.settings');
     try {
-        return $directory->groups->listGroups(array('domain' => $config->get('google_domain'), 'userKey' => $user_key))->getGroups();
+        return $directory->groups->listGroups(['domain' => $config->get('google_domain'), 'userKey' => $user_key])->getGroups();
     } catch (\Google_Service_Exception $e) {
         \Drupal::logger('google')->debug('gs_listGroups:'.$e->getMessage());
 
@@ -425,8 +425,8 @@ function guess_name($myname)
 {
     $len = mb_strlen($myname, 'UTF-8');
     if ($len > 3) {
-        return array(mb_substr($myname, 0, 2, 'UTF-8'), mb_substr($myname, 2, null, 'UTF-8'));
+        return [mb_substr($myname, 0, 2, 'UTF-8'), mb_substr($myname, 2, null, 'UTF-8')];
     } else {
-        return array(mb_substr($myname, 0, 1, 'UTF-8'), mb_substr($myname, 1, null, 'UTF-8'));
+        return [mb_substr($myname, 0, 1, 'UTF-8'), mb_substr($myname, 1, null, 'UTF-8')];
     }
 }

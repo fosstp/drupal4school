@@ -32,7 +32,7 @@ function get_tokens($auth_code)
     ));
     $data = json_decode($response->getBody());
     if ($response->getStatusCode() == 200) {
-        $tempstore = \Drupal::service('user.private_tempstore')->get('tpedu');
+        $tempstore = \Drupal::service('tempstore.private')->get('tpedu');
         $tempstore->set('expires_in', time() + $data->expires_in);
         $tempstore->set('access_token', $data->access_token);
         $tempstore->set('refresh_token', $data->refresh_token);
@@ -47,7 +47,7 @@ function get_tokens($auth_code)
 
 function refresh_tokens()
 {
-    $tempstore = \Drupal::service('user.private_tempstore')->get('tpedu');
+    $tempstore = \Drupal::service('tempstore.private')->get('tpedu');
     if ($tempstore->get('refresh_token') && $tempstore->get('expires_in') < time()) {
         $config = \Drupal::config('tpedu.settings');
         $response = \Drupal::httpClient()->post($config->get('api.token'), array(
@@ -62,7 +62,7 @@ function refresh_tokens()
         ));
         $data = json_decode($response->getBody());
         if ($response->getStatusCode() == 200) {
-            $tempstore = \Drupal::service('user.private_tempstore')->get('tpedu');
+            $tempstore = \Drupal::service('tempstore.private')->get('tpedu');
             $tempstore->set('expires_in', time() + $data->expires_in);
             $tempstore->set('access_token', $data->access_token);
             $tempstore->set('refresh_token', $data->refresh_token);
@@ -79,7 +79,7 @@ function refresh_tokens()
 function who()
 {
     $config = \Drupal::config('tpedu.settings');
-    $tempstore = \Drupal::service('user.private_tempstore')->get('tpedu');
+    $tempstore = \Drupal::service('tempstore.private')->get('tpedu');
     if ($tempstore->get('access_token')) {
         $response = \Drupal::httpClient()->get($config->get('api.login'), array(
             'headers' => array('Authorization' => 'Bearer '.$tempstore->get('access_token')),

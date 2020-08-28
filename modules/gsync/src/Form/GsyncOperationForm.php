@@ -2,10 +2,10 @@
 
 namespace Drupal\gsync\Form;
 
-use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Form\FormBase;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\ReplaceCommand;
+use Drupal\Core\Form\FormBase;
+use Drupal\Core\Form\FormStateInterface;
 
 class GsyncOperationForm extends FormBase
 {
@@ -18,126 +18,126 @@ class GsyncOperationForm extends FormBase
     {
         $config = \Drupal::config('gsync.settings');
         if ($config->get('enabled')) {
-            $form['help'] = array(
+            $form['help'] = [
                 '#markup' => '<p>進行帳號同步到 G Suite 時，會花費較久的時間，請耐心等候同步作業完成。未完成前請勿離開此頁面、重新整理頁面或是關閉瀏覽器！<br>'.
                 '同步程式無法同步密碼，程序運作流程如下：<ol>'.
                 '<li>以臺北市校園單一身分驗證服務的電子郵件搜尋 G Suite，帳號已存在者使用現有帳號，如果搜尋不到則自動幫您建立與登入單一身分驗證服務相同的帳號。（如果使用者已經有一個匹配的 G Suite 帳號，務必登錄於單一身份驗證服務中）</li>'.
                 '<li>搜尋 G Suite 群組的說明(description)欄位是否與校務行政系統裡的所屬部門名稱相同，若相同則使用該群組，如果找不到則自動幫您建立群組。（如果您已經有一個匹配的 G Suite 群組，請在說明欄輸入部門名稱，以便讓程式可以正確辨識）</li>'.
                 '<li>檢查使用者是否已經在群組裡，若否則將使用者加入。</li>'.
                 '<li>將使用者退出其它群組。</li></ol></p>',
-            );
-            $form['password_sync'] = array(
+            ];
+            $form['password_sync'] = [
                 '#type' => 'checkbox',
                 '#title' => '密碼重設為預設值',
                 '#description' => '注意：預設密碼為身分證字號後六碼',
-            );
-            $form['disable_nonuse'] = array(
+            ];
+            $form['disable_nonuse'] = [
                 '#type' => 'checkbox',
                 '#title' => '停用離職員工或不在籍學生',
                 '#description' => '如果在臺北市校園單一身分驗證服務中已經將人員設定為刪除或停用，將會停用該人員的 G Suite 帳號。',
-            );
-            $form['delete_nonuse'] = array(
+            ];
+            $form['delete_nonuse'] = [
                 '#type' => 'checkbox',
                 '#title' => '移除離職員工或不在籍學生',
                 '#description' => '如果在臺北市校園單一身分驗證服務中已經將人員設定為刪除或停用，將會刪除該人員的 G Suite 帳號。',
-            );
-            $form['log'] = array(
+            ];
+            $form['log'] = [
                 '#type' => 'checkbox',
                 '#title' => '顯示詳細處理紀錄',
                 '#description' => '預設僅顯示錯誤訊息，勾選此選項將會顯示詳細處理紀錄以便了解處理流程。',
-            );
-            $form['domain'] = array(
+            ];
+            $form['domain'] = [
                 '#type' => 'radios',
                 '#title' => '請選擇要同步的帳號類型',
                 '#default_value' => 0,
-                '#options' => array(0 => '教職員', 1 => '學生'),
-            );
+                '#options' => [0 => '教職員', 1 => '學生'],
+            ];
             $units = all_units();
-            $deplist = array();
+            $deplist = [];
             if ($units) {
                 foreach ($units as $u) {
                     $deplist[$u->id] = $u->name;
                 }
             }
-            $form['dept'] = array(
+            $form['dept'] = [
                 '#type' => 'select',
                 '#title' => '要同步哪些行政單位？',
                 '#multiple' => true,
                 '#options' => $deplist,
                 '#size' => 15,
-                '#states' => array(
-                    'visible' => array(
-                        ':input[name="domain"]' => array('value' => 0),
-                    ),
-                ),
-            );
+                '#states' => [
+                    'visible' => [
+                        ':input[name="domain"]' => ['value' => 0],
+                    ],
+                ],
+            ];
             $grades = all_grade();
-            $gradelist = array();
+            $gradelist = [];
             if ($grades) {
                 foreach ($grades as $g) {
                     $gradelist[$g->grade] = $g->grade.'年級';
                 }
             }
-            $form['grade'] = array(
+            $form['grade'] = [
                 '#type' => 'select',
                 '#title' => '請選擇要同步的年級',
                 '#multiple' => false,
                 '#options' => $gradelist,
                 '#default_value' => 1,
                 '#size' => 1,
-                '#states' => array(
-                    'visible' => array(
-                        ':input[name="domain"]' => array('value' => 1),
-                    ),
-                ),
-            );
+                '#states' => [
+                    'visible' => [
+                        ':input[name="domain"]' => ['value' => 1],
+                    ],
+                ],
+            ];
             if ($grades) {
                 foreach ($grades as $g) {
                     $classes = get_classes_of_grade($g->grade);
-                    $classlist = array();
+                    $classlist = [];
                     if ($classes) {
                         foreach ($classes as $c) {
                             $classlist[$c->id] = $c->name;
                         }
                     }
-                    $form['grade'.$g->grade] = array(
+                    $form['grade'.$g->grade] = [
                         '#type' => 'select',
                         '#title' => '要同步哪些班級的學生？',
                         '#multiple' => true,
                         '#options' => $classlist,
                         '#size' => 10,
-                        '#states' => array(
-                            'visible' => array(
-                                ':input[name="domain"]' => array('value' => 1),
-                                ':input[name="grade"]' => array('value' => $g->grade),
-                            ),
-                        ),
-                    );
+                        '#states' => [
+                            'visible' => [
+                                ':input[name="domain"]' => ['value' => 1],
+                                ':input[name="grade"]' => ['value' => $g->grade],
+                            ],
+                        ],
+                    ];
                 }
             }
-            $form['start'] = array(
+            $form['start'] = [
                 '#type' => 'button',
                 '#value' => '開始同步',
                 '#executes_submit_callback' => false,
-                '#ajax' => array(
+                '#ajax' => [
                     'callback' => [$this, 'gsync_start'],
-                ),
-            );
-            $form['viewport'] = array(
+                ],
+            ];
+            $form['viewport'] = [
                 '#type' => 'fieldset',
                 '#collapsible' => false,
                 '#collapsed' => false,
-            );
-            $form['viewport']['log_div'] = array(
+            ];
+            $form['viewport']['log_div'] = [
                 '#type' => 'item',
                 '#title' => '詳細處理紀錄',
-            );
+            ];
         } else {
-            $form['help'] = array(
+            $form['help'] = [
                 '#type' => 'item',
                 '#title' => '提示訊息：',
                 '#markup' => '請先完成 G Suite 同步模組的相關設定！',
-            );
+            ];
         }
 
         return $form;
@@ -155,10 +155,10 @@ class GsyncOperationForm extends FormBase
         $time_start = microtime(true);
         $domain = $form_state->getValue('domain');
         $log = $form_state->getValue('log');
-        initGoogleService();
+        initGoogleDirectory();
         $all_groups = gs_listGroups();
         if (!$all_groups) {
-            $all_groups = array();
+            $all_groups = [];
         }
         if ($domain == 0) {
             $depts = $form_state->getValue('dept');
@@ -166,7 +166,7 @@ class GsyncOperationForm extends FormBase
                 $teachers = get_teachers_of_unit($dept);
                 if ($teachers) {
                     foreach ($teachers as $t) {
-                        $groups = array();
+                        $groups = [];
                         $user_key = $t->email;
                         if (!strpos($user_key, $google_domain)) {
                             $user_key = $t->account.'@'.$google_domain;
