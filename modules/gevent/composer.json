@@ -1,0 +1,16 @@
+{
+    "name": "d4s/gevent",
+    "description": "本模組提供將臺北市校園單一身分驗證師生帳號同步到 G Suite 網域的功能。",
+    "type": "project",
+    "license": "GPL-2.0-or-later",
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://packages.drupal.org/8"
+        }
+    ],
+    "require": {
+        "cache/filesystem-adapter": "^1.0",
+        "google/apiclient": "^2.0"
+    }
+}

@@ -1,22 +1,28 @@
-gsync.settings:
+gevent.settings:
   type: conﬁg_object
   mapping:
-    google_service_json:
+    entity_type:
       type: string
-      label: 'Google Service Account 授權檔案'
-    google_domain_admin:
+      label: '行事曆事件內容類型'
+    field_title:
       type: string
       label: 'G Suite 管理員帳號'
-    google_domain:
+    field_memo:
       type: string
       label: 'G Suite 網域'
-    teacher_orgunit:
+    field_place:
       type: string
       label: '教師帳號所在的 G Suite 子機構'
-    student_orgunit:
+    field_attendee:
       type: string
       label: '學生帳號所在的 G Suite 子機構'
-    student_account:
+    field_calendar_id:
+      type: string
+      label: '學生帳號的樣式'
+    field_event_id:
+      type: string
+      label: '學生帳號的樣式'
+    calendar_owner:
       type: string
       label: '學生帳號的樣式'
     enabled:

@@ -1,45 +1,48 @@
-api.dc:
-  type: string
-  label: '臺北市校園單一身分驗證學校代碼'
-enable:
-  type: boolean
-  label: '已啟用臺北市校園單一身分驗證模組'
-client_id:
-  type: string
-  label: '臺北市校園單一身分驗證介接專案編號'
-client_secret:
-  type: string
-  label: '臺北市校園單一身分驗證介接專案密鑰'
-admin_token:
-  type: string
-  label: '臺北市校園單一身分驗證學校管理員預存令牌'
-call_back:
-  type: string
-  label: '臺北市校園單一身分驗證學校管理員授權回呼網址'
-sub_dept:
-  type: boolean
-  label: '科任教師部門代號（未兼行政職務應出現之職稱）'
-refresh_days:
-  type: integer
-  label: '快取資料庫更新頻率'
-display_unit:
-  type: boolean
-  label: '是否在真實姓名之前顯示單位名稱'
-display_title:
-  type: boolean
-  label: '是否在真實姓名之前顯示職務名稱'
-allow_default_login:
-  type: boolean
-  label: '允許使用 Drupal 本地帳號登入'
-login_goto_url:
-  type: string
-  label: '（選項）使用者登入後要轉送到哪個 URL'
-logout_goto_url:
-  type: string
-  label: '（選項）使用者登出後要轉送到哪個 URL'
-personal_data_notice:
-  type: boolean
-  label: '要顯示個資政策連結嗎？'
+tpedu.settings:
+  type: conﬁg_object
+  mapping:
+    api.dc:
+      type: string
+      label: '臺北市校園單一身分驗證學校代碼'
+    enable:
+      type: boolean
+      label: '已啟用臺北市校園單一身分驗證模組'
+    client_id:
+      type: string
+      label: '臺北市校園單一身分驗證介接專案編號'
+    client_secret:
+      type: string
+      label: '臺北市校園單一身分驗證介接專案密鑰'
+    admin_token:
+      type: string
+      label: '臺北市校園單一身分驗證學校管理員預存令牌'
+    call_back:
+      type: string
+      label: '臺北市校園單一身分驗證學校管理員授權回呼網址'
+    sub_dept:
+      type: boolean
+      label: '科任教師部門代號（未兼行政職務應出現之職稱）'
+    refresh_days:
+      type: integer
+      label: '快取資料庫更新頻率'
+    display_unit:
+      type: boolean
+      label: '是否在真實姓名之前顯示單位名稱'
+    display_title:
+      type: boolean
+      label: '是否在真實姓名之前顯示職務名稱'
+    allow_default_login:
+      type: boolean
+      label: '允許使用 Drupal 本地帳號登入'
+    login_goto_url:
+      type: string
+      label: '（選項）使用者登入後要轉送到哪個 URL'
+    logout_goto_url:
+      type: string
+      label: '（選項）使用者登出後要轉送到哪個 URL'
+    personal_data_notice:
+      type: boolean
+      label: '要顯示個資政策連結嗎？'
 field.field_settings.tpedu_units:
   type: mapping
   label: '行政單位欄位設定'
