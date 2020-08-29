@@ -36,7 +36,7 @@ services:
       DB_PASSWORD: dbpassword
 #要將站台內容永久化，請啟用以下設定
 #    volumes:
-#      - ./sites:/var/www/html/sites
+#      - ./files:/var/www/html/sites/default/files
     depends_on:
       - mysql
     restart: always
