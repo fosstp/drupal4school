@@ -92,7 +92,7 @@ function ad_getGroup($group)
     $base_dn = $config->get('users_dn');
     $filter = "(&(objectClass=group)(cn=$group))";
     $result = @ldap_search($ad_conn, $base_dn, $filter);
-    $data = array();
+    $data = [];
     if ($result) {
         $infos = @ldap_get_entries($ad_conn, $result);
         if ($infos['count'] > 0) {
@@ -108,7 +108,7 @@ function ad_getGroup($group)
 function ad_createGroup($group, $dn, $group_name)
 {
     $ad_conn = ad_admin();
-    $groupinfo = array();
+    $groupinfo = [];
     $groupinfo['objectClass'] = 'top';
     $groupinfo['objectClass'] = 'group';
     $groupinfo['cn'] = $group;
@@ -127,7 +127,7 @@ function ad_createGroup($group, $dn, $group_name)
 function ad_addMember($dn, $userDn)
 {
     $ad_conn = ad_admin();
-    $result = @ldap_mod_add($ad_conn, $dn, array('member' => $userDn));
+    $result = @ldap_mod_add($ad_conn, $dn, ['member' => $userDn]);
     if ($result) {
         return true;
     } else {
@@ -138,7 +138,7 @@ function ad_addMember($dn, $userDn)
 function ad_removeMember($dn, $userDn)
 {
     $ad_conn = ad_admin();
-    $result = @ldap_mod_del($ad_conn, $dn, array('member' => $userDn));
+    $result = @ldap_mod_del($ad_conn, $dn, ['member' => $userDn]);
     if ($result) {
         return true;
     } else {
@@ -153,7 +153,7 @@ function ad_getUser($account)
     $base_dn = $config->get('users_dn');
     $filter = "(sAMAccountName=$account)";
     $result = @ldap_search($ad_conn, $base_dn, $filter);
-    $data = array();
+    $data = [];
     if ($result) {
         $infos = @ldap_get_entries($ad_conn, $result);
         if ($infos['count'] > 0) {
@@ -167,12 +167,12 @@ function ad_getUser($account)
 function ad_createUser($user, $dn)
 {
     $ad_conn = ad_admin();
-    $userinfo = array();
-    $userinfo['objectClass'] = array('top', 'person', 'organizationalPerson', 'user');
+    $userinfo = [];
+    $userinfo['objectClass'] = ['top', 'person', 'organizationalPerson', 'user'];
     $userinfo['cn'] = $user->account;
     $userinfo['sAMAccountName'] = $user->account;
     $userinfo['accountExpires'] = 0;
-    $userinfo['userAccountControl'] = '0x10220';
+    $userinfo['userAccountControl'] = 66080; //0x10220
     $userinfo['userPassword'] = substr($user->idno, -6);
     $userinfo['unicodePwd'] = pwd_encryption(substr($user->idno, -6));
     if ($user->sn && $user->gn) {
@@ -201,7 +201,7 @@ function ad_createUser($user, $dn)
 function ad_syncUser($user, $dn)
 {
     $ad_conn = ad_admin();
-    $userinfo = array();
+    $userinfo = [];
     if ($user->sn && $user->gn) {
         $userinfo['sn'] = $user->sn;
         $userinfo['givenName'] = $user->gn;
@@ -263,7 +263,7 @@ function ad_deleteUser($dn)
 function ad_changeAccount($dn, $new_account)
 {
     $ad_conn = ad_admin();
-    $result = @ldap_mod_replace($ad_conn, $dn, array('sAMAccountName' => $new_account));
+    $result = @ldap_mod_replace($ad_conn, $dn, ['sAMAccountName' => $new_account]);
     if ($result) {
         return true;
     } else {
@@ -274,7 +274,7 @@ function ad_changeAccount($dn, $new_account)
 function ad_changePass($dn, $password)
 {
     $ad_conn = ad_admin();
-    $userdata = array();
+    $userdata = [];
     $userdata['userPassword'] = $password;
     $userdata['unicodePwd'] = pwd_encryption($password);
     $result = @ldap_mod_replace($ad_conn, $dn, $userdata);
