@@ -148,7 +148,7 @@ function gs_listEvents($calendarId)
     $opt_param['timeMin'] = $mydate['min'];
     $opt_param['timeMax'] = $mydate['max'];
     try {
-        $events = $calendar->$service->events->listEvents($calendarId, $opt_param);
+        $events = $calendar->events->listEvents($calendarId, $opt_param);
 
         return $events->getItems();
     } catch (\Google_Service_Exception $e) {
