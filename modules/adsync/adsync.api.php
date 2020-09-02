@@ -164,6 +164,23 @@ function ad_getUser($account)
     return $data;
 }
 
+function ad_findUser($filter)
+{
+    $ad_conn = ad_admin();
+    $config = \Drupal::config('adsync.settings');
+    $base_dn = $config->get('users_dn');
+    $result = @ldap_search($ad_conn, $base_dn, $filter);
+    $data = [];
+    if ($result) {
+        $infos = @ldap_get_entries($ad_conn, $result);
+        if ($infos['count'] > 0) {
+            $data = $infos[0];
+        }
+    }
+
+    return $data;
+}
+
 function ad_createUser($user, $dn)
 {
     $ad_conn = ad_admin();
