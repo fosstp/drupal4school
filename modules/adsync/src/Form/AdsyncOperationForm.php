@@ -326,7 +326,17 @@ class AdsyncOperationForm extends FormBase
                     }
                     foreach ($groups as $g) {
                         $group_dn = "cn=$g,$base_dn";
-                        ad_removeMember($group_dn, $user_dn);
+                        if ($log) {
+                            $detail_log .= "正在將使用者： $t->role_name $t->realname 從群組 $group_dn 移除......";
+                        }
+                        $result = ad_removeMember($group_dn, $user_dn);
+                        if ($result) {
+                            if ($log) {
+                                $detail_log .= '移除成功！<br>';
+                            }
+                        } else {
+                            $detail_log .= "無法將使用者 $t->role_name $t->realname 從群組 $group_dn 移除！".ad_error().'<br>';
+                        }
                     }
                 }
             }

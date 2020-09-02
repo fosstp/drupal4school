@@ -13,23 +13,32 @@ function current_seme()
         $seme = 2;
     }
 
-    return array('year' => $year, 'seme' => $seme);
+    return ['year' => $year, 'seme' => $seme];
+}
+
+function is_phone($str)
+{
+    if (preg_match('/^09[0-9]{8}$/', $str)) {
+        return true;
+    } else {
+        return false;
+    }
 }
 
 function get_tokens($auth_code)
 {
     global $base_url;
     $config = \Drupal::config('tpedu.settings');
-    $response = \Drupal::httpClient()->post($config->get('api.token'), array(
-        'headers' => array('Content-Type' => 'application/x-www-form-urlencoded'),
-        'form_params' => array(
+    $response = \Drupal::httpClient()->post($config->get('api.token'), [
+        'headers' => ['Content-Type' => 'application/x-www-form-urlencoded'],
+        'form_params' => [
             'grant_type' => 'authorization_code',
             'client_id' => $config->get('client_id'),
             'client_secret' => $config->get('client_secret'),
             'redirect_uri' => $config->get('call_back'),
             'code' => $auth_code,
-        ),
-    ));
+        ],
+    ]);
     $data = json_decode($response->getBody());
     if ($response->getStatusCode() == 200) {
         $tempstore = \Drupal::service('tempstore.private')->get('tpedu');
@@ -50,16 +59,16 @@ function refresh_tokens()
     $tempstore = \Drupal::service('tempstore.private')->get('tpedu');
     if ($tempstore->get('refresh_token') && $tempstore->get('expires_in') < time()) {
         $config = \Drupal::config('tpedu.settings');
-        $response = \Drupal::httpClient()->post($config->get('api.token'), array(
-            'headers' => array('Content-Type' => 'application/x-www-form-urlencoded'),
-            'form_params' => array(
+        $response = \Drupal::httpClient()->post($config->get('api.token'), [
+            'headers' => ['Content-Type' => 'application/x-www-form-urlencoded'],
+            'form_params' => [
                 'grant_type' => 'refresh_token',
                 'client_id' => $config->get('client_id'),
                 'client_secret' => $config->get('client_secret'),
                 'refresh_token' => $tempstore->get('refresh_token'),
                 'scope' => 'user',
-            ),
-        ));
+            ],
+        ]);
         $data = json_decode($response->getBody());
         if ($response->getStatusCode() == 200) {
             $tempstore = \Drupal::service('tempstore.private')->get('tpedu');
@@ -81,9 +90,9 @@ function who()
     $config = \Drupal::config('tpedu.settings');
     $tempstore = \Drupal::service('tempstore.private')->get('tpedu');
     if ($tempstore->get('access_token')) {
-        $response = \Drupal::httpClient()->get($config->get('api.login'), array(
-            'headers' => array('Authorization' => 'Bearer '.$tempstore->get('access_token')),
-        ));
+        $response = \Drupal::httpClient()->get($config->get('api.login'), [
+            'headers' => ['Authorization' => 'Bearer '.$tempstore->get('access_token')],
+        ]);
         $user = json_decode($response->getBody());
         if ($response->getStatusCode() == 200) {
             return $user->uuid;
@@ -114,8 +123,8 @@ function api($which, array $replacement = null)
         $dataapi = str_replace('{dc}', $config->get('api.dc'), $dataapi);
     } else {
         $replacement['dc'] = $config->get('api.dc');
-        $search = array();
-        $values = array();
+        $search = [];
+        $values = [];
         foreach ($replacement as $key => $data) {
             $search[] = '{'.$key.'}';
             $values[] = $data;
@@ -155,11 +164,11 @@ function fetch_user($uuid)
     $database->delete('tpedu_jobs')->condition('uuid', $uuid)->execute();
     $database->delete('tpedu_assignment')->condition('uuid', $uuid)->execute();
     $config = \Drupal::config('tpedu.settings');
-    $user = api('one_user', array('uuid' => $uuid));
+    $user = api('one_user', ['uuid' => $uuid]);
     if ($user) {
         if (is_array($user->uid)) {
             foreach ($user->uid as $u) {
-                if (!strpos($u, '@') && !is_numeric($u)) {
+                if (!strpos($u, '@') && !is_phone($u)) {
                     $account = $u;
                 }
             }
@@ -230,11 +239,11 @@ function fetch_user($uuid)
                                 }
                             }
                         }
-                        $database->insert('tpedu_jobs')->fields(array(
+                        $database->insert('tpedu_jobs')->fields([
                             'uuid' => $uuid,
                             'dept_id' => $a[1],
                             'role_id' => $a[2],
-                        ))->execute();
+                        ])->execute();
                     }
                 } else {
                     $a = explode(',', $user->title);
@@ -242,11 +251,11 @@ function fetch_user($uuid)
                     $m_role_id = $a[1];
                     $d = $user->titleName->$o[0];
                     $m_role_name = $d->name;
-                    $database->insert('tpedu_jobs')->fields(array(
+                    $database->insert('tpedu_jobs')->fields([
                         'uuid' => $uuid,
                         'dept_id' => $a[1],
                         'role_id' => $a[2],
-                    ))->execute();
+                    ])->execute();
                 }
             }
             if (!empty($user->tpTutorClass)) {
@@ -255,15 +264,15 @@ function fetch_user($uuid)
             if (isset($user->tpTeachClass)) {
                 foreach ($user->tpTeachClass as $assign_pair) {
                     $a = explode(',', $assign_pair);
-                    $database->insert('tpedu_assignment')->fields(array(
+                    $database->insert('tpedu_assignment')->fields([
                         'uuid' => $uuid,
                         'class_id' => $a[1],
                         'subject_id' => $a[2],
-                    ))->execute();
+                    ])->execute();
                 }
             }
         }
-        $fields = array(
+        $fields = [
             'uuid' => $uuid,
             'idno' => $user->cn,
             'id' => $user->employeeNumber,
@@ -279,7 +288,7 @@ function fetch_user($uuid)
             'birthdate' => date('Y-m-d H:i:s', strtotime($user->birthDate)),
             'gender' => $user->gender,
             'status' => $user->inetUserStatus,
-        );
+        ];
         if (!empty($user->mobile)) {
             $fields['mobile'] = $user->mobile;
         }
@@ -365,7 +374,7 @@ function find_user(array $filter)
     }
     $uuids = api('find_users', $filter);
     if ($uuids && is_array($uuids)) {
-        $users = array();
+        $users = [];
         foreach ($uuids as $uuid) {
             $users[] = get_user($uuid);
         }
@@ -381,7 +390,7 @@ function all_teachers()
 {
     $uuids = api('all_teachers');
     if ($uuids && is_array($uuids)) {
-        $users = array();
+        $users = [];
         foreach ($uuids as $uuid) {
             $users[] = get_user($uuid);
         }
@@ -404,10 +413,10 @@ function fetch_units()
                 $config->set('sub_dept', $o->ou);
                 $config->save();
             }
-            $fields = array(
+            $fields = [
                 'id' => $o->ou,
                 'name' => $o->description,
-            );
+            ];
             \Drupal::database()->insert('tpedu_units')->fields($fields)->execute();
         }
     }
@@ -461,7 +470,7 @@ function get_units_of_job($uuid)
         $data = $query->fetchAll();
     }
     if ($data) {
-        $units = array();
+        $units = [];
         foreach ($data as $job) {
             $units[] = get_unit($job->dept_id);
         }
@@ -483,7 +492,7 @@ function get_teachers_of_unit($ou)
         $data = $query->fetchAll();
     }
     if ($data) {
-        $users = array();
+        $users = [];
         foreach ($data as $job) {
             $users[] = get_user($job->uuid);
         }
@@ -500,14 +509,14 @@ function fetch_roles()
     $ous = api('all_units');
     if ($ous) {
         foreach ($ous as $o) {
-            $roles = api('roles_of_unit', array('ou' => $o->ou));
+            $roles = api('roles_of_unit', ['ou' => $o->ou]);
             if ($roles) {
                 foreach ($roles as $r) {
-                    $fields = array(
+                    $fields = [
                         'id' => $r->cn,
                         'unit' => $o->ou,
                         'name' => $r->description,
-                    );
+                    ];
                     \Drupal::database()->insert('tpedu_roles')->fields($fields)->execute();
                 }
             }
@@ -583,7 +592,7 @@ function get_teachers_of_role($ro)
         $data = $query->fetchAll();
     }
     if ($data) {
-        $users = array();
+        $users = [];
         foreach ($data as $job) {
             $users[] = get_user($job->uuid);
         }
@@ -600,11 +609,11 @@ function fetch_subjects()
     $subjects = api('all_subjects');
     if ($subjects) {
         foreach ($subjects as $s) {
-            $fields = array(
+            $fields = [
                 'id' => $s->tpSubject,
                 'domain' => $s->tpSubjectDomain,
                 'name' => $s->description,
-            );
+            ];
             \Drupal::database()->insert('tpedu_subjects')->fields($fields)->execute();
         }
     }
@@ -686,7 +695,7 @@ function get_teachers_of_domain($dom)
         $data = $query->fetchAll();
     }
     if ($data) {
-        $users = array();
+        $users = [];
         foreach ($data as $assign) {
             $users[] = get_user($assign->uuid);
         }
@@ -707,7 +716,7 @@ function get_subjects_of_assignment($uuid)
         $data = $query->fetchAll();
     }
     if ($data) {
-        $subjects = array();
+        $subjects = [];
         foreach ($data as $assign) {
             $subjects[] = get_subject($assign->subject_id);
         }
@@ -748,7 +757,7 @@ function get_teachers_of_subject($sub)
         $data = $query->fetchAll();
     }
     if ($data) {
-        $users = array();
+        $users = [];
         foreach ($data as $assign) {
             $users[] = get_user($assign->uuid);
         }
@@ -770,7 +779,7 @@ function get_classes_of_subject($sub)
         $data = $query->fetchAll();
     }
     if ($data) {
-        $classes = array();
+        $classes = [];
         foreach ($data as $c) {
             $classes[] = one_class($c->class_id);
         }
@@ -787,11 +796,11 @@ function fetch_classes()
     $classes = api('all_classes');
     if ($classes) {
         foreach ($classes as $c) {
-            $fields = array(
+            $fields = [
                 'id' => $c->ou,
                 'grade' => $c->grade,
                 'name' => $c->description,
-            );
+            ];
             if (isset($c->tutor[0])) {
                 $fields['tutor'] = $c->tutor[0];
             }
@@ -879,13 +888,13 @@ function get_teachers_of_grade($grade)
 function fetch_class($ou)
 {
     \Drupal::database()->delete('tpedu_classes')->condition('id', $ou)->execute();
-    $c = api('one_class', array('cls' => $ou));
+    $c = api('one_class', ['cls' => $ou]);
     if ($c) {
-        $fields = array(
+        $fields = [
             'id' => $c->ou,
             'grade' => $c->grade,
             'name' => $c->description,
-        );
+        ];
         if (isset($c->tutor)) {
             $fields['tutor'] = $c->tutor;
         }
@@ -934,7 +943,7 @@ function get_teachers_of_class($cls)
         $data = $query->fetchAll();
     }
     if ($data) {
-        $users = array();
+        $users = [];
         foreach ($data as $assign) {
             $users[] = get_user($assign->uuid);
         }
@@ -947,9 +956,9 @@ function get_teachers_of_class($cls)
 
 function get_students_of_class($cls)
 {
-    $uuids = api('students_of_class', array('cls' => $cls));
+    $uuids = api('students_of_class', ['cls' => $cls]);
     if ($uuids && is_array($uuids)) {
-        $users = array();
+        $users = [];
         foreach ($uuids as $uuid) {
             $users[] = get_user($uuid);
         }
@@ -972,7 +981,7 @@ function get_subjects_of_class($cls)
         $data = $query->fetchAll();
     }
     if ($data) {
-        $subjects = array();
+        $subjects = [];
         foreach ($data as $s) {
             $subjects[] = get_subject($s->subject_id);
         }
@@ -1012,7 +1021,7 @@ function get_teach_classes($uuid)
         $data = $query->fetchAll();
     }
     if ($data) {
-        $classes = array();
+        $classes = [];
         foreach ($data as $c) {
             $classes[] = one_class($c->class_id);
         }
@@ -1034,7 +1043,7 @@ function get_teach_subjects($uuid)
         $data = $query->fetchAll();
     }
     if ($data) {
-        $subjects = array();
+        $subjects = [];
         foreach ($data as $s) {
             $subjects[] = get_subject($s->subject_id);
         }
@@ -1056,7 +1065,7 @@ function get_teach_classes_of_subject($uuid, $sub)
         $data = $query->fetchAll();
     }
     if ($data) {
-        $classes = array();
+        $classes = [];
         foreach ($data as $c) {
             $classes[] = one_class($c->class_id);
         }
@@ -1078,7 +1087,7 @@ function get_teach_subjects_of_class($uuid, $cls)
         $data = $query->fetchAll();
     }
     if ($data) {
-        $subjects = array();
+        $subjects = [];
         foreach ($data as $s) {
             $subjects[] = get_subject($s->subject_id);
         }
@@ -1100,7 +1109,7 @@ function get_teachers_by_assign($cls, $sub)
         $data = $query->fetchAll();
     }
     if ($data) {
-        $users = array();
+        $users = [];
         foreach ($data as $assign) {
             $users[] = get_user($assign->uuid);
         }
