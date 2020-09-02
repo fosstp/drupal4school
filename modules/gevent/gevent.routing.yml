@@ -1,0 +1,7 @@
+gevent.config:
+  path: /admin/config/d4s/gevent
+  defaults:
+    _form: \Drupal\gevent\Form\GeventConfigForm
+    _title: 'G Suite 行事曆同步模組設定'
+  requirements:
+    _permission: 'administer site configuration'
