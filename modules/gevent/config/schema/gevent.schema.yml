@@ -6,25 +6,31 @@ gevent.settings:
       label: '行事曆事件內容類型'
     field_title:
       type: string
-      label: 'G Suite 管理員帳號'
+      label: '行事曆事件摘要欄位對應'
     field_memo:
       type: string
-      label: 'G Suite 網域'
+      label: '行事曆事件說明欄位對應'
     field_place:
       type: string
-      label: '教師帳號所在的 G Suite 子機構'
+      label: '行事曆事件地點欄位對應'
     field_attendee:
       type: string
-      label: '學生帳號所在的 G Suite 子機構'
+      label: '行事曆事件與會人員欄位對應'
     field_calendar_id:
       type: string
-      label: '學生帳號的樣式'
+      label: '儲存 Google 行事曆 ID'
     field_event_id:
       type: string
-      label: '學生帳號的樣式'
+      label: '儲存 Google 行事曆事件 ID'
     calendar_owner:
       type: string
-      label: '學生帳號的樣式'
+      label: 'Google 行事曆擁有者帳號'
+    calendar_taxonomy:
+      type: boolean
+      label: '透過分類系統對應不同 Google 行事曆'
+    calendar_id:
+      type: string
+      label: '指定要對應的 Google 行事曆 ID'
     enabled:
       type: boolean
-      label: 'Google API 測試完成'
+      label: 'Google Calendar API 測試完成'

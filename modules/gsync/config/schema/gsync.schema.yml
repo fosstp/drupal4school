@@ -21,4 +21,4 @@ gsync.settings:
       label: '學生帳號的樣式'
     enabled:
       type: boolean
-      label: 'Google API 測試完成'
+      label: 'Google Directory API 測試完成'

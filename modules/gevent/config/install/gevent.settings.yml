@@ -7,4 +7,5 @@ field_calendar_id: ''
 field_event_id: ''
 calendar_owner: ''
 calendar_taxonomy: ''
+calendar_id: ''
 enabled: false

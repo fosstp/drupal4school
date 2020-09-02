@@ -157,3 +157,194 @@ function gs_listEvents($calendarId)
         return false;
     }
 }
+
+function gs_getEvent($calendarId, $eventId)
+{
+    global $calendar;
+    try {
+        return $calendar->events->get($calendarId, $eventId);
+    } catch (\Google_Service_Exception $e) {
+        \Drupal::logger('google')->debug("gs_getEvent($calendarId, $eventId):".$e->getMessage());
+
+        return false;
+    }
+}
+
+function gs_deleteEvent($calendarId, $eventId)
+{
+    global $calendar;
+    try {
+        $calendar->events->delete($calendarId, $eventId);
+
+        return true;
+    } catch (\Google_Service_Exception $e) {
+        \Drupal::logger('google')->debug("gs_deleteEvent($calendarId, $eventId):".$e->getMessage());
+
+        return false;
+    }
+}
+
+function gs_createEvent($calendarId, $event)
+{
+    global $calendar;
+    try {
+        return $calendar->events->insert($calendarId, $event);
+    } catch (\Google_Service_Exception $e) {
+        \Drupal::logger('google')->debug("gs_createEvent($calendarId,".var_export($event, true).'):'.$e->getMessage());
+
+        return false;
+    }
+}
+
+function gs_updateEvent($calendarId, $eventId, $event)
+{
+    global $calendar;
+    try {
+        return $calendar->events->update($calendarId, $eventId, $event);
+    } catch (\Google_Service_Exception $e) {
+        \Drupal::logger('google')->debug("gs_updateEvent($calendarId,$eventId,".var_export($event, true).'):'.$e->getMessage());
+
+        return false;
+    }
+}
+
+function gs_syncEvent($node)
+{
+    global $calendar;
+    $config = $this->config('gevent.settings');
+    $calendar_id_field = $config->get('field_calendar_id');
+    if (substr($calendar_id_field, 0, 6) == 'field_') {
+        $calendar_id_obj = $node->$calendar_id_field;
+        if (isset($calendar_id_obj['und'][0])) {
+            $calendar_id = $calendar_id_obj['und'][0]['value'];
+        }
+    } else {
+        $calendar_id = $node->$calendar_id_field;
+    }
+    $event_id_field = $config->get('field_event_id');
+    if (substr($event_id_field, 0, 6) == 'field_') {
+        $event_id_obj = $node->$event_id_field;
+        if (isset($event_id_obj['und'][0])) {
+            $event_id = $event_id_obj['und'][0]['value'];
+        }
+    } else {
+        $event_id = $node->$event_id_field;
+    }
+    if (!empty($calendar_id) && !empty($event_id)) {
+        $event = gs_getEvent($calendar_id, $event_id);
+        if (!$event) {
+            return false;
+        }
+    } else {
+        $event = new Google_Service_Calendar_Event();
+    }
+    $title_field = $config->get('field_title');
+    if (substr($title_field, 0, 6) == 'field_') {
+        $title_obj = $node->$title_field;
+        if (isset($title_obj['und'][0])) {
+            $title = $title_obj['und'][0]['value'];
+        }
+    } else {
+        $title = $node->$title_field;
+    }
+    if (!empty($title)) {
+        $event->setSummary($title);
+    }
+    $memo_field = $config->get('field_memo');
+    if ($memo_field != 'none') {
+        if (substr($memo_field, 0, 6) == 'field_') {
+            $memo_obj = $node->$memo_field;
+            if (isset($memo_obj['und'][0])) {
+                $memo = $memo_obj['und'][0]['value'];
+            }
+        } else {
+            $memo = $node->$memo_field;
+        }
+        if (!empty($memo)) {
+            $event->setDescription($memo);
+        }
+    }
+    $place_field = $config->get('field_place');
+    if ($place_field != 'none') {
+        if (substr($place_field, 0, 6) == 'field_') {
+            $place_obj = $node->$place_field;
+            if (isset($place_obj['und'][0])) {
+                $place = $place_obj['und'][0]['value'];
+            }
+        } else {
+            $place = $node->$place_field;
+        }
+        if (!empty($place)) {
+            $event->setLocation($place);
+        }
+    }
+    $teachers_field = $config->get('field_attendee');
+    if ($teachers_field != 'none') {
+        if (substr($teachers_field, 0, 6) == 'field_') {
+            $teachers_obj = $node->$teachers_field;
+            $teachers = $teachers_obj['und'];
+        }
+        if (count($teachers) > 0) {
+            $attendees = [];
+            foreach ($teachers as $delta => $value) {
+                $uuid = $value['value'];
+                if ($user = get_user($uuid)) {
+                    $attendee = new Google_Service_Calendar_EventAttendee();
+                    $attendee->setId($uuid);
+                    $attendee->setEmail($user->email);
+                    $attendee->setDisplayName($user->realname);
+                    $attendees[] = $attendee;
+                }
+            }
+            if (count($attendees) > 0) {
+                $event->setAttendees($attendees);
+            }
+        }
+    }
+
+    $date_field = $config->get('field_date');
+    $date_obj = $node->$date_field;
+    $timezone = $date_obj['und'][0]['timezone'];
+    $event_start = new Google_Service_Calendar_EventDateTime();
+    $event_end = new Google_Service_Calendar_EventDateTime();
+    $event_start->setTimeZone($timezone);
+    $event_end->setTimeZone($timezone);
+    $start_date = date_create($date_obj['und'][0]['value'], timezone_open('UTC'));
+    date_timezone_set($start_date, timezone_open($timezone));
+    $end_date = date_create($date_obj['und'][0]['value2'], timezone_open('UTC'));
+    date_timezone_set($end_date, timezone_open($timezone));
+    if ($date_obj['und'][0]['all_day'] == 1) {
+        $event_start->setDate(date_format($start_date, 'Y-m-d'));
+        $event_end->setDate(date_format($end_date, 'Y-m-d'));
+    } else {
+        $event_start->setDateTime(date_format($start_date, 'Y-m-d\TH:i:sP'));
+        $event_end->setDateTime(date_format($end_date, 'Y-m-d\TH:i:sP'));
+    }
+    $event->setStart($event_start);
+    $event->setEnd($event_end);
+    $rrule = $date_obj['und'][0]['rrule'];
+    $event->setRecurrence($rrule);
+
+    $user = user_load($node->uid);
+    $creator = new Google_Service_Calendar_EventCreator();
+    $creator->setId($user->uuid);
+    if (isset($user->email)) {
+        $creator->setEmail($user->email);
+    }
+    $creator->setDisplayName($user->dept_name.' '.$user->realname);
+    $event->setCreator($creator);
+    if (!empty($calendar_id) && !empty($event_id)) {
+        return gs_updateEvent($calendar_id, $event_id, $event);
+    } else {
+        if ($config->get('calendar_taxonomy')) {
+            $taxonomy_field = $config->get('field_taxonomy');
+            $term_obj = $node->$taxonomy_field;
+            $term = $term_obj['und'][0]['tid'];
+            $calendar_id = $config->get('calendar_term_'.$term);
+        } else {
+            $calendar_id = $config->get('calendar_id');
+        }
+
+        return gs_createEvent($calendar_id, $event);
+    }
+}
