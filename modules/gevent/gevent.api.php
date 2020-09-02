@@ -200,7 +200,9 @@ function gs_updateEvent($calendarId, $eventId, $event)
 {
     global $calendar;
     try {
-        return $calendar->events->update($calendarId, $eventId, $event);
+        $updatedEvent = $calendar->events->update($calendarId, $eventId, $event);
+
+        return $updatedEvent->getUpdated();
     } catch (\Google_Service_Exception $e) {
         \Drupal::logger('google')->debug("gs_updateEvent($calendarId,$eventId,".var_export($event, true).'):'.$e->getMessage());
 
