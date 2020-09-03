@@ -180,85 +180,88 @@ class AdsyncOperationForm extends FormBase
                             $detail_log .= "$t->role_name $t->realname 建立失敗！".ad_error().'<br>';
                         }
                     }
-                    if (!empty($t->dept_id) && !empty($t->role_id)) {
-                        if ($log) {
-                            $detail_log .= "<p>正在處理 $t->dept_name ......<br>";
-                        }
-                        $group = ad_findGroup($t->dept_name);
-                        if ($group) {
-                            $group_dn = $group['distinguishedname'][0];
-                            $depgroup = $group['samaccountname'][0];
+                    $jobs = get_jobs($t->uuid);
+                    if ($jobs) {
+                        foreach ($jobs as $job) {
                             if ($log) {
-                                $detail_log .= "$group_dn => 在 AD 中找到匹配的使用者群組！<br>";
+                                $detail_log .= "<p>正在處理 $job->dept_name ......<br>";
                             }
-                        } else {
-                            if ($log) {
-                                $detail_log .= '無法在 AD 中找到匹配的群組，現在正在建立新的使用者群組......';
-                            }
-                            $depgroup = 'group-A'.$t->dept_id;
-                            $group_dn = "cn=$depgroup,$base_dn";
-                            $result = ad_createGroup($depgroup, $group_dn, $t->dept_name);
-                            if ($result) {
+                            $group = ad_findGroup($job->dept_name);
+                            if ($group) {
+                                $group_dn = $group['distinguishedname'][0];
+                                $depgroup = $group['samaccountname'][0];
                                 if ($log) {
-                                    $detail_log .= '建立成功！<br>';
+                                    $detail_log .= "$group_dn => 在 AD 中找到匹配的使用者群組！<br>";
                                 }
                             } else {
-                                $detail_log .= "$t->dept_name 群組建立失敗！".ad_error().'<br>';
-                            }
-                        }
-                        if (($k = array_search($group_dn, $groups)) !== false) {
-                            unset($groups[$k]);
-                        } else {
-                            if ($log) {
-                                $detail_log .= "正在將使用者： $t->role_name $t->realname 加入到群組裡......";
-                            }
-                            $result = ad_addMember($group_dn, $user_dn);
-                            if ($result) {
                                 if ($log) {
-                                    $detail_log .= '加入成功！<br>';
+                                    $detail_log .= '無法在 AD 中找到匹配的群組，現在正在建立新的使用者群組......';
+                                }
+                                $depgroup = 'group-A'.$job->dept_id;
+                                $group_dn = "cn=$depgroup,$base_dn";
+                                $result = ad_createGroup($depgroup, $group_dn, $job->dept_name);
+                                if ($result) {
+                                    if ($log) {
+                                        $detail_log .= '建立成功！<br>';
+                                    }
+                                } else {
+                                    $detail_log .= "$job->dept_name 群組建立失敗！".ad_error().'<br>';
+                                }
+                            }
+                            if (($k = array_search($group_dn, $groups)) !== false) {
+                                unset($groups[$k]);
+                            } else {
+                                if ($log) {
+                                    $detail_log .= "正在將使用者： $job->role_name $t->realname 加入到群組裡......";
+                                }
+                                $result = ad_addMember($group_dn, $user_dn);
+                                if ($result) {
+                                    if ($log) {
+                                        $detail_log .= '加入成功！<br>';
+                                    }
+                                } else {
+                                    $detail_log .= "無法將使用者 $job->role_name $t->realname 加入 $job->dept_name 群組！".ad_error().'<br>';
+                                }
+                            }
+                            if ($log) {
+                                $detail_log .= "<p>正在處理 $job->role_name ......<br>";
+                            }
+                            $group = ad_findGroup($job->role_name);
+                            if ($group) {
+                                $group_dn = $group['distinguishedname'][0];
+                                $posgroup = $group['samaccountname'][0];
+                                if ($log) {
+                                    $detail_log .= "$group_dn => 在 AD 中找到匹配的使用者群組！<br>";
                                 }
                             } else {
-                                $detail_log .= "無法將使用者 $t->role_name $t->realname 加入 $t->dept_name 群組！".ad_error().'<br>';
-                            }
-                        }
-                        if ($log) {
-                            $detail_log .= "<p>正在處理 $t->role_name ......<br>";
-                        }
-                        $group = ad_findGroup($t->role_name);
-                        if ($group) {
-                            $group_dn = $group['distinguishedname'][0];
-                            $posgroup = $group['samaccountname'][0];
-                            if ($log) {
-                                $detail_log .= "$group_dn => 在 AD 中找到匹配的使用者群組！<br>";
-                            }
-                        } else {
-                            if ($log) {
-                                $detail_log .= '無法在 AD 中找到匹配的群組，現在正在建立新的使用者群組......';
-                            }
-                            $posgroup = 'group-B'.$t->role_id;
-                            $group_dn = "cn=$posgroup,$base_dn";
-                            $result = ad_createGroup($posgroup, $group_dn, $t->role_name);
-                            if ($result) {
                                 if ($log) {
-                                    $detail_log .= '建立成功！<br>';
+                                    $detail_log .= '無法在 AD 中找到匹配的群組，現在正在建立新的使用者群組......';
                                 }
+                                $posgroup = 'group-B'.$job->role_id;
+                                $group_dn = "cn=$posgroup,$base_dn";
+                                $result = ad_createGroup($posgroup, $group_dn, $job->role_name);
+                                if ($result) {
+                                    if ($log) {
+                                        $detail_log .= '建立成功！<br>';
+                                    }
+                                } else {
+                                    $detail_log .= "$job->role_name 群組建立失敗！".ad_error().'<br>';
+                                }
+                            }
+                            if (($k = array_search($group_dn, $groups)) !== false) {
+                                unset($groups[$k]);
                             } else {
-                                $detail_log .= "$t->role_name 群組建立失敗！".ad_error().'<br>';
-                            }
-                        }
-                        if (($k = array_search($group_dn, $groups)) !== false) {
-                            unset($groups[$k]);
-                        } else {
-                            if ($log) {
-                                $detail_log .= "正在將使用者： $t->role_name $t->realname 加入到群組裡......";
-                            }
-                            $result = ad_addMember($group_dn, $user_dn);
-                            if ($result) {
                                 if ($log) {
-                                    $detail_log .= '加入成功！<br>';
+                                    $detail_log .= "正在將使用者： $job->role_name $t->realname 加入到群組裡......";
                                 }
-                            } else {
-                                $detail_log .= "無法將使用者 $t->role_name $t->realname 加入 $t->role_name 群組！".ad_error().'<br>';
+                                $result = ad_addMember($group_dn, $user_dn);
+                                if ($result) {
+                                    if ($log) {
+                                        $detail_log .= '加入成功！<br>';
+                                    }
+                                } else {
+                                    $detail_log .= "無法將使用者 $job->role_name $t->realname 加入 $job->role_name 群組！".ad_error().'<br>';
+                                }
                             }
                         }
                     }
@@ -325,17 +328,16 @@ class AdsyncOperationForm extends FormBase
                         }
                     }
                     foreach ($groups as $g) {
-                        $group_dn = "cn=$g,$base_dn";
                         if ($log) {
-                            $detail_log .= "正在將使用者： $t->role_name $t->realname 從群組 $group_dn 移除......";
+                            $detail_log .= "正在將使用者： $t->role_name $t->realname 從群組 $g 移除......";
                         }
-                        $result = ad_removeMember($group_dn, $user_dn);
+                        $result = ad_removeMember($g, $user_dn);
                         if ($result) {
                             if ($log) {
                                 $detail_log .= '移除成功！<br>';
                             }
                         } else {
-                            $detail_log .= "無法將使用者 $t->role_name $t->realname 從群組 $group_dn 移除！".ad_error().'<br>';
+                            $detail_log .= "無法將使用者 $t->role_name $t->realname 從群組 $g 移除！".ad_error().'<br>';
                         }
                     }
                 }
