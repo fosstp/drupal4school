@@ -20,20 +20,20 @@ function ad_test()
             ldap_set_option($ad_conn, LDAP_OPT_PROTOCOL_VERSION, 3);
             ldap_set_option($ad_conn, LDAP_OPT_REFERRALS, 0);
             $ad_bind = @ldap_bind($ad_conn, $ad_user, $ad_pass);
-            if ($ad_bind) {
-                \Drupal::logger('adsync')->notice('無法使用 LDAPS 通訊協定連接 AD 伺服器，請在 AD 伺服器上安裝企業級憑證服務，以便提供 LDAPS 連線功能。');
+            if (!$ad_bind) {
+                \Drupal::logger('adsync')->notice('無法使用 LDAPS 通訊協定連接 AD 伺服器，請在 AD 伺服器上安裝企業級憑證服務，以便提供 LDAPS 連線功能。'.ldap_error($ad_conn));
 
                 return 3;
             } else {
                 return 0;
             }
         } else {
-            \Drupal::logger('adsync')->notice('已經連線到 AD 伺服器，但是無法成功登入。請檢查管理員帳號密碼是否正確！');
+            \Drupal::logger('adsync')->notice('已經連線到 AD 伺服器，但是無法成功登入。請檢查管理員帳號密碼是否正確！'.ldap_error($ad_conn));
 
             return 2;
         }
     } else {
-        \Drupal::logger('adsync')->notice('連線 AD 伺服器失敗。請檢查伺服器名稱或 IP 是否正確！');
+        \Drupal::logger('adsync')->notice('連線 AD 伺服器失敗。請檢查伺服器名稱或 IP 是否正確！'.ldap_error($ad_conn));
 
         return 1;
     }
