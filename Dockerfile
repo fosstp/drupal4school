@@ -45,6 +45,6 @@ ADD run-httpd.sh /usr/sbin/run-httpd.sh
 RUN chmod +x /usr/sbin/run-httpd.sh
 
 WORKDIR /var/www/html
-VOLUME ["/var/www/html/sites"]
+VOLUME ["/var/www/html/modules","/var/www/html/themes","/var/www/html/sites/default/files"]
 EXPOSE 80
 ENTRYPOINT ["run-httpd.sh"]
