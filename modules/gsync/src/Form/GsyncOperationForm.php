@@ -422,7 +422,17 @@ class GsyncOperationForm extends FormBase
                             }
                         }
                         foreach ($groups as $g) {
-                            gs_removeMember($g, $user_key);
+                            if ($log) {
+                                $detail_log .= "正在將使用者： $t->role_name $t->realname 從群組 $g 移除......";
+                            }
+                            $result = gs_removeMember($g, $user_key);
+                            if ($result) {
+                                if ($log) {
+                                    $detail_log .= '移除成功！<br>';
+                                }
+                            } else {
+                                $detail_log .= "無法將使用者 $t->role_name $t->realname 從群組 $g 移除！<br>";
+                            }
                         }
                     }
                 }
