@@ -102,7 +102,7 @@ class GeventConfigForm extends ConfigFormBase
         $values = $form_state->cleanValues()->getValues();
         foreach ($values as $key => $value) {
             if ($key == 'google_service_json') {
-                $file = file_save_upload('google_service_json', ['file_validate_extensions' => ['json']], 'public://gsync', 0, FILE_EXISTS_REPLACE);
+                $file = file_save_upload('google_service_json', ['file_validate_extensions' => ['json']], 'public://gsync', 0, \Drupal\Core\File\FileSystemInterface::EXISTS_REPLACE);
                 if ($file) {
                     $file->setPermanent();
                     $file->save();

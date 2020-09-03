@@ -22,51 +22,51 @@ class AdsyncConfigForm extends ConfigFormBase
     public function buildForm(array $form, FormStateInterface $form_state)
     {
         $config = $this->config('adsync.settings');
-        $form['helper'] = array(
+        $form['helper'] = [
             '#type' => 'markup',
             '#markup' => '<p>微軟網域主控站僅允許透過 LDAPS 通訊協定來變更密碼或增刪帳號，但預設不會開啟此項功能。'.
             '要開啟此項功能，您必須在網域主控站上安裝憑證伺服器，並將該憑證伺服器於安裝階段設定為<em>企業</em>憑證，而非<em>獨立</em>伺服器，'.
             '安裝完成後，您必須將網域主控站的根憑證檔案匯出後（可使用 certutil -ca.cert 檔名.cer 指令匯出），透過底下表單上傳到 Drupal 網站中。</p>',
-        );
-        $form['ad_server'] = array(
+        ];
+        $form['ad_server'] = [
             '#type' => 'textfield',
             '#title' => '網域主控站',
             '#default_value' => $config->get('ad_server'),
             '#description' => '請輸入微軟網域主控站的 DNS 名稱，不建議使用 IP。',
-        );
-        $validators = array(
-            'file_validate_extensions' => array('cer'),
-        );
-        $form['ca_cert'] = array(
+        ];
+        $validators = [
+            'file_validate_extensions' => ['cer'],
+        ];
+        $form['ca_cert'] = [
             '#type' => 'file',
             '#title' => '根憑證檔案',
             '#description' => $config->get('ca_cert') ? '根憑證檔案已經上傳，如沒有要變更金鑰，請勿再上傳！' : '請從網域主控站將根憑證檔案匯出後，上傳到這裡。',
-        );
-        $form['ad_admin'] = array(
+        ];
+        $form['ad_admin'] = [
             '#type' => 'textfield',
             '#title' => '網域管理員帳號',
             '#default_value' => $config->get('ad_admin') ?: 'administrator',
             '#description' => '請輸入網域管理員帳號，該管理員必須具備 Windows 網域最高管理權限。',
-        );
-        $form['ad_password'] = array(
+        ];
+        $form['ad_password'] = [
             '#type' => 'textfield',
             '#title' => '網域管理員密碼',
             '#default_value' => $config->get('ad_password'),
             '#description' => '請輸入網域管理員密碼。',
-        );
-        $form['users_dn'] = array(
+        ];
+        $form['users_dn'] = [
             '#type' => 'textfield',
             '#title' => '使用者命名空間',
             '#default_value' => $config->get('users_dn'),
             '#description' => '請輸入儲存使用者的命名空間，如果貴校未使用組織（OU）的話，預設是 CN=Users,DC=貴校的網域 DN，例如：CN=Users,DC=xxps,DC=tp,DC=edu,DC=tw。',
-        );
-        $form['actions'] = array(
+        ];
+        $form['actions'] = [
             '#type' => 'actions',
-            'submit' => array(
+            'submit' => [
                 '#type' => 'submit',
                 '#value' => '儲存組態',
-            ),
-        );
+            ],
+        ];
 
         return $form;
     }
@@ -79,7 +79,7 @@ class AdsyncConfigForm extends ConfigFormBase
         $values = $form_state->cleanValues()->getValues();
         foreach ($values as $key => $value) {
             if ($key == 'ca_cert') {
-                $file = file_save_upload('ca_cert', array('file_validate_extensions' => array('cer')), 'public://adsync', 0, FILE_EXISTS_REPLACE);
+                $file = file_save_upload('ca_cert', ['file_validate_extensions' => ['cer']], 'public://adsync', 0, \Drupal\Core\File\FileSystemInterface::EXISTS_REPLACE);
                 if ($file) {
                     $file->setPermanent();
                     $file->save();
