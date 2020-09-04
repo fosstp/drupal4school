@@ -21,7 +21,7 @@ class GsyncOperationForm extends FormBase
             $form['help'] = [
                 '#markup' => '<p>進行帳號同步到 G Suite 時，會花費較久的時間，請耐心等候同步作業完成。未完成前請勿離開此頁面、重新整理頁面或是關閉瀏覽器！<br>'.
                 '同步程式無法同步密碼，程序運作流程如下：<ol>'.
-                '<li>以臺北市校園單一身分驗證服務的電子郵件搜尋 G Suite，帳號已存在者使用現有帳號，如果搜尋不到則自動幫您建立與登入單一身分驗證服務相同的帳號。（如果使用者已經有一個匹配的 G Suite 帳號，務必登錄於單一身份驗證服務中）</li>'.
+                '<li>以臺北市校園單一身分驗證服務的電子郵件搜尋 G Suite，帳號已存在者使用現有帳號，如果搜尋不到則自動幫您建立帳號。若學生帳號樣式設定為台北市校園單一身份驗證登入帳號，將自動把學生學號新增為郵箱別名。</li>'.
                 '<li>搜尋 G Suite 群組的說明(description)欄位是否與校務行政系統裡的所屬部門名稱相同，若相同則使用該群組，如果找不到則自動幫您建立群組。（如果您已經有一個匹配的 G Suite 群組，請在說明欄輸入部門名稱，以便讓程式可以正確辨識）</li>'.
                 '<li>檢查使用者是否已經在群組裡，若否則將使用者加入。</li>'.
                 '<li>將使用者退出其它群組。</li></ol></p>',
@@ -481,13 +481,15 @@ class GsyncOperationForm extends FormBase
                 $students = get_students_of_class($class);
                 if ($students) {
                     foreach ($students as $s) {
+                        $user_alias = false;
                         if ($std_account == 'id') {
                             $user_key = $s->id.'@'.$google_domain;
                         } else {
                             if (empty($s->account)) {
-                                $user_key = $dc.$s->id.'@'.$google_domain;
+                                $user_key = $s->id.'@'.$google_domain;
                             } else {
                                 $user_key = $s->account.'@'.$google_domain;
+                                $user_alias = $s->id.'@'.$google_domain;
                             }
                         }
                         if ($log) {
@@ -512,6 +514,9 @@ class GsyncOperationForm extends FormBase
                                     }
                                 } else {
                                     $detail_log .= "$s->class $s->seat $s->realname 更新失敗！<br>";
+                                }
+                                if ($user_alias) {
+                                    gs_createUserAlias($user_key, $user_alias);
                                 }
                             } elseif ($form_state->getValue('disable_nonuse')) {
                                 if ($log) {
@@ -550,6 +555,9 @@ class GsyncOperationForm extends FormBase
                                 }
                             } else {
                                 $detail_log .= "$s->class $s->seat $s->realname 建立失敗！<br>";
+                            }
+                            if ($user_alias) {
+                                gs_createUserAlias($user_key, $user_alias);
                             }
                         }
                         if ($log) {
