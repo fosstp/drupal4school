@@ -288,6 +288,7 @@ function fetch_user($uuid)
             'birthdate' => date('Y-m-d H:i:s', strtotime($user->birthDate)),
             'gender' => $user->gender,
             'status' => $user->inetUserStatus,
+            'fetch_date' => time(),
         ];
         if (!empty($user->mobile)) {
             $fields['mobile'] = $user->mobile;
@@ -416,6 +417,7 @@ function fetch_units()
             $fields = [
                 'id' => $o->ou,
                 'name' => $o->description,
+                'fetch_date' => time(),
             ];
             \Drupal::database()->insert('tpedu_units')->fields($fields)->execute();
         }
@@ -516,6 +518,7 @@ function fetch_roles()
                         'id' => $r->cn,
                         'unit' => $o->ou,
                         'name' => $r->description,
+                        'fetch_date' => time(),
                     ];
                     \Drupal::database()->insert('tpedu_roles')->fields($fields)->execute();
                 }
@@ -613,6 +616,7 @@ function fetch_subjects()
                 'id' => $s->tpSubject,
                 'domain' => $s->tpSubjectDomain,
                 'name' => $s->description,
+                'fetch_date' => time(),
             ];
             \Drupal::database()->insert('tpedu_subjects')->fields($fields)->execute();
         }
@@ -800,6 +804,7 @@ function fetch_classes()
                 'id' => $c->ou,
                 'grade' => $c->grade,
                 'name' => $c->description,
+                'fetch_date' => time(),
             ];
             if (isset($c->tutor[0])) {
                 $fields['tutor'] = $c->tutor[0];
@@ -894,6 +899,7 @@ function fetch_class($ou)
             'id' => $c->ou,
             'grade' => $c->grade,
             'name' => $c->description,
+            'fetch_date' => time(),
         ];
         if (isset($c->tutor)) {
             $fields['tutor'] = $c->tutor;

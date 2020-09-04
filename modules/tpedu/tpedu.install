@@ -20,336 +20,331 @@ function tpedu_uninstall()
 
 function tpedu_schema()
 {
-    $schema['tpedu_units'] = array(
+    $schema['tpedu_units'] = [
         'description' => '行政部門資料表',
-        'fields' => array(
-            'id' => array(
+        'fields' => [
+            'id' => [
                 'type' => 'varchar',
                 'length' => 50,
                 'not null' => true,
                 'description' => '部門代號',
-            ),
-            'name' => array(
+            ],
+            'name' => [
                 'type' => 'varchar',
                 'length' => 50,
                 'not null' => true,
                 'description' => '部門名稱',
-            ),
-            'fetch_date' => array(
+            ],
+            'fetch_date' => [
                 'mysql_type' => 'timestamp',
-                'not null' => true,
-                'mysql_default' => 'CURRENT_TIMESTAMP',
+                'pqsql_type' => 'timestamp without time zone',
                 'description' => '取得資料日期',
-            ),
-        ),
-        'primary key' => array('id'),
-    );
+            ],
+        ],
+        'primary key' => ['id'],
+    ];
 
-    $schema['tpedu_roles'] = array(
+    $schema['tpedu_roles'] = [
         'description' => '職稱資料表',
-        'fields' => array(
-            'id' => array(
+        'fields' => [
+            'id' => [
                 'type' => 'varchar',
                 'length' => 50,
                 'not null' => true,
                 'description' => '職稱代號',
-            ),
-            'unit' => array(
+            ],
+            'unit' => [
                 'type' => 'varchar',
                 'length' => 50,
                 'not null' => true,
                 'description' => '部門代號',
-            ),
-            'name' => array(
+            ],
+            'name' => [
                 'type' => 'varchar',
                 'length' => 50,
                 'not null' => true,
                 'description' => '職稱',
-            ),
-            'fetch_date' => array(
+            ],
+            'fetch_date' => [
                 'type' => 'varchar',
                 'mysql_type' => 'timestamp',
-                'not null' => true,
-                'mysql_default' => 'CURRENT_TIMESTAMP',
+                'pqsql_type' => 'timestamp without time zone',
                 'description' => '取得資料日期',
-            ),
-        ),
-        'primary key' => array('id'),
-        'indexes' => array(
-            'unit' => array('unit'),
-        ),
-    );
+            ],
+        ],
+        'primary key' => ['id'],
+        'indexes' => [
+            'unit' => ['unit'],
+        ],
+    ];
 
-    $schema['tpedu_classes'] = array(
+    $schema['tpedu_classes'] = [
         'description' => '班級資料表',
-        'fields' => array(
-            'id' => array(
+        'fields' => [
+            'id' => [
                 'type' => 'varchar',
                 'length' => 50,
                 'not null' => true,
                 'description' => '班級代號',
-            ),
-            'grade' => array(
+            ],
+            'grade' => [
                 'type' => 'varchar',
                 'length' => 50,
                 'not null' => true,
                 'description' => '年級',
-            ),
-            'name' => array(
+            ],
+            'name' => [
                 'type' => 'varchar',
                 'length' => 50,
                 'not null' => true,
                 'description' => '班級名稱',
-            ),
-            'tutor' => array(
+            ],
+            'tutor' => [
                 'type' => 'varchar',
                 'length' => 36,
                 'description' => '導師的人員代號',
-            ),
-            'fetch_date' => array(
+            ],
+            'fetch_date' => [
                 'type' => 'varchar',
                 'mysql_type' => 'timestamp',
-                'not null' => true,
-                'mysql_default' => 'CURRENT_TIMESTAMP',
+                'pqsql_type' => 'timestamp without time zone',
                 'description' => '取得資料日期',
-            ),
-        ),
-        'primary key' => array('id'),
-        'indexes' => array(
-            'grade' => array('grade'),
-            'tutor' => array('tutor'),
-        ),
-    );
+            ],
+        ],
+        'primary key' => ['id'],
+        'indexes' => [
+            'grade' => ['grade'],
+            'tutor' => ['tutor'],
+        ],
+    ];
 
-    $schema['tpedu_subjects'] = array(
+    $schema['tpedu_subjects'] = [
         'description' => '教學科目資料表',
-        'fields' => array(
-            'id' => array(
+        'fields' => [
+            'id' => [
                 'type' => 'varchar',
                 'length' => 50,
                 'not null' => true,
                 'description' => '科目代號',
-            ),
-            'domain' => array(
+            ],
+            'domain' => [
                 'type' => 'varchar',
                 'length' => 50,
                 'not null' => true,
                 'description' => '課程領域',
-            ),
-            'name' => array(
+            ],
+            'name' => [
                 'type' => 'varchar',
                 'length' => 50,
                 'not null' => true,
                 'description' => '科目名稱',
-            ),
-            'fetch_date' => array(
+            ],
+            'fetch_date' => [
                 'type' => 'varchar',
                 'mysql_type' => 'timestamp',
-                'not null' => true,
-                'mysql_default' => 'CURRENT_TIMESTAMP',
+                'pqsql_type' => 'timestamp without time zone',
                 'description' => '取得資料日期',
-            ),
-        ),
-        'primary key' => array('id'),
-        'indexes' => array(
-            'domain' => array('domain'),
-        ),
-    );
+            ],
+        ],
+        'primary key' => ['id'],
+        'indexes' => [
+            'domain' => ['domain'],
+        ],
+    ];
 
-    $schema['tpedu_people'] = array(
+    $schema['tpedu_people'] = [
         'description' => '教育人員資料表',
-        'fields' => array(
-            'uuid' => array(
+        'fields' => [
+            'uuid' => [
                 'type' => 'varchar',
                 'length' => 36,
                 'not null' => true,
                 'description' => '人員代號',
-            ),
-            'idno' => array(
+            ],
+            'idno' => [
                 'type' => 'varchar',
                 'length' => 10,
                 'not null' => true,
                 'description' => '身分證字號',
-            ),
-            'id' => array(
+            ],
+            'id' => [
                 'type' => 'int',
                 'not null' => true,
                 'unsigned' => true,
                 'description' => '教務行政系統使用者編號',
-            ),
-            'student' => array(
+            ],
+            'student' => [
                 'type' => 'int',
                 'size' => 'tiny',
                 'default' => 0,
                 'description' => '是否為學生',
-            ),
-            'account' => array(
+            ],
+            'account' => [
                 'type' => 'varchar_ascii',
                 'length' => 50,
                 'description' => '登入帳號',
-            ),
-            'sn' => array(
+            ],
+            'sn' => [
                 'type' => 'varchar',
                 'length' => 50,
                 'description' => '姓',
-            ),
-            'gn' => array(
+            ],
+            'gn' => [
                 'type' => 'varchar',
                 'length' => 50,
                 'description' => '名',
-            ),
-            'realname' => array(
+            ],
+            'realname' => [
                 'type' => 'varchar',
                 'length' => 50,
                 'description' => '真實姓名',
-            ),
-            'dept_id' => array(
+            ],
+            'dept_id' => [
                 'type' => 'varchar_ascii',
                 'length' => 50,
                 'description' => '部門代號',
-            ),
-            'dept_name' => array(
+            ],
+            'dept_name' => [
                 'type' => 'varchar',
                 'length' => 50,
                 'description' => '部門名稱',
-            ),
-            'role_id' => array(
+            ],
+            'role_id' => [
                 'type' => 'varchar_ascii',
                 'length' => 50,
                 'description' => '職務代號',
-            ),
-            'role_name' => array(
+            ],
+            'role_name' => [
                 'type' => 'varchar',
                 'length' => 50,
                 'description' => '職務名稱',
-            ),
-            'birthdate' => array(
+            ],
+            'birthdate' => [
                 'type' => 'varchar',
                 'mysql_type' => 'datetime',
                 'description' => '出生日期',
-            ),
-            'gender' => array(
+            ],
+            'gender' => [
                 'type' => 'int',
                 'size' => 'tiny',
                 'description' => '性別',
-            ),
-            'mobile' => array(
+            ],
+            'mobile' => [
                 'type' => 'varchar',
                 'length' => 50,
                 'description' => '行動電話',
-            ),
-            'telephone' => array(
+            ],
+            'telephone' => [
                 'type' => 'varchar',
                 'length' => 50,
                 'description' => '有線電話',
-            ),
-            'address' => array(
+            ],
+            'address' => [
                 'type' => 'varchar',
                 'length' => 200,
                 'description' => '郵寄地址',
-            ),
-            'email' => array(
+            ],
+            'email' => [
                 'type' => 'varchar',
                 'length' => 50,
                 'description' => '電子郵件信箱',
-            ),
-            'www' => array(
+            ],
+            'www' => [
                 'type' => 'varchar',
                 'length' => 50,
                 'description' => '個人首頁',
-            ),
-            'class' => array(
+            ],
+            'class' => [
                 'type' => 'varchar',
                 'length' => 50,
                 'description' => '就讀或任教班級',
-            ),
-            'seat' => array(
+            ],
+            'seat' => [
                 'type' => 'varchar',
                 'length' => 50,
                 'description' => '學生座號',
-            ),
-            'character' => array(
+            ],
+            'character' => [
                 'type' => 'varchar',
                 'length' => 100,
                 'description' => '特殊身分註記',
-            ),
-            'status' => array(
+            ],
+            'status' => [
                 'type' => 'varchar',
                 'length' => 50,
                 'description' => '人員狀態',
-            ),
-            'fetch_date' => array(
+            ],
+            'fetch_date' => [
                 'type' => 'varchar',
                 'mysql_type' => 'timestamp',
-                'not null' => true,
-                'mysql_default' => 'CURRENT_TIMESTAMP',
+                'pqsql_type' => 'timestamp without time zone',
                 'description' => '取得資料日期',
-            ),
-        ),
-        'primary key' => array('uuid'),
-        'indexes' => array(
-            'idno' => array('idno'),
-            'id' => array('id'),
-        ),
-    );
+            ],
+        ],
+        'primary key' => ['uuid'],
+        'indexes' => [
+            'idno' => ['idno'],
+            'id' => ['id'],
+        ],
+    ];
 
-    $schema['tpedu_jobs'] = array(
+    $schema['tpedu_jobs'] = [
         'description' => '職務分派資料表',
-        'fields' => array(
-            'uuid' => array(
+        'fields' => [
+            'uuid' => [
                 'type' => 'varchar',
                 'length' => 36,
                 'not null' => true,
                 'description' => '人員代號',
-            ),
-            'dept_id' => array(
+            ],
+            'dept_id' => [
                 'type' => 'varchar',
                 'length' => 50,
                 'not null' => true,
                 'description' => '部門代號',
-            ),
-            'role_id' => array(
+            ],
+            'role_id' => [
                 'type' => 'varchar',
                 'length' => 50,
                 'not null' => true,
                 'description' => '職稱代號',
-            ),
-        ),
-        'indexes' => array(
-            'uuid' => array('uuid'),
-            'dept_id' => array('dept_id'),
-            'role_id' => array('role_id'),
-        ),
-    );
+            ],
+        ],
+        'indexes' => [
+            'uuid' => ['uuid'],
+            'dept_id' => ['dept_id'],
+            'role_id' => ['role_id'],
+        ],
+    ];
 
-    $schema['tpedu_assignment'] = array(
+    $schema['tpedu_assignment'] = [
         'description' => '配課資料表',
-        'fields' => array(
-            'uuid' => array(
+        'fields' => [
+            'uuid' => [
                 'type' => 'varchar',
                 'length' => 36,
                 'not null' => true,
                 'description' => '人員代號',
-            ),
-            'class_id' => array(
+            ],
+            'class_id' => [
                 'type' => 'varchar',
                 'length' => 50,
                 'not null' => true,
                 'description' => '班級代號',
-            ),
-            'subject_id' => array(
+            ],
+            'subject_id' => [
                 'type' => 'varchar',
                 'length' => 50,
                 'not null' => true,
                 'description' => '科目代號',
-            ),
-        ),
-        'indexes' => array(
-            'uuid' => array('uuid'),
-            'class_id' => array('class_id'),
-            'subject_id' => array('subject_id'),
-        ),
-    );
+            ],
+        ],
+        'indexes' => [
+            'uuid' => ['uuid'],
+            'class_id' => ['class_id'],
+            'subject_id' => ['subject_id'],
+        ],
+    ];
 
     return $schema;
 }
