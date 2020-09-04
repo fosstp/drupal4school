@@ -28,8 +28,7 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
     && composer require cache/filesystem-adapter google/apiclient:^2.0 drupal/console:~1.0 --prefer-dist --optimize-autoloader \
     && curl https://drupalconsole.com/installer -L -o drupal.phar \
     && mv drupal.phar /usr/local/bin/drupal \
-    && chmod +x /usr/local/bin/drupal \
-    && echo "0" | drupal init
+    && chmod +x /usr/local/bin/drupal
 
 ADD modules /var/www/html/modules
 RUN mkdir /var/www/html/sites/default/files \
