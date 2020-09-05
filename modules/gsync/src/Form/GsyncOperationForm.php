@@ -519,7 +519,17 @@ class GsyncOperationForm extends FormBase
                                     $detail_log .= "$s->class $s->seat $s->realname 更新失敗！<br>";
                                 }
                                 if ($user_alias) {
-                                    gs_createUserAlias($user_key, $user_alias);
+                                    if ($log) {
+                                        $detail_log .= "現在正在建立使用者別名 $user_alias ......";
+                                    }
+                                    $result = gs_createUserAlias($user_key, $user_alias);
+                                    if ($result) {
+                                        if ($log) {
+                                            $detail_log .= '建立完成！<br>';
+                                        }
+                                    } else {
+                                        $detail_log .= '別名建立失敗！<br>';
+                                    }
                                 }
                             } elseif ($form_state->getValue('disable_nonuse')) {
                                 if ($log) {
@@ -560,7 +570,17 @@ class GsyncOperationForm extends FormBase
                                 $detail_log .= "$s->class $s->seat $s->realname 建立失敗！<br>";
                             }
                             if ($user_alias) {
-                                gs_createUserAlias($user_key, $user_alias);
+                                if ($log) {
+                                    $detail_log .= "現在正在建立使用者別名 $user_alias ......";
+                                }
+                                $result = gs_createUserAlias($user_key, $user_alias);
+                                if ($result) {
+                                    if ($log) {
+                                        $detail_log .= '建立完成！<br>';
+                                    }
+                                } else {
+                                    $detail_log .= '別名建立失敗！<br>';
+                                }
                             }
                         }
                         if ($log) {

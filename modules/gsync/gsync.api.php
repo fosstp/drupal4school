@@ -187,7 +187,10 @@ function gs_syncUser($t, $user_key, $user = null, $recover = false)
         $user->setPassword(sha1(substr($t->idno, -6)));
     } else {
         $create = false;
-        $user_key = $user->getPrimaryEmail();
+        $old_key = $user->getPrimaryEmail();
+        if ($old_key != $user_key) {
+            $user->setPrimaryEmail($user_key);
+        }
         if ($recover) {
             $user->setHashFunction('SHA-1');
             $user->setPassword(sha1(substr($t->idno, -6)));
