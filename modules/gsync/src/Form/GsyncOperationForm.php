@@ -187,7 +187,7 @@ class GsyncOperationForm extends FormBase
                                 foreach ($data as $g) {
                                     $gn = $g->getEmail();
                                     if (substr($gn, 0, 6) == 'group-') {
-                                        $groups[] = $g->getEmail();
+                                        $groups[] = $gn;
                                     }
                                 }
                             }
