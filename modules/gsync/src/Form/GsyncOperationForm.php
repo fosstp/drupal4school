@@ -185,7 +185,10 @@ class GsyncOperationForm extends FormBase
                             $data = gs_listUserGroups($user_key);
                             if ($data) {
                                 foreach ($data as $g) {
-                                    $groups[] = $g->getEmail();
+                                    $gn = $g->getEmail();
+                                    if (substr($gn, 0, 6) == 'group-') {
+                                        $groups[] = $g->getEmail();
+                                    }
                                 }
                             }
                             if ($log) {
