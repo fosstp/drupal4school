@@ -1,15 +1,21 @@
 gevent.settings:
   type: conﬁg_object
   mapping:
-    entity_type:
+    content_type:
       type: string
       label: '行事曆事件內容類型'
+    field_taxonomy:
+      type: string
+      label: '行事曆事件分類'
     field_title:
       type: string
       label: '行事曆事件摘要欄位對應'
     field_memo:
       type: string
       label: '行事曆事件說明欄位對應'
+    field_date:
+      type: string
+      label: '行事曆事件起迄時間與遞迴設定'    
     field_place:
       type: string
       label: '行事曆事件地點欄位對應'

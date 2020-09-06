@@ -213,7 +213,7 @@ function gs_updateEvent($calendarId, $eventId, $event)
 function gs_syncEvent($node)
 {
     global $calendar;
-    $config = $this->config('gevent.settings');
+    $config = \Drupal::config('gevent.settings');
     $calendar_id_field = $config->get('field_calendar_id');
     if (substr($calendar_id_field, 0, 6) == 'field_') {
         $calendar_id_obj = $node->$calendar_id_field;

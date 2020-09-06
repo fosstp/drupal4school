@@ -1,11 +1,13 @@
-entity_type: ''
+content_type: ''
+field_taxonomy: ''
 field_title: ''
 field_memo: ''
+field_date: ''
 field_place: ''
 field_attendee: ''
 field_calendar_id: ''
 field_event_id: ''
 calendar_owner: ''
-calendar_taxonomy: ''
+calendar_taxonomy: false
 calendar_id: ''
 enabled: false

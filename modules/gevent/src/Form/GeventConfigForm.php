@@ -4,6 +4,7 @@ namespace Drupal\gevent\Form;
 
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\node\Entity\NodeType;
 
 class GeventConfigForm extends ConfigFormBase
 {
@@ -21,75 +22,172 @@ class GeventConfigForm extends ConfigFormBase
 
     public function buildForm(array $form, FormStateInterface $form_state)
     {
-        $config = $this->config('gevent.settings');
-        $form['helper'] = [
-            '#type' => 'markup',
-            '#markup' => '<p>要使用 G Suite 帳號單一簽入功能，您必須建立 Google 開發專案並取得 Google 發給您的<em>網路應用程式憑證</em>，請依照以下步驟取得相關組態值：'.
-            '<ol><li>請連結 <a href="https://console.cloud.google.com/apis/dashboard">Google apis 主控台</a>，如果還沒有介接專案，請先建立專案！</li>'.
-            '<li>請進入「資料庫」管理頁面，為該專案啟用這兩個 API：Admin SDK、Google Calendar API。至少應包含這兩個 API，如果要自行開發模組的話當然也可以啟用更多 API。</li>'.
-            '<li>請進入「憑證」管理頁面，然後建立「服務帳戶」憑證，並且需要從 G Suite 「管理主控台」->「安全性」->「API 權限」->「全網域委派」進行全域授權，請參考<a href="https://support.google.com/a/answer/162106?hl=zh-Hant">這篇文章</a>。</li>'.
-            '<li>全域授權時，需輸入該專案的服務帳戶用戶端編號，授權範圍至少應包含：<ul>'.
-            '<li>https://www.googleapis.com/auth/admin.directory.orgunit</li>'.
-            '<li>https://www.googleapis.com/auth/admin.directory.user</li>'.
-            '<li>https://www.googleapis.com/auth/admin.directory.group</li>'.
-            '<li>https://www.googleapis.com/auth/admin.directory.group.member</li>'.
-            '<li>https://www.googleapis.com/auth/calendar</li>'.
-            '<li>https://www.googleapis.com/auth/calendar.events</li>'.
-            '</ul></li>'.
-            '<li>線上測試 OAuth 用戶端 API 資料存取，請連到 <a href="https://developers.google.com/oauthplayground/">OAuth playground</a>。</li>'.
-            '</ol>',
-        ];
-        $validators = [
-            'file_validate_extensions' => ['json'],
-        ];
-        $form['google_service_json'] = [
-            '#type' => 'file',
-            '#title' => 'Google 服務帳號授權驗證 JSON 檔',
-            '#description' => $config->get('google_service_json') ? '授權驗證檔案已經上傳，如沒有要變更金鑰，請勿再上傳' : '請從 Google apis 主控台專案管理頁面下載上述「服務帳戶」所提供的 JSON 檔案並上傳到這裡。',
-        ];
-        $form['google_domain'] = [
-            '#type' => 'textfield',
-            '#title' => 'G Suite 網域',
-            '#default_value' => $config->get('google_domain'),
-            '#description' => '請設定 G Suite 網域名稱，通常是貴機構的 DNS 域名。',
-        ];
-        $form['google_domain_admin'] = [
-            '#type' => 'textfield',
-            '#title' => 'G Suite 管理員帳號',
-            '#default_value' => $config->get('google_domain_admin'),
-            '#description' => '請設定 G Suite 網域的管理員郵件地址，該管理員必須具備該網域的最高管理權限。Google 服務帳號將以該管理員的身份進行資料操作。',
-        ];
-        $form['teacher_orgunit'] = [
-            '#type' => 'textfield',
-            '#title' => '教師帳號所在的機構',
-            '#default_value' => $config->get('teacher_orgunit'),
-            '#description' => '如果您使用子機構來區分教師與學生帳號，請在這裡輸入教師帳號子機構的階層路徑，最高層級為 <strong>/</strong>，假如您輸入<strong>/小學部/教師帳號</strong>，意味著所有的教師帳號將會同步到第二層級機構<strong>小學部</strong>的子機構<strong>教師帳號</strong>中。由於機構僅用來套用 Google 的相關設定，無法如群組一般擁有郵寄清單和論壇主頁，機構為階層結構，而群組為巢狀結構，所以您不應該使用機構來對教師帳號或學生帳號做進一步的分類，而應該使用群組來進行分類。本模組將依循此法則進行帳號同步作業！',
-        ];
-        $form['student_orgunit'] = [
-            '#type' => 'textfield',
-            '#title' => '學生帳號所在的機構',
-            '#default_value' => $config->get('student_orgunit'),
-            '#description' => '如果您使用子機構來區分教師與學生帳號，請在這裡輸入學生帳號子機構的階層路徑，最高層級為 <strong>/</strong>，假如您輸入<strong>/小學部/學生帳號</strong>，意味著所有的學生帳號將會同步到第二層級機構<strong>小學部</strong>的子機構<strong>學生帳號</strong>中。',
-        ];
-        $form['student_account'] = [
-            '#type' => 'select',
-            '#title' => '學生帳號的樣式',
-            '#multiple' => false,
-            '#options' => [
-                'id' => '學號',
-                'account' => '臺北市校園單一身分驗證登入帳號',
-            ],
-            '#size' => 1,
-            '#default_value' => $config->get('student_account') ?: 'id',
-            '#description' => '建立學生帳號時，要以什麼資料當作預設帳號？',
-        ];
-        $form['actions'] = [
-            '#type' => 'actions',
-            'submit' => [
-                '#type' => 'submit',
-                '#value' => '儲存組態',
-            ],
-        ];
+        $enable = \Drupal::config('gsync.settings')->get('enabled');
+        if (!$enable) {
+            $form['helper'] = [
+                '#type' => 'markup',
+                '#markup' => '<p>尚未完成 G Suite 帳號同步模組設定，因此無法存取 Google Api 服務，請先完成 G Suite 帳號同步模組設定！</p>',
+            ];
+        } else {
+            $config = $this->config('gevent.settings');
+            $options = ['none' => '-請選擇-'];
+            $boundles = NodeType::loadMultiple();
+            foreach (keys($boundles) as $node_type) {
+                $fields = \Drupal::service('entity_field.manager')->getFieldDefinitions('node', $node_type);
+                $bundles[$node_type]['field_defintions'] = $fields;
+                foreach ($fields as $field_name => $field_definition) {
+                    if ($field_definition->getType() == 'datetime') {
+                        $options[$node_type] = $all_types[$node_type]->name;
+                        continue;
+                    }
+                }
+            }
+            $form['content_type'] = [
+                '#type' => 'select',
+                '#title' => '要把哪種內容類型同步到 Google 行事曆',
+                '#options' => $options,
+                '#default_value' => $config->get('content_type'),
+                '#description' => '日期時間欄位為行事曆事件的必要欄位，因此這裡僅列出含有日期時間欄位的內容類型',
+                '#required' => true,
+                '#ajax' => [
+                    'callback' => [$this, 'reload_node_fields_ajax_callback'],
+                ],
+            ];
+
+            $my_bundle = $config->get('content_type');
+            $my_fields = ['none' => '-請選擇-'];
+            $teacher_field = ['none' => '-請選擇-'];
+            if (!empty($my_bundle)) {
+                foreach ($bundles[$my_bundle]['field_defintions'] as $field_name => $field_defintion) {
+                    $type = $field_defintion->getType();
+                    if ($type == 'entity_reference') {
+                        $target_type = $field_defintion->getSetting('target_type');
+                        if ($target_type == 'taxonomy_term') {
+                            $config->set('field_taxonomy', $field_name);
+                            $vocabularys = $field_defintion->getSetting('handler_settings')['target_bundles'];
+                            $my_terms = [];
+                            foreach ($vocabularys as $v) {
+                                $terms = \Drupal::service('entity_type.manager')->getStorage('taxonomy_term')->loadTree($v);
+                                foreach ($terms as $t) {
+                                    $my_terms[] = $t->getName();
+                                }
+                            }
+                        }
+                    } elseif ($type == 'datetime') {
+                        $config->set('field_date', $field_name);
+                    } elseif ($type == 'tpedu_teachers') {
+                        $teacher_field[$field_name] = $field_defintion->getLabel();
+                    } elseif ($type == 'string' || $type == 'string_long') {
+                        $my_fields[$field_name] = $field_defintion->getLabel();
+                    }
+                }
+            }
+
+            $form['field_title'] = [
+                '#type' => 'select',
+                '#title' => '行事曆事件標題對應欄位',
+                '#options' => $my_fields,
+                '#default_value' => $config->get('field_title'),
+                '#description' => '這裡僅列出類型為字串或長字串的欄位',
+                '#required' => true,
+            ];
+            $form['field_memo'] = [
+                '#type' => 'select',
+                '#title' => '行事曆事件說明對應欄位',
+                '#options' => $my_fields,
+                '#default_value' => $config->get('field_memo'),
+                '#description' => '這裡僅列出類型為字串或長字串的欄位',
+            ];
+            $form['field_place'] = [
+                '#type' => 'select',
+                '#title' => '行事曆事件位置對應欄位',
+                '#options' => $my_fields,
+                '#default_value' => $config->get('field_place'),
+                '#description' => '這裡僅列出類型為字串或長字串的欄位',
+            ];
+            $form['field_attendee'] = [
+                '#type' => 'select',
+                '#title' => '行事曆事件邀請對象對應欄位',
+                '#options' => $teacher_field,
+                '#default_value' => $config->get('field_attendee'),
+                '#description' => '這裡僅列出類型為（台北市校園）教師的欄位',
+            ];
+            $form['field_calendar_id'] = [
+                '#type' => 'select',
+                '#title' => '用來儲存 Google 行事曆代號的欄位',
+                '#options' => $my_fields,
+                '#default_value' => $config->get('field_calendar_id'),
+                '#description' => '此欄位類型必須為字串或長字串，僅用於同步時檢索行事曆，請勿顯示於輸入表單中讓使用者編輯！',
+                '#required' => true,
+            ];
+            $form['field_event_id'] = [
+                '#type' => 'select',
+                '#title' => '用來儲存 Google 行事曆事件代號的欄位',
+                '#options' => $my_fields,
+                '#default_value' => $config->get('field_event_id'),
+                '#description' => '此欄位類型必須為字串或長字串，僅用於同步時檢索事件，請勿顯示於輸入表單中讓使用者編輯！',
+                '#required' => true,
+            ];
+            $form['calendar_owner'] = [
+                '#type' => 'textfield',
+                '#title' => '行事曆擁有者',
+                '#default_value' => $config->get('calendar_owner'),
+                '#description' => '請輸入用來儲存學校行事曆的專屬帳號，應包含 G Suite 網域，例如：schedule@xxps.tp.edu.tw',
+                '#required' => true,
+            ];
+            if ($config->get('enabled')) {
+                $my_calendars = [];
+                $calendar = initGoogleCalendar();
+                $calendars = gs_listCalendars();
+                foreach ($calendars->getItems() as $calendarListEntry) {
+                    $my_calendars[$calendarListEntry->getId()] = $calendarListEntry->getSummary();
+                }
+                $form['calendar_taxonomy'] = [
+                    '#type' => 'checkbox',
+                    '#title' => '行事曆事件分類',
+                    '#default_value' => $config->get('calendar_taxonomy'),
+                    '#description' => '是否要利用分類（Taxonomy）對行事曆事件進行區分，以便對應到不同的行事曆。',
+                ];
+                $form['calendar_id'] = [
+                    '#type' => 'select',
+                    '#title' => '要同步到哪一個行事曆？',
+                    '#options' => $my_calendars,
+                    '#default_value' => $config->get('calendar_id'),
+                    '#states' => [
+                        'invisible' => [
+                            ':input[name="calendar_taxonomy"]' => ['checked' => true],
+                        ],
+                    ],
+                ];
+                if (count($my_terms) > 0) {
+                    foreach ($my_terms as $term) {
+                        $form['calendar_term_'.$term] = [
+                            '#type' => 'select',
+                            '#title' => "要將類別 $term 同步到哪一個行事曆？",
+                            '#options' => $my_calendars,
+                            '#default_value' => $config->get('calendar_term_'.$term) ?: '',
+                            '#states' => [
+                                'invisible' => [
+                                    ':input[name="calendar_taxonomy"]' => ['checked' => false],
+                                ],
+                            ],
+                        ];
+                    }
+                }
+            } else {
+                $form['helper'] = [
+                    '#type' => 'markup',
+                    '#markup' => '<p>由於尚未取得 Google 行事曆清單，因此無法進行事件分類設定，請先按「儲存組態」然後繼續設定！</p>',
+                ];
+            }
+            $form['actions'] = [
+                '#type' => 'actions',
+                'submit' => [
+                    '#type' => 'submit',
+                    '#value' => '儲存組態',
+                ],
+            ];
+        }
 
         return $form;
     }
@@ -98,28 +196,16 @@ class GeventConfigForm extends ConfigFormBase
     {
         $error = '';
         $message = '';
-        $config = $this->config('gsync.settings');
+        $config = $this->config('gevent.settings');
         $values = $form_state->cleanValues()->getValues();
         foreach ($values as $key => $value) {
-            if ($key == 'google_service_json') {
-                $file = file_save_upload('google_service_json', ['file_validate_extensions' => ['json']], 'public://gsync', 0, \Drupal\Core\File\FileSystemInterface::EXISTS_REPLACE);
-                if ($file) {
-                    $file->setPermanent();
-                    $file->save();
-                    $config->set($key, $file->getFileUri());
-                    $message = 'Google 服務帳戶的金鑰檔案已經更新。';
-                }
-            } else {
-                $config->set($key, $value);
-            }
+            $config->set($key, $value);
         }
         $config->save();
         $ok = false;
-        if ($config->get('google_service_json') && $config->get('google_domain') && $config->get('google_domain_admin')) {
-            $directory = initGoogleDirectory();
-            if ($directory && gs_getUser($config->get('google_domain_admin'))) {
-                $ok = true;
-            }
+        $calendar = initGoogleCalendar();
+        if ($calendar && gs_listCalendars()) {
+            $ok = true;
         }
         if ($ok) {
             $config->set('enabled', true);
@@ -132,5 +218,84 @@ class GeventConfigForm extends ConfigFormBase
             $message .= 'G Suite API 連線測試失敗，模組無法啟用。';
             \Drupal::messenger()->addMessage($message, 'warning');
         }
+    }
+
+    public function reload_node_fields_ajax_callback($form, $form_state)
+    {
+        $config = $this->config('gevent.settings');
+        $response = new AjaxResponse();
+        $element = $form_state->getTriggeringElement();
+        $my_bundle = $element['#value'];
+        $my_fields = ['none' => '-請選擇-'];
+        $teacher_field = ['none' => '-請選擇-'];
+        $fields = \Drupal::service('entity_field.manager')->getFieldDefinitions('node', $my_bundle);
+        foreach ($fields as $field_name => $field_defintion) {
+            $type = $field_defintion->getType();
+            if ($type == 'entity_reference') {
+                $target_type = $field_defintion->getSetting('target_type');
+                if ($target_type == 'taxonomy_term') {
+                    $config->set('field_taxonomy', $field_name);
+                }
+            } elseif ($type == 'datetime') {
+                $config->set('field_date', $field_name);
+            } elseif ($type == 'tpedu_teachers') {
+                $teacher_field[$field_name] = $field_defintion->getLabel();
+            } elseif ($type == 'string' || $type == 'string_long') {
+                $my_fields[$field_name] = $field_defintion->getLabel();
+            }
+        }
+        $form['field_title'] = [
+            '#type' => 'select',
+            '#title' => '行事曆事件標題對應欄位',
+            '#options' => $my_fields,
+            '#default_value' => $config->get('field_title'),
+            '#description' => '這裡僅列出類型為字串或長字串的欄位',
+            '#required' => true,
+        ];
+        $form['field_memo'] = [
+            '#type' => 'select',
+            '#title' => '行事曆事件說明對應欄位',
+            '#options' => $my_fields,
+            '#default_value' => $config->get('field_memo'),
+            '#description' => '這裡僅列出類型為字串或長字串的欄位',
+        ];
+        $form['field_place'] = [
+            '#type' => 'select',
+            '#title' => '行事曆事件位置對應欄位',
+            '#options' => $my_fields,
+            '#default_value' => $config->get('field_place'),
+            '#description' => '這裡僅列出類型為字串或長字串的欄位',
+        ];
+        $form['field_attendee'] = [
+            '#type' => 'select',
+            '#title' => '行事曆事件邀請對象對應欄位',
+            '#options' => $teacher_field,
+            '#default_value' => $config->get('field_attendee'),
+            '#description' => '這裡僅列出類型為（台北市校園）教師的欄位',
+        ];
+        $form['field_calendar_id'] = [
+            '#type' => 'select',
+            '#title' => '用來儲存 Google 行事曆代號的欄位',
+            '#options' => $my_fields,
+            '#default_value' => $config->get('field_calendar_id'),
+            '#description' => '此欄位類型必須為字串或長字串，僅用於同步時檢索行事曆，請勿顯示於輸入表單中讓使用者編輯！',
+            '#required' => true,
+        ];
+        $form['field_event_id'] = [
+            '#type' => 'select',
+            '#title' => '用來儲存 Google 行事曆事件代號的欄位',
+            '#options' => $my_fields,
+            '#default_value' => $config->get('field_event_id'),
+            '#description' => '此欄位類型必須為字串或長字串，僅用於同步時檢索事件，請勿顯示於輸入表單中讓使用者編輯！',
+            '#required' => true,
+        ];
+        $response->addCommand(new ReplaceCommand('name="field_title"', \Drupal::service('renderer')->render($form['field_title'])));
+        $response->addCommand(new ReplaceCommand('name="field_memo"', \Drupal::service('renderer')->render($form['field_memo'])));
+        $response->addCommand(new ReplaceCommand('name="field_place"', \Drupal::service('renderer')->render($form['field_place'])));
+        $response->addCommand(new ReplaceCommand('name="field_attendee"', \Drupal::service('renderer')->render($form['field_attendee'])));
+        $response->addCommand(new ReplaceCommand('name="field_calendar_id"', \Drupal::service('renderer')->render($form['field_calendar_id'])));
+        $response->addCommand(new ReplaceCommand('name="field_event_id"', \Drupal::service('renderer')->render($form['field_event_id'])));
+
+        return $response;
     }
 }
