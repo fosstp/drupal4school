@@ -1,0 +1,6 @@
+gevent_print:
+  version: 1.x
+  header: true
+  css:
+    theme:
+      css/print.css: {}

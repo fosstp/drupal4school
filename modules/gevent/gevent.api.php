@@ -2,7 +2,7 @@
 
 $calendar = null;
 
-function current_seme()
+function gevent_current_seme()
 {
     if (date('m') > 7) {
         $year = date('Y');
@@ -144,9 +144,11 @@ function gs_pruneEvents($calendarId)
 function gs_listEvents($calendarId)
 {
     global $calendar;
-    $mydate = current_seme();
+    $mydate = gevent_current_seme();
     $opt_param['timeMin'] = $mydate['min'];
     $opt_param['timeMax'] = $mydate['max'];
+    $opt_param['singleEvents'] = true;
+    $opt_param['orderBy'] = 'startTime';
     try {
         $events = $calendar->events->listEvents($calendarId, $opt_param);
 
@@ -170,11 +172,23 @@ function gs_getEvent($calendarId, $eventId)
     }
 }
 
+function gs_moveEvent($calendarId, $eventId, $target)
+{
+    global $calendar;
+    try {
+        return $calendar->events->move($calendarId, $eventId, $target);
+    } catch (\Google_Service_Exception $e) {
+        \Drupal::logger('google')->debug("gs_moveEvent($calendarId, $eventId, $target):".$e->getMessage());
+
+        return false;
+    }
+}
+
 function gs_deleteEvent($calendarId, $eventId)
 {
     global $calendar;
     try {
-        $calendar->events->delete($calendarId, $eventId);
+        $calendar->events->delete($calendar_id, $event_id);
 
         return true;
     } catch (\Google_Service_Exception $e) {
@@ -212,7 +226,7 @@ function gs_updateEvent($calendarId, $eventId, $event)
 
 function gs_syncEvent($node)
 {
-    global $calendar;
+    initGoogleCalendar();
     $config = \Drupal::config('gevent.settings');
     $calendar_id_field = $config->get('field_calendar_id');
     if (substr($calendar_id_field, 0, 6) == 'field_') {
@@ -235,7 +249,7 @@ function gs_syncEvent($node)
     if (!empty($calendar_id) && !empty($event_id)) {
         $event = gs_getEvent($calendar_id, $event_id);
         if (!$event) {
-            return false;
+            $event = new Google_Service_Calendar_Event();
         }
     } else {
         $event = new Google_Service_Calendar_Event();
@@ -335,18 +349,29 @@ function gs_syncEvent($node)
     }
     $creator->setDisplayName($user->dept_name.' '.$user->realname);
     $event->setCreator($creator);
-    if (!empty($calendar_id) && !empty($event_id)) {
-        return gs_updateEvent($calendar_id, $event_id, $event);
+    if ($config->get('calendar_taxonomy')) {
+        $taxonomy_field = $config->get('field_taxonomy');
+        $term_obj = $node->$taxonomy_field;
+        $term = $term_obj['und'][0]['tid'];
+        $calendar_newid = $config->get('calendar_term_'.$term);
     } else {
-        if ($config->get('calendar_taxonomy')) {
-            $taxonomy_field = $config->get('field_taxonomy');
-            $term_obj = $node->$taxonomy_field;
-            $term = $term_obj['und'][0]['tid'];
-            $calendar_id = $config->get('calendar_term_'.$term);
-        } else {
-            $calendar_id = $config->get('calendar_id');
-        }
+        $calendar_newid = $config->get('calendar_id');
+    }
+    if (!empty($calendar_id) && !empty($event_id)) {
+        if ($calendar_newid != $calendar_id) {
+            gs_updateEvent($calendar_id, $event_id, $event);
 
-        return gs_createEvent($calendar_id, $event);
+            return gs_moveEvent($calendar_id, $event_id, $calendar_newid);
+        } else {
+            return gs_updateEvent($calendar_id, $event_id, $event);
+        }
+    } else {
+//        $summary = gs_getCalendar($calendar_id)->getSummary();
+//        $organizer = new Google_Service_Calendar_EventOrganizer();
+//        $organizer->setEmail($calendar_id);
+//        $organizer->setDisplayName($summary);
+//        $event->setOrganizer($organizer);
+
+        return gs_createEvent($calendar_newid, $event);
     }
 }

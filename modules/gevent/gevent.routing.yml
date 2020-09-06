@@ -5,3 +5,11 @@ gevent.config:
     _title: 'G Suite 行事曆同步模組設定'
   requirements:
     _permission: 'administer site configuration'
+
+gevent.todolist:
+  path: /tranditional_calendar
+  defaults:
+    _controller: \Drupal\gevent\Controller\GeventController::handle
+    _title: '行事曆一覽表'
+  requirements:
+    _access: 'TRUE'
