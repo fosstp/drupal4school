@@ -219,6 +219,18 @@ function gs_createEvent($calendarId, $event)
     }
 }
 
+function gs_importEvent($calendarId, $event)
+{
+    global $calendar;
+    try {
+        return $calendar->events->import($calendarId, $event);
+    } catch (\Google_Service_Exception $e) {
+        \Drupal::logger('google')->debug("gs_importEvent($calendarId,".var_export($event, true).'):'.$e->getMessage());
+
+        return false;
+    }
+}
+
 function gs_updateEvent($calendarId, $eventId, $event)
 {
     global $calendar;
@@ -319,20 +331,13 @@ function gs_syncEvent($node)
     $department = $node->get($dept_field)->getValue();
     $creator->setDisplayName($department);
     $event->setCreator($creator);
-    if ($config->get('calendar_taxonomy')) {
-        $taxonomy_field = $config->get('field_taxonomy');
-        $term = $node->get($taxonomy_field)->getValue();
-        $calendar_newid = $config->get('calendar_term_'.$term);
-    } else {
-        $calendar_newid = $config->get('calendar_id');
-    }
+    $calendar_newid = $config->get('calendar_id');
     if (!empty($calendar_id) && !empty($event_id)) {
         if ($calendar_newid != $calendar_id) {
             gs_updateEvent($calendar_id, $event_id, $event);
-
-            return gs_moveEvent($calendar_id, $event_id, $calendar_newid);
+            $event = gs_moveEvent($calendar_id, $event_id, $calendar_newid);
         } else {
-            return gs_updateEvent($calendar_id, $event_id, $event);
+            $event = gs_updateEvent($calendar_id, $event_id, $event);
         }
     } else {
 //        $summary = gs_getCalendar($calendar_id)->getSummary();
@@ -341,6 +346,15 @@ function gs_syncEvent($node)
 //        $organizer->setDisplayName($summary);
 //        $event->setOrganizer($organizer);
 
-        return gs_createEvent($calendar_newid, $event);
+        $event = gs_createEvent($calendar_newid, $event);
     }
+    if ($config->get('calendar_taxonomy')) {
+        $taxonomy_field = $config->get('field_taxonomy');
+        $term = $node->get($taxonomy_field)->getValue();
+        $calendar_newid = $config->get('calendar_term_'.$term);
+    }
+    $event->setICalUID('originalUID');
+    gs_importEvent($calendar_newid, $event);
+
+    return $event;
 }

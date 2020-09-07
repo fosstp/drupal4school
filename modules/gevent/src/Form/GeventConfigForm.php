@@ -161,19 +161,17 @@ class GeventConfigForm extends ConfigFormBase
                     '#title' => '要同步到哪一個行事曆？',
                     '#options' => $my_calendars,
                     '#default_value' => $config->get('calendar_id'),
-                    '#states' => [
-                        'invisible' => [
-                            ':input[name="calendar_taxonomy"]' => ['checked' => true],
-                        ],
-                    ],
+                    '#required' => true,
+                    '#description' => '這是主要行事曆，所有的行事曆事件都會儲存於此。',
                 ];
                 if (count($my_terms) > 0) {
                     foreach ($my_terms as $term) {
                         $form['calendar_term_'.$term] = [
                             '#type' => 'select',
-                            '#title' => "要將類別 $term 同步到哪一個行事曆？",
+                            '#title' => "要將類別 $term 匯出到哪一個行事曆？",
                             '#options' => $my_calendars,
                             '#default_value' => $config->get('calendar_term_'.$term) ?: '',
+                            '#description' => '這是次要行事曆，指定分類的行事曆事件將會匯入到這裏。',
                             '#states' => [
                                 'invisible' => [
                                     ':input[name="calendar_taxonomy"]' => ['checked' => false],

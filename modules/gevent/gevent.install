@@ -1,0 +1,45 @@
+<?php
+
+use Drupal\taxonomy\Entity\Term;
+use Drupal\taxonomy\Entity\Vocabulary;
+
+function gevent_install()
+{
+    $vocabulary = Vocabulary::load('calendar');
+    if (!$vocabulary) {
+        $vocabulary = Vocabulary::create([
+            'vid' => 'calendar',
+            'description' => '用於行事曆事件的分類',
+            'name' => '行事曆分類',
+        ]);
+        $vocabulary->save();
+    }
+
+    $terms = \Drupal::service('entity_type.manager')->getStorage('taxonomy_term');
+    $tree = $terms->loadTree('calendar', $parent = 0, $max_depth = null, $load_entities = false);
+    if (count($tree) == 0) {
+        Term::create([
+            'parent' => [0],
+            'name' => '重要活動',
+            'vid' => 'websites',
+        ])->save();
+        Term::create([
+            'parent' => [0],
+            'name' => '週三進修',
+            'vid' => 'websites',
+        ])->save();
+        Term::create([
+            'parent' => [0],
+            'name' => '學生行事曆',
+            'vid' => 'websites',
+        ])->save();
+    }
+}
+
+function thumblink_uninstall()
+{
+    $vocabulary = Vocabulary::load('calendar');
+    if ($vocabulary) {
+        $vocabulary->delete();
+    }
+}
