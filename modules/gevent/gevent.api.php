@@ -287,14 +287,14 @@ function gs_syncEvent($node)
     }
 
     $date_field = $config->get('field_date');
-    $date_array = $node->get($date_field)->getValue();
+    $date_array = $node->get($date_field)->getValue()[0];
     $event_start = new Google_Service_Calendar_EventDateTime();
     $event_end = new Google_Service_Calendar_EventDateTime();
     $event_start->setTimeZone('Asia/Teipei');
     $event_end->setTimeZone('Asia/Teipei');
-    $start_date = date($date_array[0]['value']);
-    $end_date = date($date_array[0]['value2']);
-    if ($date_array[0]['all_day'] == 1) {
+    $start_date = $date_array->getStart();
+    $end_date = $date_array->getEnd();
+    if ($date_array['all_day'] == 1) {
         $event_start->setDate(date_format($start_date, 'Y-m-d'));
         $event_end->setDate(date_format($end_date, 'Y-m-d'));
     } else {
@@ -303,8 +303,11 @@ function gs_syncEvent($node)
     }
     $event->setStart($event_start);
     $event->setEnd($event_end);
-    $rrule = $date_array[0]['rrule'];
-    $event->setRecurrence($rrule);
+    if ($date_array->isRecurring()) {
+        $helper = $date_array->getHelper();
+        $rrule = $helper->getRules();
+        $event->setRecurrence($rrule);
+    }
 
     $user = user_load($node->uid);
     $creator = new Google_Service_Calendar_EventCreator();
