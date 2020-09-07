@@ -244,7 +244,7 @@ class GeventConfigForm extends ConfigFormBase
                 if ($target_type == 'taxonomy_term') {
                     $config->set('field_taxonomy', $field_name);
                 }
-            } elseif ($type == 'datetime') {
+            } elseif ($type == 'datetime_range') {
                 $config->set('field_date', $field_name);
             } elseif ($type == 'tpedu_teachers') {
                 $teacher_field[$field_name] = $field_defintion->getLabel();
@@ -257,6 +257,14 @@ class GeventConfigForm extends ConfigFormBase
             '#title' => '行事曆事件標題對應欄位',
             '#options' => $my_fields,
             '#default_value' => $config->get('field_title'),
+            '#description' => '這裡僅列出類型為字串或長字串的欄位',
+            '#required' => true,
+        ];
+        $form['field_department'] = [
+            '#type' => 'select',
+            '#title' => '行事曆事件主辦單位對應欄位',
+            '#options' => $my_fields,
+            '#default_value' => $config->get('field_department'),
             '#description' => '這裡僅列出類型為字串或長字串的欄位',
             '#required' => true,
         ];
@@ -298,6 +306,7 @@ class GeventConfigForm extends ConfigFormBase
             '#required' => true,
         ];
         $response->addCommand(new ReplaceCommand('name="field_title"', \Drupal::service('renderer')->render($form['field_title'])));
+        $response->addCommand(new ReplaceCommand('name="field_department"', \Drupal::service('renderer')->render($form['field_department'])));
         $response->addCommand(new ReplaceCommand('name="field_memo"', \Drupal::service('renderer')->render($form['field_memo'])));
         $response->addCommand(new ReplaceCommand('name="field_place"', \Drupal::service('renderer')->render($form['field_place'])));
         $response->addCommand(new ReplaceCommand('name="field_attendee"', \Drupal::service('renderer')->render($form['field_attendee'])));
