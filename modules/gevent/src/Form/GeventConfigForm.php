@@ -73,7 +73,7 @@ class GeventConfigForm extends ConfigFormBase
                                 }
                             }
                         }
-                    } elseif ($type == 'datetime') {
+                    } elseif ($type == 'datetime_range') {
                         $config->set('field_date', $field_name);
                     } elseif ($type == 'tpedu_teachers') {
                         $teacher_field[$field_name] = $field_defintion->getLabel();
