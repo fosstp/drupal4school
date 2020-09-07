@@ -81,3 +81,18 @@ function gevent_node_delete(EntityInterface $node)
         gs_deleteEvent($calendar_id, $event_id);
     }
 }
+
+function gevent_theme()
+{
+    return [
+        'gevent_todolist' => [
+            'variables' => [
+                'title' => '學校行事曆',
+                'syear' => 0,
+                'eyear' => 0,
+                'seme' => 0,
+                'events' => [],
+            ],
+        ],
+    ];
+}

@@ -5,22 +5,31 @@ $calendar = null;
 function gevent_current_seme()
 {
     if (date('m') > 7) {
-        $year = date('Y');
-        $nextyear = $year++;
-        $min = "$year-08-01T00:00:00+08:00";
-        $max = "$nextyear-01-31T00:00:00+08:00";
+        $syear = date('Y');
+        $eyear = $syear++;
+        $stryear = $syear - 1911;
+        $seme = 1;
+        $min = "$syear-08-01T00:00:00+08:00";
+        $max = "$eyear-01-31T00:00:00+08:00";
     } elseif (date('m') < 2) {
+        $eyear = date('Y');
+        $syear = $eyear--;
+        $stryear = $syear - 1911;
+        $seme = 1;
         $year = date('Y');
         $lastyear = $year--;
-        $min = "$lastyear-08-01T00:00:00+08:00";
-        $max = "$year-01-31T00:00:00+08:00";
+        $min = "$syear-08-01T00:00:00+08:00";
+        $max = "$eyear-01-31T00:00:00+08:00";
     } else {
-        $year = date('Y');
-        $min = "$year-02-01T00:00:00+08:00";
-        $max = "$year-07-31T00:00:00+08:00";
+        $syear = date('Y');
+        $eyear = $syear;
+        $stryear = $syear - 1912;
+        $seme = 2;
+        $min = "$syear-02-01T00:00:00+08:00";
+        $max = "$eyear-07-31T00:00:00+08:00";
     }
 
-    return ['min' => $min, 'max' => $max];
+    return ['min' => $min, 'max' => $max, 'syear' => $syear, 'eyear' => $eyear, 'stryear' => $stryear, 'seme' => $seme];
 }
 
 function initGoogleCalendar()
@@ -347,7 +356,7 @@ function gs_syncEvent($node)
     if (isset($user->email)) {
         $creator->setEmail($user->email);
     }
-    $creator->setDisplayName($user->dept_name.' '.$user->realname);
+    $creator->setDisplayName($user->dept_name);
     $event->setCreator($creator);
     if ($config->get('calendar_taxonomy')) {
         $taxonomy_field = $config->get('field_taxonomy');
