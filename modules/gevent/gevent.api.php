@@ -238,23 +238,9 @@ function gs_syncEvent($node)
     initGoogleCalendar();
     $config = \Drupal::config('gevent.settings');
     $calendar_id_field = $config->get('field_calendar_id');
-    if (substr($calendar_id_field, 0, 6) == 'field_') {
-        $calendar_id_obj = $node->$calendar_id_field;
-        if (isset($calendar_id_obj['und'][0])) {
-            $calendar_id = $calendar_id_obj['und'][0]['value'];
-        }
-    } else {
-        $calendar_id = $node->$calendar_id_field;
-    }
+    $calendar_id = $node->get($calendar_id_field)->getValue();
     $event_id_field = $config->get('field_event_id');
-    if (substr($event_id_field, 0, 6) == 'field_') {
-        $event_id_obj = $node->$event_id_field;
-        if (isset($event_id_obj['und'][0])) {
-            $event_id = $event_id_obj['und'][0]['value'];
-        }
-    } else {
-        $event_id = $node->$event_id_field;
-    }
+    $event_id = $node->get($event_id_field)->getValue();
     if (!empty($calendar_id) && !empty($event_id)) {
         $event = gs_getEvent($calendar_id, $event_id);
         if (!$event) {
@@ -264,55 +250,28 @@ function gs_syncEvent($node)
         $event = new Google_Service_Calendar_Event();
     }
     $title_field = $config->get('field_title');
-    if (substr($title_field, 0, 6) == 'field_') {
-        $title_obj = $node->$title_field;
-        if (isset($title_obj['und'][0])) {
-            $title = $title_obj['und'][0]['value'];
-        }
-    } else {
-        $title = $node->$title_field;
-    }
-    if (!empty($title)) {
-        $event->setSummary($title);
-    }
+    $title = $node->get($title_field)->getValue();
+    $event->setSummary($title);
     $memo_field = $config->get('field_memo');
     if ($memo_field != 'none') {
-        if (substr($memo_field, 0, 6) == 'field_') {
-            $memo_obj = $node->$memo_field;
-            if (isset($memo_obj['und'][0])) {
-                $memo = $memo_obj['und'][0]['value'];
-            }
-        } else {
-            $memo = $node->$memo_field;
-        }
+        $memo = $node->get($memo_field)->getValue();
         if (!empty($memo)) {
             $event->setDescription($memo);
         }
     }
     $place_field = $config->get('field_place');
     if ($place_field != 'none') {
-        if (substr($place_field, 0, 6) == 'field_') {
-            $place_obj = $node->$place_field;
-            if (isset($place_obj['und'][0])) {
-                $place = $place_obj['und'][0]['value'];
-            }
-        } else {
-            $place = $node->$place_field;
-        }
+        $place = $node->get($place_field)->getValue();
         if (!empty($place)) {
             $event->setLocation($place);
         }
     }
     $teachers_field = $config->get('field_attendee');
     if ($teachers_field != 'none') {
-        if (substr($teachers_field, 0, 6) == 'field_') {
-            $teachers_obj = $node->$teachers_field;
-            $teachers = $teachers_obj['und'];
-        }
+        $teachers = $node->get($teachers_field)->getValue();
         if (count($teachers) > 0) {
             $attendees = [];
-            foreach ($teachers as $delta => $value) {
-                $uuid = $value['value'];
+            foreach ($teachers as $delta => $uuid) {
                 if ($user = get_user($uuid)) {
                     $attendee = new Google_Service_Calendar_EventAttendee();
                     $attendee->setId($uuid);
@@ -328,17 +287,14 @@ function gs_syncEvent($node)
     }
 
     $date_field = $config->get('field_date');
-    $date_obj = $node->$date_field;
-    $timezone = $date_obj['und'][0]['timezone'];
+    $date_array = $node->get($date_field)->getValue();
     $event_start = new Google_Service_Calendar_EventDateTime();
     $event_end = new Google_Service_Calendar_EventDateTime();
-    $event_start->setTimeZone($timezone);
-    $event_end->setTimeZone($timezone);
-    $start_date = date_create($date_obj['und'][0]['value'], timezone_open('UTC'));
-    date_timezone_set($start_date, timezone_open($timezone));
-    $end_date = date_create($date_obj['und'][0]['value2'], timezone_open('UTC'));
-    date_timezone_set($end_date, timezone_open($timezone));
-    if ($date_obj['und'][0]['all_day'] == 1) {
+    $event_start->setTimeZone('Asia/Teipei');
+    $event_end->setTimeZone('Asia/Teipei');
+    $start_date = date($date_array[0]['value']);
+    $end_date = date($date_array[0]['value2']);
+    if ($date_array[0]['all_day'] == 1) {
         $event_start->setDate(date_format($start_date, 'Y-m-d'));
         $event_end->setDate(date_format($end_date, 'Y-m-d'));
     } else {
@@ -347,7 +303,7 @@ function gs_syncEvent($node)
     }
     $event->setStart($event_start);
     $event->setEnd($event_end);
-    $rrule = $date_obj['und'][0]['rrule'];
+    $rrule = $date_array[0]['rrule'];
     $event->setRecurrence($rrule);
 
     $user = user_load($node->uid);
@@ -356,12 +312,13 @@ function gs_syncEvent($node)
     if (isset($user->email)) {
         $creator->setEmail($user->email);
     }
-    $creator->setDisplayName($user->dept_name);
+    $dept_field = $config->get('field_department');
+    $department = $node->get($dept_field)->getValue();
+    $creator->setDisplayName($department);
     $event->setCreator($creator);
     if ($config->get('calendar_taxonomy')) {
         $taxonomy_field = $config->get('field_taxonomy');
-        $term_obj = $node->$taxonomy_field;
-        $term = $term_obj['und'][0]['tid'];
+        $term = $node->get($taxonomy_field)->getValue();
         $calendar_newid = $config->get('calendar_term_'.$term);
     } else {
         $calendar_newid = $config->get('calendar_id');

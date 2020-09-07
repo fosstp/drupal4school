@@ -4,8 +4,9 @@ type: module
 package: D4S
 version: 1.0
 core: 8.x
-core_version_requirement: ^8 || ^9
+core_version_requirement: ^9
 dependencies:
   - date
+  - date_recur
   - gsync
 configure: gevent.config

@@ -91,6 +91,14 @@ class GeventConfigForm extends ConfigFormBase
                 '#description' => '這裡僅列出類型為字串或長字串的欄位',
                 '#required' => true,
             ];
+            $form['field_department'] = [
+                '#type' => 'select',
+                '#title' => '行事曆事件主辦單位對應欄位',
+                '#options' => $my_fields,
+                '#default_value' => $config->get('field_department'),
+                '#description' => '這裡僅列出類型為字串或長字串的欄位',
+                '#required' => true,
+            ];
             $form['field_memo'] = [
                 '#type' => 'select',
                 '#title' => '行事曆事件說明對應欄位',

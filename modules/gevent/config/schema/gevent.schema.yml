@@ -7,6 +7,9 @@ gevent.settings:
     field_taxonomy:
       type: string
       label: '行事曆事件分類'
+    field_department:
+      type: string
+      label: '行事曆事件主辦單位欄位對應'
     field_title:
       type: string
       label: '行事曆事件摘要欄位對應'
