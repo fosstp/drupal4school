@@ -170,7 +170,7 @@ class AdsyncOperationForm extends FormBase
                         if ($log) {
                             $detail_log .= '無法在 AD 中找到這個使用者，現在正在為使用者建立帳號......';
                         }
-                        $user_dn = 'cn='.$t->account.",$base_dn";
+                        $user_dn = 'CN='.$t->account.",$base_dn";
                         $result = ad_createUser($t, $user_dn);
                         if ($result) {
                             if ($log) {
@@ -198,7 +198,7 @@ class AdsyncOperationForm extends FormBase
                                     $detail_log .= '無法在 AD 中找到匹配的群組，現在正在建立新的使用者群組......';
                                 }
                                 $depgroup = 'group-A'.$job->dept_id;
-                                $group_dn = "cn=$depgroup,$base_dn";
+                                $group_dn = "CN=$depgroup,$base_dn";
                                 $result = ad_createGroup($depgroup, $group_dn, $job->dept_name);
                                 if ($result) {
                                     if ($log) {
@@ -238,7 +238,7 @@ class AdsyncOperationForm extends FormBase
                                     $detail_log .= '無法在 AD 中找到匹配的群組，現在正在建立新的使用者群組......';
                                 }
                                 $posgroup = 'group-B'.$job->role_id;
-                                $group_dn = "cn=$posgroup,$base_dn";
+                                $group_dn = "CN=$posgroup,$base_dn";
                                 $result = ad_createGroup($posgroup, $group_dn, $job->role_name);
                                 if ($result) {
                                     if ($log) {
@@ -272,27 +272,27 @@ class AdsyncOperationForm extends FormBase
                         $grade = substr($t->class, 0, 1);
                         switch ($grade) {
                                 case 1:
-                                    $clsgroup = 'group-ca';
+                                    $clsgroup = 'group-Ca';
                                     break;
                                 case 2:
-                                    $clsgroup = 'group-cb';
+                                    $clsgroup = 'group-Cb';
                                     break;
                                 case 3:
-                                    $clsgroup = 'group-cc';
+                                    $clsgroup = 'group-Cc';
                                     break;
                                 case 4:
-                                    $clsgroup = 'group-cd';
+                                    $clsgroup = 'group-Cd';
                                     break;
                                 case 5:
-                                    $clsgroup = 'group-ce';
+                                    $clsgroup = 'group-Ce';
                                     break;
                                 case 6:
-                                    $clsgroup = 'group-cf';
+                                    $clsgroup = 'group-Cf';
                                     break;
                                 default:
                                     $clsgroup = 'group-C'.$grade;
                             }
-                        $group_dn = "cn=$clsgroup,$base_dn";
+                        $group_dn = "CN=$clsgroup,$base_dn";
                         $group = ad_getGroup($clsgroup);
                         if ($group) {
                             if ($log) {

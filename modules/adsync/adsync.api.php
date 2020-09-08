@@ -90,7 +90,7 @@ function ad_getGroup($group)
     $ad_conn = ad_admin();
     $config = \Drupal::config('adsync.settings');
     $base_dn = $config->get('users_dn');
-    $filter = "(&(objectClass=group)(cn=$group))";
+    $filter = "(&(objectClass=group)(CN=$group))";
     $result = @ldap_search($ad_conn, $base_dn, $filter);
     $data = [];
     if ($result) {

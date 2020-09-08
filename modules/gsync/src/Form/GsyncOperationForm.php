@@ -360,22 +360,22 @@ class GsyncOperationForm extends FormBase
                             $grade = substr($t->class, 0, 1);
                             switch ($grade) {
                                 case 1:
-                                    $clsgroup = 'group-ca';
+                                    $clsgroup = 'group-Ca';
                                     break;
                                 case 2:
-                                    $clsgroup = 'group-cb';
+                                    $clsgroup = 'group-Cb';
                                     break;
                                 case 3:
-                                    $clsgroup = 'group-cc';
+                                    $clsgroup = 'group-Cc';
                                     break;
                                 case 4:
-                                    $clsgroup = 'group-cd';
+                                    $clsgroup = 'group-Cd';
                                     break;
                                 case 5:
-                                    $clsgroup = 'group-ce';
+                                    $clsgroup = 'group-Ce';
                                     break;
                                 case 6:
-                                    $clsgroup = 'group-cf';
+                                    $clsgroup = 'group-Cf';
                                     break;
                                 default:
                                     $clsgroup = 'group-C'.$grade;
