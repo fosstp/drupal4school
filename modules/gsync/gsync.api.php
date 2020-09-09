@@ -218,6 +218,7 @@ function gs_syncUser($t, $user_key, $user = null, $recover = false)
     if ($t->student) {
         $neworg = new \Google_Service_Directory_UserOrganization();
         $neworg->setType('school');
+        $neworg->setDepartment('學生');
         $neworg->setTitle($t->dept_name.$t->seat.'號');
         $neworg->setPrimary(true);
         $orgs[] = $neworg;
@@ -226,7 +227,8 @@ function gs_syncUser($t, $user_key, $user = null, $recover = false)
         foreach ($jobs as $job) {
             $neworg = new \Google_Service_Directory_UserOrganization();
             $neworg->setType('school');
-            $neworg->setTitle($job->dept_name.$job->role_name);
+            $neworg->setDepartment($job->dept_name);
+            $neworg->setTitle($job->role_name);
             if ($job->role_id == $t->role_id) {
                 $neworg->setPrimary(true);
             }
