@@ -32,6 +32,7 @@ $ docker-compose down
 要將 drupal 容器更新到最新版，而不影響已經運作之站台（保留所有站台資料和模組設定），請用以下指令：
 
 $ docker pull fosstp/drupal
+
 $ docker-compose up -d
 
 環境變數說明如下：
@@ -50,6 +51,7 @@ $ docker-compose up -d
 以上環境變數將透過 drush 或 drupal console 自動為您安裝網站，無需透過網頁進行任何設定，網站將直接啟用。如要變更以上參數，必須將所有舊容器移除重新啟動（所有資料將會遺失，一切重來）：
 
 $ docker-compose down
+
 $ docker-compose up -d
 
 ## 手動建立 Drupal 容器
