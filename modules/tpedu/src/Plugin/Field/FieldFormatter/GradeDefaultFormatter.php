@@ -2,8 +2,8 @@
 
 namespace Drupal\tpedu\Plugin\Field\FieldFormatter;
 
-use Drupal\Core\Field\FormatterBase;
 use Drupal\Core\Field\FieldItemListInterface;
+use Drupal\Core\Field\FormatterBase;
 
 /**
  * Plugin implementation of the 'snippets_default' formatter.
@@ -20,20 +20,20 @@ class GradeDefaultFormatter extends FormatterBase
 {
     public function viewElements(FieldItemListInterface $items, $langcode)
     {
-        $elements = array();
+        $elements = [];
         foreach ($items as $delta => $item) {
             $grades = explode(',', $item->grade);
             foreach ($grades as $g) {
                 $grade_list .= $g.' ';
             }
-            $source = array(
+            $source = [
                 '#type' => 'inline_template',
                 '#template' => '年級： {{name}}',
                 '#context' => [
                     'name' => $grade_list,
                 ],
-            );
-            $elements[$delta] = array('#markup' => drupal_render($source));
+            ];
+            $elements[$delta] = ['#markup' => \Drupal::service('renderer')->render($source)];
         }
 
         return $elements;

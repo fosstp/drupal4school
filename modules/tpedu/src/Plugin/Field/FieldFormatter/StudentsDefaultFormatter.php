@@ -2,8 +2,8 @@
 
 namespace Drupal\tpedu\Plugin\Field\FieldFormatter;
 
-use Drupal\Core\Field\FormatterBase;
 use Drupal\Core\Field\FieldItemListInterface;
+use Drupal\Core\Field\FormatterBase;
 
 /**
  * Plugin implementation of the 'snippets_default' formatter.
@@ -20,21 +20,21 @@ class StudentsDefaultFormatter extends FormatterBase
 {
     public function viewElements(FieldItemListInterface $items, $langcode)
     {
-        $elements = array();
+        $elements = [];
         foreach ($items as $delta => $item) {
             $students = explode(',', $item->uuid);
             foreach ($students as $s) {
                 $user = get_user($s);
                 $student_list .= $user->class.$user->seat.$user->realname.' ';
             }
-            $source = array(
+            $source = [
                 '#type' => 'inline_template',
                 '#template' => '學生： {{name}}',
                 '#context' => [
                     'name' => $student_list,
                 ],
-            );
-            $elements[$delta] = array('#markup' => drupal_render($source));
+            ];
+            $elements[$delta] = ['#markup' => \Drupal::service('renderer')->render($source)];
         }
 
         return $elements;
