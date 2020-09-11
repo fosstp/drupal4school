@@ -20,6 +20,7 @@ class GradeDefaultFormatter extends FormatterBase
 {
     public function viewElements(FieldItemListInterface $items, $langcode)
     {
+        $grade_list = '';
         $elements = [];
         foreach ($items as $delta => $item) {
             $grades = explode(',', $item->grade);

@@ -20,20 +20,21 @@ class ClassesDefaultFormatter extends FormatterBase
 {
     public function viewElements(FieldItemListInterface $items, $langcode)
     {
+        $class_list = '';
         $elements = [];
         foreach ($items as $delta => $item) {
             $classes = explode(',', $item->class_id);
             foreach ($classes as $c) {
                 $myclass = one_class($c);
                 if ($myclass) {
-                    $myclassname .= $myclass->name.' ';
+                    $class_list .= $myclass->name.' ';
                 }
             }
             $source = [
                 '#type' => 'inline_template',
                 '#template' => '班級： {{name}}',
                 '#context' => [
-                    'name' => $myclassname,
+                    'name' => $class_list,
                 ],
             ];
             $elements[$delta] = ['#markup' => \Drupal::service('renderer')->render($source)];

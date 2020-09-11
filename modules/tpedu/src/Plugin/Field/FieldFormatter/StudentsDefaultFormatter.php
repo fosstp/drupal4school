@@ -20,6 +20,7 @@ class StudentsDefaultFormatter extends FormatterBase
 {
     public function viewElements(FieldItemListInterface $items, $langcode)
     {
+        $student_list = '';
         $elements = [];
         foreach ($items as $delta => $item) {
             $students = explode(',', $item->uuid);

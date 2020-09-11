@@ -20,20 +20,21 @@ class UnitsDefaultFormatter extends FormatterBase
 {
     public function viewElements(FieldItemListInterface $items, $langcode)
     {
+        $unit_list = '';
         $elements = [];
         foreach ($items as $delta => $item) {
             $units = explode(',', $item->dept_id);
             foreach ($units as $o) {
                 $unit = get_unit($o);
                 if ($unit) {
-                    $title .= $unit->name.' ';
+                    $unit_list .= $unit->name.' ';
                 }
             }
             $source = [
                 '#type' => 'inline_template',
                 '#template' => '處室： {{name}}',
                 '#context' => [
-                    'name' => $title,
+                    'name' => $unit_list,
                 ],
             ];
             $elements[$delta] = ['#markup' => \Drupal::service('renderer')->render($source)];

@@ -20,6 +20,7 @@ class SubjectsDefaultFormatter extends FormatterBase
 {
     public function viewElements(FieldItemListInterface $items, $langcode)
     {
+        $subject_list = '';
         $elements = [];
         foreach ($items as $delta => $item) {
             $subjects = explode(',', $item->subject_id);
