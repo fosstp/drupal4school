@@ -3,7 +3,6 @@ description: 本模組將為您新增「行事曆事件」內容類型，編輯�
 type: module
 package: D4S
 version: 1.0
-core: 8.x
 core_version_requirement: ^9
 dependencies:
   - date
