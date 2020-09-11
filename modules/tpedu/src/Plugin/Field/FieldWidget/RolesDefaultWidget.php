@@ -2,11 +2,11 @@
 
 namespace Drupal\tpedu\Plugin\Field\FieldWidget;
 
+use Drupal\Core\Ajax\AjaxResponse;
+use Drupal\Core\Ajax\ReplaceCommand;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\user\Entity\User;
-use Drupal\Core\Ajax\AjaxResponse;
-use Drupal\Core\Ajax\ReplaceCommand;
 
 /**
  * Plugin implementation of the 'classes_default' widget.
@@ -34,7 +34,7 @@ class RolesDefaultWidget extends TpeduWidgetBase
 
     protected function getOptions()
     {
-        $roles = array();
+        $roles = [];
         if ($this->getFieldSetting('filter_by_unit') && $this->getFieldSetting('unit')) {
             $roles = get_roles_of_unit($this->getFieldSetting('unit'));
         }
@@ -48,7 +48,7 @@ class RolesDefaultWidget extends TpeduWidgetBase
             $roles = all_roles();
         }
         usort($roles, function ($a, $b) { return strcmp($a->id, $b->id); });
-        $options = array();
+        $options = [];
         foreach ($roles as $r) {
             $options[$r->id] = $r->name;
         }
@@ -58,8 +58,8 @@ class RolesDefaultWidget extends TpeduWidgetBase
 
     protected function getTeachersOptions(array $settings, $role)
     {
-        $values = array();
-        $teachers = array();
+        $values = [];
+        $teachers = [];
         if ($settings['filter_by_role'] && $role) {
             $teachers = get_teachers_of_role($role);
             usort($teachers, function ($a, $b) { return strcmp($a->realname, $b->realname); });
@@ -93,7 +93,7 @@ class RolesDefaultWidget extends TpeduWidgetBase
                     $target['#options'] = $this->getTeachersOptions($settings, $current);
                     if ($target['#type'] == 'checkboxes') {
                         foreach ($target['#options'] as $k => $v) {
-                            $target[$k] = array(
+                            $target[$k] = [
                                 '#type' => 'checkbox',
                                 '#id' => $target['#id'].'-'.$k,
                                 '#name' => $field_name.'['.$k.']',
@@ -101,7 +101,7 @@ class RolesDefaultWidget extends TpeduWidgetBase
                                 '#return_value' => $k,
                                 '#default_value' => null,
                                 '#attributes' => $target['#attributes'],
-                            );
+                            ];
                         }
                         $inline = $settings['inline_columns'];
                         $target = $this->display_inline($target, $inline);

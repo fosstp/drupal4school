@@ -2,11 +2,11 @@
 
 namespace Drupal\tpedu\Plugin\Field\FieldWidget;
 
+use Drupal\Core\Ajax\AjaxResponse;
+use Drupal\Core\Ajax\ReplaceCommand;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\user\Entity\User;
-use Drupal\Core\Ajax\AjaxResponse;
-use Drupal\Core\Ajax\ReplaceCommand;
 
 /**
  * Plugin implementation of the 'classes_default' widget.
@@ -34,7 +34,7 @@ class SubjectsDefaultWidget extends TpeduWidgetBase
 
     protected function getOptions()
     {
-        $subjects = array();
+        $subjects = [];
         if ($this->getFieldSetting('filter_by_domain') && $this->getFieldSetting('domain')) {
             $subjects = get_subjects_of_domain($this->getFieldSetting('domain'));
         }
@@ -51,7 +51,7 @@ class SubjectsDefaultWidget extends TpeduWidgetBase
             $subjects = all_subjects();
         }
         usort($subjects, function ($a, $b) { return strcmp($a->id, $b->id); });
-        $options = array();
+        $options = [];
         foreach ($subjects as $r) {
             $options[$r->id] = $r->name;
         }
@@ -61,8 +61,8 @@ class SubjectsDefaultWidget extends TpeduWidgetBase
 
     protected function getClassesOptions(array $settings, $subject)
     {
-        $values = array();
-        $classes = array();
+        $values = [];
+        $classes = [];
         if ($settings['filter_by_subject'] && $subject) {
             $classes = get_classes_of_subject($subject);
             usort($classes, function ($a, $b) { return strcmp($a->id, $b->id); });
@@ -76,8 +76,8 @@ class SubjectsDefaultWidget extends TpeduWidgetBase
 
     protected function getTeachersOptions(array $settings, $subject)
     {
-        $values = array();
-        $teachers = array();
+        $values = [];
+        $teachers = [];
         if ($settings['filter_by_subject'] && $subject) {
             $teachers = get_teachers_of_subject($subject);
             usort($teachers, function ($a, $b) { return strcmp($a->realname, $b->realname); });
@@ -115,7 +115,7 @@ class SubjectsDefaultWidget extends TpeduWidgetBase
                     }
                     if ($target['#type'] == 'checkboxes') {
                         foreach ($target['#options'] as $k => $v) {
-                            $target[$k] = array(
+                            $target[$k] = [
                                 '#type' => 'checkbox',
                                 '#id' => $target['#id'].'-'.$k,
                                 '#name' => $field_name.'['.$k.']',
@@ -123,7 +123,7 @@ class SubjectsDefaultWidget extends TpeduWidgetBase
                                 '#return_value' => $k,
                                 '#default_value' => null,
                                 '#attributes' => $target['#attributes'],
-                            );
+                            ];
                         }
                         $inline = $settings['inline_columns'];
                         $target = $this->display_inline($target, $inline);

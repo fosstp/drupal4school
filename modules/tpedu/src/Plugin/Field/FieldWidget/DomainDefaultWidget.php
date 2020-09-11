@@ -2,10 +2,10 @@
 
 namespace Drupal\tpedu\Plugin\Field\FieldWidget;
 
-use Drupal\Core\Field\FieldItemListInterface;
-use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\ReplaceCommand;
+use Drupal\Core\Field\FieldItemListInterface;
+use Drupal\Core\Form\FormStateInterface;
 
 /**
  * Plugin implementation of the 'classes_default' widget.
@@ -47,8 +47,8 @@ class DomainDefaultWidget extends TpeduWidgetBase
 
     protected function getSubjectsOptions(array $settings, $domain)
     {
-        $options = array();
-        $subjects = array();
+        $options = [];
+        $subjects = [];
         if ($settings['filter_by_domain'] && $domain) {
             $subjects = get_subjects_of_domain($domain);
             usort($subjects, function ($a, $b) { return strcmp($a->id, $b->id); });
@@ -62,8 +62,8 @@ class DomainDefaultWidget extends TpeduWidgetBase
 
     protected function getTeachersOptions(array $settings, $domain)
     {
-        $options = array();
-        $teachers = array();
+        $options = [];
+        $teachers = [];
         if ($settings['filter_by_domain'] && $domain) {
             $teachers = get_teachers_of_domain($domain);
             usort($teachers, function ($a, $b) { return strcmp($a->realname, $b->realname); });
@@ -101,7 +101,7 @@ class DomainDefaultWidget extends TpeduWidgetBase
                     }
                     if ($target['#type'] == 'checkboxes') {
                         foreach ($target['#options'] as $k => $v) {
-                            $target[$k] = array(
+                            $target[$k] = [
                                 '#type' => 'checkbox',
                                 '#id' => $target['#id'].'-'.$k,
                                 '#name' => $field_name.'['.$k.']',
@@ -109,7 +109,7 @@ class DomainDefaultWidget extends TpeduWidgetBase
                                 '#return_value' => $k,
                                 '#default_value' => null,
                                 '#attributes' => $target['#attributes'],
-                            );
+                            ];
                         }
                         $inline = $settings['inline_columns'];
                         $target = $this->display_inline($target, $inline);
