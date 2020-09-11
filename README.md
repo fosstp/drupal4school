@@ -29,6 +29,11 @@ $ docker-compose up -d
 
 $ docker-compose down
 
+要將 drupal 容器更新到最新版，而不影響已經運作之站台（保留所有站台資料和模組設定），請用以下指令：
+
+$ docker pull fosstp/drupal
+$ docker-compose up -d
+
 環境變數說明如下：
 * DB_HOST: 資料庫容器名稱，請直接使用預設值「mysql」，除非您要使用獨立資料庫（例如：已存在之容器、獨立主機、Vmware 虛擬機或其它線上資料庫）。
 * DB_USER: 資料庫連線帳號，預設為「root」
@@ -42,7 +47,10 @@ $ docker-compose down
 * SITE_ADMIN_MAIL: 網站管理員的電子郵件，your_mail@xxps.tp.edu.tw
 * SITE_PASSWORD: 網站管理員密碼，預設為「your_password」，請務必修改密碼
 
-以上環境變數將透過 drupal console 自動為您安裝網站，無需透過網頁進行任何設定，網站將直接啟用。如有變更以上參數，必須將舊容器移除重新啟動（請參考前面介紹的兩個指令）。
+以上環境變數將透過 drush 或 drupal console 自動為您安裝網站，無需透過網頁進行任何設定，網站將直接啟用。如要變更以上參數，必須將所有舊容器移除重新啟動（所有資料將會遺失，一切重來）：
+
+$ docker-compose down
+$ docker-compose up -d
 
 ## 手動建立 Drupal 容器
 您可以依照以下步驟，手動建立所有必要的容器。 使用此映像檔的基本語法如下：
