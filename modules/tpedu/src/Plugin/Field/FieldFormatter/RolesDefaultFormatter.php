@@ -32,7 +32,7 @@ class RolesDefaultFormatter extends FormatterBase
             }
             $source = [
                 '#type' => 'inline_template',
-                '#template' => '職務： {{name}}',
+                '#template' => '{{name}}',
                 '#context' => [
                     'name' => $role_list,
                 ],

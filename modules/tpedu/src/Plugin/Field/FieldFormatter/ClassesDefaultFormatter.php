@@ -32,7 +32,7 @@ class ClassesDefaultFormatter extends FormatterBase
             }
             $source = [
                 '#type' => 'inline_template',
-                '#template' => '班級： {{name}}',
+                '#template' => '{{name}}',
                 '#context' => [
                     'name' => $class_list,
                 ],

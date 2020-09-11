@@ -29,7 +29,7 @@ class DomainDefaultFormatter extends FormatterBase
             }
             $source = [
                 '#type' => 'inline_template',
-                '#template' => '領域： {{name}}',
+                '#template' => '{{name}}',
                 '#context' => [
                     'name' => $domain_list,
                 ],

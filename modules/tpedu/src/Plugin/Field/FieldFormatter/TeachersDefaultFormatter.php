@@ -20,17 +20,25 @@ class TeachersDefaultFormatter extends FormatterBase
 {
     public function viewElements(FieldItemListInterface $items, $langcode)
     {
+        $config = \Drupal::config('tpedu.settings');
         $teacher_list = '';
         $elements = [];
         foreach ($items as $delta => $item) {
             $teachers = explode(',', $item->uuid);
             foreach ($teachers as $s) {
                 $user = get_user($s);
-                $teacher_list .= $user->role_name.$user->realname.' ';
+                $prefix = '';
+                if ($config->get('display_unit')) {
+                    $prefix = $user->dept_name;
+                }
+                if ($config->get('display_title')) {
+                    $prefix .= $user->role_name;
+                }
+                $teacher_list .= $prefix.$user->realname.' ';
             }
             $source = [
                 '#type' => 'inline_template',
-                '#template' => '教師： {{name}}',
+                '#template' => '{{name}}',
                 '#context' => [
                     'name' => $teacher_list,
                 ],

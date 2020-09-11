@@ -32,7 +32,7 @@ class UnitsDefaultFormatter extends FormatterBase
             }
             $source = [
                 '#type' => 'inline_template',
-                '#template' => '處室： {{name}}',
+                '#template' => '{{name}}',
                 '#context' => [
                     'name' => $unit_list,
                 ],

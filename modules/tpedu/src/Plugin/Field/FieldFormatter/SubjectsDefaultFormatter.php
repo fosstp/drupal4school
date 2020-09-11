@@ -30,7 +30,7 @@ class SubjectsDefaultFormatter extends FormatterBase
             }
             $source = [
                 '#type' => 'inline_template',
-                '#template' => '科目： {{name}}',
+                '#template' => '{{name}}',
                 '#context' => [
                     'name' => $subject_list,
                 ],

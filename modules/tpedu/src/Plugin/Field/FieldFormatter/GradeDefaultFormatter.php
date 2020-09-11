@@ -29,7 +29,7 @@ class GradeDefaultFormatter extends FormatterBase
             }
             $source = [
                 '#type' => 'inline_template',
-                '#template' => '年級： {{name}}',
+                '#template' => '{{name}}',
                 '#context' => [
                     'name' => $grade_list,
                 ],
