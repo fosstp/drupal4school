@@ -17,8 +17,8 @@ class TeachersDefaultWidget extends TpeduWidgetBase
 {
     protected function getOptions()
     {
-        $options = array();
-        $teachers = array();
+        $options = [];
+        $teachers = [];
         if ($this->getFieldSetting('filter_by_unit') && $this->getFieldSetting('unit')) {
             $teachers = get_teachers_of_unit($this->getFieldSetting('unit'));
         }

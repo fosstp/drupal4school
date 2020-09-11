@@ -22,7 +22,7 @@ class TpeduSchoolSelectForm extends ConfigFormBase
     public function buildForm(array $form, FormStateInterface $form_state)
     {
         global $base_url;
-        $tempstore = \Drupal::service('user.private_tempstore')->get('tpedu');
+        $tempstore = \Drupal::service('tempstore.private')->get('tpedu');
         $form['helper'] = array(
             '#type' => 'markup',
             '#markup' => '本模組僅能管理單一學校或機構，如果您具備多重機構管理員身分，請從下面選單選取您要管理的機構。如果您要切換不同機構，請先移除重裝模組，然後再變更設定。',
@@ -62,7 +62,7 @@ class TpeduSchoolSelectForm extends ConfigFormBase
             fetch_subjects();
             fetch_classes();
         }
-        $tempstore = \Drupal::service('user.private_tempstore')->get('tpedu');
+        $tempstore = \Drupal::service('tempstore.private')->get('tpedu');
         $tempstore->delete('organization');
         $form_state->setRedirect('tpedu.config');
     }

@@ -2,11 +2,11 @@
 
 namespace Drupal\tpedu\Plugin\Field\FieldWidget;
 
+use Drupal\Core\Ajax\AjaxResponse;
+use Drupal\Core\Ajax\ReplaceCommand;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\user\Entity\User;
-use Drupal\Core\Ajax\AjaxResponse;
-use Drupal\Core\Ajax\ReplaceCommand;
 
 /**
  * Plugin implementation of the 'classes_default' widget.
@@ -34,7 +34,7 @@ class ClassesDefaultWidget extends TpeduWidgetBase
 
     protected function getOptions()
     {
-        $classes = array();
+        $classes = [];
         if ($this->getFieldSetting('filter_by_subject') && $this->getFieldSetting('subject')) {
             $classes = get_classes_of_subject($this->getFieldSetting('subject'));
         }
@@ -59,7 +59,7 @@ class ClassesDefaultWidget extends TpeduWidgetBase
             $classes = all_classes();
         }
         usort($classes, function ($a, $b) { return strcmp($a->id, $b->id); });
-        $options = array();
+        $options = [];
         foreach ($classes as $c) {
             $options[$c->id] = $c->name;
         }
@@ -69,8 +69,8 @@ class ClassesDefaultWidget extends TpeduWidgetBase
 
     protected function getSubjectsOptions(array $settings, $myclass)
     {
-        $values = array();
-        $subjects = array();
+        $values = [];
+        $subjects = [];
         if ($settings['filter_by_class'] && $myclass) {
             $subjects = get_subjects_of_class($myclass);
             foreach ($subjects as $s) {
@@ -83,8 +83,8 @@ class ClassesDefaultWidget extends TpeduWidgetBase
 
     protected function getStudentsOptions(array $settings, $myclass)
     {
-        $values = array();
-        $students = array();
+        $values = [];
+        $students = [];
         if ($settings['filter_by_class'] && $myclass) {
             $students = get_students_of_class($myclass);
             usort($students, function ($a, $b) { return strcmp($a->seat, $b->seat); });
@@ -98,8 +98,8 @@ class ClassesDefaultWidget extends TpeduWidgetBase
 
     protected function getTeachersOptions(array $settings, $myclass)
     {
-        $values = array();
-        $teachers = array();
+        $values = [];
+        $teachers = [];
         if ($settings['filter_by_class'] && $myclass) {
             $teachers = get_teachers_of_class($myclass);
             usort($teachers, function ($a, $b) { return strcmp($a->realname, $b->realname); });
@@ -139,7 +139,7 @@ class ClassesDefaultWidget extends TpeduWidgetBase
                     }
                     if ($target['#type'] == 'checkboxes') {
                         foreach ($target['#options'] as $k => $v) {
-                            $target[$k] = array(
+                            $target[$k] = [
                                 '#type' => 'checkbox',
                                 '#id' => $target['#id'].'-'.$k,
                                 '#name' => $field_name.'['.$k.']',
@@ -147,7 +147,7 @@ class ClassesDefaultWidget extends TpeduWidgetBase
                                 '#return_value' => $k,
                                 '#default_value' => null,
                                 '#attributes' => $target['#attributes'],
-                            );
+                            ];
                         }
                         $inline = $settings['inline_columns'];
                         $target = $this->display_inline($target, $inline);

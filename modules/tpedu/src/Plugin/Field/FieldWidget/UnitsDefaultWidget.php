@@ -2,11 +2,11 @@
 
 namespace Drupal\tpedu\Plugin\Field\FieldWidget;
 
+use Drupal\Core\Ajax\AjaxResponse;
+use Drupal\Core\Ajax\ReplaceCommand;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\user\Entity\User;
-use Drupal\Core\Ajax\AjaxResponse;
-use Drupal\Core\Ajax\ReplaceCommand;
 
 /**
  * Plugin implementation of the 'classes_default' widget.
@@ -44,7 +44,7 @@ class UnitsDefaultWidget extends TpeduWidgetBase
             $units = all_units();
         }
         usort($units, function ($a, $b) { return strcmp($a->id, $b->id); });
-        $options = array();
+        $options = [];
         foreach ($units as $o) {
             $options[$o->id] = $o->name;
         }
@@ -55,8 +55,8 @@ class UnitsDefaultWidget extends TpeduWidgetBase
 
     protected function getRolesOptions(array $settings, $unit)
     {
-        $options = array();
-        $roles = array();
+        $options = [];
+        $roles = [];
         if ($settings['filter_by_units'] && $unit) {
             $roles = get_roles_of_unit($unit);
             usort($roles, function ($a, $b) { return strcmp($a->id, $b->id); });
@@ -70,8 +70,8 @@ class UnitsDefaultWidget extends TpeduWidgetBase
 
     protected function getTeachersOptions(array $settings, $unit)
     {
-        $options = array();
-        $roles = array();
+        $options = [];
+        $roles = [];
         if ($settings['filter_by_unit'] && $unit) {
             $teachers = get_teachers_of_unit($unit);
             usort($teachers, function ($a, $b) { return strcmp($a->realname, $b->realname); });
@@ -109,7 +109,7 @@ class UnitsDefaultWidget extends TpeduWidgetBase
                     }
                     if ($target['#type'] == 'checkboxes') {
                         foreach ($target['#options'] as $k => $v) {
-                            $target[$k] = array(
+                            $target[$k] = [
                                 '#type' => 'checkbox',
                                 '#id' => $target['#id'].'-'.$k,
                                 '#name' => $field_name.'['.$k.']',
@@ -117,7 +117,7 @@ class UnitsDefaultWidget extends TpeduWidgetBase
                                 '#return_value' => $k,
                                 '#default_value' => null,
                                 '#attributes' => $target['#attributes'],
-                            );
+                            ];
                         }
                         $inline = $settings['inline_columns'];
                         $target = $this->display_inline($target, $inline);

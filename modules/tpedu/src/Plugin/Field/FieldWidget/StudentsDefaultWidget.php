@@ -17,8 +17,8 @@ class StudentsDefaultWidget extends TpeduWidgetBase
 {
     protected function getOptions()
     {
-        $options = array();
-        $students = array();
+        $options = [];
+        $students = [];
         if ($this->getFieldSetting('filter_by_class') && $this->getFieldSetting('class')) {
             $students = get_students_of_class($this->getFieldSetting('class'));
             usort($students, function ($a, $b) { return strcmp($a->seat, $b->seat); });

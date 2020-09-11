@@ -123,7 +123,7 @@ class TpeduConfigForm extends ConfigFormBase
         $user = profile();
         if (!empty($user->o)) {
             if (is_array($user->o)) {
-                $tempstore = \Drupal::service('user.private_tempstore')->get('tpedu');
+                $tempstore = \Drupal::service('tempstore.private')->get('tpedu');
                 $tempstore->set('organization', $user->organization);
                 $form_state->setRedirect('tpedu.school_select');
             } else {

@@ -2,10 +2,10 @@
 
 namespace Drupal\tpedu\Plugin\Field\FieldType;
 
-use Drupal\Core\Field\FieldStorageDefinitionInterface;
-use Drupal\Core\TypedData\DataDefinition;
 use Drupal\Core\Field\FieldItemBase;
+use Drupal\Core\Field\FieldStorageDefinitionInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\TypedData\DataDefinition;
 
 /**
  * Plugin implementation of the 'tpedu_classes' field type.
@@ -24,20 +24,22 @@ class Grade extends FieldItemBase
 {
     public static function schema(FieldStorageDefinitionInterface $field)
     {
-        return array(
-          'columns' => array(
-            'grade' => array(
+        return [
+          'columns' => [
+            'grade' => [
                 'type' => 'varchar_ascii',
                 'length' => 50,
                 'not null' => false,
-            ),
-          ),
-        );
+            ],
+          ],
+        ];
     }
 
     public function isEmpty()
     {
-        return empty($this->get('grade')->value);
+        $value = $this->get('grade')->getValue();
+
+        return $value === null || $value === '';
     }
 
     public static function propertyDefinitions(FieldStorageDefinitionInterface $field_definition)
@@ -49,10 +51,10 @@ class Grade extends FieldItemBase
 
     public function fieldSettingsForm(array $form, FormStateInterface $form_state)
     {
-        $element = array();
-        $element['extra_info'] = array(
+        $element = [];
+        $element['extra_info'] = [
             '#markup' => '<p>此欄位可以單獨使用或結合班級、教師欄位使用！結合班級欄位時，可用於選取不同年級的班級；結合教師欄位時，可用於選取不同年級的導師！</p>',
-        );
+        ];
 
         return $element;
     }

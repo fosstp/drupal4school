@@ -2,8 +2,8 @@
 
 namespace Drupal\tpedu\Plugin\Field\FieldFormatter;
 
-use Drupal\Core\Field\FormatterBase;
 use Drupal\Core\Field\FieldItemListInterface;
+use Drupal\Core\Field\FormatterBase;
 
 /**
  * Plugin implementation of the 'snippets_default' formatter.
@@ -20,23 +20,24 @@ class ClassesDefaultFormatter extends FormatterBase
 {
     public function viewElements(FieldItemListInterface $items, $langcode)
     {
-        $elements = array();
+        $class_list = '';
+        $elements = [];
         foreach ($items as $delta => $item) {
             $classes = explode(',', $item->class_id);
             foreach ($classes as $c) {
                 $myclass = one_class($c);
                 if ($myclass) {
-                    $myclassname .= $myclass->name.' ';
+                    $class_list .= $myclass->name.' ';
                 }
             }
-            $source = array(
+            $source = [
                 '#type' => 'inline_template',
                 '#template' => '班級： {{name}}',
                 '#context' => [
-                    'name' => $myclassname,
+                    'name' => $class_list,
                 ],
-            );
-            $elements[$delta] = array('#markup' => drupal_render($source));
+            ];
+            $elements[$delta] = ['#markup' => \Drupal::service('renderer')->render($source)];
         }
 
         return $elements;

@@ -4,9 +4,9 @@ namespace Drupal\tpedu\Plugin\Field\FieldWidget;
 
 use Drupal\Component\Utility\Html;
 use Drupal\Component\Utility\NestedArray;
+use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldFilteredMarkup;
 use Drupal\Core\Field\FieldItemListInterface;
-use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\WidgetBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Form\OptGroup;
@@ -28,21 +28,21 @@ class TpeduWidgetBase extends WidgetBase
         $parents = $form['#parents'];
 
         // Store field information in $form_state.
-        $field_state = array(
+        $field_state = [
             'items_count' => count($items),
-            'array_parents' => array(),
+            'array_parents' => [],
             'field_type' => $this->fieldDefinition->getType(),
             'field_settings' => $this->fieldDefinition->getSettings(),
-        );
+        ];
         static::setWidgetState($parents, $field_name, $form_state, $field_state);
 
         // Collect widget elements.
-        $elements = array();
+        $elements = [];
         $delta = isset($get_delta) ? $get_delta : 0;
-        $element = array(
+        $element = [
             '#title' => $this->fieldDefinition->getLabel(),
             '#description' => FieldFilteredMarkup::create(\Drupal::token()->replace($this->fieldDefinition->getDescription())),
-        );
+        ];
         $element = $this->formElement($items, $delta, $element, $form, $form_state);
         if ($element) {
             if (isset($get_delta)) {
@@ -51,35 +51,35 @@ class TpeduWidgetBase extends WidgetBase
                 $elements = $element;
             }
         }
-        $elements['#after_build'][] = array(
+        $elements['#after_build'][] = [
             get_class($this),
             'afterBuild',
-        );
+        ];
         $elements['#field_name'] = $field_name;
         $elements['#field_parents'] = $parents;
-        $elements['#parents'] = array_merge($parents, array(
+        $elements['#parents'] = array_merge($parents, [
             $field_name,
-        ));
+        ]);
 
         // Most widgets need their internal structure preserved in submitted values.
-        $elements += array(
+        $elements += [
             '#tree' => true,
-        );
+        ];
 
-        return array(
+        return [
             '#type' => 'container',
-            '#parents' => array_merge($parents, array(
+            '#parents' => array_merge($parents, [
                 $field_name.'_wrapper',
-            )),
-            '#attributes' => array(
-                'class' => array(
+            ]),
+            '#attributes' => [
+                'class' => [
                     'field--type-'.Html::getClass($this->fieldDefinition->getType()),
                     'field--name-'.Html::getClass($field_name),
                     'field--widget-'.Html::getClass($this->getPluginId()),
-                ),
-            ),
+                ],
+            ],
             'widget' => $elements,
-        );
+        ];
     }
 
     public function formElement(FieldItemListInterface $items, $delta, array $element, array &$form, FormStateInterface $form_state)
@@ -133,7 +133,7 @@ class TpeduWidgetBase extends WidgetBase
         $key_exists = null;
         $values = NestedArray::getValue($form_state->getValues(), $path, $key_exists);
         if (!is_array($values)) {
-            $values = array($values);
+            $values = [$values];
         }
         if ($key_exists) {
             $values = $this->massageFormValues($values, $form, $form_state);
