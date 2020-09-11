@@ -262,8 +262,8 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
-          label: 內文
-          exclude: true
+          label: 內文摘要
+          exclude: false
           alter:
             alter_text: false
             text: ''
@@ -281,14 +281,14 @@ display:
             suffix: ''
             target: ''
             nl2br: false
-            max_length: 0
+            max_length: 50
             word_boundary: true
             ellipsis: true
             more_link: false
             more_link_text: ''
             more_link_path: ''
             strip_tags: false
-            trim: false
+            trim: true
             preserve_tags: ''
             html: false
           element_type: ''
@@ -325,7 +325,7 @@ display:
           group_type: group
           admin_label: ''
           label: 名稱
-          exclude: false
+          exclude: true
           alter:
             alter_text: false
             text: ''
@@ -839,6 +839,11 @@ display:
         type: normal
         title: 校園最新消息
         menu_name: main
+        weight: -49
+        description: ''
+        parent: ''
+        expanded: true
+        enabled: true
     cache_metadata:
       max-age: -1
       contexts:
