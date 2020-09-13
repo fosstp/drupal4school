@@ -25,6 +25,7 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
     && echo "memory_limit = -1" > /usr/local/etc/php/conf.d/memory.ini \
     && echo "max_execution_time = 300" > /usr/local/etc/php/conf.d/execution_time.ini \
     && cd /opt/drupal \
+    && cp -rp /opt/drupal/web/sites /root/sites \
 #    && composer require cache/filesystem-adapter google/apiclient:^2.0 drupal/console:~1.0 --prefer-dist --optimize-autoloader \
 #    && curl https://drupalconsole.com/installer -L -o drupal.phar \
 #    && mv drupal.phar /usr/local/bin/drupal \
@@ -36,7 +37,8 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
     && chmod +x /usr/local/bin/drush
 
 ADD modules /opt/drupal/web/modules
-RUN mkdir -p /opt/drupal/web/sites/default/files \
+RUN cp -rp /opt/drupal/web/modules /root/modules \
+    && mkdir -p /opt/drupal/web/sites/default/files \
     && chown -R www-data:www-data /opt/drupal/web \
     && chmod -R 750 /opt/drupal/web \
     && chmod -R 777 /opt/drupal/web/sites
