@@ -24,9 +24,7 @@ if [ ! -d "/var/www/html/sites/default/files/gsync" ]; then
     mkdir -p /var/www/html/sites/default/files/gsync
 fi
 
-if [ ! "$(ls -A /var/www/html/modules)" ]; then
-    cp -rp /root/modules/* /var/www/html/modules
-fi
+cp -rp /root/modules/* /var/www/html/modules
 
 chown -R www-data:www-data /var/www/html
 chmod -R 750 /var/www/html
