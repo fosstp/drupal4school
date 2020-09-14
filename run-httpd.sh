@@ -1,10 +1,10 @@
 #!/bin/sh
 set -e
 
-if mysqlshow —host=${DB_HOST} —user=${DB_USER} —password=${DB_PASSWORD} drupal; then
+if mysqlshow —-host=${DB_HOST} —-user=${DB_USER} —-password=${DB_PASSWORD} drupal; then
     echo "database exist!"
 else
-    echo "CREATE DATABASE drupal CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;" | mysql —host=${DB_HOST} —user=${DB_USER} —password=${DB_PASSWORD}
+    echo "CREATE DATABASE drupal CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;" | mysql —-host=${DB_HOST} —-user=${DB_USER} —-password=${DB_PASSWORD}
 fi
 
 if [ ! -f "/var/www/html/sites/default/settings.php" ]; then
