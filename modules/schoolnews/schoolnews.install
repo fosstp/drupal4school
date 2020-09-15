@@ -46,7 +46,7 @@ function schoolnews_install()
     }
 }
 
-function tpedunews_uninstall()
+function schoolnews_uninstall()
 {
     $vocabulary = Vocabulary::load('news');
     if ($vocabulary) {
