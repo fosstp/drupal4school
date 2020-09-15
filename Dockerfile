@@ -46,6 +46,5 @@ RUN cp -rp /opt/drupal/web/modules /root/modules \
 ADD run-httpd.sh /usr/sbin/run-httpd.sh
 RUN chmod +x /usr/sbin/run-httpd.sh
 
-WORKDIR /var/www/html
 EXPOSE 80
 ENTRYPOINT ["run-httpd.sh"]
