@@ -9,6 +9,7 @@ ENV SITE_PASSWORD your_password
 ENV DB_HOST mysql
 ENV DB_USER root
 ENV DB_PASSWORD dbpassword
+ENV EDITOR /usr/bin/mcedit
 
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
     && apt-get update \
