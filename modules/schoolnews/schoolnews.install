@@ -16,7 +16,7 @@ function schoolnews_install()
     }
 
     $terms = \Drupal::service('entity_type.manager')->getStorage('taxonomy_term');
-    $tree = $terms->loadTree('news', $parent = 0, $max_depth = null, $load_entities = false);
+    $tree = $terms->loadTree('news');
     if (count($tree) == 0) {
         Term::create([
             'parent' => [0],
