@@ -208,9 +208,19 @@ class GeventConfigForm extends ConfigFormBase
         $error = '';
         $message = '';
         $config = $this->config('gevent.settings');
-        $values = $form_state->cleanValues()->getValues();
+        $form_state->cleanValues();
+        $use_taxonomy = $form_state->getValue('calendar_taxonomy');
+        if ($use_taxonomy) {
+            $values = $form_state->getValues();
+            foreach ($values as $key => $value) {
+                if (substr($key, 13) == 'calendar_term_' && $value != 'none') {
+                    $config->set($key, $value);
+                }
+            }
+        }
+        $values = $form_state->getValues();
         foreach ($values as $key => $value) {
-            if ($value != 'none') {
+            if (substr($key, 13) != 'calendar_term_') {
                 $config->set($key, $value);
             }
         }
