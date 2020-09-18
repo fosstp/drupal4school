@@ -21,17 +21,17 @@ function gevent_install()
         Term::create([
             'parent' => [0],
             'name' => '重要活動',
-            'vid' => 'websites',
+            'vid' => 'calendar',
         ])->save();
         Term::create([
             'parent' => [0],
             'name' => '週三進修',
-            'vid' => 'websites',
+            'vid' => 'calendar',
         ])->save();
         Term::create([
             'parent' => [0],
             'name' => '學生行事曆',
-            'vid' => 'websites',
+            'vid' => 'calendar',
         ])->save();
     }
 }

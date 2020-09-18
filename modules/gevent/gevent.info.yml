@@ -6,5 +6,6 @@ version: 1.0
 core_version_requirement: ^9
 dependencies:
   - date_recur
+  - date_recur_modular
   - gsync
 configure: gevent.config
