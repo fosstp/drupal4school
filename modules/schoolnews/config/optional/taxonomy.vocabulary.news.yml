@@ -1,7 +1,7 @@
 langcode: zh-hant
 status: true
 dependencies: {  }
-name: 最新消息類別
+name: 最新消息分類
 vid: news
-description: 最新消息分類項目
+description: 用於最新消息的分類
 weight: 0
