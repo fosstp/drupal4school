@@ -2,6 +2,8 @@
 
 namespace Drupal\gevent\Form;
 
+use Drupal\Core\Ajax\AjaxResponse;
+use Drupal\Core\Ajax\ReplaceCommand;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\node\Entity\NodeType;
@@ -36,8 +38,8 @@ class GeventConfigForm extends ConfigFormBase
                 $fields = \Drupal::service('entity_field.manager')->getFieldDefinitions('node', $node_type);
                 $bundles[$node_type]['field_defintions'] = $fields;
                 foreach ($fields as $field_name => $field_definition) {
-                    if ($field_definition->getType() == 'datetime') {
-                        $options[$node_type] = $all_types[$node_type]->name;
+                    if ($field_definition->getType() == 'date_recur') {
+                        $options[$node_type] = $boundles[$node_type]->label();
                         continue;
                     }
                 }
@@ -56,7 +58,8 @@ class GeventConfigForm extends ConfigFormBase
 
             $my_bundle = $config->get('content_type');
             $my_fields = ['none' => '-請選擇-'];
-            $teacher_field = ['none' => '-請選擇-'];
+            $teacher_fields = ['none' => '-請選擇-'];
+            $unit_fields = ['none' => '-請選擇-'];
             if (!empty($my_bundle)) {
                 foreach ($bundles[$my_bundle]['field_defintions'] as $field_name => $field_defintion) {
                     $type = $field_defintion->getType();
@@ -73,10 +76,12 @@ class GeventConfigForm extends ConfigFormBase
                                 }
                             }
                         }
-                    } elseif ($type == 'datetime_range') {
+                    } elseif ($type == 'date_recur') {
                         $config->set('field_date', $field_name);
+                    } elseif ($type == 'tpedu_units') {
+                        $unit_fields[$field_name] = $field_defintion->getLabel();
                     } elseif ($type == 'tpedu_teachers') {
-                        $teacher_field[$field_name] = $field_defintion->getLabel();
+                        $teacher_fields[$field_name] = $field_defintion->getLabel();
                     } elseif ($type == 'string' || $type == 'string_long') {
                         $my_fields[$field_name] = $field_defintion->getLabel();
                     }
@@ -94,7 +99,7 @@ class GeventConfigForm extends ConfigFormBase
             $form['field_department'] = [
                 '#type' => 'select',
                 '#title' => '行事曆事件主辦單位對應欄位',
-                '#options' => $my_fields,
+                '#options' => $unit_fields,
                 '#default_value' => $config->get('field_department'),
                 '#description' => '這裡僅列出類型為字串或長字串的欄位',
                 '#required' => true,
@@ -116,7 +121,7 @@ class GeventConfigForm extends ConfigFormBase
             $form['field_attendee'] = [
                 '#type' => 'select',
                 '#title' => '行事曆事件邀請對象對應欄位',
-                '#options' => $teacher_field,
+                '#options' => $teacher_fields,
                 '#default_value' => $config->get('field_attendee'),
                 '#description' => '這裡僅列出類型為（台北市校園）教師的欄位',
             ];
@@ -233,7 +238,8 @@ class GeventConfigForm extends ConfigFormBase
         $element = $form_state->getTriggeringElement();
         $my_bundle = $element['#value'];
         $my_fields = ['none' => '-請選擇-'];
-        $teacher_field = ['none' => '-請選擇-'];
+        $teacher_fields = ['none' => '-請選擇-'];
+        $unit_fields = ['none' => '-請選擇-'];
         $fields = \Drupal::service('entity_field.manager')->getFieldDefinitions('node', $my_bundle);
         foreach ($fields as $field_name => $field_defintion) {
             $type = $field_defintion->getType();
@@ -242,10 +248,12 @@ class GeventConfigForm extends ConfigFormBase
                 if ($target_type == 'taxonomy_term') {
                     $config->set('field_taxonomy', $field_name);
                 }
-            } elseif ($type == 'datetime_range') {
+            } elseif ($type == 'date_recur') {
                 $config->set('field_date', $field_name);
+            } elseif ($type == 'tpedu_units') {
+                $unit_fields[$field_name] = $field_defintion->getLabel();
             } elseif ($type == 'tpedu_teachers') {
-                $teacher_field[$field_name] = $field_defintion->getLabel();
+                $teacher_fields[$field_name] = $field_defintion->getLabel();
             } elseif ($type == 'string' || $type == 'string_long') {
                 $my_fields[$field_name] = $field_defintion->getLabel();
             }
@@ -261,9 +269,9 @@ class GeventConfigForm extends ConfigFormBase
         $form['field_department'] = [
             '#type' => 'select',
             '#title' => '行事曆事件主辦單位對應欄位',
-            '#options' => $my_fields,
+            '#options' => $unit_fields,
             '#default_value' => $config->get('field_department'),
-            '#description' => '這裡僅列出類型為字串或長字串的欄位',
+            '#description' => '這裡僅列出類型為類型為（台北市校園）行政單位的欄位',
             '#required' => true,
         ];
         $form['field_memo'] = [
@@ -283,7 +291,7 @@ class GeventConfigForm extends ConfigFormBase
         $form['field_attendee'] = [
             '#type' => 'select',
             '#title' => '行事曆事件邀請對象對應欄位',
-            '#options' => $teacher_field,
+            '#options' => $teacher_fields,
             '#default_value' => $config->get('field_attendee'),
             '#description' => '這裡僅列出類型為（台北市校園）教師的欄位',
         ];

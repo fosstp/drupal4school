@@ -67,9 +67,7 @@ function gs_listCalendars()
 {
     global $calendar;
     try {
-        $list = $calendar->calendarList->listCalendarList();
-
-        return $list->getItems();
+        return $calendar->calendarList->listCalendarList();
     } catch (\Google_Service_Exception $e) {
         \Drupal::logger('google')->debug('gs_listCalendars:'.$e->getMessage());
 
