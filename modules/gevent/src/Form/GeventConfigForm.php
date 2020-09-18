@@ -318,13 +318,13 @@ class GeventConfigForm extends ConfigFormBase
             '#description_display' => '此欄位類型必須為字串或長字串，僅用於同步時檢索事件，請勿顯示於輸入表單中讓使用者編輯！',
             '#required' => true,
         ];
-        $response->addCommand(new ReplaceCommand('name="field_title"', \Drupal::service('renderer')->render($form['field_title'])));
-        $response->addCommand(new ReplaceCommand('name="field_department"', \Drupal::service('renderer')->render($form['field_department'])));
-        $response->addCommand(new ReplaceCommand('name="field_memo"', \Drupal::service('renderer')->render($form['field_memo'])));
-        $response->addCommand(new ReplaceCommand('name="field_place"', \Drupal::service('renderer')->render($form['field_place'])));
-        $response->addCommand(new ReplaceCommand('name="field_attendee"', \Drupal::service('renderer')->render($form['field_attendee'])));
-        $response->addCommand(new ReplaceCommand('name="field_calendar_id"', \Drupal::service('renderer')->render($form['field_calendar_id'])));
-        $response->addCommand(new ReplaceCommand('name="field_event_id"', \Drupal::service('renderer')->render($form['field_event_id'])));
+        $response->addCommand(new ReplaceCommand('.form-item-field-title', \Drupal::service('renderer')->render($form['field_title'])));
+        $response->addCommand(new ReplaceCommand('.form-item-field-department', \Drupal::service('renderer')->render($form['field_department'])));
+        $response->addCommand(new ReplaceCommand('.form-item-field-memo', \Drupal::service('renderer')->render($form['field_memo'])));
+        $response->addCommand(new ReplaceCommand('.form-item-field-place', \Drupal::service('renderer')->render($form['field_place'])));
+        $response->addCommand(new ReplaceCommand('.form-item-field-attendee', \Drupal::service('renderer')->render($form['field_attendee'])));
+        $response->addCommand(new ReplaceCommand('.form-item-field-calendar-id', \Drupal::service('renderer')->render($form['field_calendar_id'])));
+        $response->addCommand(new ReplaceCommand('.form-item-field-event-id', \Drupal::service('renderer')->render($form['field_event_id'])));
 
         return $response;
     }
