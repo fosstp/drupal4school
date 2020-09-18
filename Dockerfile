@@ -47,4 +47,4 @@ ADD run-httpd.sh /usr/sbin/run-httpd.sh
 RUN chmod +x /usr/sbin/run-httpd.sh
 
 EXPOSE 80
-ENTRYPOINT ["run-httpd.sh"]
+CMD ["run-httpd.sh"]
