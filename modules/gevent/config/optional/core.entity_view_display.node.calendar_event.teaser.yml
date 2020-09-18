@@ -1,0 +1,36 @@
+langcode: zh-hant
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.teaser
+    - field.field.node.calendar_event.field_attendee
+    - field.field.node.calendar_event.field_calendar_id
+    - field.field.node.calendar_event.field_catalog
+    - field.field.node.calendar_event.field_creator
+    - field.field.node.calendar_event.field_daterange
+    - field.field.node.calendar_event.field_event_id
+    - field.field.node.calendar_event.field_location
+    - field.field.node.calendar_event.field_memo
+    - node.type.calendar_event
+  module:
+    - user
+id: node.calendar_event.teaser
+targetEntityType: node
+bundle: calendar_event
+mode: teaser
+content:
+  links:
+    weight: 100
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+hidden:
+  field_attendee: true
+  field_calendar_id: true
+  field_catalog: true
+  field_creator: true
+  field_daterange: true
+  field_event_id: true
+  field_location: true
+  field_memo: true
+  langcode: true

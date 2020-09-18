@@ -1,0 +1,93 @@
+langcode: zh-hant
+status: true
+dependencies:
+  config:
+    - field.field.node.calendar_event.field_attendee
+    - field.field.node.calendar_event.field_calendar_id
+    - field.field.node.calendar_event.field_catalog
+    - field.field.node.calendar_event.field_creator
+    - field.field.node.calendar_event.field_daterange
+    - field.field.node.calendar_event.field_event_id
+    - field.field.node.calendar_event.field_location
+    - field.field.node.calendar_event.field_memo
+    - node.type.calendar_event
+  module:
+    - date_recur_modular
+    - tpedu
+id: node.calendar_event.default
+targetEntityType: node
+bundle: calendar_event
+mode: default
+content:
+  created:
+    type: datetime_timestamp
+    weight: 8
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_attendee:
+    weight: 5
+    settings: {  }
+    third_party_settings: {  }
+    type: teachers_default
+    region: content
+  field_catalog:
+    weight: 26
+    settings: {  }
+    third_party_settings: {  }
+    type: options_select
+    region: content
+  field_creator:
+    weight: 0
+    settings: {  }
+    third_party_settings: {  }
+    type: units_default
+    region: content
+  field_daterange:
+    weight: 3
+    settings: {  }
+    third_party_settings: {  }
+    type: date_recur_modular_alpha
+    region: content
+  field_location:
+    weight: 2
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_memo:
+    weight: 4
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textarea
+    region: content
+  title:
+    type: string_textfield
+    weight: 1
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  uid:
+    type: entity_reference_autocomplete
+    weight: 7
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+      match_limit: 10
+    region: content
+    third_party_settings: {  }
+hidden:
+  field_calendar_id: true
+  field_event_id: true
+  langcode: true
+  path: true
+  promote: true
+  status: true
+  sticky: true

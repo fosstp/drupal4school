@@ -1,0 +1,33 @@
+langcode: zh-hant
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_attendee
+    - node.type.calendar_event
+  module:
+    - tpedu
+id: node.calendar_event.field_attendee
+field_name: field_attendee
+entity_type: node
+bundle: calendar_event
+label: 參與人員
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  filter_by_unit: false
+  unit: ''
+  filter_by_role: false
+  role: ''
+  filter_by_domain: false
+  domain: ''
+  filter_by_subject: false
+  subject: ''
+  filter_by_grade: false
+  grade: ''
+  filter_by_class: false
+  class: ''
+  inline_columns: 5
+field_type: tpedu_teachers

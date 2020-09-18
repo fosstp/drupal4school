@@ -1,0 +1,18 @@
+langcode: zh-hant
+status: true
+dependencies:
+  module:
+    - node
+    - tpedu
+id: node.field_attendee
+field_name: field_attendee
+entity_type: node
+type: tpedu_teachers
+settings: {  }
+module: tpedu
+locked: false
+cardinality: -1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

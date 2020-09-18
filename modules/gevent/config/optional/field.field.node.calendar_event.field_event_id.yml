@@ -1,0 +1,18 @@
+langcode: zh-hant
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_event_id
+    - node.type.calendar_event
+id: node.calendar_event.field_event_id
+field_name: field_event_id
+entity_type: node
+bundle: calendar_event
+label: event_id
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

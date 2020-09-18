@@ -1,0 +1,21 @@
+langcode: zh-hant
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_creator
+    - node.type.calendar_event
+  module:
+    - tpedu
+id: node.calendar_event.field_creator
+field_name: field_creator
+entity_type: node
+bundle: calendar_event
+label: 主辦單位
+description: ''
+required: true
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  filter_by_current_user: true
+field_type: tpedu_units

@@ -1,0 +1,7 @@
+langcode: zh-hant
+status: true
+dependencies: {  }
+name: 行事曆分類
+vid: calendar
+description: 用於行事曆事件的分類
+weight: 0

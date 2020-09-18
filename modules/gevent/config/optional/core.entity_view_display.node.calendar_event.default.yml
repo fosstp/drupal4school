@@ -1,0 +1,98 @@
+langcode: zh-hant
+status: true
+dependencies:
+  config:
+    - core.date_format.medium
+    - field.field.node.calendar_event.field_attendee
+    - field.field.node.calendar_event.field_calendar_id
+    - field.field.node.calendar_event.field_catalog
+    - field.field.node.calendar_event.field_creator
+    - field.field.node.calendar_event.field_daterange
+    - field.field.node.calendar_event.field_event_id
+    - field.field.node.calendar_event.field_location
+    - field.field.node.calendar_event.field_memo
+    - node.type.calendar_event
+  module:
+    - date_recur
+    - tpedu
+    - user
+id: node.calendar_event.default
+targetEntityType: node
+bundle: calendar_event
+mode: default
+content:
+  field_attendee:
+    weight: 5
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: teachers_default
+    region: content
+  field_calendar_id:
+    weight: 7
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_catalog:
+    weight: 10
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  field_creator:
+    weight: 1
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: units_default
+    region: content
+  field_daterange:
+    weight: 9
+    label: above
+    settings:
+      show_next: 5
+      count_per_item: true
+      occurrence_format_type: medium
+      same_end_date_format_type: medium
+      interpreter: null
+      separator: '-'
+      format_type: medium
+      timezone_override: ''
+    third_party_settings: {  }
+    type: date_recur_basic_formatter
+    region: content
+  field_event_id:
+    weight: 8
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_location:
+    weight: 3
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_memo:
+    weight: 4
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: basic_string
+    region: content
+  links:
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  langcode: true

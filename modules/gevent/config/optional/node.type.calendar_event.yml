@@ -1,0 +1,17 @@
+langcode: zh-hant
+status: true
+dependencies:
+  module:
+    - menu_ui
+third_party_settings:
+  menu_ui:
+    available_menus:
+      - main
+    parent: 'main:'
+name: 行事曆事件
+type: calendar_event
+description: '用來儲存行事曆事件，並在內容新增、更新、刪除時，自動同步到 Google 行事曆。'
+help: ''
+new_revision: true
+preview_mode: 1
+display_submitted: true

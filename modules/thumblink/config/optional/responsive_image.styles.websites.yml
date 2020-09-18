@@ -1,0 +1,15 @@
+langcode: zh-hant
+status: true
+dependencies:
+  config:
+    - image.style.thumbnail
+id: websites
+label: websites
+image_style_mappings:
+  -
+    breakpoint_id: responsive_image.viewport_sizing
+    multiplier: 1x
+    image_mapping_type: image_style
+    image_mapping: thumbnail
+breakpoint_group: responsive_image
+fallback_image_style: thumbnail
