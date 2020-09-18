@@ -27,12 +27,14 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
     && echo "max_execution_time = 300" > /usr/local/etc/php/conf.d/execution_time.ini \
     && cd /opt/drupal \
     && cp -rp /opt/drupal/web/sites /root/sites \
-    && composer require drupal/date_recur:^3.0 drupal/date_recur_modular:^3.0 cache/filesystem-adapter google/apiclient:^2.0 drupal/console:~1.0 --prefer-dist --optimize-autoloader \
-    && ln -s /opt/drupal/vendor/drupal/console/bin/drupal /usr/local/bin/drupal 
-#    && composer require drupal/date_recur:^3.0 drupal/date_recur_modular:^3.0 cache/filesystem-adapter google/apiclient:^2.0 drush/drush:^10 --prefer-dist --optimize-autoloader \
-#    && curl https://github.com/drush-ops/drush-launcher/releases/latest/download/drush.phar -L -o drush.phar \
-#    && mv drush.phar /usr/local/bin/drush \
-#    && chmod +x /usr/local/bin/drush
+#    && composer require drupal/date_recur:^3.0 drupal/date_recur_modular:^3.0 cache/filesystem-adapter google/apiclient:^2.0 drupal/console:~1.0 --prefer-dist --optimize-autoloader \
+#    && curl https://drupalconsole.com/installer -L -o drupal.phar \
+#    && mv drupal.phar /usr/local/bin/drupal \
+#    && chmod +x /usr/local/bin/drupal
+    && composer require drupal/date_recur:^3.0 drupal/date_recur_modular:^3.0 cache/filesystem-adapter google/apiclient:^2.0 drush/drush:^10 --prefer-dist --optimize-autoloader \
+    && curl https://github.com/drush-ops/drush-launcher/releases/latest/download/drush.phar -L -o drush.phar \
+    && mv drush.phar /usr/local/bin/drush \
+    && chmod +x /usr/local/bin/drush
 
 ADD modules /opt/drupal/web/modules
 RUN cp -rp /opt/drupal/web/modules /root/modules \
