@@ -4,7 +4,7 @@ dependencies:
   config:
     - field.storage.node.field_news_category
     - node.type.school_news
-    - taxonomy.vocabulary.kindofnews
+    - taxonomy.vocabulary.news
 id: node.school_news.field_news_category
 field_name: field_news_category
 entity_type: node
@@ -19,7 +19,7 @@ settings:
   handler: 'default:taxonomy_term'
   handler_settings:
     target_bundles:
-      kindofnews: kindofnews
+      news: news
     sort:
       field: name
       direction: asc

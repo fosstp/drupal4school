@@ -7,7 +7,7 @@ dependencies:
     - field.storage.node.field_news_category
     - node.type.school_news
     - system.menu.main
-    - taxonomy.vocabulary.kindofnews
+    - taxonomy.vocabulary.news
   module:
     - node
     - taxonomy
@@ -670,7 +670,7 @@ display:
           reduce_duplicates: false
           type: select
           limit: true
-          vid: kindofnews
+          vid: news
           hierarchy: false
           error_message: true
           plugin_id: taxonomy_index_tid
