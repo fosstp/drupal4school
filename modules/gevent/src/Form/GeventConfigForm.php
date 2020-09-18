@@ -32,7 +32,7 @@ class GeventConfigForm extends ConfigFormBase
             $config = $this->config('gevent.settings');
             $options = ['none' => '-請選擇-'];
             $boundles = NodeType::loadMultiple();
-            foreach (keys($boundles) as $node_type) {
+            foreach (array_keys($boundles) as $node_type) {
                 $fields = \Drupal::service('entity_field.manager')->getFieldDefinitions('node', $node_type);
                 $bundles[$node_type]['field_defintions'] = $fields;
                 foreach ($fields as $field_name => $field_definition) {

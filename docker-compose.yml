@@ -36,9 +36,9 @@ services:
       DB_PASSWORD: dbpassword
 #要將站台內容永久化，請啟用以下設定
 #    volumes:
-#      - ./modules:/var/www/html/modules
-#      - ./themes:/var/www/html/themes
-#      - ./sites:/var/www/html/sites
+#      - ./modules:/opt/drupal/web/modules
+#      - ./themes:/opt/drupal/web/themes
+#      - ./sites:/opt/drupal/web/sites
     depends_on:
       - mysql
     restart: always

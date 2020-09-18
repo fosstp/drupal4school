@@ -36,7 +36,7 @@ function gevent_install()
     }
 }
 
-function thumblink_uninstall()
+function gevent_uninstall()
 {
     $vocabulary = Vocabulary::load('calendar');
     if ($vocabulary) {

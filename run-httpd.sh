@@ -9,10 +9,10 @@ fi
 
 if [ ! -f "/opt/drupal/web/sites/default/settings.php" ]; then
     cp -rp /root/sites/* /opt/drupal/web/sites
-#    drupal si standard mysql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}/drupal -n --langcode="zh-hant" --site-name="${SITE_NAME}" --site-mail="${SITE_MAIL}" --account-name="${SITE_ADMIN}" --account-mail="${SITE_ADMIN_MAIL}" --account-pass="${SITE_PASSWORD}" --force --no-ansi --no-interaction
-#    drupal moi tpedu
-    drush si standard --db-url=mysql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}/drupal --locale="zh-hant" --site-name="${SITE_NAME}" --site-mail="${SITE_MAIL}" --account-name="${SITE_ADMIN}" --account-mail="${SITE_ADMIN_MAIL}" --account-pass="${SITE_PASSWORD}"
-    drush en tpedu
+    drupal si standard mysql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}/drupal -n --langcode="zh-hant" --site-name="${SITE_NAME}" --site-mail="${SITE_MAIL}" --account-name="${SITE_ADMIN}" --account-mail="${SITE_ADMIN_MAIL}" --account-pass="${SITE_PASSWORD}" --force --no-ansi --no-interaction
+    drupal moi tpedu
+#    drush si standard --db-url=mysql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}/drupal --locale="zh-hant" --site-name="${SITE_NAME}" --site-mail="${SITE_MAIL}" --account-name="${SITE_ADMIN}" --account-mail="${SITE_ADMIN_MAIL}" --account-pass="${SITE_PASSWORD}"
+#    drush en tpedu
 fi
 
 if [ ! -d "/opt/drupal/web/sites/default/files/adsync" ]; then
@@ -35,8 +35,8 @@ do
     find $d -type f -exec chmod 664 '{}' \;
 done
 chmod 644 /opt/drupal/web/sites/default/settings.php
-#drupal cc
-drush cr
+drupal cc
+#drush cr
 
 if [ ! -f "/var/run/apache2/apache2.pid" ]; then
     exec apache2-foreground
