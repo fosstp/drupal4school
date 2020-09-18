@@ -1,6 +1,6 @@
 gevent.admin:
   title: 'G Suite 行事曆同步模組設定'
-  description: '請先向 G Suite 申請介接專案，然後完成模組設定。'
+  description: '請先完成模組設定，模組才會真正啟用。'
   route_name: gevent.config
   weight: 40
   parent: d4s.admin_index
