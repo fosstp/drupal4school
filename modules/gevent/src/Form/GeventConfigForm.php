@@ -149,7 +149,7 @@ class GeventConfigForm extends ConfigFormBase
                 '#required' => true,
             ];
             if ($config->get('enabled')) {
-                $my_calendars = [];
+                $my_calendars = ['none' => '-請選擇-'];
                 $calendar = initGoogleCalendar();
                 $calendars = gs_listCalendars();
                 foreach ($calendars->getItems() as $calendarListEntry) {
@@ -170,12 +170,12 @@ class GeventConfigForm extends ConfigFormBase
                     '#description' => '這是主要行事曆，所有的行事曆事件都會儲存於此。',
                 ];
                 if (count($my_terms) > 0) {
-                    foreach ($my_terms as $term) {
-                        $form['calendar_term_'.$term] = [
+                    foreach ($my_terms as $tis => $term) {
+                        $form['calendar_term_'.$tid] = [
                             '#type' => 'select',
                             '#title' => "要將類別 $term 匯出到哪一個行事曆？",
                             '#options' => $my_calendars,
-                            '#default_value' => $config->get('calendar_term_'.$term) ?: '',
+                            '#default_value' => $config->get('calendar_term_'.$tid) ?: '',
                             '#description' => '這是次要行事曆，指定分類的行事曆事件將會匯入到這裏。',
                             '#states' => [
                                 'invisible' => [
@@ -210,7 +210,9 @@ class GeventConfigForm extends ConfigFormBase
         $config = $this->config('gevent.settings');
         $values = $form_state->cleanValues()->getValues();
         foreach ($values as $key => $value) {
-            $config->set($key, $value);
+            if ($value != 'none') {
+                $config->set($key, $value);
+            }
         }
         $config->save();
         $ok = false;
