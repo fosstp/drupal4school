@@ -240,22 +240,24 @@ class GeventConfigForm extends ConfigFormBase
         $my_fields = ['none' => '-請選擇-'];
         $teacher_fields = ['none' => '-請選擇-'];
         $unit_fields = ['none' => '-請選擇-'];
-        $fields = \Drupal::service('entity_field.manager')->getFieldDefinitions('node', $my_bundle);
-        foreach ($fields as $field_name => $field_defintion) {
-            $type = $field_defintion->getType();
-            if ($type == 'entity_reference') {
-                $target_type = $field_defintion->getSetting('target_type');
-                if ($target_type == 'taxonomy_term') {
-                    $config->set('field_taxonomy', $field_name);
+        if ($my_bundle != 'none') {
+            $fields = \Drupal::service('entity_field.manager')->getFieldDefinitions('node', $my_bundle);
+            foreach ($fields as $field_name => $field_defintion) {
+                $type = $field_defintion->getType();
+                if ($type == 'entity_reference') {
+                    $target_type = $field_defintion->getSetting('target_type');
+                    if ($target_type == 'taxonomy_term') {
+                        $config->set('field_taxonomy', $field_name);
+                    }
+                } elseif ($type == 'date_recur') {
+                    $config->set('field_date', $field_name);
+                } elseif ($type == 'tpedu_units') {
+                    $unit_fields[$field_name] = $field_defintion->getLabel();
+                } elseif ($type == 'tpedu_teachers') {
+                    $teacher_fields[$field_name] = $field_defintion->getLabel();
+                } elseif ($type == 'string' || $type == 'string_long') {
+                    $my_fields[$field_name] = $field_defintion->getLabel();
                 }
-            } elseif ($type == 'date_recur') {
-                $config->set('field_date', $field_name);
-            } elseif ($type == 'tpedu_units') {
-                $unit_fields[$field_name] = $field_defintion->getLabel();
-            } elseif ($type == 'tpedu_teachers') {
-                $teacher_fields[$field_name] = $field_defintion->getLabel();
-            } elseif ($type == 'string' || $type == 'string_long') {
-                $my_fields[$field_name] = $field_defintion->getLabel();
             }
         }
         $form['field_title'] = [
@@ -264,7 +266,7 @@ class GeventConfigForm extends ConfigFormBase
             '#options' => $my_fields,
             '#default_value' => $config->get('field_title'),
             '#description' => '這裡僅列出類型為字串或長字串的欄位',
-            '#description_display' => '這裡僅列出類型為字串或長字串的欄位',
+            '#description_display' => 'after',
             '#required' => true,
         ];
         $form['field_department'] = [
@@ -273,7 +275,7 @@ class GeventConfigForm extends ConfigFormBase
             '#options' => $unit_fields,
             '#default_value' => $config->get('field_department'),
             '#description' => '這裡僅列出類型為類型為（台北市校園）行政單位的欄位',
-            '#description_display' => '這裡僅列出類型為類型為（台北市校園）行政單位的欄位',
+            '#description_display' => 'after',
             '#required' => true,
         ];
         $form['field_memo'] = [
@@ -282,7 +284,7 @@ class GeventConfigForm extends ConfigFormBase
             '#options' => $my_fields,
             '#default_value' => $config->get('field_memo'),
             '#description' => '這裡僅列出類型為字串或長字串的欄位',
-            '#description_isplay' => '這裡僅列出類型為字串或長字串的欄位',
+            '#description_isplay' => 'after',
         ];
         $form['field_place'] = [
             '#type' => 'select',
@@ -290,7 +292,7 @@ class GeventConfigForm extends ConfigFormBase
             '#options' => $my_fields,
             '#default_value' => $config->get('field_place'),
             '#description' => '這裡僅列出類型為字串或長字串的欄位',
-            '#description_display' => '這裡僅列出類型為字串或長字串的欄位',
+            '#description_display' => 'after',
         ];
         $form['field_attendee'] = [
             '#type' => 'select',
@@ -298,7 +300,7 @@ class GeventConfigForm extends ConfigFormBase
             '#options' => $teacher_fields,
             '#default_value' => $config->get('field_attendee'),
             '#description' => '這裡僅列出類型為（台北市校園）教師的欄位',
-            '#description_display' => '這裡僅列出類型為（台北市校園）教師的欄位',
+            '#description_display' => 'after',
         ];
         $form['field_calendar_id'] = [
             '#type' => 'select',
@@ -306,7 +308,7 @@ class GeventConfigForm extends ConfigFormBase
             '#options' => $my_fields,
             '#default_value' => $config->get('field_calendar_id'),
             '#description' => '此欄位類型必須為字串或長字串，僅用於同步時檢索行事曆，請勿顯示於輸入表單中讓使用者編輯！',
-            '#description_display' => '此欄位類型必須為字串或長字串，僅用於同步時檢索行事曆，請勿顯示於輸入表單中讓使用者編輯！',
+            '#description_display' => 'after',
             '#required' => true,
         ];
         $form['field_event_id'] = [
@@ -315,7 +317,7 @@ class GeventConfigForm extends ConfigFormBase
             '#options' => $my_fields,
             '#default_value' => $config->get('field_event_id'),
             '#description' => '此欄位類型必須為字串或長字串，僅用於同步時檢索事件，請勿顯示於輸入表單中讓使用者編輯！',
-            '#description_display' => '此欄位類型必須為字串或長字串，僅用於同步時檢索事件，請勿顯示於輸入表單中讓使用者編輯！',
+            '#description_display' => 'after',
             '#required' => true,
         ];
         $response->addCommand(new ReplaceCommand('.form-item-field-title', \Drupal::service('renderer')->render($form['field_title'])));
