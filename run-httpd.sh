@@ -1,6 +1,8 @@
 #!/bin/sh
 set -e
 
+echo '0' | drupal init
+
 if mysqlshow --host=${DB_HOST} --user=${DB_USER} --password=${DB_PASSWORD} drupal; then
     echo "database exist!"
 else
