@@ -2,7 +2,7 @@
 <table class="views-table cols-4">
 	<thead>
 		<tr>
-			<th class="views-field" colspan="4" style="text-align: center; font-size: 150%">{{ title }}<a href="javascript:window.print()">友善列印</a></th>
+			<th class="views-field" colspan="4" style="text-align: center"><span style="font-size: 150%">{{ title }}</span> <a href="javascript:window.print()">友善列印</a></th>
 		</tr>
 		<tr>
 			<th class="views-field" width="16" style="text-align: center;">月</th>
@@ -32,22 +32,21 @@
 			<td align="center">{{ m }}</td>
 			<td align="center">{{ d }}</td>
             {% set meeting = date("#{y}-#{m}-#{d}")|date('w') %}
-			{% switch meeting %}
-            	{% case 0 %}
+			{% if (meeting == 0) %}
             <td align=center bgcolor=#FF0000><font color=#FFFFFF>日</font></td>
-            	{% case 1 %}
+            {% elseif (meeting == 1) %}
             <td align=center>一</td>
-	        	{% case 2 %}
+            {% elseif (meeting == 2) %}
             <td align=center>二</td>
-        		{% case 3 %}
+            {% elseif (meeting == 3) %}
             <td align=center>三</td>
-        		{% case 4 %}
+            {% elseif (meeting == 4) %}
             <td align=center>四</td>
-            	{% case 5 %}
+            {% elseif (meeting == 5) %}
             <td align=center>五</td>
-            	{% case 6 %}
+            {% elseif (meeting == 6) %}
             <td align=center bgcolor=#FF0000><font color=#FFFFFF>六</font></td>
-			{% endswitch %}
+			{% endif %}
 			{% spaceless %}
 			<td>
 			{% if (events) %}
