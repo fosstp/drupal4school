@@ -152,7 +152,7 @@ class GeventConfigForm extends ConfigFormBase
                 $my_calendars = ['none' => '-請選擇-'];
                 $calendar = initGoogleCalendar();
                 $calendars = gs_listCalendars();
-                foreach ($calendars->getItems() as $calendarListEntry) {
+                foreach ($calendars as $calendarListEntry) {
                     $my_calendars[$calendarListEntry->getId()] = $calendarListEntry->getSummary();
                 }
                 $form['calendar_taxonomy'] = [
@@ -170,7 +170,7 @@ class GeventConfigForm extends ConfigFormBase
                     '#description' => '這是主要行事曆，所有的行事曆事件都會儲存於此。',
                 ];
                 if (count($my_terms) > 0) {
-                    foreach ($my_terms as $tis => $term) {
+                    foreach ($my_terms as $tid => $term) {
                         $form['calendar_term_'.$tid] = [
                             '#type' => 'select',
                             '#title' => "要將類別 $term 匯出到哪一個行事曆？",
