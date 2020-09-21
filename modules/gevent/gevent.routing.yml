@@ -13,3 +13,18 @@ gevent.todolist:
     _title: '行事曆一覽表'
   requirements:
     _access: 'TRUE'
+
+gevent.update_event:
+  path: '/event-update' 
+  defaults: 
+    _controller: '\Drupal\gevent\Controller\GeventController::updateEvent'
+  requirements: 
+    _permission: 'access content'
+    
+gevent.add_event:
+  path: '/event-add' 
+  defaults: 
+    _controller: '\Drupal\gevent\Controller\GeventController::addEvent' 
+    _title: '新增事件'
+  requirements: 
+    _permission: 'access content'

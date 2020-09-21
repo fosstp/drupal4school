@@ -1,0 +1,18 @@
+services:
+  # Timezone conversion service.
+  gevent.timezone_conversion_service:
+    class: Drupal\gevent\TimezoneService
+    
+  # Taxonomy color service.
+  gevent.taxonomy_color:
+    class: Drupal\gevent\TaxonomyColor
+    arguments: ['@entity_type.manager']
+    
+  # View preprocess service.
+  gevent.view_preprocess:
+    class: Drupal\gevent\FullcalendarViewPreprocess
+    
+  # View processor plugin.
+  plugin.manager.fullcalendar_view_processor:
+    class: Drupal\gevent\Plugin\FullcalendarViewProcessorManager
+    parent: default_plugin_manager
