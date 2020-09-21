@@ -92,25 +92,23 @@ class TpeduWidgetBase extends WidgetBase
         $this->required = $this->fieldDefinition->isRequired();
         $this->multiple = $this->fieldDefinition->getFieldStorageDefinition()->isMultiple();
         $this->has_value = isset($items[0]->{$this->column});
-        if (!$this->multiple && !$this->required) {
-            $element['#empty_option'] = '- 選取 -';
-            $element['#empty_value'] = '_none';
-            $element['#required'] = false;
-        } else {
-            $element['#required'] = true;
-        }
         if ($this->multiple) {
             $element['#type'] = 'checkboxes';
             $inline = $this->getFieldSetting('inline_columns');
             $this->display_inline($element, $inline);
             $element['#default_value'] = $this->getSelectedOptions($items);
         } else {
+            if (!$this->required) {
+                $element['#empty_option'] = '- 選取 -';
+                $element['#empty_value'] = '_none';
+            }
             $element['#type'] = 'select';
             $value = isset($items[$delta]->{$this->column}) ? $items[$delta]->{$this->column} : '';
             if ($value) {
                 $element['#default_value'] = $value;
             }
         }
+        $element['#required'] = $this->required;
         // Allow modules to alter the field widget form element.
         $context = [
               'form' => $form,
