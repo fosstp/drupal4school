@@ -2,21 +2,12 @@
 
 namespace Drupal\gevent;
 
-/**
- * Class TimezoneService.
- */
 class TimezoneService
 {
-    /**
-     * Constructor.
-     */
     public function __construct()
     {
     }
 
-    /**
-     * Return the value of the converted date from UTC date.
-     */
     public function utcToLocal($utc_date, $local_timezone, $format = DATE_ATOM, $offset = '')
     {
         // UTC timezone.

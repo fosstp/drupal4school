@@ -30,13 +30,12 @@ class TaxonomyColor
         // Taxonomy color details.
         $elements = [
             '#type' => 'details',
-            '#title' => $this->t('Colors for Taxonomies'),
+            '#title' => '依照分類配色',
             '#fieldset' => 'colors',
             '#open' => $open,
             '#prefix' => '<div id="color-taxonomies-div">',
             '#suffix' => '</div>',
             '#states' => [
-                // Only show this field when the 'vocabularies' is selected.
                 'invisible' => [
                     [':input[name="style_options[vocabularies]"]' => ['value' => '']],
                 ],
@@ -53,7 +52,6 @@ class TaxonomyColor
                     '#default_value' => $color,
                     '#type' => 'color',
                     '#states' => [
-                        // Only show this field when the 'tax_field' is selected.
                         'invisible' => [
                             [':input[name="style_options[tax_field]"]' => ['value' => '']],
                         ],

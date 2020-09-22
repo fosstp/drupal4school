@@ -15,7 +15,7 @@ function gevent_install()
         $vocabulary->save();
     }
 
-    $terms = \Drupal::service('entity_type.manager')->getStorage('taxonomy_term');
+    $terms = \Drupal::entityTypeManager()->getStorage('taxonomy_term');
     $tree = $terms->loadTree('calendar');
     if (count($tree) == 0) {
         Term::create([

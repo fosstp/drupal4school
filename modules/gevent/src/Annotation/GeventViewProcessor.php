@@ -4,7 +4,7 @@ namespace Drupal\gevent\Annotation;
 
 use Drupal\Component\Annotation\Plugin;
 
-class FullcalendarViewProcessor extends Plugin
+class GeventViewProcessor extends Plugin
 {
     /**
      * The plugin ID.

@@ -5,7 +5,7 @@
 
 // Jquery wrapper for drupal to avoid conflicts between libraries.
 (function ($) {
-  var initialLocaleCode = 'en';
+  var initialLocaleCode = 'zh-tw';
   // Dialog index.
   var dialogIndex = 0;
   // Dialog objects.
@@ -42,7 +42,7 @@
     let strEnd = '';
     let strStart = '';
     let viewIndex = parseInt(this.el.getAttribute("calendar-view-index"));
-    let viewSettings = drupalSettings.fullCalendarView[viewIndex];
+    let viewSettings = drupalSettings.geventView[viewIndex];
     const formatSettings = {
         month: '2-digit',
         year: 'numeric',
@@ -90,7 +90,7 @@
       jQuery
         .post(
           drupalSettings.path.baseUrl +
-            "fullcalendar-view-event-update",
+            "event-update",
           {
             eid: info.event.extendedProps.eid,
             entity_type: viewSettings.entityType,
@@ -121,7 +121,7 @@
     info.jsEvent.preventDefault();
     let thisEvent = info.event;
     let viewIndex = parseInt(this.el.getAttribute("calendar-view-index"));
-    let viewSettings = drupalSettings.fullCalendarView[viewIndex];
+    let viewSettings = drupalSettings.geventView[viewIndex];
     let des = thisEvent.extendedProps.des;
     // Show the event detail in a pop up dialog.
     if (viewSettings.dialogWindow) {
@@ -173,7 +173,7 @@
     let strEnd = '';
     let strStart = '';
     let viewIndex = parseInt(this.el.getAttribute("calendar-view-index"));
-    let viewSettings = drupalSettings.fullCalendarView[viewIndex];
+    let viewSettings = drupalSettings.geventView[viewIndex];
     const formatSettings = {
         month: '2-digit',
         year: 'numeric',
@@ -221,7 +221,7 @@
       jQuery
         .post(
           drupalSettings.path.baseUrl +
-            "fullcalendar-view-event-update",
+            "event-update",
           {
             eid: info.event.extendedProps.eid,
             entity_type: viewSettings.entityType,
@@ -248,7 +248,7 @@
     .each(function() {              
       let calendarEl = this;
       let viewIndex = parseInt(calendarEl.getAttribute("calendar-view-index"));
-      let viewSettings = drupalSettings.fullCalendarView[viewIndex];
+      let viewSettings = drupalSettings.geventView[viewIndex];
       var calendarOptions = JSON.parse(viewSettings.calendar_options);
       // Bind the render event handler.
       calendarOptions.eventRender = eventRender;
@@ -298,7 +298,7 @@
         // Double click event.
         calendarEl.addEventListener('dblclick' , function(e) {
           let viewIndex = parseInt(this.getAttribute("calendar-view-index"));
-          let viewSettings = drupalSettings.fullCalendarView[viewIndex];
+          let viewSettings = drupalSettings.geventView[viewIndex];
           // New event window can be open if following conditions match.
           // * The new event content type are specified.
           // * Allow to create a new event by double click.
@@ -346,7 +346,7 @@
     // Remove the existing calendars except updating Ajax events.
     if (
         drupalSettings.calendar &&
-        settings.url !== '/fullcalendar-view-event-update'
+        settings.url !== '/event-update'
         ) {
       // Rebuild the calendars.
       drupalSettings.calendar.forEach(function(calendar) {

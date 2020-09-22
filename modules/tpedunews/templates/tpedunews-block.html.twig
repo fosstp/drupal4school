@@ -12,9 +12,7 @@
 			</tr>
         	<tr>
     			<td colspan=2>
-				{% verbatim %}
-        			<p>{{ item.getDescription() }}</p>
-				{% endverbatim %}
+        			<p>{{ item.getDescription() | raw }}</p>
         		</td>
         	</tr>
 		{% endfor %}

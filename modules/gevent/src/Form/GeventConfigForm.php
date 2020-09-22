@@ -70,7 +70,7 @@ class GeventConfigForm extends ConfigFormBase
                             $config->set('field_taxonomy', $field_name);
                             $vocabularys = $field_defintion->getSetting('handler_settings')['target_bundles'];
                             foreach ($vocabularys as $v) {
-                                $terms = \Drupal::service('entity_type.manager')->getStorage('taxonomy_term')->loadTree($v);
+                                $terms = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadTree($v);
                                 foreach ($terms as $t) {
                                     $my_terms[$t->tid] = $t->name;
                                 }

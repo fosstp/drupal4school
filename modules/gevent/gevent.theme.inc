@@ -1,12 +1,12 @@
 <?php
 
-function template_preprocess_views_view_fullcalendar(array &$variables)
+function template_preprocess_views_view_gevent(array &$variables)
 {
-    // Fullcalendar View preprocess service.
+    // Gevent View preprocess service.
     $preprocess_service = \Drupal::service('gevent.view_preprocess');
 
     // View processor plugins.
-    $processor_plugins = \Drupal::service('plugin.manager.fullcalendar_view_processor');
+    $processor_plugins = \Drupal::service('plugin.manager.gevent_view_processor');
     // The list of available plugins:
     $plugin_definitions = $processor_plugins->getDefinitions();
 
@@ -17,7 +17,7 @@ function template_preprocess_views_view_fullcalendar(array &$variables)
             $field_types = $field_types + $definition['field_types'];
         }
     }
-    $variables['fullcalendar_fieldtypes'] = $field_types;
+    $variables['gevent_fieldtypes'] = $field_types;
 
     $preprocess_service->process($variables);
 

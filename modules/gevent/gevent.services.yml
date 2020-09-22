@@ -10,9 +10,9 @@ services:
     
   # View preprocess service.
   gevent.view_preprocess:
-    class: Drupal\gevent\FullcalendarViewPreprocess
+    class: Drupal\gevent\GeventViewPreprocess
     
   # View processor plugin.
-  plugin.manager.fullcalendar_view_processor:
-    class: Drupal\gevent\Plugin\FullcalendarViewProcessorManager
+  plugin.manager.gevent_view_processor:
+    class: Drupal\gevent\Plugin\GeventViewProcessorManager
     parent: default_plugin_manager
