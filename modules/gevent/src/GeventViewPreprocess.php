@@ -146,74 +146,62 @@ class GeventViewPreprocess
             } else {
                 $link_url = '';
             }
-            // Calendar event start date.
-            $date_instance = $current_entity->get($date_field);
-            if ($date_field_option['type'] !== 'date_recur') {
+            // Calendar event date.
+            $mydate = $current_entity->get($date_field)->getValue();
+            if (strpos($date_field_option['type'], 'date_recur') === fasle) {
                 continue;
             } else {
-                foreach ($date_instance->occurrences as $i => $occurrence) {
-                    $entry = [
-                        'title' => Xss::filter($title, $title_allowed_tags),
-                        'id' => $row->index."-$i",
-                        'eid' => $entity_id,
-                        'url' => $link_url,
-                        'des' => isset($des) ? $des : '',
-                    ];
-                    $start_date = $occurrence->getStart();
-                    $end_date = $occurrence->getEnd();
-                    // A user who doesn't have the permission can't edit an event.
-                    if (!$current_entity->access('update')) {
-                        $entry['editable'] = false;
-                    }
-                    // If we don't yet know the default_date (we're configured to use the
-                    // date from the first row, and we haven't set it yet), do so now.
-                    if (!isset($default_date)) {
-                        // Only use the first 10 digits since we only care about the date.
-                        $default_date = substr($start_date, 0, 10);
-                    }
-                    $all_day = (strlen($start_date) < 11) ? true : false;
+                $start_date = $mydate['value'];
+                $end_date = $mydate['end_value'];
+                $rrule = $mydate['rrule'];
+                // A user who doesn't have the permission can't edit an event.
+                if (!$current_entity->access('update')) {
+                    $entry['editable'] = false;
+                }
+                // If we don't yet know the default_date (we're configured to use the
+                // date from the first row, and we haven't set it yet), do so now.
+                if (!isset($default_date)) {
+                    // Only use the first 10 digits since we only care about the date.
+                    $default_date = substr($start_date, 0, 10);
+                }
+                $all_day = (strlen($start_date) < 11) ? true : false;
+                if ($all_day) {
+                    $entry['start'] = $start_date;
+                    $entry['allDay'] = true;
+                } else {
+                    // Drupal store date time in UTC timezone.
+                    // So we need to convert it into user timezone.
+                    $entry['start'] = $timezone_service->utcToLocal($start_date, $timezone, DATE_ATOM);
+                }
+                if (!empty($end_date)) {
+                    $all_day = (strlen($end_date) < 11) ? true : false;
                     if ($all_day) {
-                        $entry['start'] = $start_date;
+                        $end = new DrupalDateTime($end_date);
+                        // The end date is inclusive for a all day event,
+                        // which is not what we want. So we need one day offset.
+                        $end->modify('+1 day');
+                        $entry['end'] = $end->format('Y-m-d');
                         $entry['allDay'] = true;
                     } else {
                         // Drupal store date time in UTC timezone.
                         // So we need to convert it into user timezone.
-                        $entry['start'] = $timezone_service->utcToLocal($start_date, $timezone, DATE_ATOM);
+                        $entry['end'] = $timezone_service->utcToLocal($end_date, $timezone, DATE_ATOM);
                     }
-                    if (!empty($end_date)) {
-                        $all_day = (strlen($end_date) < 11) ? true : false;
-                        if ($all_day) {
-                            $end = new DrupalDateTime($end_date);
-                            // The end date is inclusive for a all day event,
-                            // which is not what we want. So we need one day offset.
-                            $end->modify('+1 day');
-                            $entry['end'] = $end->format('Y-m-d');
-                            $entry['allDay'] = true;
-                        } else {
-                            // Drupal store date time in UTC timezone.
-                            // So we need to convert it into user timezone.
-                            $entry['end'] = $timezone_service->utcToLocal($end_date, $timezone, DATE_ATOM);
-                        }
-                    } else {
-                        $entry['eventDurationEditable'] = false;
-                    }
-                    // Set the color for this event.
-                    if (isset($event_type) && isset($color_tax[$event_type])) {
-                        $entry['backgroundColor'] = $color_tax[$event_type];
-                    }
-                    // Recurring event.
-                    if ($date_instance->isRecurring()) {
-                        $helper = $date_instance->getHelper();
-                        $rrule = $helper->getRules();
-                        if (!empty($rrule)) {
-                            $entry['rrule'] = Xss::filter($rrule);
-                            // Recurring events are read-only.
-                            $entry['editable'] = false;
-                        }
-                    }
-                    // Add this event into the array.
-                    $entries[] = $entry;
+                } else {
+                    $entry['eventDurationEditable'] = false;
                 }
+                // Set the color for this event.
+                if (isset($event_type) && isset($color_tax[$event_type])) {
+                    $entry['backgroundColor'] = $color_tax[$event_type];
+                }
+                // Recurring event.
+                if (!empty($rrule)) {
+                    $entry['rrule'] = Xss::filter($rrule);
+                    // Recurring events are read-only.
+//                    $entry['editable'] = false;
+                }
+                // Add this event into the array.
+                $entries[] = $entry;
             }
         }
 
