@@ -10,7 +10,7 @@ gevent.todolist:
   path: /todolist
   defaults:
     _controller: \Drupal\gevent\Controller\GeventController::todolist
-    _title: '行事曆一覽表'
+    _title: '學期行事一覽表'
   requirements:
     _access: 'TRUE'
 

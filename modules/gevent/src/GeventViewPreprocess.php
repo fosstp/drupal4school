@@ -151,9 +151,16 @@ class GeventViewPreprocess
             if (strpos($date_field_option['type'], 'date_recur') === fasle) {
                 continue;
             } else {
-                $start_date = $mydate['value'];
-                $end_date = $mydate['end_value'];
-                $rrule = $mydate['rrule'];
+                $entry = [
+                    'title' => Xss::filter($title, $title_allowed_tags),
+                    'id' => $row->index."-$i",
+                    'eid' => $entity_id,
+                    'url' => $link_url,
+                    'des' => isset($des) ? $des : '',
+                ];
+                $start_date = $mydate[0]['value'];
+                $end_date = $mydate[0]['end_value'];
+                $rrule = $mydate[0]['rrule'];
                 // A user who doesn't have the permission can't edit an event.
                 if (!$current_entity->access('update')) {
                     $entry['editable'] = false;

@@ -4,3 +4,11 @@ gevent.admin:
   route_name: gevent.config
   weight: 40
   parent: d4s.admin_index
+
+gevent.tranditional:
+  title: '學期行事一覽表'
+  route_name: gevent.todolist
+  expanded: true
+  weight: -48
+  parent: ''
+  menu_name: main
