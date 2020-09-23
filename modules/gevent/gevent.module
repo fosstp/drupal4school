@@ -1,10 +1,12 @@
 <?php
 
+use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 
 require 'gevent.api.php';
+\Drupal::moduleHandler()->loadInclude('gevent', 'inc', 'gevent.theme');
 
 function gevent_help($route_name, RouteMatchInterface $route_match)
 {

@@ -21,7 +21,7 @@ class GeventViewProcessorManager extends DefaultPluginManager
     {
         parent::__construct('Plugin/GeventViewProcessor', $namespaces, $module_handler, 'Drupal\gevent\Plugin\GeventViewProcessorInterface', 'Drupal\gevent\Annotation\GeventViewProcessor');
 
-        $this->alterInfo('gevent_view_processor_info');
-        $this->setCacheBackend($cache_backend, 'gevent_view_processor_plugins');
+        $this->alterInfo('gevent_gevent_view_processor_info');
+        $this->setCacheBackend($cache_backend, 'gevent_gevent_view_processor_plugins');
     }
 }
