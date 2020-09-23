@@ -26,6 +26,21 @@ function gevent_form_node_form_alter(&$form, FormStateInterface $form_state, $fo
             unset($form[$config->get('field_event_id')]);
         }
     }
+    // Event start date from query parameter.
+    $start = \Drupal::request()->query->get('start');
+    // Field name of the start date from query parameter.
+    $date_field = \Drupal::request()->query->get('date_field');
+    if (!empty($start) && !empty($date_field)) {
+        $node = $form_state->getFormObject()->getEntity();
+        // Only handle new node with the start field.
+        if ($node->isNew() && isset($form[$date_field]) && isset($form[$date_field]['widget'][0])) {
+            // Only handle date_recur field.
+            if ($form[$date_field]['widget'][0]['value']['#type'] === 'date_recur') {
+                // Prepopulate the start date field as the event date.
+                $form[$date_field]['widget'][0]['value']['#default_value'] = new DrupalDateTime($start, 'UTC');
+            }
+        }
+    }
 }
 
 function gevent_node_insert(EntityInterface $node)
@@ -85,6 +100,9 @@ function gevent_node_delete(EntityInterface $node)
 function gevent_theme()
 {
     return [
+        'fullcalendar' => [
+            'file' => 'gevent.theme.inc',
+        ],
         'gevent_todolist' => [
             'variables' => [
                 'title' => '學校行事曆',
@@ -96,3 +114,134 @@ function gevent_theme()
         ],
     ];
 }
+
+function gevent_library_info_alter(array &$libraries, $module)
+{
+    if ('gevent' == $module) {
+        // Use CDN instead of all local missing libraries.
+        // JSFrame.js
+        $cdn_library = _gevent_use_cdn_full_path($libraries, 'libraries.jsframe', 'js');
+        if ($cdn_library) {
+            $libraries['libraries.jsframe']['js'] = $cdn_library;
+        }
+        // Moment.js
+        $cdn_library = _gevent_use_cdn_full_path($libraries, 'libraries.moment', 'js');
+        if ($cdn_library) {
+            $libraries['libraries.moment']['js'] = $cdn_library;
+        }
+        // RRule js.
+        $cdn_library = _gevent_use_cdn_full_path($libraries, 'libraries.rrule', 'js');
+        if ($cdn_library) {
+            $libraries['libraries.rrule']['js'] = $cdn_library;
+        }
+        // Fullcalendar default theme.
+        $cdn_library = _gevent_use_cdn($libraries, 'libraries.fullcalendar-theme', 'css');
+        if ($cdn_library) {
+            $libraries['libraries.fullcalendar-theme']['css']['component'] = $cdn_library;
+        }
+        // Fullcalendar js.
+        $cdn_library = _gevent_use_cdn($libraries, 'libraries.fullcalendar', 'js');
+        if ($cdn_library) {
+            $libraries['libraries.fullcalendar']['js'] = $cdn_library;
+        }
+    }
+}
+
+/**
+ * Replace local library with CDN.
+ *
+ * @param array  $libraries
+ *                              The libraries array
+ * @param string $library_name
+ *                              The library name
+ * @param string $type
+ *                              The library type
+ * @param bool   $replace_local
+ *                              Force to replace local libraries with CDN
+ *
+ * @return array
+ *               The new library array (CDN)
+ */
+function _gevent_use_cdn(array $libraries, $library_name, $type, $replace_local = false)
+{
+    if (isset($libraries[$library_name])) {
+        if (isset($libraries[$library_name][$type]) && isset($libraries[$library_name]['cdn'])) {
+            $library_array = [];
+            $updated = false;
+            // CSS library has a sub-array called component.
+            if ($type === 'css') {
+                if (isset($libraries[$library_name][$type]['component'])) {
+                    $local_library = $libraries[$library_name][$type]['component'];
+                } else {
+                    return false;
+                }
+            } else {
+                // Local js library.
+                $local_library = $libraries[$library_name][$type];
+            }
+            foreach ($local_library as $key => $value) {
+                if (!file_exists(DRUPAL_ROOT.$key) || $replace_local) {
+                    // The js file doesn't exist.
+                    // Replace it with remote cdn.
+                    $path = explode('/', $key);
+                    $end = count($path);
+                    $plugin_url = $path[$end - 2].'@'.$libraries[$library_name]['version'].'/'.$path[$end - 1];
+                    $library_array[$libraries[$library_name]['cdn'].$plugin_url] = $value;
+                    $updated = true;
+                } else {
+                    $library_array[$key] = $value;
+                }
+            }
+        }
+    }
+
+    return empty($updated) ? false : $library_array;
+}
+
+  /**
+   * Replace local rrule library with CDN.
+   *
+   * @param array  $libraries
+   *                              The libraries array
+   * @param string $library_name
+   *                              The library name
+   * @param string $type
+   *                              The library type
+   * @param bool   $replace_local
+   *                              Force to replace local libraries with CDN
+   *
+   * @return array
+   *               The new library array (CDN)
+   */
+  function _gevent_use_cdn_full_path(array $libraries, $library_name, $type, $replace_local = false)
+  {
+      if (isset($libraries[$library_name])) {
+          if (isset($libraries[$library_name][$type]) && isset($libraries[$library_name]['cdn'])) {
+              $library_array = [];
+              $updated = false;
+              // CSS library has a sub-array called component.
+              if ($type === 'css') {
+                  if (isset($libraries[$library_name][$type]['component'])) {
+                      $local_library = $libraries[$library_name][$type]['component'];
+                  } else {
+                      return false;
+                  }
+              } else {
+                  // Local js library.
+                  $local_library = $libraries[$library_name][$type];
+              }
+              foreach ($local_library as $key => $value) {
+                  if (!file_exists(DRUPAL_ROOT.$key) || $replace_local) {
+                      // The js file doesn't exist.
+                      // Replace it with remote cdn.
+                      $library_array[$libraries[$library_name]['cdn']] = $value;
+                      $updated = true;
+                  } else {
+                      $library_array[$key] = $value;
+                  }
+              }
+          }
+      }
+
+      return empty($updated) ? false : $library_array;
+  }
