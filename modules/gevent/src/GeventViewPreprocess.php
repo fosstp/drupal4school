@@ -147,20 +147,20 @@ class GeventViewPreprocess
                 $link_url = '';
             }
             // Calendar event date.
-            $mydate = $current_entity->get($date_field)->getValue();
-            if (strpos($date_field_option['type'], 'date_recur') === fasle) {
+            if (strpos($date_field_option['type'], 'date_recur') === false) {
                 continue;
             } else {
+                $mydate = $current_entity->get($date_field)->getValue()[0];
+                $start_date = $mydate['value'];
+                $end_date = $mydate['end_value'];
+                $rrule = $mydate['rrule'];
                 $entry = [
                     'title' => Xss::filter($title, $title_allowed_tags),
-                    'id' => $row->index."-$i",
+                    'id' => $row->index,
                     'eid' => $entity_id,
                     'url' => $link_url,
                     'des' => isset($des) ? $des : '',
                 ];
-                $start_date = $mydate[0]['value'];
-                $end_date = $mydate[0]['end_value'];
-                $rrule = $mydate[0]['rrule'];
                 // A user who doesn't have the permission can't edit an event.
                 if (!$current_entity->access('update')) {
                     $entry['editable'] = false;

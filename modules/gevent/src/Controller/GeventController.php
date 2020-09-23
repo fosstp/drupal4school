@@ -81,7 +81,7 @@ class GeventController extends ControllerBase
     {
         $entity_type_id = $request->get('entity', '');
         $bundle = $request->get('bundle', '');
-        $srat = $request->get('start', '');
+        $start = $request->get('start', '');
         $date_field = $request->get('date_field', '');
 
         if (!empty($bundle) && !empty($entity_type_id)) {

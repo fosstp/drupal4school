@@ -302,23 +302,20 @@ function gs_syncEvent($node)
     $date_array = $node->get($date_field)->getValue()[0];
     $event_start = new Google_Service_Calendar_EventDateTime();
     $event_end = new Google_Service_Calendar_EventDateTime();
-    $event_start->setTimeZone('Asia/Teipei');
-    $event_end->setTimeZone('Asia/Teipei');
-    $start_date = $date_array->getStart();
-    $end_date = $date_array->getEnd();
-    if ($date_array['all_day'] == 1) {
-        $event_start->setDate(date_format($start_date, 'Y-m-d'));
-        $event_end->setDate(date_format($end_date, 'Y-m-d'));
+    $event_start->setTimeZone($date_array['timezone']);
+    $event_end->setTimeZone($date_array['timezone']);
+    $all_day = (strlen($date_array['value']) < 11) ? true : false;
+    if ($all_day) {
+        $event_start->setDate(date_format($date_array['value'], 'Y-m-d'));
+        $event_end->setDate(date_format($date_array['end_value'], 'Y-m-d'));
     } else {
-        $event_start->setDateTime(date_format($start_date, 'Y-m-d\TH:i:sP'));
-        $event_end->setDateTime(date_format($end_date, 'Y-m-d\TH:i:sP'));
+        $event_start->setDateTime(date_format($date_array['value'], 'Y-m-d\TH:i:sP'));
+        $event_end->setDateTime(date_format($date_array['end_value'], 'Y-m-d\TH:i:sP'));
     }
     $event->setStart($event_start);
     $event->setEnd($event_end);
-    if ($date_array->isRecurring()) {
-        $helper = $date_array->getHelper();
-        $rrule = $helper->getRules();
-        $event->setRecurrence($rrule);
+    if (!empty($date_array['rrule'])) {
+        $event->setRecurrence($date_array['rrule']);
     }
 
     $user = user_load($node->uid);
