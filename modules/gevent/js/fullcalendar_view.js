@@ -96,8 +96,7 @@
             entity_type: viewSettings.entityType,
             start: strStart,
             end: strEnd,
-            start_field: viewSettings.startField,
-            end_field: viewSettings.endField,
+            date_field: viewSettings.dateField,
             token: viewSettings.token
           }
         )
@@ -227,8 +226,7 @@
             entity_type: viewSettings.entityType,
             start: strStart,
             end: strEnd,
-            start_field: viewSettings.startField,
-            end_field: viewSettings.endField,
+            date_field: viewSettings.dateField,
             token: viewSettings.token
           }
         )
@@ -316,8 +314,8 @@
                   viewSettings.addForm +
                   "?start=" +
                   slotDate +
-                  "&start_field=" +
-                  viewSettings.startField +
+                  "&date_field=" +
+                  viewSettings.dateField +
                   "&destination=" + window.location.pathname,
                 "_blank"
               );

@@ -28,7 +28,7 @@
   <div id="bottom-buttons fc-button-group">
     {% if showAddEvent %}
     <div class="fullcalendar-bottom-btn add-event-btn">
-        <a id="calendar-add-event"  href="/event-add?entity={{ entity_id }}&bundle={{ options.bundle_type }}&start_field={{ options.start }}&end_field={{ options.end }}&destination={{ path('<current>') }}" class="use-ajax" data-dialog-type="dialog" data-dialog-renderer="off_canvas" 
+        <a id="calendar-add-event"  href="/event-add?entity={{ entity_id }}&bundle={{ options.bundle_type }}&date_field={{ options.datetime }}&destination={{ path('<current>') }}" class="use-ajax" data-dialog-type="dialog" data-dialog-renderer="off_canvas" 
    data-dialog-options="{&quot;width&quot;:400}">{{ 'Add event'|t }}</a>
     </div>
     {% endif %}

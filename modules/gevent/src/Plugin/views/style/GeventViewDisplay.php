@@ -24,7 +24,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   display_types = { "normal" }
  * )
  */
-class GeventDisplay extends StylePluginBase
+class GeventViewDisplay extends StylePluginBase
 {
     protected $usesFields = true;
 
@@ -46,7 +46,7 @@ class GeventDisplay extends StylePluginBase
         $options = parent::defineOptions();
         $options['default_date_source'] = ['default' => 'now'];
         $options['defaultDate'] = ['default' => ''];
-        $options['start'] = ['default' => 'field_daterange'];
+        $options['datetime'] = ['default' => 'field_daterange'];
         $options['title'] = ['default' => 'title'];
         $options['bundle_type'] = ['default' => 'calendar_event'];
         $options['tax_field'] = ['default' => 'field_catalog'];

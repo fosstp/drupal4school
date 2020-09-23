@@ -63,7 +63,7 @@ class GeventViewPreprocess
         $variables['showAddEvent'] = $dbl_click_to_create && $options['createEventLink'];
         // Time format
         $timeFormat = $options['timeFormat'];
-        // Field machine name of start date.
+        // Field machine name of date field.
         $date_field = $options['datetime'];
         // Start date field is critical.
         if (empty($date_field)) {
@@ -278,10 +278,8 @@ class GeventViewPreprocess
             'dialogWindow' => $options['dialogWindow'],
             // The bundle (content) type of a new event.
             'eventBundleType' => $event_bundle_type,
-            // The machine name of start date field.
-            'startField' => $start_field,
-            // The machine name of end date field.
-            'endField' => $end_field,
+            // The machine name of date_recur field.
+            'dateField' => $date_field,
             // Allow to create a new event by double clicking.
             'dblClickToCreate' => $dbl_click_to_create,
             // Entity type.
