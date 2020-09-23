@@ -408,6 +408,14 @@ class GeventDisplay extends StylePluginBase
             $form['color_taxonomies'] = $this->taxonomyColorService->colorInputBoxs($this->options['vocabularies'], $this->options['color_taxonomies']);
         }
 
+        // All bundle types.
+        $bundles = \Drupal::service('entity_type.bundle.info')->getBundleInfo($entity_type);
+        // Options list.
+        $bundlesList = [];
+        foreach ($bundles as $id => $bundle) {
+            $label = $bundle['label'];
+            $bundlesList[$id] = $label;
+        }
         // New event bundle type.
         $form['bundle_type'] = [
             '#title' => '內容類型',
