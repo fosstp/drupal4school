@@ -37,7 +37,7 @@ class GeventViewPreprocess
         $event_bundle_type = $options['bundle_type'];
         $entity_type = $view->getBaseEntityType();
         if ($entity_type->id() === 'node') {
-            $add_form = 'node/add/'.$event_bundle_type;
+            $add_form = '/event-add';
         } else {
             $entity_links = $entity_type->get('links');
             if (isset($entity_links['add-form'])) {

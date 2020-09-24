@@ -71,8 +71,8 @@
     if (start) {
       strStart = FullCalendar.formatDate(start, formatSettings);
     }
-    const title = info.event.title.replace(/(<([^>]+)>)/ig,"");;
-    const msg = Drupal.t('@title end is now @event_end. Do you want to save this change?', {
+    const title = info.event.title.replace(/(<([^>]+)>)/ig,"");
+    const msg = Drupal.t('事件：@title 的結束時間將修改成 @event_end。確定要修改嗎？', {
       '@title': title,
       '@event_end': strEnd
     });
@@ -202,7 +202,7 @@
       strStart = FullCalendar.formatDate(start, formatSettings);
     }
     const title = info.event.title.replace(/(<([^>]+)>)/ig,"");;
-    const msg = Drupal.t('@title end is now @event_end. Do you want to save this change?', {
+    const msg = Drupal.t('事件：@title 的結束時間將修改成 @event_end。確定要修改嗎？', {
       '@title': title,
       '@event_end': strEnd
     });
@@ -312,7 +312,11 @@
               window.open(
                   drupalSettings.path.baseUrl +
                   viewSettings.addForm +
-                  "?start=" +
+                  "?entity=" +
+                  viewSettings.entityType +
+                  "&bundle=" +
+                  viewSettings.eventBundleType +
+                  "&start=" +
                   slotDate +
                   "&date_field=" +
                   viewSettings.dateField +

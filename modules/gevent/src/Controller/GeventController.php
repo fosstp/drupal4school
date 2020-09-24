@@ -53,7 +53,7 @@ class GeventController extends ControllerBase
                         $date_type = $fields_def->getType();
                         // Datetime field.
                         if ($date_type === 'date_recur') {
-                            $date_instance = $entity->get($date_field);
+                            $date_instance = $entity->get($date_field)->first();
                             $helper = $date_instance->getHelper();
                             $generator = $helper->generateOccurrences($start_date, $end_date);
                         }
@@ -109,11 +109,13 @@ class GeventController extends ControllerBase
                                 $element['#access'] = false;
                         }
                         // Hide all fields that are irrelevant to the event date.
-//                        if (substr($name, 0, 6) === 'field_' && $name !== $date_field && $name !== 'field_monthly_event' && $name !== 'field_weekly_event' && !$field_def[$name]->isRequired()) {
-//                            $element['#access'] = false;
-//                        }
-                        if ($name === $date_field) {
-                            $form[$date_field]['widget'][0]['value'] = $start;
+                        if (substr($name, 0, 6) === 'field_' && $name !== $date_field && !$field_def[$name]->isRequired()) {
+                            $element['#access'] = false;
+                        }
+                        if (!empty($start) && $name === $date_field) {
+                            if ($field_def[$name]['widget'] == 'date_recur_madular') {
+                                $element['start']['#default_value'] = $start;
+                            }
                         }
                     }
                     // Hide preview button.
