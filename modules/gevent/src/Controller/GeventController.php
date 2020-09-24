@@ -53,7 +53,7 @@ class GeventController extends ControllerBase
                         $date_type = $fields_def->getType();
                         // Datetime field.
                         if ($date_type === 'date_recur') {
-                            $date_instance = $entity->get($date_field)->first();
+                            $date_instance = $entity->get($date_field);
                             $helper = $date_instance->getHelper();
                             $generator = $helper->generateOccurrences($start_date, $end_date);
                         }
@@ -92,32 +92,23 @@ class GeventController extends ControllerBase
                     'type' => $bundle,
                 ];
                 // Create a new event entity for this form.
-                $entity = $this->entityTypeManager()
-                    ->getStorage($entity_type_id)
-                    ->create($data);
-
+                $entity = $this->entityTypeManager()->getStorage($entity_type_id)->create($data);
                 if (!empty($entity)) {
-                    // Add form.
                     $form = $this->entityFormBuilder()->getForm($entity);
-                    // Field definitions of this entity.
+                    $form['advanced']['#access'] = false;
+                    $form['body']['#access'] = false;
                     $field_def = $entity->getFieldDefinitions();
-                    // Hide those fields we don't need for this form.
                     foreach ($form as $name => &$element) {
-                        switch ($name) {
-                            case 'advanced':
-                            case 'body':
-                                $element['#access'] = false;
-                        }
                         // Hide all fields that are irrelevant to the event date.
                         if (substr($name, 0, 6) === 'field_' && $name !== $date_field && !$field_def[$name]->isRequired()) {
                             $element['#access'] = false;
                         }
-                        if (!empty($start) && $name === $date_field) {
-                            if ($field_def[$name]['widget'] == 'date_recur_madular') {
-                                $element['start']['#default_value'] = $start;
-                            }
-                        }
                     }
+                    $form_display = $this->entityTypeManager()->getStorage('entity_form_display')->load("$entity_type_id.$bundle.default");
+                    $widget = $form_display->getRenderer($date_field);
+                    \Drupal::logger('gevent')->debug($widget);
+                    // if (!empty($start)) {}
+                    //                    $form[$date_field]['widget'][0]['value'] = $start;
                     // Hide preview button.
                     if (isset($form['actions']['preview'])) {
                         $form['actions']['preview']['#access'] = false;

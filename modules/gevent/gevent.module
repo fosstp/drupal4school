@@ -1,6 +1,5 @@
 <?php
 
-use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
@@ -26,21 +25,6 @@ function gevent_form_node_form_alter(&$form, FormStateInterface $form_state, $fo
         if ($node->get('type')->value == $config->get('content_type')) {
             unset($form[$config->get('field_calendar_id')]);
             unset($form[$config->get('field_event_id')]);
-        }
-    }
-    // Event start date from query parameter.
-    $start = \Drupal::request()->query->get('start');
-    // Field name of the start date from query parameter.
-    $date_field = \Drupal::request()->query->get('date_field');
-    if (!empty($start) && !empty($date_field)) {
-        $node = $form_state->getFormObject()->getEntity();
-        // Only handle new node with the start field.
-        if ($node->isNew() && isset($form[$date_field]) && isset($form[$date_field]['widget'][0])) {
-            // Only handle date_recur field.
-            if ($form[$date_field]['widget'][0]['value']['#type'] === 'date_recur') {
-                // Prepopulate the start date field as the event date.
-                $form[$date_field]['widget'][0]['value']['#default_value'] = new DrupalDateTime($start, 'UTC');
-            }
         }
     }
 }
