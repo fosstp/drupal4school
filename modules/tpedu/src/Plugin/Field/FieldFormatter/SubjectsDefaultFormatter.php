@@ -28,14 +28,7 @@ class SubjectsDefaultFormatter extends FormatterBase
                 $subj = get_subject($s);
                 $subject_list .= $subj->name.' ';
             }
-            $source = [
-                '#type' => 'inline_template',
-                '#template' => '{{name}}',
-                '#context' => [
-                    'name' => $subject_list,
-                ],
-            ];
-            $elements[$delta] = ['#markup' => \Drupal::service('renderer')->render($source)];
+            $elements[$delta] = ['#markup' => $subject_list];
         }
 
         return $elements;

@@ -30,14 +30,7 @@ class UnitsDefaultFormatter extends FormatterBase
                     $unit_list .= $unit->name.' ';
                 }
             }
-            $source = [
-                '#type' => 'inline_template',
-                '#template' => '{{name}}',
-                '#context' => [
-                    'name' => $unit_list,
-                ],
-            ];
-            $elements[$delta] = ['#markup' => \Drupal::service('renderer')->render($source)];
+            $elements[$delta] = ['#markup' => $unit_list];
         }
 
         return $elements;

@@ -30,14 +30,7 @@ class RolesDefaultFormatter extends FormatterBase
                     $role_list .= $role->name.' ';
                 }
             }
-            $source = [
-                '#type' => 'inline_template',
-                '#template' => '{{name}}',
-                '#context' => [
-                    'name' => $role_list,
-                ],
-            ];
-            $elements[$delta] = ['#markup' => \Drupal::service('renderer')->render($source)];
+            $elements[$delta] = ['#markup' => $role_list];
         }
 
         return $elements;

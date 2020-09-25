@@ -222,8 +222,8 @@ class GeventViewPreprocess
         $dialog_options = [
             'left' => 0,
             'top' => 0,
-            'width' => 640,
-            'height' => 480,
+            'width' => 300,
+            'height' => 200,
             'movable' => true, //Enable to be moved by mouse
             'resizable' => true, //Enable to be resized by mouse
             'style' => [

@@ -33,14 +33,7 @@ class StudentsDefaultFormatter extends FormatterBase
                 }
                 $student_list .= $prefix.$user->seat.'號'.$user->realname.' ';
             }
-            $source = [
-                '#type' => 'inline_template',
-                '#template' => '{{name}}',
-                '#context' => [
-                    'name' => $student_list,
-                ],
-            ];
-            $elements[$delta] = ['#markup' => \Drupal::service('renderer')->render($source)];
+            $elements[$delta] = ['#markup' => $student_list];
         }
 
         return $elements;

@@ -36,14 +36,7 @@ class TeachersDefaultFormatter extends FormatterBase
                 }
                 $teacher_list .= $prefix.$user->realname.' ';
             }
-            $source = [
-                '#type' => 'inline_template',
-                '#template' => '{{name}}',
-                '#context' => [
-                    'name' => $teacher_list,
-                ],
-            ];
-            $elements[$delta] = ['#markup' => \Drupal::service('renderer')->render($source)];
+            $elements[$delta] = ['#markup' => $teacher_list];
         }
 
         return $elements;

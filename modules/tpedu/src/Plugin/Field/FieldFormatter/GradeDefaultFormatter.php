@@ -27,14 +27,7 @@ class GradeDefaultFormatter extends FormatterBase
             foreach ($grades as $g) {
                 $grade_list .= $g.' ';
             }
-            $source = [
-                '#type' => 'inline_template',
-                '#template' => '{{name}}',
-                '#context' => [
-                    'name' => $grade_list,
-                ],
-            ];
-            $elements[$delta] = ['#markup' => \Drupal::service('renderer')->render($source)];
+            $elements[$delta] = ['#markup' => $grade_list];
         }
 
         return $elements;

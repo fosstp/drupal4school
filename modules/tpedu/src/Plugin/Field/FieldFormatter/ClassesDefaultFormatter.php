@@ -30,14 +30,7 @@ class ClassesDefaultFormatter extends FormatterBase
                     $class_list .= $myclass->name.' ';
                 }
             }
-            $source = [
-                '#type' => 'inline_template',
-                '#template' => '{{name}}',
-                '#context' => [
-                    'name' => $class_list,
-                ],
-            ];
-            $elements[$delta] = ['#markup' => \Drupal::service('renderer')->render($source)];
+            $elements[$delta] = ['#markup' => $class_list];
         }
 
         return $elements;

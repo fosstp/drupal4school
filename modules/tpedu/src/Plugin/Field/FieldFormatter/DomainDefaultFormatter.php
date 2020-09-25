@@ -27,14 +27,7 @@ class DomainDefaultFormatter extends FormatterBase
             foreach ($domains as $g) {
                 $domain_list .= $g.' ';
             }
-            $source = [
-                '#type' => 'inline_template',
-                '#template' => '{{name}}',
-                '#context' => [
-                    'name' => $domain_list,
-                ],
-            ];
-            $elements[$delta] = ['#markup' => \Drupal::service('renderer')->render($source)];
+            $elements[$delta] = ['#markup' => $domain_list];
         }
 
         return $elements;
