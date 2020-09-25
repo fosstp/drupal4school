@@ -93,7 +93,7 @@ class GeventController extends ControllerBase
                 ];
                 // Create a new event entity for this form.
                 $entity = $this->entityTypeManager()->getStorage($entity_type_id)->create($data);
-                if (!empty($entity)) {
+                if (!empty($entity) && $entity->hasField($date_field)) {
                     $form = $this->entityFormBuilder()->getForm($entity);
                     $form['advanced']['#access'] = false;
                     $form['body']['#access'] = false;
@@ -104,11 +104,35 @@ class GeventController extends ControllerBase
                             $element['#access'] = false;
                         }
                     }
-                    $form_display = $this->entityTypeManager()->getStorage('entity_form_display')->load("$entity_type_id.$bundle.default");
-                    $widget = $form_display->getRenderer($date_field);
-                    \Drupal::logger('gevent')->debug($widget);
-                    // if (!empty($start)) {}
-                    //                    $form[$date_field]['widget'][0]['value'] = $start;
+                    if (!empty($start)) {
+                        $date_type = $field_def[$date_field]->getType();
+                        if ($date_type === 'date_recur') {
+                            $form_display = $this->entityTypeManager()->getStorage('entity_form_display')->load("$entity_type_id.$bundle.default");
+                            $widget = $form_display->getRenderer($date_field)->getPluginId();
+                            $s = new DrupalDateTime($start);
+                            $e = $s;
+                            $e->add(new DateInterval('PT1H'));
+                            switch ($widget) {
+                                case 'date_recur_modular_alphas':
+                                    $form[$date_field]['start']['#default_value'] = $s->format('Y-m-d H:i:s');
+                                    $form[$date_field]['end']['#default_value'] = $e->format('Y-m-d H:i:s');
+                                    break;
+                                case 'date_recur_modular_oscar':
+                                    $form[$date_field]['day_start']['#default_value'] = $s->format('Y-m-d');
+                                    $form[$date_field]['is_all_day']['#default_value'] = 'partial';
+                                    $form[$date_field]['times']['time_start']['#default_value'] = $s->format('H:i:s');
+                                    $form[$date_field]['times']['time_end']['#default_value'] = $e->format('H:i:s');
+                                    break;
+                                case 'date_recur_modular_sierra':
+                                    $form[$date_field]['day_start']['#default_value'] = $s->format('Y-m-d');
+                                    $form[$date_field]['day_end']['#default_value'] = $e->format('Y-m-d');
+                                    $form[$date_field]['time_start']['#default_value'] = $s->format('H:i:s');
+                                    $form[$date_field]['time_end']['#default_value'] = $e->format('H:i:s');
+                                    break;
+                            }
+                        }
+                    }
+                    //
                     // Hide preview button.
                     if (isset($form['actions']['preview'])) {
                         $form['actions']['preview']['#access'] = false;
