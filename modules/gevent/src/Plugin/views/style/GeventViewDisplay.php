@@ -46,8 +46,9 @@ class GeventViewDisplay extends StylePluginBase
         $options = parent::defineOptions();
         $options['default_date_source'] = ['default' => 'now'];
         $options['defaultDate'] = ['default' => ''];
-        $options['datetime'] = ['default' => 'field_daterange'];
+        $options['department'] = ['default' => 'field_creator'];
         $options['title'] = ['default' => 'title'];
+        $options['datetime'] = ['default' => 'field_daterange'];
         $options['bundle_type'] = ['default' => 'calendar_event'];
         $options['tax_field'] = ['default' => 'field_catalog'];
         $options['color_taxonomies'] = ['default' => []];
@@ -112,21 +113,28 @@ class GeventViewDisplay extends StylePluginBase
         // All selected fields.
         $field_names = $this->displayHandler->getFieldLabels();
         $entity_type = $this->view->getBaseEntityType()->id();
-        // Field name of start date.
-        $form['datetime'] = [
-            '#title' => '事件時間欄位',
+        // Field name of title.
+        $form['department'] = [
+            '#title' => '行政單位欄位',
             '#type' => 'select',
             '#options' => $field_names,
-            '#default_value' => (!empty($this->options['datetime'])) ? $this->options['datetime'] : '',
-            '#description' => '請指定內容類型裡儲存事件起迄時間的欄位',
+            '#default_value' => (!empty($this->options['department'])) ? $this->options['department'] : '',
+            '#description' => '請指定內容類型裡儲存行政單位的欄位',
         ];
-        // Field name of title.
         $form['title'] = [
             '#title' => '事件標題欄位',
             '#type' => 'select',
             '#options' => $field_names,
             '#default_value' => (!empty($this->options['title'])) ? $this->options['title'] : '',
             '#description' => '請指定內容類型裡儲存事件標題的欄位',
+        ];
+        // Field name of date.
+        $form['datetime'] = [
+            '#title' => '事件時間欄位',
+            '#type' => 'select',
+            '#options' => $field_names,
+            '#default_value' => (!empty($this->options['datetime'])) ? $this->options['datetime'] : '',
+            '#description' => '請指定內容類型裡儲存事件起迄時間的欄位',
         ];
         // Display settings.
         $form['display'] = [

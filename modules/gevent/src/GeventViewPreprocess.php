@@ -132,6 +132,9 @@ class GeventViewPreprocess
                 }
             }
             // Event title.
+            if (!empty($fields[$options['department']])) {
+                $unit = $fields[$options['department']]->advancedRender($row);
+            }
             if (empty($options['title']) || $options['title'] == 'title') {
                 $title = $fields['title']->advancedRender($row);
             } elseif (!empty($fields[$options['title']])) {
@@ -155,7 +158,7 @@ class GeventViewPreprocess
                 $end_date = $mydate['end_value'];
                 $rrule = $mydate['rrule'];
                 $entry = [
-                    'title' => Xss::filter($title, $title_allowed_tags),
+                    'title' => Xss::filter('【<span style="color:red;">'.$unit.'</span>】'.$title, $title_allowed_tags),
                     'id' => $row->index,
                     'eid' => $entity_id,
                     'url' => $link_url,
