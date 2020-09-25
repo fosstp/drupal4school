@@ -309,7 +309,8 @@
               viewSettings.addForm !== ""
             ) {
               // Open a new window to create a new event (content).
-              window.open(
+              //window.open(
+              jQuery.post(
                   drupalSettings.path.baseUrl +
                   viewSettings.addForm +
                   "?entity=" +
@@ -320,8 +321,8 @@
                   slotDate +
                   "&date_field=" +
                   viewSettings.dateField +
-                  "&destination=" + window.location.pathname,
-                "_blank"
+                  "&destination=" + window.location.pathname
+                //,"_blank"
               );
             }
 
