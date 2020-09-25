@@ -308,9 +308,8 @@
               viewSettings.dblClickToCreate &&
               viewSettings.addForm !== ""
             ) {
-              // Open a new window to create a new event (content).
-              //window.open(
-              jQuery.post(
+              add_link = document.getElementById('calendar-add-event');
+              add_link.setAttribute("href", 
                   drupalSettings.path.baseUrl +
                   viewSettings.addForm +
                   "?entity=" +
@@ -322,8 +321,8 @@
                   "&date_field=" +
                   viewSettings.dateField +
                   "&destination=" + window.location.pathname
-                //,"_blank"
               );
+              add_link.click();
             }
 
         });

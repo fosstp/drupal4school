@@ -150,11 +150,11 @@ class GeventViewPreprocess
                 continue;
             } else {
                 $mydate = $current_entity->get($date_field)->getValue()[0];
-                $start_date = $mydate['value'];
-                $end_date = $mydate['end_value'];
+                $start_date = new DrupalDateTime($mydate['value']);
+                $end_date = new DrupalDateTime($mydate['end_value']);
                 $rrule = $mydate['rrule'];
                 $entry = [
-                    'title' => Xss::filter('【<span style="color:red;">'.$unit.'</span>】'.$title, $title_allowed_tags),
+                    'title' => Xss::filter('【<b>'.$unit.'</b>】'.$title, $title_allowed_tags),
                     'id' => $row->index,
                     'eid' => $entity_id,
                     'url' => $link_url,
@@ -164,37 +164,20 @@ class GeventViewPreprocess
                 if (!$current_entity->access('update')) {
                     $entry['editable'] = false;
                 }
-                // If we don't yet know the default_date (we're configured to use the
-                // date from the first row, and we haven't set it yet), do so now.
                 if (!isset($default_date)) {
-                    // Only use the first 10 digits since we only care about the date.
-                    $default_date = substr($start_date, 0, 10);
+                    $default_date = $start_date->format('Y-m-d');
                 }
-                $all_day = (strlen($start_date) < 11) ? true : false;
+                $all_day = ($start_date->diff($end_date)->format('%a') == '1') ? true : false;
                 if ($all_day) {
-                    $entry['start'] = $start_date;
+                    $entry['start'] = $start_date->format('Y-m-d');
+                    $entry['end'] = $end_date->format('Y-m-d');
                     $entry['allDay'] = true;
+                    $entry['eventDurationEditable'] = false;
                 } else {
                     // Drupal store date time in UTC timezone.
                     // So we need to convert it into user timezone.
-                    $entry['start'] = $timezone_service->utcToLocal($start_date, $timezone, DATE_ATOM);
-                }
-                if (!empty($end_date)) {
-                    $all_day = (strlen($end_date) < 11) ? true : false;
-                    if ($all_day) {
-                        $end = new DrupalDateTime($end_date);
-                        // The end date is inclusive for a all day event,
-                        // which is not what we want. So we need one day offset.
-                        $end->modify('+1 day');
-                        $entry['end'] = $end->format('Y-m-d');
-                        $entry['allDay'] = true;
-                    } else {
-                        // Drupal store date time in UTC timezone.
-                        // So we need to convert it into user timezone.
-                        $entry['end'] = $timezone_service->utcToLocal($end_date, $timezone, DATE_ATOM);
-                    }
-                } else {
-                    $entry['eventDurationEditable'] = false;
+                    $entry['start'] = $timezone_service->utcToLocal($start_date->format('Y-m-d'), $timezone, DATE_ATOM);
+                    $entry['end'] = $timezone_service->utcToLocal($end_date->format('Y-m-d'), $timezone, DATE_ATOM);
                 }
                 // Set the color for this event.
                 if (isset($event_type) && isset($color_tax[$event_type])) {
@@ -204,7 +187,7 @@ class GeventViewPreprocess
                 if (!empty($rrule)) {
                     $entry['rrule'] = Xss::filter($rrule);
                     // Recurring events are read-only.
-//                    $entry['editable'] = false;
+                    $entry['editable'] = false;
                 }
                 // Add this event into the array.
                 $entries[] = $entry;
