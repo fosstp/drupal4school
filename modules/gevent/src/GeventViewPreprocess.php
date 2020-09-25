@@ -125,12 +125,8 @@ class GeventViewPreprocess
                 // Event type.
                 $event_type = $current_entity->get($tax_field)->target_id;
             }
-            // Render all other fields to so they can be used in rewrite.
-            foreach ($fields as $name => $field) {
-                if (method_exists($field, 'advancedRender')) {
-                    $des = $field->advancedRender($row);
-                }
-            }
+            $view_builder = $entity_manager->getViewBuilder($entity_type->id());
+            $des = \Drupal::service('renderer')->render($view_builder->view($current_entity));
             // Event title.
             if (!empty($fields[$options['department']])) {
                 $unit = $fields[$options['department']]->advancedRender($row);
