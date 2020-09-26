@@ -336,6 +336,7 @@
                 dialogType: $obj.data('dialog-type'),
                 dialog: $obj.data('dialog-options'),
                 dialogRenderer: $obj.data('dialog-renderer'),
+//                element: link,
                 base: mybase,
                 url: $obj.attr('href'),
                 event: 'click'
