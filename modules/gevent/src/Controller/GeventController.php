@@ -117,20 +117,20 @@ class GeventController extends ControllerBase
                             $e->add(new \DateInterval('PT1H'));
                             switch ($widget) {
                                 case 'date_recur_modular_alphas':
-                                    $form[$date_field]['start']['#default_value'] = $s->format('Y-m-d H:i:s');
-                                    $form[$date_field]['end']['#default_value'] = $e->format('Y-m-d H:i:s');
+                                    $form[$date_field]['widget'][0]['start']['#default_value'] = $s->format('Y-m-d H:i:s');
+                                    $form[$date_field]['widget'][0]['end']['#default_value'] = $e->format('Y-m-d H:i:s');
                                     break;
                                 case 'date_recur_modular_oscar':
-                                    $form[$date_field]['day_start']['#default_value'] = $s->format('Y-m-d');
-                                    $form[$date_field]['is_all_day']['#default_value'] = 'partial';
-                                    $form[$date_field]['times']['time_start']['#default_value'] = $s->format('H:i:s');
-                                    $form[$date_field]['times']['time_end']['#default_value'] = $e->format('H:i:s');
+                                    $form[$date_field]['widget'][0]['day_start']['#default_value'] = $s->format('Y-m-d');
+                                    $form[$date_field]['widget'][0]['is_all_day']['#default_value'] = 'partial';
+                                    $form[$date_field]['widget'][0]['times']['time_start']['#default_value'] = $s->format('H:i:s');
+                                    $form[$date_field]['widget'][0]['times']['time_end']['#default_value'] = $e->format('H:i:s');
                                     break;
                                 case 'date_recur_modular_sierra':
-                                    $form[$date_field]['day_start']['#default_value'] = $s->format('Y-m-d');
-                                    $form[$date_field]['day_end']['#default_value'] = $e->format('Y-m-d');
-                                    $form[$date_field]['time_start']['#default_value'] = $s->format('H:i:s');
-                                    $form[$date_field]['time_end']['#default_value'] = $e->format('H:i:s');
+                                    $form[$date_field]['widget'][0]['day_start']['#default_value'] = $s->format('Y-m-d');
+                                    $form[$date_field]['widget'][0]['day_end']['#default_value'] = $e->format('Y-m-d');
+                                    $form[$date_field]['widget'][0]['time_start']['#default_value'] = $s->format('H:i:s');
+                                    $form[$date_field]['widget'][0]['time_end']['#default_value'] = $e->format('H:i:s');
                                     break;
                             }
                         }
