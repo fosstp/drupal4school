@@ -114,7 +114,7 @@ class GeventController extends ControllerBase
                             $widget = $form_display->getRenderer($date_field)->getPluginId();
                             $s = new DrupalDateTime($start);
                             $e = $s;
-                            $e->add(new DateInterval('PT1H'));
+                            $e->add(new \DateInterval('PT1H'));
                             switch ($widget) {
                                 case 'date_recur_modular_alphas':
                                     $form[$date_field]['start']['#default_value'] = $s->format('Y-m-d H:i:s');
