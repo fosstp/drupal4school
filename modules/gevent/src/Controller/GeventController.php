@@ -4,6 +4,7 @@ namespace Drupal\gevent\Controller;
 
 use Drupal\Core\Access\CsrfTokenGenerator;
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -43,27 +44,29 @@ class GeventController extends ControllerBase
             $end_date = $request->request->get('end', '');
             $date_field = $request->request->get('date_field', '');
 
-            if (!empty($eid) && !empty($start_date) && !empty($end_date) && !empty($date_field) && !empty($entity_type)) {
+            if (!empty($eid) && !empty($start_date) && !empty($date_field) && !empty($entity_type)) {
                 $entity = $this->entityTypeManager()->getStorage($entity_type)->load($eid);
 
                 if (!empty($entity) && $entity->access('update')) {
                     if ($entity->hasField($date_field)) {
-                        // Field definitions.
-                        $fields_def = $entity->getFieldDefinition($date_field);
-                        $date_type = $fields_def->getType();
-                        // Datetime field.
-                        if ($date_type === 'date_recur') {
-                            $date_instance = $entity->get($date_field);
-                            $helper = $date_instance->getHelper();
-                            $generator = $helper->generateOccurrences($start_date, $end_date);
+                        $timezone_service = \Drupal::service('gevent.timezone_conversion_service');
+                        $field_type = $entity->getFieldDefinition($date_field)->getType();
+                        if ($field_type === 'date_recur') {
+                            $date_instance = $entity->get($date_field)[0];
+                            $values = $date_instance->getValue();
+                            $timezone = $values['timezone'];
+                            $values['value'] = $timezone_service->localToUtc($start_date, $timezone, DATE_ATOM);
+                            if (!empty($end_date)) {
+                                $values['end_value'] = $timezone_service->localToUtc($end_date, $timezone, DATE_ATOM);
+                            } else {
+                                $values['end_value'] = $timezone_service->localToUtc(substr($start_date, 0, 10).' 23:59:59', $timezone, DATE_ATOM);
+                            }
+                            $values['value'] = substr($values['value'], 0, 19);
+                            $values['end_value'] = substr($values['end_value'], 0, 19);
+                            $date_instance->setValue($values);
+                            $entity->save();
                         }
-                        $entity->save();
-                        // Log the content changed.
-                        $this->loggerFactory->get($entity_type)->notice('%entity_type: updated %title', [
-                            '%entity_type' => $entity->getEntityType()->getLabel(),
-                            '%title' => $entity->label(),
-                        ]);
-                        // Returen 1 as success.
+
                         return new Response(1);
                     }
                 } else {

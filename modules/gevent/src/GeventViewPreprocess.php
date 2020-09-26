@@ -3,7 +3,6 @@
 namespace Drupal\gevent;
 
 use Drupal\Component\Utility\Xss;
-use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 
 class GeventViewPreprocess
@@ -126,7 +125,8 @@ class GeventViewPreprocess
                 $event_type = $current_entity->get($tax_field)->target_id;
             }
             $view_builder = $entity_manager->getViewBuilder($entity_type->id());
-            $des = \Drupal::service('renderer')->render($view_builder->view($current_entity));
+            $current_view = $view_builder->view($current_entity, 'view');
+            $des = \Drupal::service('renderer')->render($current_view);
             // Event title.
             if (!empty($fields[$options['department']])) {
                 $unit = $fields[$options['department']]->advancedRender($row);
@@ -150,8 +150,8 @@ class GeventViewPreprocess
                 continue;
             } else {
                 $mydate = $current_entity->get($date_field)->getValue()[0];
-                $start_date = new DrupalDateTime($mydate['value']);
-                $end_date = new DrupalDateTime($mydate['end_value']);
+                $start_date = $timezone_service->utcToLocal($mydate['value'], $timezone, DATE_ATOM);
+                $end_date = $timezone_service->utcToLocal($mydate['end_value'], $timezone, DATE_ATOM);
                 $rrule = $mydate['rrule'];
                 $entry = [
                     'title' => Xss::filter('【<b>'.$unit.'</b>】'.$title, $title_allowed_tags),
@@ -165,19 +165,18 @@ class GeventViewPreprocess
                     $entry['editable'] = false;
                 }
                 if (!isset($default_date)) {
-                    $default_date = $start_date->format('Y-m-d');
+                    $default_date = substr($start_date, 0, 10);
                 }
-                $all_day = ($start_date->diff($end_date)->format('%a') == '1') ? true : false;
+                $all_day = (substr($start_date, 11, 8) == '00:00:00' && substr($end_date, 11, 8) == '23:59:59') ? true : false;
                 if ($all_day) {
-                    $entry['start'] = $start_date->format('Y-m-d');
-                    $entry['end'] = $end_date->format('Y-m-d');
+                    $entry['start'] = substr($start_date, 0, 10);
                     $entry['allDay'] = true;
                     $entry['eventDurationEditable'] = false;
                 } else {
                     // Drupal store date time in UTC timezone.
                     // So we need to convert it into user timezone.
-                    $entry['start'] = $timezone_service->utcToLocal($start_date->format('Y-m-d'), $timezone, DATE_ATOM);
-                    $entry['end'] = $timezone_service->utcToLocal($end_date->format('Y-m-d'), $timezone, DATE_ATOM);
+                    $entry['start'] = $start_date;
+                    $entry['end'] = $end_date;
                 }
                 // Set the color for this event.
                 if (isset($event_type) && isset($color_tax[$event_type])) {
@@ -222,8 +221,8 @@ class GeventViewPreprocess
         $dialog_options = [
             'left' => 0,
             'top' => 0,
-            'width' => 300,
-            'height' => 200,
+            'width' => 400,
+            'height' => 300,
             'movable' => true, //Enable to be moved by mouse
             'resizable' => true, //Enable to be resized by mouse
             'style' => [

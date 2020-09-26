@@ -256,10 +256,10 @@ function gs_syncEvent($node)
     if (!empty($calendar_id) && !empty($event_id)) {
         $event = gs_getEvent($calendar_id, $event_id);
         if (!$event) {
-            $event = new Google_Service_Calendar_Event();
+            $event = new \Google_Service_Calendar_Event();
         }
     } else {
-        $event = new Google_Service_Calendar_Event();
+        $event = new \Google_Service_Calendar_Event();
     }
     $title_field = $config->get('field_title');
     $title = $node->get($title_field)->getValue();
@@ -285,7 +285,7 @@ function gs_syncEvent($node)
             $attendees = [];
             foreach ($teachers as $delta => $uuid) {
                 if ($user = get_user($uuid)) {
-                    $attendee = new Google_Service_Calendar_EventAttendee();
+                    $attendee = new \Google_Service_Calendar_EventAttendee();
                     $attendee->setId($uuid);
                     $attendee->setEmail($user->email);
                     $attendee->setDisplayName($user->realname);
@@ -300,17 +300,20 @@ function gs_syncEvent($node)
 
     $date_field = $config->get('field_date');
     $date_array = $node->get($date_field)->getValue()[0];
-    $event_start = new Google_Service_Calendar_EventDateTime();
-    $event_end = new Google_Service_Calendar_EventDateTime();
+    $timezone_service = \Drupal::service('gevent.timezone_conversion_service');
+    $start_date = $timezone_service->utcToLocal($date_array['value'], $timezone, DATE_ATOM);
+    $end_date = $timezone_service->utcToLocal($date_array['end_value'], $timezone, DATE_ATOM);
+    $event_start = new \Google_Service_Calendar_EventDateTime();
+    $event_end = new \Google_Service_Calendar_EventDateTime();
     $event_start->setTimeZone($date_array['timezone']);
     $event_end->setTimeZone($date_array['timezone']);
-    $all_day = (strlen($date_array['value']) < 11) ? true : false;
+    $all_day = (substr($start_date, 11, 8) == '00:00:00' && substr($end_date, 11, 8) == '23:59:59') ? true : false;
     if ($all_day) {
-        $event_start->setDate(date_format($date_array['value'], 'Y-m-d'));
-        $event_end->setDate(date_format($date_array['end_value'], 'Y-m-d'));
+        $event_start->setDate(substr($start_date, 0, 10));
+        $event_end->setDate(substr($end_date, 0, 10));
     } else {
-        $event_start->setDateTime(date_format($date_array['value'], 'Y-m-d\TH:i:sP'));
-        $event_end->setDateTime(date_format($date_array['end_value'], 'Y-m-d\TH:i:sP'));
+        $event_start->setDateTime($start_date);
+        $event_end->setDateTime($end_date);
     }
     $event->setStart($event_start);
     $event->setEnd($event_end);
@@ -319,7 +322,7 @@ function gs_syncEvent($node)
     }
 
     $user = user_load($node->uid);
-    $creator = new Google_Service_Calendar_EventCreator();
+    $creator = new \Google_Service_Calendar_EventCreator();
     $creator->setId($user->uuid);
     if (isset($user->email)) {
         $creator->setEmail($user->email);
@@ -342,16 +345,17 @@ function gs_syncEvent($node)
 //        $organizer->setEmail($calendar_id);
 //        $organizer->setDisplayName($summary);
 //        $event->setOrganizer($organizer);
-
         $event = gs_createEvent($calendar_newid, $event);
     }
     if ($config->get('calendar_taxonomy')) {
         $taxonomy_field = $config->get('field_taxonomy');
         $term = $node->get($taxonomy_field)->getValue();
-        $calendar_newid = $config->get('calendar_term_'.$term);
+        $calendar_newid = $config->get('calendar_term_'.$term) ?: '';
+        $event->setICalUID('originalUID');
+        if (!empty($calendar_newid)) {
+            gs_importEvent($calendar_newid, $event);
+        }
     }
-    $event->setICalUID('originalUID');
-    gs_importEvent($calendar_newid, $event);
 
     return $event;
 }

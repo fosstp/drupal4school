@@ -24,4 +24,21 @@ class TimezoneService
 
         return $date->format($format);
     }
+
+    public function localToUtc($local_date, $local_timezone, $format = DATE_ATOM, $offset = '')
+    {
+        // UTC timezone.
+        $utc = new \DateTimeZone('UTC');
+        // Local time zone.
+        $localTZ = new \DateTimeZone($local_timezone);
+        // Date object in UTC timezone.
+        $date = new \DateTime($local_date, $localTZ);
+        $date->setTimezone($utc);
+
+        if (!empty($offset)) {
+            $date->modify($offset);
+        }
+
+        return $date->format($format);
+    }
 }

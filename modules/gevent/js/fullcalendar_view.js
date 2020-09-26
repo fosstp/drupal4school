@@ -202,9 +202,9 @@
       strStart = FullCalendar.formatDate(start, formatSettings);
     }
     const title = info.event.title.replace(/(<([^>]+)>)/ig,"");;
-    const msg = Drupal.t('事件：@title 的結束時間將修改成 @event_end。確定要修改嗎？', {
+    const msg = Drupal.t('事件：@title 的開始時間將修改成 @event_start。確定要修改嗎？', {
       '@title': title,
-      '@event_end': strEnd
+      '@event_start': strStart
     });
 
     if (
@@ -308,23 +308,21 @@
               viewSettings.dblClickToCreate &&
               viewSettings.addForm !== ""
             ) {
-              add_link = document.getElementById('calendar-add-event');
-              add_link.setAttribute("href", 
-                  drupalSettings.path.baseUrl +
-                  viewSettings.addForm +
-                  "?entity=" +
-                  viewSettings.entityType +
-                  "&bundle=" +
-                  viewSettings.eventBundleType +
-                  "&start=" +
-                  slotDate +
-                  "&date_field=" +
-                  viewSettings.dateField +
-                  "&destination=" + window.location.pathname
-              );
-              add_link.click();
+              var obj = $('#calendar-add-event');
+              obj.attr('href', drupalSettings.path.baseUrl +
+                    viewSettings.addForm +
+                    "?entity=" +
+                    viewSettings.entityType +
+                    "&bundle=" +
+                    viewSettings.eventBundleType +
+                    "&start=" +
+                    slotDate +
+                    "&date_field=" +
+                    viewSettings.dateField +
+                    "&destination=" + window.location.pathname);
+              Drupal.ajax.bindAjaxLinks(obj);
+              obj.click();
             }
-
         });
       }
     });
