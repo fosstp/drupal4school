@@ -27,7 +27,7 @@
   <div class="js-drupal-fullcalendar" calendar-view-index="{{ view_index }}" calendar-view-name="{{ view_id }}" calendar-display="{{ display_id }}"></div>
   <div id="bottom-buttons fc-button-group">
     <div class="fullcalendar-bottom-btn add-event-btn" {% if not showAddEvent %}style="display: none"{% endif %}>
-        <a id="calendar-add-event"  href="/event-add?entity={{ entity_id }}&bundle={{ options.bundle_type }}&start={{ "now"|date('Y-m-d') }}&date_field={{ options.datetime }}&destination={{ path('<current>') }}" class="use-ajax" data-dialog-type="dialog" data-dialog-renderer="off_canvas" 
+        <a id="calendar-add-event"  href="/event-add?entity={{ entity_id }}&bundle={{ options.bundle_type }}&start={{ "now"|date('Y-m-d H:i:s') }}&date_field={{ options.datetime }}&destination={{ path('<current>') }}" class="use-ajax" data-dialog-type="dialog" data-dialog-renderer="off_canvas" 
    data-dialog-options="{&quot;width&quot;:400}">{{ 'Add event'|t }}</a>
     </div>
     {% if options.languageSelector == 1 %}
