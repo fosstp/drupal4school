@@ -112,6 +112,7 @@ class GeventController extends ControllerBase
                         if ($date_type === 'date_recur') {
                             $form_display = $this->entityTypeManager()->getStorage('entity_form_display')->load("$entity_type_id.$bundle.default");
                             $widget = $form_display->getRenderer($date_field)->getPluginId();
+                            $all_day = (strlen($start) < 11) ? true : false;
                             $s = new DrupalDateTime($start, date_default_timezone_get());
                             $e = new DrupalDateTime($start, date_default_timezone_get());
                             $e->add(new \DateInterval('PT1H'));
@@ -122,15 +123,21 @@ class GeventController extends ControllerBase
                                     break;
                                 case 'date_recur_modular_oscar':
                                     $form[$date_field]['widget'][0]['day_start']['#value'] = $s->format('Y-m-d');
-                                    $form[$date_field]['widget'][0]['is_all_day']['#value'] = 'partial';
-                                    $form[$date_field]['widget'][0]['times']['time_start']['#value'] = $s->format('H:i:s');
-                                    $form[$date_field]['widget'][0]['times']['time_end']['#value'] = $e->format('H:i:s');
+                                    if ($all_day) {
+                                        $form[$date_field]['widget'][0]['is_all_day']['#value'] = 'all-day';
+                                    } else {
+                                        $form[$date_field]['widget'][0]['is_all_day']['#value'] = 'partial';
+                                        $form[$date_field]['widget'][0]['times']['time_start']['#value'] = $s->format('H:i:s');
+                                        $form[$date_field]['widget'][0]['times']['time_end']['#value'] = $e->format('H:i:s');
+                                    }
                                     break;
                                 case 'date_recur_modular_sierra':
                                     $form[$date_field]['widget'][0]['day_start']['#value'] = $s->format('Y-m-d');
                                     $form[$date_field]['widget'][0]['day_end']['#value'] = $e->format('Y-m-d');
-                                    $form[$date_field]['widget'][0]['time_start']['#value'] = $s->format('H:i:s');
-                                    $form[$date_field]['widget'][0]['time_end']['#value'] = $e->format('H:i:s');
+                                    if (!$all_day) {
+                                        $form[$date_field]['widget'][0]['time_start']['#value'] = $s->format('H:i:s');
+                                        $form[$date_field]['widget'][0]['time_end']['#value'] = $e->format('H:i:s');
+                                    }
                                     break;
                             }
                         }

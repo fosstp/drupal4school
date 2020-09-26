@@ -308,20 +308,40 @@
               viewSettings.dblClickToCreate &&
               viewSettings.addForm !== ""
             ) {
-              var obj = $('#calendar-add-event');
-              obj.attr('href', drupalSettings.path.baseUrl +
-                    viewSettings.addForm +
-                    "?entity=" +
-                    viewSettings.entityType +
-                    "&bundle=" +
-                    viewSettings.eventBundleType +
-                    "&start=" +
-                    slotDate +
-                    "&date_field=" +
-                    viewSettings.dateField +
-                    "&destination=" + window.location.pathname);
-              Drupal.ajax.bindAjaxLinks(obj);
-              obj.click();
+              var rnd = Math.round(Math.random() * 100000000);
+              var mybase = 'add-event-' + rnd;
+              var myhref = drupalSettings.path.baseUrl +
+                viewSettings.addForm +
+                "?entity=" +
+                viewSettings.entityType +
+                "&bundle=" +
+                viewSettings.eventBundleType +
+                "&start=" +
+                slotDate +
+                "&date_field=" +
+                viewSettings.dateField +
+                "&destination=" + window.location.pathname;
+              var link = $('<a>',{
+                id: mybase,
+                text: mybase,
+                href: myhref,
+                class: 'js-hide use-ajax',
+                'data-dialog-type': 'dialog',
+                'data-dialog-renderer': 'off_canvas',
+                'data-dialog-options': '{"width":400}'
+              }).appendTo('body');
+              var $obj = $('#' + mybase);
+              var elementSettings = {
+                progress: { type: 'throbber' },
+                dialogType: $obj.data('dialog-type'),
+                dialog: $obj.data('dialog-options'),
+                dialogRenderer: $obj.data('dialog-renderer'),
+                base: mybase,
+                url: $obj.attr('href'),
+                event: 'click'
+              };
+              Drupal.ajax(elementSettings);
+              $obj.click();
             }
         });
       }

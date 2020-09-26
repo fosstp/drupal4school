@@ -82,6 +82,9 @@ libraries.jsframe:
 
 # Feature libraries.
 fullcalendar:
+  css:
+    theme:
+      css/print.css: {}
   js:
     js/fullcalendar_view.js: {} 
   dependencies:
