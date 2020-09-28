@@ -10,14 +10,13 @@ class TimezoneService
 
     public function utcToLocal($utc_date, $local_timezone, $format = DATE_ATOM, $offset = '')
     {
-        // UTC timezone.
+        if (empty($local_timezone)) {
+            $local_timezone = date_default_timezone_get();
+        }
         $utc = new \DateTimeZone('UTC');
-        // Local time zone.
         $localTZ = new \DateTimeZone($local_timezone);
-        // Date object in UTC timezone.
         $date = new \DateTime($utc_date, $utc);
         $date->setTimezone($localTZ);
-
         if (!empty($offset)) {
             $date->modify($offset);
         }
@@ -27,14 +26,13 @@ class TimezoneService
 
     public function localToUtc($local_date, $local_timezone, $format = DATE_ATOM, $offset = '')
     {
-        // UTC timezone.
+        if (empty($local_timezone)) {
+            $local_timezone = date_default_timezone_get();
+        }
         $utc = new \DateTimeZone('UTC');
-        // Local time zone.
         $localTZ = new \DateTimeZone($local_timezone);
-        // Date object in UTC timezone.
         $date = new \DateTime($local_date, $localTZ);
         $date->setTimezone($utc);
-
         if (!empty($offset)) {
             $date->modify($offset);
         }
