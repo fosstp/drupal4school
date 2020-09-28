@@ -39,7 +39,6 @@ function gevent_node_insert(EntityInterface $node)
         $event_id = $event->getId();
         $node->set($config->get('field_calendar_id'), $claendar_id);
         $node->set($config->get('field_event_id'), $event_id);
-        $node->save();
     }
 }
 
@@ -53,7 +52,6 @@ function gevent_node_update(EntityInterface $node)
         $event_id = $event->getId();
         $node->set($config->get('field_calendar_id'), $claendar_id);
         $node->set($config->get('field_event_id'), $event_id);
-        $node->save();
     }
 }
 

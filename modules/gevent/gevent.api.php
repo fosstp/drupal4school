@@ -252,9 +252,9 @@ function gs_syncEvent(EntityInterface $node)
     initGoogleCalendar();
     $config = \Drupal::config('gevent.settings');
     $calendar_id_field = $config->get('field_calendar_id');
-    $calendar_id = $node->get($calendar_id_field)->getValue();
+    $calendar_id = $node->get($calendar_id_field)->getValue()[0];
     $event_id_field = $config->get('field_event_id');
-    $event_id = $node->get($event_id_field)->getValue();
+    $event_id = $node->get($event_id_field)->getValue()[0];
     if (!empty($calendar_id) && !empty($event_id)) {
         $event = gs_getEvent($calendar_id, $event_id);
         if (!$event) {
