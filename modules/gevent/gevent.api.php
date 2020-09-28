@@ -252,9 +252,9 @@ function gs_syncEvent(EntityInterface $node)
     initGoogleCalendar();
     $config = \Drupal::config('gevent.settings');
     $calendar_id_field = $config->get('field_calendar_id');
-    $calendar_id = $node->get($calendar_id_field)->getValue()[0];
+    $calendar_id = $node->get($calendar_id_field)->value;
     $event_id_field = $config->get('field_event_id');
-    $event_id = $node->get($event_id_field)->getValue()[0];
+    $event_id = $node->get($event_id_field)->value;
     if (!empty($calendar_id) && !empty($event_id)) {
         $event = gs_getEvent($calendar_id, $event_id);
         if (!$event) {
@@ -264,25 +264,25 @@ function gs_syncEvent(EntityInterface $node)
         $event = new \Google_Service_Calendar_Event();
     }
     $title_field = $config->get('field_title');
-    $title = $node->get($title_field)->getValue()[0];
+    $title = $node->getTitle();
     $event->setSummary($title);
     $memo_field = $config->get('field_memo');
     if ($memo_field != 'none') {
-        $memo = $node->get($memo_field)->getValue()[0];
+        $memo = $node->get($memo_field)->value;
         if (!empty($memo)) {
             $event->setDescription($memo);
         }
     }
     $place_field = $config->get('field_place');
     if ($place_field != 'none') {
-        $place = $node->get($place_field)->getValue()[0];
+        $place = $node->get($place_field)->value;
         if (!empty($place)) {
             $event->setLocation($place);
         }
     }
     $teachers_field = $config->get('field_attendee');
     if ($teachers_field != 'none') {
-        $teachers = $node->get($teachers_field)->getValue()[0];
+        $teachers = $node->get($teachers_field)->value;
         if (count($teachers) > 0) {
             $attendees = [];
             foreach ($teachers as $delta => $uuid) {
@@ -332,7 +332,7 @@ function gs_syncEvent(EntityInterface $node)
         $creator->setEmail($mail);
     }
     $dept_field = $config->get('field_department');
-    $department = $node->get($dept_field)->getValue()[0];
+    $department = $node->get($dept_field)->value;
     $creator->setDisplayName($department);
     $event->setCreator($creator);
     $calendar_newid = $config->get('calendar_id');
@@ -353,7 +353,7 @@ function gs_syncEvent(EntityInterface $node)
     }
     if ($config->get('calendar_taxonomy')) {
         $taxonomy_field = $config->get('field_taxonomy');
-        $term = $node->get($taxonomy_field)->getValue()[0];
+        $term = $node->get($taxonomy_field)->value;
         $calendar_newid = $config->get('calendar_term_'.$term) ?: '';
         $event->setICalUID('originalUID');
         if (!empty($calendar_newid)) {
