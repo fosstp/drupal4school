@@ -329,6 +329,16 @@ function gs_syncEvent(EntityInterface $node)
     }
     if (!empty($calendar_id) && !empty($event_id)) {
         $event = gs_updateEvent($calendar_id, $event_id, $event);
+        $calendar_id = $config->get('calendar_id');
+        if ($config->get('calendar_taxonomy')) {
+            $taxonomy_field = $config->get('field_taxonomy');
+            $term = $node->get($taxonomy_field)->target_id;
+            $calendar_term = $config->get('calendar_term_'.$term) ?: 'none';
+            if (!empty($calendar_term) && $calendar_term != 'none') {
+                $event = gs_moveEvent($calendar_id, $event, $calendar_term);
+                $calendar_id = $calendar_term;
+            }
+        }
     } else {
         $calendar_id = $config->get('calendar_id');
         if ($config->get('calendar_taxonomy')) {
@@ -340,6 +350,9 @@ function gs_syncEvent(EntityInterface $node)
             }
         }
         $event = gs_createEvent($calendar_id, $event);
+    }
+    if ($event) {
+        $event->calendar_id = $calendar_id;
     }
 
     return $event;

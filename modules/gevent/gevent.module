@@ -36,7 +36,7 @@ function gevent_node_presave(EntityInterface $node)
         $event = gs_syncEvent($node);
 
         if ($event) {
-            $calendar_id = $event->getCreator()->getEmail();
+            $calendar_id = $event->calendar_id;
             $event_id = $event->getId();
             $node->set($config->get('field_calendar_id'), $calendar_id);
             $node->set($config->get('field_event_id'), $event_id);
