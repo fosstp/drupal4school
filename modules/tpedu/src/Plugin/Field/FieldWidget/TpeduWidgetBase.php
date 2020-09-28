@@ -103,6 +103,7 @@ class TpeduWidgetBase extends WidgetBase
                 $element['#empty_value'] = '_none';
             }
             $element['#type'] = 'select';
+            $element['#multiple'] = false;
             $value = isset($items[$delta]->{$this->column}) ? $items[$delta]->{$this->column} : '';
             if ($value) {
                 $element['#default_value'] = $value;

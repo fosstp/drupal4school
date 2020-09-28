@@ -259,6 +259,10 @@ function gs_syncEvent(EntityInterface $node)
         $event = gs_getEvent($calendar_id, $event_id);
         if (!$event) {
             $event = new \Google_Service_Calendar_Event();
+        } else {
+            if ($event->getStatus == 'cancelled') {
+                $event->setStatus('confirmed');
+            }
         }
     } else {
         $event = new \Google_Service_Calendar_Event();
@@ -283,7 +287,7 @@ function gs_syncEvent(EntityInterface $node)
     $teachers_field = $config->get('field_attendee');
     if ($teachers_field != 'none') {
         $teachers = $node->get($teachers_field)->value;
-        if (count($teachers) > 0) {
+        if (is_array($teachers) && count($teachers) > 0) {
             $attendees = [];
             foreach ($teachers as $delta => $uuid) {
                 if ($user = get_user($uuid)) {
@@ -323,42 +327,19 @@ function gs_syncEvent(EntityInterface $node)
     if (!empty($date_array['rrule'])) {
         $event->setRecurrence($date_array['rrule']);
     }
-
-    $user = $node->getOwner();
-    $creator = new \Google_Service_Calendar_EventCreator();
-    $creator->setId($user->uuid);
-    $mail = $user->getEmail();
-    if (!empty($mail)) {
-        $creator->setEmail($mail);
-    }
-    $dept_field = $config->get('field_department');
-    $department = $node->get($dept_field)->value;
-    $creator->setDisplayName($department);
-    $event->setCreator($creator);
-    $calendar_newid = $config->get('calendar_id');
     if (!empty($calendar_id) && !empty($event_id)) {
-        if ($calendar_newid != $calendar_id) {
-            gs_updateEvent($calendar_id, $event_id, $event);
-            $event = gs_moveEvent($calendar_id, $event_id, $calendar_newid);
-        } else {
-            $event = gs_updateEvent($calendar_id, $event_id, $event);
-        }
+        $event = gs_updateEvent($calendar_id, $event_id, $event);
     } else {
-//        $summary = gs_getCalendar($calendar_id)->getSummary();
-//        $organizer = new Google_Service_Calendar_EventOrganizer();
-//        $organizer->setEmail($calendar_id);
-//        $organizer->setDisplayName($summary);
-//        $event->setOrganizer($organizer);
-        $event = gs_createEvent($calendar_newid, $event);
-    }
-    if ($config->get('calendar_taxonomy')) {
-        $taxonomy_field = $config->get('field_taxonomy');
-        $term = $node->get($taxonomy_field)->value;
-        $calendar_newid = $config->get('calendar_term_'.$term) ?: '';
-        $event->setICalUID('originalUID');
-        if (!empty($calendar_newid)) {
-            gs_importEvent($calendar_newid, $event);
+        $calendar_id = $config->get('calendar_id');
+        if ($config->get('calendar_taxonomy')) {
+            $taxonomy_field = $config->get('field_taxonomy');
+            $term = $node->get($taxonomy_field)->target_id;
+            $calendar_term = $config->get('calendar_term_'.$term) ?: 'none';
+            if (!empty($calendar_term) && $calendar_term != 'none') {
+                $calendar_id = $calendar_term;
+            }
         }
+        $event = gs_createEvent($calendar_id, $event);
     }
 
     return $event;

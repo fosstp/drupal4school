@@ -29,54 +29,29 @@ function gevent_form_node_form_alter(&$form, FormStateInterface $form_state, $fo
     }
 }
 
-function gevent_node_insert(EntityInterface $node)
+function gevent_node_presave(EntityInterface $node)
 {
     $config = \Drupal::config('gevent.settings');
     if ($config->get('enabled') && $node->getType() == $config->get('content_type')) {
         $event = gs_syncEvent($node);
 
-        $calendar_id = $event->getOrganizer()->getEmail();
-        $event_id = $event->getId();
-        $node->set($config->get('field_calendar_id'), $claendar_id);
-        $node->set($config->get('field_event_id'), $event_id);
+        if ($event) {
+            $calendar_id = $event->getCreator()->getEmail();
+            $event_id = $event->getId();
+            $node->set($config->get('field_calendar_id'), $calendar_id);
+            $node->set($config->get('field_event_id'), $event_id);
+        }
     }
 }
 
-function gevent_node_update(EntityInterface $node)
-{
-    $config = \Drupal::config('gevent.settings');
-    if ($config->get('enabled') && $node->getType() == $config->get('content_type')) {
-        $event = gs_syncEvent($node);
-
-        $calendar_id = $event->getOrganizer()->getEmail();
-        $event_id = $event->getId();
-        $node->set($config->get('field_calendar_id'), $claendar_id);
-        $node->set($config->get('field_event_id'), $event_id);
-    }
-}
-
-function gevent_node_delete(EntityInterface $node)
+function gevent_node_predelete(EntityInterface $node)
 {
     $config = \Drupal::config('gevent.settings');
     if ($config->get('enabled') && $node->getType() == $config->get('content_type')) {
         $calendar_id_field = $config->get('field_calendar_id');
-        if (substr($calendar_id_field, 0, 6) == 'field_') {
-            $calendar_id_obj = $node->$calendar_id_field;
-            if (isset($calendar_id_obj['und'][0])) {
-                $calendar_id = $calendar_id_obj['und'][0]['value'];
-            }
-        } else {
-            $calendar_id = $node->$calendar_id_field;
-        }
+        $calendar_id = $node->get($calendar_id_field)->value;
         $event_id_field = $config->get('field_event_id');
-        if (substr($event_id_field, 0, 6) == 'field_') {
-            $event_id_obj = $node->$event_id_field;
-            if (isset($event_id_obj['und'][0])) {
-                $event_id = $event_id_obj['und'][0]['value'];
-            }
-        } else {
-            $event_id = $node->$event_id_field;
-        }
+        $event_id = $node->get($event_id_field)->value;
         gs_deleteEvent($calendar_id, $event_id);
     }
 }
