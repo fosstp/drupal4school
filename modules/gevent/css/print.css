@@ -16,12 +16,9 @@
   }
 }
 
-.js .js-hide {
-  display: none;
+.js-hide {
+  display: none !important;
 }
 .js-show {
-  display: none;
-}
-.js .js-show {
   display: block;
 }

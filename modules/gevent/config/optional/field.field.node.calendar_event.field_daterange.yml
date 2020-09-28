@@ -19,18 +19,25 @@ default_value:
     default_date_time_zone: Asia/Taipei
 default_value_callback: ''
 settings:
-  precreate: P2Y
+  precreate: P1Y
   parts:
-    all: true
+    all: false
     frequencies:
       SECONDLY: {  }
       MINUTELY: {  }
       HOURLY: {  }
       DAILY:
-        - '*'
+        - BYDAY
+        - COUNT
+        - DTSTART
+        - INTERVAL
+        - UNTIL
       WEEKLY:
-        - '*'
-      MONTHLY:
-        - '*'
+        - BYDAY
+        - COUNT
+        - DTSTART
+        - INTERVAL
+        - UNTIL
+      MONTHLY: {  }
       YEARLY: {  }
 field_type: date_recur

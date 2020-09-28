@@ -20,7 +20,7 @@ function gevent_help($route_name, RouteMatchInterface $route_match)
 function gevent_form_node_form_alter(&$form, FormStateInterface $form_state, $form_id)
 {
     $config = \Drupal::config('gevent.settings');
-    if ($config->get('enable')) {
+    if ($config->get('enabled')) {
         $node = $form_state->getFormObject()->getEntity();
         if ($node->get('type')->value == $config->get('content_type')) {
             unset($form[$config->get('field_calendar_id')]);
@@ -32,7 +32,7 @@ function gevent_form_node_form_alter(&$form, FormStateInterface $form_state, $fo
 function gevent_node_insert(EntityInterface $node)
 {
     $config = \Drupal::config('gevent.settings');
-    if ($config->get('enable') && $node->getType() == $config->get('content_type')) {
+    if ($config->get('enabled') && $node->getType() == $config->get('content_type')) {
         $event = gs_syncEvent($node);
 
         $calendar_id = $event->getOrganizer()->getEmail();
@@ -46,7 +46,7 @@ function gevent_node_insert(EntityInterface $node)
 function gevent_node_update(EntityInterface $node)
 {
     $config = \Drupal::config('gevent.settings');
-    if ($config->get('enable') && $node->getType() == $config->get('content_type')) {
+    if ($config->get('enabled') && $node->getType() == $config->get('content_type')) {
         $event = gs_syncEvent($node);
 
         $calendar_id = $event->getOrganizer()->getEmail();
@@ -60,7 +60,7 @@ function gevent_node_update(EntityInterface $node)
 function gevent_node_delete(EntityInterface $node)
 {
     $config = \Drupal::config('gevent.settings');
-    if ($config->get('enable') && $node->getType() == $config->get('content_type')) {
+    if ($config->get('enabled') && $node->getType() == $config->get('content_type')) {
         $calendar_id_field = $config->get('field_calendar_id');
         if (substr($calendar_id_field, 0, 6) == 'field_') {
             $calendar_id_obj = $node->$calendar_id_field;

@@ -55,14 +55,14 @@ content:
     weight: 9
     label: above
     settings:
-      show_next: 5
-      count_per_item: true
+      format_type: medium
       occurrence_format_type: medium
       same_end_date_format_type: medium
-      interpreter: null
-      separator: '-'
-      format_type: medium
+      separator: ～
       timezone_override: ''
+      interpreter: ''
+      show_next: 5
+      count_per_item: true
     third_party_settings: {  }
     type: date_recur_basic_formatter
     region: content

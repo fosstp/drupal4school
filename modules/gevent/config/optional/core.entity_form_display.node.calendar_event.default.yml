@@ -2,6 +2,8 @@ langcode: zh-hant
 status: true
 dependencies:
   config:
+    - core.date_format.html_datetime
+    - date_recur.interpreter.default_interpreter
     - field.field.node.calendar_event.field_attendee
     - field.field.node.calendar_event.field_calendar_id
     - field.field.node.calendar_event.field_catalog
@@ -45,9 +47,12 @@ content:
     region: content
   field_daterange:
     weight: 3
-    settings: {  }
+    settings:
+      interpreter: default_interpreter
+      date_format_type: html_datetime
+      occurrences_modal: true
     third_party_settings: {  }
-    type: date_recur_modular_alpha
+    type: date_recur_modular_sierra
     region: content
   field_location:
     weight: 2

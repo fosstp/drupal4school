@@ -71,14 +71,14 @@ display:
           right_buttons: 'dayGridMonth,timeGridWeek,timeGridDay,listYear'
           default_view: dayGridMonth
           firstDay: '0'
-          nav_links: 1
-          timeFormat: 'hh:mm a'
+          nav_links: 0
+          timeFormat: 'HH:mm'
           allowEventOverlap: 1
           updateAllowed: 1
           updateConfirm: 1
           defaultLanguage: zh-tw
           languageSelector: 0
-          dialogWindow: 0
+          dialogWindow: 1
           openEntityInNewTab: 1
           createEventLink: 1
           tax_field: field_catalog

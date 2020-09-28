@@ -1,5 +1,7 @@
 <?php
 
+use Drupal\Core\Entity\EntityInterface;
+
 $calendar = null;
 
 function gevent_current_seme()
@@ -245,7 +247,7 @@ function gs_updateEvent($calendarId, $eventId, $event)
     }
 }
 
-function gs_syncEvent($node)
+function gs_syncEvent(EntityInterface $node)
 {
     initGoogleCalendar();
     $config = \Drupal::config('gevent.settings');
@@ -262,25 +264,25 @@ function gs_syncEvent($node)
         $event = new \Google_Service_Calendar_Event();
     }
     $title_field = $config->get('field_title');
-    $title = $node->get($title_field)->getValue();
+    $title = $node->get($title_field)->getValue()[0];
     $event->setSummary($title);
     $memo_field = $config->get('field_memo');
     if ($memo_field != 'none') {
-        $memo = $node->get($memo_field)->getValue();
+        $memo = $node->get($memo_field)->getValue()[0];
         if (!empty($memo)) {
             $event->setDescription($memo);
         }
     }
     $place_field = $config->get('field_place');
     if ($place_field != 'none') {
-        $place = $node->get($place_field)->getValue();
+        $place = $node->get($place_field)->getValue()[0];
         if (!empty($place)) {
             $event->setLocation($place);
         }
     }
     $teachers_field = $config->get('field_attendee');
     if ($teachers_field != 'none') {
-        $teachers = $node->get($teachers_field)->getValue();
+        $teachers = $node->get($teachers_field)->getValue()[0];
         if (count($teachers) > 0) {
             $attendees = [];
             foreach ($teachers as $delta => $uuid) {
@@ -300,6 +302,7 @@ function gs_syncEvent($node)
 
     $date_field = $config->get('field_date');
     $date_array = $node->get($date_field)->getValue()[0];
+    $timezone = date_default_timezone_get();
     $timezone_service = \Drupal::service('gevent.timezone_conversion_service');
     $start_date = $timezone_service->utcToLocal($date_array['value'], $timezone, DATE_ATOM);
     $end_date = $timezone_service->utcToLocal($date_array['end_value'], $timezone, DATE_ATOM);
@@ -321,14 +324,15 @@ function gs_syncEvent($node)
         $event->setRecurrence($date_array['rrule']);
     }
 
-    $user = user_load($node->uid);
+    $user = $node->getOwner();
     $creator = new \Google_Service_Calendar_EventCreator();
     $creator->setId($user->uuid);
-    if (isset($user->email)) {
-        $creator->setEmail($user->email);
+    $mail = $user->getEmail();
+    if (!empty($mail)) {
+        $creator->setEmail($mail);
     }
     $dept_field = $config->get('field_department');
-    $department = $node->get($dept_field)->getValue();
+    $department = $node->get($dept_field)->getValue()[0];
     $creator->setDisplayName($department);
     $event->setCreator($creator);
     $calendar_newid = $config->get('calendar_id');
@@ -349,7 +353,7 @@ function gs_syncEvent($node)
     }
     if ($config->get('calendar_taxonomy')) {
         $taxonomy_field = $config->get('field_taxonomy');
-        $term = $node->get($taxonomy_field)->getValue();
+        $term = $node->get($taxonomy_field)->getValue()[0];
         $calendar_newid = $config->get('calendar_term_'.$term) ?: '';
         $event->setICalUID('originalUID');
         if (!empty($calendar_newid)) {
