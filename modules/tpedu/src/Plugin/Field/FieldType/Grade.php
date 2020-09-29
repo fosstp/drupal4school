@@ -26,7 +26,7 @@ class Grade extends FieldItemBase
     {
         return [
           'columns' => [
-            'grade' => [
+            'value' => [
                 'type' => 'varchar_ascii',
                 'length' => 50,
                 'not null' => false,
@@ -44,7 +44,7 @@ class Grade extends FieldItemBase
 
     public static function propertyDefinitions(FieldStorageDefinitionInterface $field_definition)
     {
-        $properties['grade'] = DataDefinition::create('string')->setLabel('年級');
+        $properties['value'] = DataDefinition::create('string')->setLabel('年級');
 
         return $properties;
     }

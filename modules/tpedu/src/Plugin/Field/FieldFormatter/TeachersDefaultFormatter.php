@@ -18,25 +18,34 @@ use Drupal\Core\Field\FormatterBase;
  */
 class TeachersDefaultFormatter extends FormatterBase
 {
+    public function settingsSummary()
+    {
+        $summary = [];
+        $summary[] = '顯示教師姓名（從模組設定可以修改顯示方式）';
+
+        return $summary;
+    }
+
     public function viewElements(FieldItemListInterface $items, $langcode)
     {
         $config = \Drupal::config('tpedu.settings');
-        $teacher_list = '';
         $elements = [];
         foreach ($items as $delta => $item) {
-            $teachers = explode(',', $item->uuid);
-            foreach ($teachers as $s) {
-                $user = get_user($s);
+            $teacher_name = '';
+            $user = get_user($s);
+            if ($user) {
                 $prefix = '';
                 if ($config->get('display_unit')) {
-                    $prefix = $user->dept_name;
+                    $prefix .= $user->dept_name;
                 }
                 if ($config->get('display_title')) {
                     $prefix .= $user->role_name;
                 }
-                $teacher_list .= $prefix.$user->realname.' ';
+                $teacher_name = $prefix.$user->realname;
+            } else {
+                $teacher_name = $item->value;
             }
-            $elements[$delta] = ['#markup' => $teacher_list];
+            $elements[$delta] = ['#markup' => $teacher_name];
         }
 
         return $elements;

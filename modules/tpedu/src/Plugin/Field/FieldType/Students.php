@@ -26,7 +26,7 @@ class Students extends FieldItemBase
     {
         return [
           'columns' => [
-            'uuid' => [
+            'value' => [
                 'type' => 'varchar_ascii',
                 'length' => 36,
                 'not null' => true,
@@ -37,14 +37,14 @@ class Students extends FieldItemBase
 
     public function isEmpty()
     {
-        $value = $this->get('uuid')->getValue();
+        $value = $this->get('value')->getValue();
 
         return $value === null || $value === '';
     }
 
     public static function propertyDefinitions(FieldStorageDefinitionInterface $field_definition)
     {
-        $properties['uuid'] = DataDefinition::create('string')->setLabel('人員代號');
+        $properties['value'] = DataDefinition::create('string')->setLabel('人員代號');
 
         return $properties;
     }

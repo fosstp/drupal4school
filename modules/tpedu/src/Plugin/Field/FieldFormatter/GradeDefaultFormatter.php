@@ -18,16 +18,42 @@ use Drupal\Core\Field\FormatterBase;
  */
 class GradeDefaultFormatter extends FormatterBase
 {
+    public function settingsSummary()
+    {
+        $summary = [];
+        $summary[] = '顯示年級';
+
+        return $summary;
+    }
+
     public function viewElements(FieldItemListInterface $items, $langcode)
     {
         $grade_list = '';
         $elements = [];
         foreach ($items as $delta => $item) {
-            $grades = explode(',', $item->grade);
-            foreach ($grades as $g) {
-                $grade_list .= $g.' ';
+            switch ($item->value) {
+                case 1:
+                    $name = '一年級';
+                    break;
+                case 2:
+                    $name = '二年級';
+                    break;
+                case 3:
+                    $name = '三年級';
+                    break;
+                case 4:
+                    $name = '四年級';
+                    break;
+                case 5:
+                    $name = '五年級';
+                    break;
+                case 6:
+                    $name = '六年級';
+                    break;
+                default:
+                    $name = $item->value;
             }
-            $elements[$delta] = ['#markup' => $grade_list];
+            $elements[$delta] = ['#markup' => $name];
         }
 
         return $elements;

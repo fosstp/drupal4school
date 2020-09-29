@@ -18,16 +18,19 @@ use Drupal\Core\Field\FormatterBase;
  */
 class DomainDefaultFormatter extends FormatterBase
 {
+    public function settingsSummary()
+    {
+        $summary = [];
+        $summary[] = '顯示領域名稱';
+
+        return $summary;
+    }
+
     public function viewElements(FieldItemListInterface $items, $langcode)
     {
-        $domain_list = '';
         $elements = [];
         foreach ($items as $delta => $item) {
-            $domains = explode(',', $item->domain);
-            foreach ($domains as $g) {
-                $domain_list .= $g.' ';
-            }
-            $elements[$delta] = ['#markup' => $domain_list];
+            $elements[$delta] = ['#markup' => $item->value];
         }
 
         return $elements;

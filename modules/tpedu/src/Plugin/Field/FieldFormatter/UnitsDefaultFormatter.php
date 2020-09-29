@@ -18,19 +18,26 @@ use Drupal\Core\Field\FormatterBase;
  */
 class UnitsDefaultFormatter extends FormatterBase
 {
+    public function settingsSummary()
+    {
+        $summary = [];
+        $summary[] = '顯示行政單位（處室）名稱';
+
+        return $summary;
+    }
+
     public function viewElements(FieldItemListInterface $items, $langcode)
     {
-        $unit_list = '';
         $elements = [];
         foreach ($items as $delta => $item) {
-            $units = explode(',', $item->dept_id);
-            foreach ($units as $o) {
-                $unit = get_unit($o);
-                if ($unit) {
-                    $unit_list .= $unit->name.' ';
-                }
+            $unit_name = '';
+            $unit = get_unit($item->value);
+            if ($unit) {
+                $unit_name = $unit->name;
+            } else {
+                $unit_name = $item->value;
             }
-            $elements[$delta] = ['#markup' => $unit_list];
+            $elements[$delta] = ['#markup' => $unit_name];
         }
 
         return $elements;

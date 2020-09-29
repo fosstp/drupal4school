@@ -26,7 +26,7 @@ class Roles extends FieldItemBase
     {
         return [
           'columns' => [
-            'role_id' => [
+            'value' => [
                 'type' => 'varchar_ascii',
                 'length' => 50,
                 'not null' => true,

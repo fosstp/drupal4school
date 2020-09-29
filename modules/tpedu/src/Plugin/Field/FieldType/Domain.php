@@ -26,7 +26,7 @@ class Domain extends FieldItemBase
     {
         return [
           'columns' => [
-            'domain' => [
+            'value' => [
                 'type' => 'varchar_ascii',
                 'length' => 50,
                 'not null' => false,
@@ -37,14 +37,14 @@ class Domain extends FieldItemBase
 
     public function isEmpty()
     {
-        $value = $this->get('domain')->getValue();
+        $value = $this->get('value')->getValue();
 
         return $value === null || $value === '';
     }
 
     public static function propertyDefinitions(FieldStorageDefinitionInterface $field_definition)
     {
-        $properties['domain'] = DataDefinition::create('string')->setLabel('領域');
+        $properties['value'] = DataDefinition::create('string')->setLabel('領域');
 
         return $properties;
     }

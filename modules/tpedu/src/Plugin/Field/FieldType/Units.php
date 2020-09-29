@@ -26,7 +26,7 @@ class Units extends FieldItemBase
     {
         return [
           'columns' => [
-            'dept_id' => [
+            'value' => [
                'type' => 'varchar_ascii',
                'length' => 50,
                'not null' => false,
@@ -37,14 +37,14 @@ class Units extends FieldItemBase
 
     public function isEmpty()
     {
-        $value = $this->get('dept_id')->getValue();
+        $value = $this->get('value')->getValue();
 
         return $value === null || $value === '';
     }
 
     public static function propertyDefinitions(FieldStorageDefinitionInterface $field_definition)
     {
-        $properties['dept_id'] = DataDefinition::create('string')->setLabel('行政單位');
+        $properties['value'] = DataDefinition::create('string')->setLabel('行政單位');
 
         return $properties;
     }

@@ -26,7 +26,7 @@ class Classes extends FieldItemBase
     {
         return [
           'columns' => [
-            'class_id' => [
+            'value' => [
                 'type' => 'varchar_ascii',
                 'length' => 50,
                 'not null' => true,
@@ -37,14 +37,14 @@ class Classes extends FieldItemBase
 
     public function isEmpty()
     {
-        $value = $this->get('class_id')->getValue();
+        $value = $this->get('value')->getValue();
 
         return $value === null || $value === '';
     }
 
     public static function propertyDefinitions(FieldStorageDefinitionInterface $field_definition)
     {
-        $properties['class_id'] = DataDefinition::create('string')->setLabel('班級代號');
+        $properties['value'] = DataDefinition::create('string')->setLabel('班級代號');
 
         return $properties;
     }

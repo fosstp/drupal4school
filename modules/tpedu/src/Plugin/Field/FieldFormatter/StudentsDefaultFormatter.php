@@ -18,22 +18,26 @@ use Drupal\Core\Field\FormatterBase;
  */
 class StudentsDefaultFormatter extends FormatterBase
 {
+    public function settingsSummary()
+    {
+        $summary = [];
+        $summary[] = '顯示學生年班座號和姓名';
+
+        return $summary;
+    }
+
     public function viewElements(FieldItemListInterface $items, $langcode)
     {
-        $config = \Drupal::config('tpedu.settings');
-        $student_list = '';
         $elements = [];
         foreach ($items as $delta => $item) {
-            $students = explode(',', $item->uuid);
-            foreach ($students as $s) {
-                $user = get_user($s);
-                $prefix = '';
-                if ($config->get('display_unit') || $config->get('display_title')) {
-                    $prefix = $user->dept_name.' ';
-                }
-                $student_list .= $prefix.$user->seat.'號'.$user->realname.' ';
+            $student_name = '';
+            $user = get_user($item->value);
+            if ($user) {
+                $student_name = $user->dept_name.$user->seat.'號'.$user->realname;
+            } else {
+                $student_name = $item->value;
             }
-            $elements[$delta] = ['#markup' => $student_list];
+            $elements[$delta] = ['#markup' => $student_name];
         }
 
         return $elements;

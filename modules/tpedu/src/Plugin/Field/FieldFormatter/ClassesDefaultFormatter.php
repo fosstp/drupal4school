@@ -18,19 +18,26 @@ use Drupal\Core\Field\FormatterBase;
  */
 class ClassesDefaultFormatter extends FormatterBase
 {
+    public function settingsSummary()
+    {
+        $summary = [];
+        $summary[] = '顯示班級名稱';
+
+        return $summary;
+    }
+
     public function viewElements(FieldItemListInterface $items, $langcode)
     {
-        $class_list = '';
         $elements = [];
         foreach ($items as $delta => $item) {
-            $classes = explode(',', $item->class_id);
-            foreach ($classes as $c) {
-                $myclass = one_class($c);
-                if ($myclass) {
-                    $class_list .= $myclass->name.' ';
-                }
+            $class_name = '';
+            $myclass = one_class($item->value);
+            if ($myclass) {
+                $class_name = $myclass->name;
+            } else {
+                $class_name = $item->value;
             }
-            $elements[$delta] = ['#markup' => $class_list];
+            $elements[$delta] = ['#markup' => $class_name];
         }
 
         return $elements;

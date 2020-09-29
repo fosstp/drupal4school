@@ -18,17 +18,26 @@ use Drupal\Core\Field\FormatterBase;
  */
 class SubjectsDefaultFormatter extends FormatterBase
 {
+    public function settingsSummary()
+    {
+        $summary = [];
+        $summary[] = '顯示科目名稱';
+
+        return $summary;
+    }
+
     public function viewElements(FieldItemListInterface $items, $langcode)
     {
-        $subject_list = '';
         $elements = [];
         foreach ($items as $delta => $item) {
-            $subjects = explode(',', $item->subject_id);
-            foreach ($subjects as $s) {
-                $subj = get_subject($s);
-                $subject_list .= $subj->name.' ';
+            $subject_name = '';
+            $subj = get_subject($item->value);
+            if ($subj) {
+                $subject_name = $subj->name;
+            } else {
+                $subject_name = $item->value;
             }
-            $elements[$delta] = ['#markup' => $subject_list];
+            $elements[$delta] = ['#markup' => $subject_name];
         }
 
         return $elements;

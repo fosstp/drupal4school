@@ -26,7 +26,7 @@ class Subjects extends FieldItemBase
     {
         return [
           'columns' => [
-            'subject_id' => [
+            'value' => [
                 'type' => 'varchar_ascii',
                 'length' => 50,
                 'not null' => true,
@@ -37,14 +37,14 @@ class Subjects extends FieldItemBase
 
     public function isEmpty()
     {
-        $value = $this->get('subject_id')->getValue();
+        $value = $this->get('value')->getValue();
 
         return $value === null || $value === '';
     }
 
     public static function propertyDefinitions(FieldStorageDefinitionInterface $field_definition)
     {
-        $properties['subject_id'] = DataDefinition::create('string')->setLabel('科目代號');
+        $properties['value'] = DataDefinition::create('string')->setLabel('科目代號');
 
         return $properties;
     }

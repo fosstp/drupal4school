@@ -18,19 +18,26 @@ use Drupal\Core\Field\FormatterBase;
  */
 class RolesDefaultFormatter extends FormatterBase
 {
+    public function settingsSummary()
+    {
+        $summary = [];
+        $summary[] = '顯示工作職稱';
+
+        return $summary;
+    }
+
     public function viewElements(FieldItemListInterface $items, $langcode)
     {
-        $role_list = '';
         $elements = [];
         foreach ($items as $delta => $item) {
-            $roles = explode(',', $item->role_id);
-            foreach ($roles as $r) {
-                $role = get_role($r);
-                if ($role) {
-                    $role_list .= $role->name.' ';
-                }
+            $role_name = '';
+            $role = get_role($item->value);
+            if ($role) {
+                $role_name = $role->name;
+            } else {
+                $role_name = $item->value;
             }
-            $elements[$delta] = ['#markup' => $role_list];
+            $elements[$delta] = ['#markup' => $role_name];
         }
 
         return $elements;
