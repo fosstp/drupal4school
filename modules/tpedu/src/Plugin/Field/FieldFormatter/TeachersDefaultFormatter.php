@@ -32,7 +32,7 @@ class TeachersDefaultFormatter extends FormatterBase
         $elements = [];
         foreach ($items as $delta => $item) {
             $teacher_name = '';
-            $user = get_user($s);
+            $user = get_user($item->value);
             if ($user) {
                 $prefix = '';
                 if ($config->get('display_unit')) {
