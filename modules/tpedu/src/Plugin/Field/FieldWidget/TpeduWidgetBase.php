@@ -94,7 +94,6 @@ class TpeduWidgetBase extends WidgetBase
         $this->has_value = isset($items[0]->{$this->column});
         if ($this->multiple) {
             $element['#type'] = 'checkboxes';
-            $element['#multiple'] = true;
             $inline = $this->getFieldSetting('inline_columns');
             $this->display_inline($element, $inline);
             $element['#default_value'] = $this->getSelectedOptions($items);
@@ -104,7 +103,6 @@ class TpeduWidgetBase extends WidgetBase
                 $element['#empty_value'] = '_none';
             }
             $element['#type'] = 'select';
-            $element['#multiple'] = false;
             $value = isset($items[$delta]->{$this->column}) ? $items[$delta]->{$this->column} : '';
             if ($value) {
                 $element['#default_value'] = $value;
@@ -137,7 +135,10 @@ class TpeduWidgetBase extends WidgetBase
         }
         if ($key_exists) {
             $values = $this->massageFormValues($values, $form, $form_state);
-            $items->setValue($values);
+            $values = array_filter($values, function ($var) {
+                return !empty($var);
+            });
+            $items->setValue(array_values($values));
             $items->filterEmptyItems();
 
             // Put delta mapping in $form_state, so that flagErrors() can use it.
@@ -189,23 +190,18 @@ class TpeduWidgetBase extends WidgetBase
         return $selected_options;
     }
 
-    public function display_inline(array &$element, $inline = null)
+    public function display_inline(array &$element, $inline = 10)
     {
-        if (empty($inline)) {
-            $inline = count($element['#options']);
-        }
-        if ($inline > 0) {
-            $element['#attached']['library'][] = 'tpedu/tpedu_fields';
-            $column = 0;
-            foreach ($element['#options'] as $key => $choice) {
-                if ($key === 0) {
-                    $key = '0';
-                }
-                $style = ($column % $inline) ? 'button-columns' : 'button-columns-clear';
-                $element[$key]['#prefix'] = '<div class="'.$style.'">';
-                $element[$key]['#suffix'] = '</div>';
-                ++$column;
+        $element['#attached']['library'][] = 'tpedu/tpedu_fields';
+        $column = 0;
+        foreach ($element['#options'] as $key => $choice) {
+            if ($key === 0) {
+                $key = '0';
             }
+            $style = ($column % $inline) ? 'checkbox-columns' : 'checkbox-columns-clear';
+            $element[$key]['#prefix'] = '<div class="'.$style.'">';
+            $element[$key]['#suffix'] = '</div>';
+            ++$column;
         }
 
         return $element;

@@ -1,11 +1,11 @@
-.button-columns .form-item {
+.checkbox-columns .form-item {
   margin-right: 10px !important;
   float: left;
-  display: inline;
+/*  display: inline; */
 }
-.button-columns-clear .form-item {
+.checkbox-columns-clear .form-item {
   margin-right: 10px !important;
   clear: left;
   float: left;
-  display: inline;
+/*  display: inline; */
 }

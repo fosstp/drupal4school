@@ -33,6 +33,7 @@ function gevent_node_presave(EntityInterface $node)
 {
     $config = \Drupal::config('gevent.settings');
     if ($config->get('enabled') && $node->getType() == $config->get('content_type')) {
+        initGoogleCalendar();
         $event = gs_syncEvent($node);
 
         if ($event) {
@@ -52,6 +53,7 @@ function gevent_node_predelete(EntityInterface $node)
         $calendar_id = $node->get($calendar_id_field)->value;
         $event_id_field = $config->get('field_event_id');
         $event_id = $node->get($event_id_field)->value;
+        initGoogleCalendar();
         gs_deleteEvent($calendar_id, $event_id);
     }
 }
