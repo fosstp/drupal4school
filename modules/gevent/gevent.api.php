@@ -152,14 +152,16 @@ function gs_pruneEvents($calendarId)
     }
 }
 
-function gs_listEvents($calendarId)
+function gs_listEvents($calendarId, $opt_param = null)
 {
     global $calendar;
-    $mydate = gevent_current_seme();
-    $opt_param['timeMin'] = $mydate['min'];
-    $opt_param['timeMax'] = $mydate['max'];
-    $opt_param['singleEvents'] = true;
-    $opt_param['orderBy'] = 'startTime';
+    if (empty($opt_param)) {
+        $mydate = gevent_current_seme();
+        $opt_param['timeMin'] = $mydate['min'];
+        $opt_param['timeMax'] = $mydate['max'];
+        $opt_param['singleEvents'] = true;
+        $opt_param['orderBy'] = 'startTime';
+    }
     try {
         $events = $calendar->events->listEvents($calendarId, $opt_param);
 
@@ -329,13 +331,12 @@ function gs_syncEvent(EntityInterface $node)
     }
     if (!empty($calendar_id) && !empty($event_id)) {
         $event = gs_updateEvent($calendar_id, $event_id, $event);
-        $calendar_id = $config->get('calendar_id');
         if ($config->get('calendar_taxonomy')) {
             $taxonomy_field = $config->get('field_taxonomy');
             $term = $node->get($taxonomy_field)->target_id;
             $calendar_term = $config->get('calendar_term_'.$term) ?: 'none';
             if (!empty($calendar_term) && $calendar_term != 'none') {
-                $event = gs_moveEvent($calendar_id, $event, $calendar_term);
+                $event = gs_moveEvent($calendar_id, $event_id, $calendar_term);
                 $calendar_id = $calendar_term;
             }
         }

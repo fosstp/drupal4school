@@ -94,6 +94,7 @@ class TpeduWidgetBase extends WidgetBase
         $this->has_value = isset($items[0]->{$this->column});
         if ($this->multiple) {
             $element['#type'] = 'checkboxes';
+            $element['#multiple'] = true;
             $inline = $this->getFieldSetting('inline_columns');
             $this->display_inline($element, $inline);
             $element['#default_value'] = $this->getSelectedOptions($items);
