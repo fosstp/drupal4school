@@ -8,15 +8,15 @@ function gevent_current_seme()
 {
     if (date('m') > 7) {
         $syear = date('Y');
-        $eyear = $syear++;
-        $stryear = $syear - 1912;
+        $eyear = $syear + 1;
+        $stryear = $syear - 1911;
         $seme = 1;
         $min = "$syear-08-01T00:00:00+08:00";
         $max = "$eyear-01-31T00:00:00+08:00";
     } elseif (date('m') < 2) {
         $eyear = date('Y');
-        $syear = $eyear--;
-        $stryear = $syear - 1912;
+        $syear = $eyear - 1;
+        $stryear = $syear - 1911;
         $seme = 1;
         $year = date('Y');
         $lastyear = $year--;
@@ -25,7 +25,7 @@ function gevent_current_seme()
     } else {
         $syear = date('Y');
         $eyear = $syear;
-        $stryear = $syear - 1913;
+        $stryear = $syear - 1912;
         $seme = 2;
         $min = "$syear-02-01T00:00:00+08:00";
         $max = "$eyear-07-31T00:00:00+08:00";
