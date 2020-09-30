@@ -261,8 +261,10 @@ function gs_syncEvent(EntityInterface $node)
         $event = gs_getEvent($calendar_id, $event_id);
         if (!$event) {
             $event = new \Google_Service_Calendar_Event();
+            $calendar_id = '';
+            $event_id = '';
         } else {
-            if ($event->getStatus == 'cancelled') {
+            if ($event->getStatus() == 'cancelled') {
                 $event->setStatus('confirmed');
             }
         }
