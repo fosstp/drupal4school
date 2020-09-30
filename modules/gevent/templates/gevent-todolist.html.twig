@@ -51,31 +51,31 @@
 			<td>
 			{% if events %}
 				{% for event in events %}
-					{% if (date(event.getStart().getDate())|date('Y-m-d') == date("#{y}-#{m}-#{d}")) %}
-				【<span style="color:red;">{{ event.getCreator().getDisplayName() }}</span>】
-				{{ event.getSummary() }}
-						{% if event.getStart().getDate()|length < 11 %}
+					{% if (event.Start.Date|date('Y-m-d') == date("#{y}-#{m}-#{d}")) %}
+				【<span style="color:red;">{{ event.Creator.DisplayName }}</span>】
+				{{ event.Summary }}
+						{% if event.Start.Date|length < 11 %}
 				（全天）
 						{% else %}
-							{% if event.getStart().getDate()|date('Y') == event.getEnd().getDate()|date('Y') %}
-								{% if event.getStart().getDate()|date('m') == event.getEnd().getDate()|date('m') %}
-									{% if event.getStart().getDate()|date('d') == event.getEnd().getDate()|date('d') %}
-				（{{ event.getStart().getDate()|date('H:i') }}到{{ event.getEnd().getDate()|date('H:i') }}止）
+							{% if event.Start.Date|date('Y') == event.End.Date|date('Y') %}
+								{% if event.Start.Date|date('m') == event.End.Date|date('m') %}
+									{% if event.Start.Date|date('d') == event.End.Date|date('d') %}
+				（{{ event.Start.Date|date('H:i') }}到{{ event.End.Date|date('H:i') }}止）
 									{% else %}
-				（{{ event.getStart().getDate()|date('j') }}日到{{ event.getEnd().getDate()|date('j') }}日止）
+				（{{ event.Start.Date|date('j') }}日到{{ event.End.Date|date('j') }}日止）
 									{% endif %}
 								{% else %}
-				（{{ event.getStart().getDate()|date('n') }}月{{ event.getStart().getDate()|date('j') }}日到{{ event.getEnd().getDate()|date('n') }}月{{ event.getEnd().getDate()|date('j') }}日止）
+				（{{ event.Start.Date|date('n') }}月{{ event.Start.Date|date('j') }}日到{{ event.End.Date|date('n') }}月{{ event.End.Date|date('j') }}日止）
 								{% endif %}
 							{% else %}
-				（{{ event.getStart().getDate()|date('Y') }}年{{ event.getStart().getDate()|date('n') }}月{{ event.getStart().getDate()|date('j') }}日到{{ event.getEnd().getDate()|date('Y') }}年{{ event.getEnd().getDate()|date('n') }}月{{ event.getEnd().getDate()|date('j') }}日止）
+				（{{ event.Start.Date|date('Y') }}年{{ event.Start.Date|date('n') }}月{{ event.Start.Date|date('j') }}日到{{ event.End.Date|date('Y') }}年{{ event.End.Date|date('n') }}月{{ event.End.Date|date('j') }}日止）
 							{% endif %}
 						{% endif %}
-						{% if (event.getLocation() is not empty) %}
-				　地點：{{ event.getLocation() }}
+						{% if (event.Location is not empty) %}
+				　地點：{{ event.Location }}
 						{% endif %}
-						{% if (event.getDescription() is not empty) %}
-				　備註：{{ event.getDescription() }}
+						{% if (event.Description is not empty) %}
+				　備註：{{ event.Description }}
 						{% endif %}
 					{% endif %}
 				{% endfor %}
