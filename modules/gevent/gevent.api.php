@@ -155,6 +155,9 @@ function gs_pruneEvents($calendarId)
 function gs_listEvents($calendarId, $opt_param = null)
 {
     global $calendar;
+    if (empty($calendarId)) {
+        $calendarId = 'primary';
+    }
     if (empty($opt_param)) {
         $mydate = gevent_current_seme();
         $opt_param['timeMin'] = $mydate['min'];
