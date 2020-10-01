@@ -204,7 +204,7 @@ function gs_deleteEvent($calendarId, $eventId)
 {
     global $calendar;
     try {
-        $calendar->events->delete($calendar_id, $event_id);
+        $calendar->events->delete($calendarId, $eventId);
 
         return true;
     } catch (\Google_Service_Exception $e) {

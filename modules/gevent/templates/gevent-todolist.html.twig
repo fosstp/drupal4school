@@ -64,31 +64,31 @@
 			<td>
 			{% if events %}
 				{% for event in events %}
-					{% if (event.Start.Date|date('Y-m-d') == date("#{y}-#{m}-#{d}")) %}
-				【<span style="color:red;">{{ event.Creator.DisplayName }}</span>】
+				{% dump(event) %}
+					{% if (event.start.dateTime|date('Y-m-d') == date("#{y}-#{m}-#{d}")) %}
 				{{ event.Summary }}
-						{% if event.Start.Date|length < 11 %}
+						{% if event.start.dateTime|length < 11 %}
 				（全天）
 						{% else %}
-							{% if event.Start.Date|date('Y') == event.End.Date|date('Y') %}
-								{% if event.Start.Date|date('m') == event.End.Date|date('m') %}
-									{% if event.Start.Date|date('d') == event.End.Date|date('d') %}
-				（{{ event.Start.Date|date('H:i') }}到{{ event.End.Date|date('H:i') }}止）
+							{% if event.start.dateTime|date('Y') == event.end.dateTime|date('Y') %}
+								{% if event.start.dateTime|date('m') == event.end.dateTime|date('m') %}
+									{% if event.start.dateTime|date('d') == event.end.dateTime|date('d') %}
+				（{{ event.start.dateTime|date('H:i') }}到{{ event.end.dateTime|date('H:i') }}止）
 									{% else %}
-				（{{ event.Start.Date|date('j') }}日到{{ event.End.Date|date('j') }}日止）
+				（{{ event.start.dateTime|date('j') }}日到{{ event.end.dateTime|date('j') }}日止）
 									{% endif %}
 								{% else %}
-				（{{ event.Start.Date|date('n') }}月{{ event.Start.Date|date('j') }}日到{{ event.End.Date|date('n') }}月{{ event.End.Date|date('j') }}日止）
+				（{{ event.start.dateTime|date('n') }}月{{ event.start.dateTime|date('j') }}日到{{ event.end.dateTime|date('n') }}月{{ event.end.dateTime|date('j') }}日止）
 								{% endif %}
 							{% else %}
-				（{{ event.Start.Date|date('Y') }}年{{ event.Start.Date|date('n') }}月{{ event.Start.Date|date('j') }}日到{{ event.End.Date|date('Y') }}年{{ event.End.Date|date('n') }}月{{ event.End.Date|date('j') }}日止）
+				（{{ event.start.dateTime|date('Y') }}年{{ event.start.dateTime|date('n') }}月{{ event.start.dateTime|date('j') }}日到{{ event.end.dateTime|date('Y') }}年{{ event.end.dateTime|date('n') }}月{{ event.end.dateTime|date('j') }}日止）
 							{% endif %}
 						{% endif %}
-						{% if (event.Location is not empty) %}
-				　地點：{{ event.Location }}
+						{% if (event.location is not empty) %}
+				　地點：{{ event.location }}
 						{% endif %}
-						{% if (event.Description is not empty) %}
-				　備註：{{ event.Description }}
+						{% if (event.description is not empty) %}
+				　備註：{{ event.description }}
 						{% endif %}
 					{% endif %}
 				{% endfor %}
