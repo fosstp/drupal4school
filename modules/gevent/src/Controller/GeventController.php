@@ -167,6 +167,9 @@ class GeventController extends ControllerBase
         $calendars = gs_listCalendars();
         foreach ($calendars as $calendarListEntry) {
             $my_calendars[$calendarListEntry->getId()] = $calendarListEntry->getSummary();
+            if (empty($calendar_id)) {
+                $calendar_id = $calendarListEntry->getId();
+            }
         }
         date_default_timezone_set('Asia/Taipei');
         $mydate = gevent_current_seme();
@@ -179,6 +182,7 @@ class GeventController extends ControllerBase
             '#eyear' => $mydate['eyear'],
             '#seme' => $mydate['seme'],
             '#calendars' => $my_calendars,
+            '#current' => $calendar_id,
             '#events' => $events,
         ];
 

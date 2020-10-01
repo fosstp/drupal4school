@@ -5,16 +5,16 @@
 			<th class="views-field" colspan="4" style="text-align: center">
 				<span style="font-size: 150%">{{ title }}
 				{% if calendars %}
-					<select onchange="window.location = '/todolist?calendar=' + this.value;">
+					<select style="color: blue;" onchange="window.location = '/todolist?calendar=' + this.value;">
 					{% for id, name in calendars %}
-						<option value="{{ id }}">{{ name }}</option>
+						<option value="{{ id }}"{% if id == current %}selected{% endif %}>{{ name }}</option>
 					{% endfor %}
 					</select>
 				{% else %}
 					行事曆
 				{% endif %}
 				</span>　　
-				<a class="button" href="javascript:window.print()">友善列印</a>
+				<button class="button js-form-submit form-submit" onclick="window.print()">友善列印</button>
 			</th>
 		</tr>
 		<tr>

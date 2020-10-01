@@ -71,6 +71,7 @@ function gevent_theme()
                 'eyear' => 0,
                 'seme' => 0,
                 'calendars' => [],
+                'current' => '',
                 'events' => [],
             ],
         ],
