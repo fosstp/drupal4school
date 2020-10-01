@@ -3,18 +3,20 @@
 	<thead>
 		<tr>
 			<th class="views-field" colspan="4" style="text-align: center">
-				<span style="font-size: 150%">{{ title }}
+				<form style="display: flex;flex-flow: row wrap;align-items: center;">
+					<span style="font-size: 150%">{{ title }}
 				{% if calendars %}
-					<select style="color: blue;" onchange="window.location = '/todolist?calendar=' + this.value;">
+						<select style="color: blue;" name="calendar" onchange="this.form.submit()">
 					{% for id, name in calendars %}
-						<option value="{{ id }}"{% if id == current %}selected{% endif %}>{{ name }}</option>
+							<option value="{{ id }}"{% if id == current %}selected{% endif %}>{{ name }}</option>
 					{% endfor %}
-					</select>
+						</select>
 				{% else %}
 					行事曆
 				{% endif %}
-				</span>　　
-				<button class="button js-form-submit form-submit" onclick="window.print()">友善列印</button>
+					</span>　　
+					<button class="button js-form-submit form-submit" onclick="window.print()">友善列印</button>
+				</form>
 			</th>
 		</tr>
 		<tr>
