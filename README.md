@@ -1,5 +1,5 @@
 # Drupal學校架站包計劃（D4S: Drupal for School）
-這是一個 [docker](https://www.docker.com/) 映像檔，此映像檔內容包含：debian 10.2(buster-slim) + php 7.3 + apache 2.4 + drupal 9.0.3 + drush 10 + D4S 專案模組。
+這是一個 [docker](https://www.docker.com/) 映像檔，此映像檔內容包含：debian 10.2(buster-slim) + php 7.3 + apache 2.4 + drupal 9.0.６ + drush 10 + D4S 專案模組。
 目前已納入臺北市校園單一身分驗證服務的各級學程所有學校都可以使用，不再受限於各別校務行政系統的開放性。
 
 drupal/console 尚未完全支援 drupal 9，因此改用 drush 10，兩者的差別請看[這篇文章](https://www.cmsdrupal.com/blog/drupal-console-vs-drush-should-you-run-both-or-stick-one-each-cli-tools-most-powerful-commands)。
@@ -11,8 +11,7 @@ drupal/console 尚未完全支援 drupal 9，因此改用 drush 10，兩者的�
 * thumblink 模組：提供「縮圖連結」內容類型和「相關網站」區塊。
 * tpedunews 模組：為您啟用 aggregator 模組，將教育局最新消息６個 RSS feed 新增到新聞聯播中，並提供「教育局最新消息」區塊。
 * schoolnews 模組：提供「最新消息」內容類型以及「校園最新消息」頁面，可以直接設定為網站首頁。
-
-還在開發的模組有：行事曆（與 G Suite 線上同步功能）
+* gevent 模組： 提供內容類型：「行事曆事件」、Views 顯示模式：「學校行事曆」、傳統行事曆頁面，編輯事件時會自動同步到 G Suite
 
 ## 單機測試環境
 在 Windows 或 Mac 工作站上進行架站測試與套件開發，請先安裝 [docker desktop](https://www.docker.com/products/docker-desktop) ，然後啟動主控台，執行底下介紹的 docker-compose 指令。
