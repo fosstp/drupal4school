@@ -1,9 +1,9 @@
 @media print {
-  #skip-link, .region-page-top, #header, #header-menu, #banner, .brick, h1, h2, ul, #sidebar-right, #footer, #footer-bottom{
+  #header, #breadcrumb, #hightlighted, #sidebar-first, #sidebar-second, #footer, #toolbar {
     display: none;
   }
 
-  #content #content-inside #main .region-content{
+  #main {
     width: 100%;
     margin: 0;
     padding: 0;
