@@ -46,8 +46,8 @@ function get_tokens($auth_code)
         $tempstore->set('access_token', $data->access_token);
         $tempstore->set('refresh_token', $data->refresh_token);
     } else {
-        if (isset($json->error)) {
-            \Drupal::logger('tpedu')->error('oauth2 response:'.$dataapi.'=>'.$json->error);
+        if (isset($data->error)) {
+            \Drupal::logger('tpedu')->error('oauth2 response:'.$config->get('api.token').'=>'.$data->error);
 
             return false;
         }
@@ -76,8 +76,8 @@ function refresh_tokens()
             $tempstore->set('access_token', $data->access_token);
             $tempstore->set('refresh_token', $data->refresh_token);
         } else {
-            if (isset($json->error)) {
-                \Drupal::logger('tpedu')->error('oauth2 response:'.$dataapi.'=>'.$json->error);
+            if (isset($data->error)) {
+                \Drupal::logger('tpedu')->error('oauth2 response:'.$config->get('api.token').'=>'.$data->error);
 
                 return false;
             }
@@ -97,8 +97,8 @@ function who()
         if ($response->getStatusCode() == 200) {
             return $user->uuid;
         } else {
-            if (isset($json->error)) {
-                \Drupal::logger('tpedu')->error('oauth2 response:'.$dataapi.'=>'.$json->error);
+            if (isset($user->error)) {
+                \Drupal::logger('tpedu')->error('oauth2 response:'.$config->get('api.login').'=>'.$user->error);
 
                 return false;
             }
