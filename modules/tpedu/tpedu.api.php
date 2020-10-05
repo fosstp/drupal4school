@@ -93,7 +93,7 @@ function who()
         if ($response->getStatusCode() == 200) {
             return $user->uuid;
         } else {
-            \Drupal::logger('tpedu')->error('oauth2 token response =>'.$response->getBody());
+            \Drupal::logger('tpedu')->error('oauth2 user response =>'.$response->getBody());
 
             return false;
         }
@@ -133,7 +133,7 @@ function api($which, array $replacement = null)
     if ($response->getStatusCode() == 200) {
         return $json;
     } else {
-        \Drupal::logger('tpedu')->error('oauth2 token response =>'.$response->getBody());
+        \Drupal::logger('tpedu')->error('oauth2 api response:'.$dataapi.'=>'.$response->getBody());
 
         return false;
     }
