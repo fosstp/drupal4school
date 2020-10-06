@@ -310,7 +310,11 @@ function fetch_user($uuid)
             $fields['seat'] = $myseat;
         }
         if (!empty($user->tpCharacter)) {
-            $fields['character'] = $user->tpCharacter;
+            if (is_array($user->tpCharacter)) {
+                $fields['character'] = implode(',', $user->tpCharacter);
+            } else {
+                $fields['character'] = $user->tpCharacter;
+            }
         }
         $database->insert('tpedu_people')->fields($fields)->execute();
     }
