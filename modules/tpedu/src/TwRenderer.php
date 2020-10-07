@@ -80,6 +80,11 @@ class TwRenderer extends HtmlRenderer
                     $img->setAttribute('alt', '排版用裝飾圖片');
                 }
             }
+        } else {
+            $myalt = $images->getAttribute('alt');
+            if (!$myalt) {
+                $images->setAttribute('alt', '排版用裝飾圖片');
+            }
         }
         $links = $dom->getElementsByTagName('a');
         $tab_index = 1;
@@ -97,6 +102,18 @@ class TwRenderer extends HtmlRenderer
                 $lnk->setAttribute('tabindex', $tab_index);
                 ++$tab_index;
             }
+        } else {
+            $mytitle = $links->getAttribute('title');
+            if (!$mytitle) {
+                if ($links->nodeValue) {
+                    $links->setAttribute('title', trim($links->nodeValue));
+                } else {
+                    $links->nodeValue = '::';
+                    $links->setAttribute('title', $links->getAttribute('id'));
+                }
+            }
+            $links->setAttribute('tabindex', $tab_index);
+            ++$tab_index;
         }
         $fields = $dom->getElementsByTagName('fieldset');
         if (is_array($fields)) {
@@ -107,6 +124,12 @@ class TwRenderer extends HtmlRenderer
                     $fs->appendChild($legend);
                 }
             }
+        } else {
+            $legend = $fields->getElementsByTagName('legend');
+            if (!$legend) {
+                $legend = $dom->createElement('legend', 'This is noname group!');
+                $fields->appendChild($legend);
+            }
         }
         $objs = $dom->getElementsByTagName('object');
         if (is_array($objs)) {
@@ -115,6 +138,11 @@ class TwRenderer extends HtmlRenderer
                 if (!$myalt) {
                     $obj->nodeValue = $obj->getAttribute('data');
                 }
+            }
+        } else {
+            $myalt = $objs->nodeValue;
+            if (!$myalt) {
+                $objs->nodeValue = $objs->getAttribute('data');
             }
         }
         $applets = $dom->getElementsByTagName('applet');
@@ -128,6 +156,14 @@ class TwRenderer extends HtmlRenderer
                     $app->setAttribute('alt', $myalt);
                 }
             }
+        } else {
+            $myalt = $applets->nodeValue;
+            if (!$myalt) {
+                $applets->setAttribute('alt', '多媒體互動物件');
+                $applets->nodeValue = '多媒體互動物件';
+            } else {
+                $applets->setAttribute('alt', $myalt);
+            }
         }
         $img_maps = $dom->getElementsByTagName('area');
         if (is_array($img_maps)) {
@@ -137,6 +173,11 @@ class TwRenderer extends HtmlRenderer
                     $area->setAttribute('alt', $area->getAttribute('href'));
                 }
             }
+        } else {
+            $myalt = $img_maps->getAttribute('alt');
+            if (!$myalt) {
+                $img_maps->setAttribute('alt', $img_maps->getAttribute('href'));
+            }
         }
         $ems = $dom->getElementsByTagName('i');
         if (is_array($ems)) {
@@ -144,6 +185,9 @@ class TwRenderer extends HtmlRenderer
                 $newem = $dom->createElement('em', $em->nodeValue);
                 $em->parentNode->replaceChild($newem, $em);
             }
+        } else {
+            $newem = $dom->createElement('em', $ems->nodeValue);
+            $ems->parentNode->replaceChild($newem, $ems);
         }
         $strongs = $dom->getElementsByTagName('b');
         if (is_array($strongs)) {
@@ -151,6 +195,9 @@ class TwRenderer extends HtmlRenderer
                 $newstrong = $dom->createElement('strong', $strong->nodeValue);
                 $strong->parentNode->replaceChild($newstrong, $strong);
             }
+        } else {
+            $newstrong = $dom->createElement('strong', $strongs->nodeValue);
+            $strongs->parentNode->replaceChild($newstrong, $strongs);
         }
         $tables = $dom->getElementsByTagName('table');
         if (is_array($tables)) {
@@ -167,6 +214,18 @@ class TwRenderer extends HtmlRenderer
                     $table->setAttribute('title', $caption);
                 }
             }
+        } else {
+            $mytitle = $tables->getAttribute('title');
+            $mysummary = $tables->getAttribute('summary');
+            $caption = false;
+            if ($tables->hasChildNodes()) {
+                if ($tables->firstChild->nodeName == 'caption') {
+                    $caption = $tables->firstChild->nodeValue;
+                }
+            }
+            if (!$mytitle && $caption) {
+                $tables->setAttribute('title', $caption);
+            }
         }
         $table_headers = $dom->getElementsByTagName('th');
         if (is_array($table_headers)) {
@@ -176,6 +235,12 @@ class TwRenderer extends HtmlRenderer
                 if (!$myscope && !$myheaders) {
                     $myth->setAttribute('scope', 'col');
                 }
+            }
+        } else {
+            $myscope = $table_headers->getAttribute('scope');
+            $myheaders = $table_headers->getAttribute('headers');
+            if (!$myscope && !$myheaders) {
+                $table_headers->setAttribute('scope', 'col');
             }
         }
         $content = $dom->saveHTML();
