@@ -160,7 +160,7 @@ class GeventController extends ControllerBase
 
     public function todolist(Request $request)
     {
-        $calendar_id = $request->get('calendar', '');
+        $calendar_id = $request->query->get('calendar', '');
         $build = [];
         $build['#attached']['library'][] = 'gevent/gevent_print';
         initGoogleCalendar();
