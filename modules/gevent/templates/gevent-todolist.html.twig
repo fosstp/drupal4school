@@ -2,10 +2,11 @@
 <table class="views-table cols-4">
 	<thead>
 		<tr>
-			<th class="views-field" colspan="4" style="text-align: center">
+			<td class="views-field" colspan="4" style="text-align: center">
 				<form action="/todolist">
 					<span style="font-size: 150%">{{ title }}
 				{% if calendars %}
+				        <label for="calendar" style="display: none;">選擇行事曆：</label>
 						<select style="color: blue;" name="calendar" onchange="this.form.submit()">
 					{% for id, name in calendars %}
 							<option value="{{ id }}"{% if id == current %}selected{% endif %}>{{ name }}</option>
@@ -17,7 +18,7 @@
 					</span>　　
 					<button class="button js-form-submit form-submit" onclick="window.print()">友善列印</button>
 				</form>
-			</th>
+			</td>
 		</tr>
 		<tr>
 			<th class="views-field" width="16" style="text-align: center;">月</th>

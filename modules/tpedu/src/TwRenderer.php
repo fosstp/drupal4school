@@ -4,11 +4,11 @@ namespace Drupal\tpedu;
 
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Render\HtmlResponse;
+use Drupal\Core\Render\MainContent\HtmlRenderer;
 use Drupal\Core\Render\RenderContext;
 use Drupal\Core\Render\RendererInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Drupal\Core\Render\MainContent\HtmlRenderer;
 
 class TwRenderer extends HtmlRenderer
 {
@@ -96,6 +96,16 @@ class TwRenderer extends HtmlRenderer
                 }
                 $lnk->setAttribute('tabindex', $tab_index);
                 ++$tab_index;
+            }
+        }
+        $fields = $dom->getElementsByTagName('fieldset');
+        if (is_array($fields)) {
+            foreach ($fields as $fs) {
+                $legend = $fs->getElementsByTagName('legend');
+                if (!$legend) {
+                    $legend = $dom->createElement('legend', 'This is noname group!');
+                    $fs->appendChild($legend);
+                }
             }
         }
         $objs = $dom->getElementsByTagName('object');
