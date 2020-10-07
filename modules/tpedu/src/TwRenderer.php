@@ -73,174 +73,93 @@ class TwRenderer extends HtmlRenderer
         libxml_use_internal_errors(true);
         $dom->loadHTML(mb_convert_encoding($content, 'HTML-ENTITIES', 'UTF-8'));
         $images = $dom->getElementsByTagName('img');
-        if (is_array($images)) {
-            foreach ($images as $img) {
-                $myalt = $img->getAttribute('alt');
-                if (!$myalt) {
-                    $img->setAttribute('alt', '排版用裝飾圖片');
-                }
-            }
-        } else {
-            $myalt = $images->getAttribute('alt');
+        foreach ($images as $img) {
+            $myalt = $img->getAttribute('alt');
             if (!$myalt) {
-                $images->setAttribute('alt', '排版用裝飾圖片');
+                $img->setAttribute('alt', '排版用裝飾圖片');
             }
         }
         $links = $dom->getElementsByTagName('a');
         $tab_index = 1;
-        if (is_array($links)) {
-            foreach ($links as $lnk) {
-                $mytitle = $lnk->getAttribute('title');
-                if (!$mytitle) {
-                    if ($lnk->nodeValue) {
-                        $lnk->setAttribute('title', trim($lnk->nodeValue));
-                    } else {
-                        $lnk->nodeValue = '::';
-                        $lnk->setAttribute('title', $lnk->getAttribute('id'));
-                    }
-                }
-                $lnk->setAttribute('tabindex', $tab_index);
-                ++$tab_index;
-            }
-        } else {
-            $mytitle = $links->getAttribute('title');
+        foreach ($links as $lnk) {
+            $mytitle = $lnk->getAttribute('title');
             if (!$mytitle) {
-                if ($links->nodeValue) {
-                    $links->setAttribute('title', trim($links->nodeValue));
+                if ($lnk->nodeValue) {
+                    $lnk->setAttribute('title', trim($lnk->nodeValue));
                 } else {
-                    $links->nodeValue = '::';
-                    $links->setAttribute('title', $links->getAttribute('id'));
+                    $lnk->nodeValue = '::';
+                    $lnk->setAttribute('title', $lnk->getAttribute('id'));
+                }
+            } else {
+                if (empty($lnk->nodeValue)) {
+                    $lnk->nodeValue = '::';
                 }
             }
-            $links->setAttribute('tabindex', $tab_index);
+            $lnk->setAttribute('tabindex', $tab_index);
             ++$tab_index;
         }
         $fields = $dom->getElementsByTagName('fieldset');
-        if (is_array($fields)) {
-            foreach ($fields as $fs) {
-                $legend = $fs->getElementsByTagName('legend');
-                if (!$legend) {
-                    $legend = $dom->createElement('legend', 'This is noname group!');
-                    $fs->appendChild($legend);
-                }
-            }
-        } else {
-            $legend = $fields->getElementsByTagName('legend');
-            if (!$legend) {
+        foreach ($fields as $fs) {
+            if ($fs->firstChild->nodeName != 'legend') {
                 $legend = $dom->createElement('legend', 'This is noname group!');
-                $fields->appendChild($legend);
+                $legend->setAttribute('style', 'display:none;');
+                $fs->insertBefore($legend, $fs->firstChild);
             }
         }
         $objs = $dom->getElementsByTagName('object');
-        if (is_array($objs)) {
-            foreach ($objs as $obj) {
-                $myalt = $obj->nodeValue;
-                if (!$myalt) {
-                    $obj->nodeValue = $obj->getAttribute('data');
-                }
-            }
-        } else {
-            $myalt = $objs->nodeValue;
+        foreach ($objs as $obj) {
+            $myalt = $obj->nodeValue;
             if (!$myalt) {
-                $objs->nodeValue = $objs->getAttribute('data');
+                $obj->nodeValue = $obj->getAttribute('data');
             }
         }
         $applets = $dom->getElementsByTagName('applet');
-        if (is_array($applets)) {
-            foreach ($applets as $app) {
-                $myalt = $app->nodeValue;
-                if (!$myalt) {
-                    $app->setAttribute('alt', '多媒體互動物件');
-                    $app->nodeValue = '多媒體互動物件';
-                } else {
-                    $app->setAttribute('alt', $myalt);
-                }
-            }
-        } else {
-            $myalt = $applets->nodeValue;
+        foreach ($applets as $app) {
+            $myalt = $app->nodeValue;
             if (!$myalt) {
-                $applets->setAttribute('alt', '多媒體互動物件');
-                $applets->nodeValue = '多媒體互動物件';
+                $app->setAttribute('alt', '多媒體互動物件');
+                $app->nodeValue = '多媒體互動物件';
             } else {
-                $applets->setAttribute('alt', $myalt);
+                $app->setAttribute('alt', $myalt);
             }
         }
         $img_maps = $dom->getElementsByTagName('area');
-        if (is_array($img_maps)) {
-            foreach ($img_maps as $area) {
-                $myalt = $area->getAttribute('alt');
-                if (!$myalt) {
-                    $area->setAttribute('alt', $area->getAttribute('href'));
-                }
-            }
-        } else {
-            $myalt = $img_maps->getAttribute('alt');
+        foreach ($img_maps as $area) {
+            $myalt = $area->getAttribute('alt');
             if (!$myalt) {
-                $img_maps->setAttribute('alt', $img_maps->getAttribute('href'));
+                $area->setAttribute('alt', $area->getAttribute('href'));
             }
         }
         $ems = $dom->getElementsByTagName('i');
-        if (is_array($ems)) {
-            foreach ($ems as $em) {
-                $newem = $dom->createElement('em', $em->nodeValue);
-                $em->parentNode->replaceChild($newem, $em);
-            }
-        } else {
-            $newem = $dom->createElement('em', $ems->nodeValue);
-            $ems->parentNode->replaceChild($newem, $ems);
+        foreach ($ems as $em) {
+            $newem = $dom->createElement('em', $em->nodeValue);
+            $em->parentNode->replaceChild($newem, $em);
         }
         $strongs = $dom->getElementsByTagName('b');
-        if (is_array($strongs)) {
-            foreach ($strongs as $strong) {
-                $newstrong = $dom->createElement('strong', $strong->nodeValue);
-                $strong->parentNode->replaceChild($newstrong, $strong);
-            }
-        } else {
-            $newstrong = $dom->createElement('strong', $strongs->nodeValue);
-            $strongs->parentNode->replaceChild($newstrong, $strongs);
+        foreach ($strongs as $strong) {
+            $newstrong = $dom->createElement('strong', $strong->nodeValue);
+            $strong->parentNode->replaceChild($newstrong, $strong);
         }
         $tables = $dom->getElementsByTagName('table');
-        if (is_array($tables)) {
-            foreach ($tables as $table) {
-                $mytitle = $table->getAttribute('title');
-                $mysummary = $table->getAttribute('summary');
-                $caption = false;
-                if ($table->hasChildNodes()) {
-                    if ($table->firstChild->nodeName == 'caption') {
-                        $caption = $table->firstChild->nodeValue;
-                    }
-                }
-                if (!$mytitle && $caption) {
-                    $table->setAttribute('title', $caption);
-                }
-            }
-        } else {
-            $mytitle = $tables->getAttribute('title');
-            $mysummary = $tables->getAttribute('summary');
+        foreach ($tables as $table) {
+            $mytitle = $table->getAttribute('title');
+            $mysummary = $table->getAttribute('summary');
             $caption = false;
-            if ($tables->hasChildNodes()) {
-                if ($tables->firstChild->nodeName == 'caption') {
-                    $caption = $tables->firstChild->nodeValue;
+            if ($table->hasChildNodes()) {
+                if ($table->firstChild->nodeName == 'caption') {
+                    $caption = $table->firstChild->nodeValue;
                 }
             }
             if (!$mytitle && $caption) {
-                $tables->setAttribute('title', $caption);
+                $table->setAttribute('title', $caption);
             }
         }
         $table_headers = $dom->getElementsByTagName('th');
-        if (is_array($table_headers)) {
-            foreach ($table_headers as $myth) {
-                $myscope = $myth->getAttribute('scope');
-                $myheaders = $myth->getAttribute('headers');
-                if (!$myscope && !$myheaders) {
-                    $myth->setAttribute('scope', 'col');
-                }
-            }
-        } else {
-            $myscope = $table_headers->getAttribute('scope');
-            $myheaders = $table_headers->getAttribute('headers');
+        foreach ($table_headers as $myth) {
+            $myscope = $myth->getAttribute('scope');
+            $myheaders = $myth->getAttribute('headers');
             if (!$myscope && !$myheaders) {
-                $table_headers->setAttribute('scope', 'col');
+                $myth->setAttribute('scope', 'col');
             }
         }
         $content = $dom->saveHTML();
