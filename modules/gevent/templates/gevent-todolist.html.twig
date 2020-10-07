@@ -7,7 +7,7 @@
 					<span style="font-size: 150%">{{ title }}
 				{% if calendars %}
 				        <label for="calendar" style="display: none;">選擇行事曆：</label>
-						<select style="color: blue;" name="calendar" onchange="this.form.submit()">
+						<select id="calendar" name="calendar" style="color: blue;" onchange="this.form.submit()">
 					{% for id, name in calendars %}
 							<option value="{{ id }}"{% if id == current %}selected{% endif %}>{{ name }}</option>
 					{% endfor %}
