@@ -160,15 +160,18 @@ class GeventController extends ControllerBase
 
     public function todolist(Request $request)
     {
-        $calendar_id = $request->query->get('calendar', '');
+        $calendar_id = $request->get('calendar', '');
         $build = [];
         $build['#attached']['library'][] = 'gevent/gevent_print';
         initGoogleCalendar();
         $calendars = gs_listCalendars();
         foreach ($calendars as $calendarListEntry) {
-            $my_calendars[$calendarListEntry->getId()] = $calendarListEntry->getSummary();
-            if (empty($calendar_id)) {
-                $calendar_id = $calendarListEntry->getId();
+            $calId = $calendarListEntry->getId();
+            if (!strpos($calid, '#holiday') && !strpos($calid, '#contacts')) {
+                $my_calendars[$calId] = $calendarListEntry->getSummary();
+                if (empty($calendar_id)) {
+                    $calendar_id = $calendarListEntry->getId();
+                }
             }
         }
         date_default_timezone_set('Asia/Taipei');

@@ -91,7 +91,7 @@ class TwRenderer extends HtmlRenderer
                     $lnk->setAttribute('title', $lnk->getAttribute('id'));
                 }
             } else {
-                if (empty($lnk->nodeValue)) {
+                if (empty($lnk->nodeValue) && !($lnk->hasChildNodes())) {
                     $lnk->nodeValue = '::';
                 }
             }
