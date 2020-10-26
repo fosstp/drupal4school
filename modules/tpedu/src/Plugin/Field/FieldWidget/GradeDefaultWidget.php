@@ -107,7 +107,6 @@ class GradeDefaultWidget extends TpeduWidgetBase
                                 '#name' => $field_name.'['.$k.']',
                                 '#title' => $v,
                                 '#return_value' => $k,
-                                '#default_value' => null,
                                 '#attributes' => $target['#attributes'],
                             ];
                         }
