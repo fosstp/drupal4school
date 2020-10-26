@@ -41,9 +41,9 @@ class SubjectsDefaultWidget extends TpeduWidgetBase
         if ($this->getFieldSetting('filter_by_class') && $this->getFieldSetting('class')) {
             $subjects = get_subjects_of_class($this->getFieldSetting('class'));
         }
-        $account = User::load(\Drupal::currentUser()->id());
-        if ($account->get('init')->value == 'tpedu') {
-            if ($this->getFieldSetting('filter_by_current_user')) {
+        if ($this->getFieldSetting('filter_by_current_user')) {
+            $account = User::load(\Drupal::currentUser()->id());
+            if ($account->get('init')->value == 'tpedu') {
                 $subjects = get_subjects_of_assignment($account->get('uuid')->value);
             }
         }

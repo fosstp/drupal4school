@@ -357,7 +357,7 @@ function gs_syncEvent(EntityInterface $node)
         }
         $event = gs_createEvent($calendar_id, $event);
     }
-    if ($event) {
+    if ($event instanceof \Google_Service_Calendar_Event) {
         $event->calendar_id = $calendar_id;
     }
 

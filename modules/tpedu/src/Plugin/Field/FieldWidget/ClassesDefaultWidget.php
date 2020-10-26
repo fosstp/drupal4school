@@ -49,9 +49,9 @@ class ClassesDefaultWidget extends TpeduWidgetBase
                 }
             }
         }
-        $account = User::load(\Drupal::currentUser()->id());
-        if ($account->get('init')->value == 'tpedu') {
-            if ($this->getFieldSetting('filter_by_current_user')) {
+        if ($this->getFieldSetting('filter_by_current_user')) {
+            $account = User::load(\Drupal::currentUser()->id());
+            if ($account->get('init')->value == 'tpedu') {
                 $classes = get_teach_classes($account->get('uuid')->value);
             }
         }

@@ -36,7 +36,7 @@ function gevent_node_presave(EntityInterface $node)
         initGoogleCalendar();
         $event = gs_syncEvent($node);
 
-        if ($event) {
+        if ($event instanceof \Google_Service_Calendar_Event) {
             $calendar_id = $event->calendar_id;
             $event_id = $event->getId();
             $node->set($config->get('field_calendar_id'), $calendar_id);

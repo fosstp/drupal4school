@@ -38,9 +38,9 @@ class RolesDefaultWidget extends TpeduWidgetBase
         if ($this->getFieldSetting('filter_by_unit') && $this->getFieldSetting('unit')) {
             $roles = get_roles_of_unit($this->getFieldSetting('unit'));
         }
-        $account = User::load(\Drupal::currentUser()->id());
-        if ($account->get('init')->value == 'tpedu') {
-            if ($this->getFieldSetting('filter_by_current_user')) {
+        if ($this->getFieldSetting('filter_by_current_user')) {
+            $account = User::load(\Drupal::currentUser()->id());
+            if ($account->get('init')->value == 'tpedu') {
                 $roles = get_roles_of_jobs($account->get('uuid')->value);
             }
         }
