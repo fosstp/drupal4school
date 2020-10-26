@@ -23,7 +23,7 @@ class StudentsDefaultWidget extends TpeduWidgetBase
         $students = [];
         if ($this->getFieldSetting('filter_by_class') && $this->getFieldSetting('class')) {
             $students = get_students_of_class($this->getFieldSetting('class'));
-            usort($students, function ($a, $b) { return strcmp($a->seat, $b->seat); });
+            usort($students, function ($a, $b) { return ($a->seat - $b->seat) ? -1 : 1; });
             foreach ($students as $r) {
                 $options[$r->uuid] = $r->seat.' '.$r->realname;
             }
@@ -33,7 +33,7 @@ class StudentsDefaultWidget extends TpeduWidgetBase
             $user = get_user($account->get('uuid')->value);
             if ($this->getFieldSetting('filter_by_current_user') && !empty($user->class)) {
                 $students = get_students_of_class($user->class);
-                usort($students, function ($a, $b) { return strcmp($a->seat, $b->seat); });
+                usort($students, function ($a, $b) { return ($a->seat - $b->seat) ? -1 : 1; });
                 foreach ($students as $r) {
                     $options[$r->uuid] = $r->seat.' '.$r->realname;
                 }

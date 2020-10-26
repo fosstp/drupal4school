@@ -87,7 +87,7 @@ class ClassesDefaultWidget extends TpeduWidgetBase
         $students = [];
         if ($settings['filter_by_class'] && $myclass) {
             $students = get_students_of_class($myclass);
-            usort($students, function ($a, $b) { return strcmp($a->seat, $b->seat); });
+            usort($students, function ($a, $b) { return ($a->seat - $b->seat) ? -1 : 1; });
             foreach ($students as $s) {
                 $values[$s->uuid] = $s->seat.' '.$s->realname;
             }

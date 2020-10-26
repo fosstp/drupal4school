@@ -43,11 +43,14 @@ class TpeduField extends ManyToOne
         if ($field->getType() == 'tpedu_classes') {
             $this->valueOptions = $this->getClassesOptions();
         }
+        if ($field->getType() == 'tpedu_teachers') {
+            $this->valueOptions = $this->getTeachersOptions();
+        }
     }
 
     protected function getGradeOptions()
     {
-        $options = array();
+        $options = [];
         $grades = all_grade();
         usort($grades, function ($a, $b) { return strcmp($a->grade, $b->grade); });
         foreach ($grades as $g) {
@@ -59,7 +62,7 @@ class TpeduField extends ManyToOne
 
     protected function getUnitsOptions()
     {
-        $options = array();
+        $options = [];
         $units = all_units();
         usort($units, function ($a, $b) { return strcmp($a->id, $b->id); });
         foreach ($units as $o) {
@@ -71,7 +74,7 @@ class TpeduField extends ManyToOne
 
     protected function getRolesOptions()
     {
-        $options = array();
+        $options = [];
         $roles = all_roles();
         usort($roles, function ($a, $b) { return strcmp($a->id, $b->id); });
         foreach ($roles as $r) {
@@ -83,7 +86,7 @@ class TpeduField extends ManyToOne
 
     protected function getDomainOptions()
     {
-        $options = array();
+        $options = [];
         $domains = all_domains();
         usort($domains, function ($a, $b) { return strcmp($a->domain, $b->domain); });
         foreach ($domains as $g) {
@@ -95,7 +98,7 @@ class TpeduField extends ManyToOne
 
     protected function getSubjectsOptions()
     {
-        $options = array();
+        $options = [];
         $subjects = all_subjects();
         usort($subjects, function ($a, $b) { return strcmp($a->id, $b->id); });
         foreach ($subjects as $r) {
@@ -107,7 +110,7 @@ class TpeduField extends ManyToOne
 
     protected function getClassesOptions()
     {
-        $options = array();
+        $options = [];
         $classes = all_classes();
         usort($classes, function ($a, $b) { return strcmp($a->id, $b->id); });
         foreach ($classes as $c) {
@@ -115,5 +118,14 @@ class TpeduField extends ManyToOne
         }
 
         return $options;
+    }
+
+    protected function getTeachersOptions()
+    {
+        $teachers = all_teachers();
+        usort($teachers, function ($a, $b) { return strcmp($a->realname, $b->realname); });
+        foreach ($teachers as $t) {
+            $options[$t->uuid] = $t->role_name.' '.$t->realname;
+        }
     }
 }
