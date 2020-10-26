@@ -2,6 +2,8 @@
 
 namespace Drupal\tpedu\Plugin\Field\FieldWidget;
 
+use Drupal\user\Entity\User;
+
 /**
  * Plugin implementation of the 'classes_default' widget.
  *
