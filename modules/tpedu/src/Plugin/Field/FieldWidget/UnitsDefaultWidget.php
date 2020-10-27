@@ -35,20 +35,23 @@ class UnitsDefaultWidget extends TpeduWidgetBase
 
     protected function getOptions(FormState $form_state)
     {
-        $account = User::load(\Drupal::currentUser()->id());
-        if ($account->get('init')->value == 'tpedu') {
-            if ($this->getFieldSetting('filter_by_current_user')) {
+        $options = [];
+        $units = [];
+        if ($this->getFieldSetting('filter_by_current_user')) {
+            $account = User::load(\Drupal::currentUser()->id());
+            if ($account->get('init')->value == 'tpedu') {
                 $units = get_units_of_job($account->get('uuid')->value);
             }
-        }
-        if (empty($units)) {
+        } else {
             $units = all_units();
         }
-        usort($units, function ($a, $b) { return strcmp($a->id, $b->id); });
-        $options = [];
-        foreach ($units as $o) {
-            $options[$o->id] = $o->name;
+        if (!empty($units)) {
+            usort($units, function ($a, $b) { return strcmp($a->id, $b->id); });
+            foreach ($units as $o) {
+                $options[$o->id] = $o->name;
+            }
         }
+        $this->options = $options;
 
         return $options;
     }

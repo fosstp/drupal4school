@@ -36,9 +36,8 @@ class StudentsDefaultWidget extends TpeduWidgetBase
                     $current = '101';
                 }
             }
-            $students = get_students_of_class($current_class);
-        }
-        if ($this->getFieldSetting('filter_by_current_user')) {
+            $students = get_students_of_class($current);
+        } elseif ($this->getFieldSetting('filter_by_current_user')) {
             $account = User::load(\Drupal::currentUser()->id());
             if ($account->get('init')->value == 'tpedu') {
                 $user = get_user($account->get('uuid')->value);
@@ -53,6 +52,7 @@ class StudentsDefaultWidget extends TpeduWidgetBase
                 $options[$r->uuid] = $r->seat.' '.$r->realname;
             }
         }
+        $this->options = $options;
 
         return $options;
     }

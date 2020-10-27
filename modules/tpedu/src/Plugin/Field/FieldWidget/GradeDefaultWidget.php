@@ -36,10 +36,13 @@ class GradeDefaultWidget extends TpeduWidgetBase
     {
         $options = [];
         $grades = all_grade();
-        usort($grades, function ($a, $b) { return strcmp($a->grade, $b->grade); });
-        foreach ($grades as $g) {
-            $options[$g->grade] = $g->grade.'年級';
+        if (!empty($grades)) {
+            usort($grades, function ($a, $b) { return strcmp($a->grade, $b->grade); });
+            foreach ($grades as $g) {
+                $options[$g->grade] = $g->grade.'年級';
+            }
         }
+        $this->options = $options;
 
         return $options;
     }

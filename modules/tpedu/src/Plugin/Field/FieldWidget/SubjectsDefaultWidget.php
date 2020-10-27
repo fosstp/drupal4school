@@ -51,8 +51,7 @@ class SubjectsDefaultWidget extends TpeduWidgetBase
             if (!empty($current)) {
                 $subjects = get_subjects_of_domain($current);
             }
-        }
-        if ($this->getFieldSetting('filter_by_class')) {
+        } elseif ($this->getFieldSetting('filter_by_class')) {
             $current = '';
             $fields = $form_state->getStorage()['field_storage']['#parents']['#fields'];
             foreach ($fields as $field_name => $my_field) {
@@ -66,20 +65,21 @@ class SubjectsDefaultWidget extends TpeduWidgetBase
             if (!empty($current)) {
                 $subjects = get_subjects_of_class($current);
             }
-        }
-        if ($this->getFieldSetting('filter_by_current_user')) {
+        } elseif ($this->getFieldSetting('filter_by_current_user')) {
             $account = User::load(\Drupal::currentUser()->id());
             if ($account->get('init')->value == 'tpedu') {
                 $subjects = get_subjects_of_assignment($account->get('uuid')->value);
             }
-        }
-        if (empty($subjects)) {
+        } else {
             $subjects = all_subjects();
         }
-        usort($subjects, function ($a, $b) { return strcmp($a->id, $b->id); });
-        foreach ($subjects as $r) {
-            $options[$r->id] = $r->name;
+        if (!empty($subjects)) {
+            usort($subjects, function ($a, $b) { return strcmp($a->id, $b->id); });
+            foreach ($subjects as $r) {
+                $options[$r->id] = $r->name;
+            }
         }
+        $this->options = $options;
 
         return $options;
     }

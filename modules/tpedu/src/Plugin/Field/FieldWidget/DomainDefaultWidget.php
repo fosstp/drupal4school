@@ -36,10 +36,13 @@ class DomainDefaultWidget extends TpeduWidgetBase
     {
         $options = [];
         $domains = all_domains();
-        usort($domains, function ($a, $b) { return strcmp($a->domain, $b->domain); });
-        foreach ($domains as $g) {
-            $options[$g->domain] = $g->domain.'領域';
+        if (!empty($domains)) {
+            usort($domains, function ($a, $b) { return strcmp($a->domain, $b->domain); });
+            foreach ($domains as $g) {
+                $options[$g->domain] = $g->domain.'領域';
+            }
         }
+        $this->options = $options;
 
         return $options;
     }

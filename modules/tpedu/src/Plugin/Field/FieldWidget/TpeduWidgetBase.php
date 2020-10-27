@@ -87,7 +87,7 @@ class TpeduWidgetBase extends WidgetBase
         $element['#delta'] = $delta;
         $element['#weight'] = $delta;
         $element['#key_column'] = $this->column;
-        $options = $this->getOptions($form_state);
+        $this->getOptions($form_state);
         $element['#options'] = $options;
         $this->required = $this->fieldDefinition->isRequired();
         $this->multiple = $this->fieldDefinition->getFieldStorageDefinition()->isMultiple();
@@ -177,7 +177,7 @@ class TpeduWidgetBase extends WidgetBase
 
     protected function getSelectedOptions(FieldItemListInterface $items)
     {
-        $flat_options = OptGroup::flattenOptions($this->getOptions());
+        $flat_options = OptGroup::flattenOptions($this->options);
 
         $selected_options = [];
         foreach ($items as $item) {

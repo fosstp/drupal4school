@@ -5,8 +5,8 @@ namespace Drupal\tpedu\Plugin\Field\FieldWidget;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\ReplaceCommand;
 use Drupal\Core\Field\FieldItemListInterface;
-use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Form\FormState;
+use Drupal\Core\Form\FormStateInterface;
 use Drupal\user\Entity\User;
 
 /**
@@ -37,6 +37,7 @@ class ClassesDefaultWidget extends TpeduWidgetBase
 
     protected function getOptions(FormState $form_state)
     {
+        $options = [];
         $classes = [];
         if ($this->getFieldSetting('filter_by_subject')) {
             $current = '';
@@ -52,8 +53,7 @@ class ClassesDefaultWidget extends TpeduWidgetBase
             if (!empty($current)) {
                 $classes = get_classes_of_subject($current);
             }
-        }
-        if ($this->getFieldSetting('filter_by_grade')) {
+        } elseif ($this->getFieldSetting('filter_by_grade')) {
             $current = '';
             $fields = $form_state->getStorage()['field_storage']['#parents']['#fields'];
             foreach ($fields as $field_name => $my_field) {
@@ -75,21 +75,21 @@ class ClassesDefaultWidget extends TpeduWidgetBase
                     }
                 }
             }
-        }
-        if ($this->getFieldSetting('filter_by_current_user')) {
+        } elseif ($this->getFieldSetting('filter_by_current_user')) {
             $account = User::load(\Drupal::currentUser()->id());
             if ($account->get('init')->value == 'tpedu') {
                 $classes = get_teach_classes($account->get('uuid')->value);
             }
-        }
-        if (empty($classes)) {
+        } else {
             $classes = all_classes();
         }
-        usort($classes, function ($a, $b) { return strcmp($a->id, $b->id); });
-        $options = [];
-        foreach ($classes as $c) {
-            $options[$c->id] = $c->name;
+        if (!empty($classes)) {
+            usort($classes, function ($a, $b) { return strcmp($a->id, $b->id); });
+            foreach ($classes as $c) {
+                $options[$c->id] = $c->name;
+            }
         }
+        $this->options = $options;
 
         return $options;
     }

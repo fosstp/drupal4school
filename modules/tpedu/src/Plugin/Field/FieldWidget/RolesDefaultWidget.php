@@ -51,19 +51,19 @@ class RolesDefaultWidget extends TpeduWidgetBase
             if (!empty($current)) {
                 $roles = get_roles_of_unit($current);
             }
-        }
-        if ($this->getFieldSetting('filter_by_current_user')) {
+        } elseif ($this->getFieldSetting('filter_by_current_user')) {
             $account = User::load(\Drupal::currentUser()->id());
             if ($account->get('init')->value == 'tpedu') {
                 $roles = get_roles_of_jobs($account->get('uuid')->value);
             }
-        }
-        if (empty($roles)) {
+        } else {
             $roles = all_roles();
         }
-        usort($roles, function ($a, $b) { return strcmp($a->id, $b->id); });
-        foreach ($roles as $r) {
-            $options[$r->id] = $r->name;
+        if (!empty($roles)) {
+            usort($roles, function ($a, $b) { return strcmp($a->id, $b->id); });
+            foreach ($roles as $r) {
+                $options[$r->id] = $r->name;
+            }
         }
 
         return $options;

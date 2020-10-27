@@ -35,8 +35,7 @@ class TeachersDefaultWidget extends TpeduWidgetBase
             if (!empty($current)) {
                 $teachers = get_teachers_of_unit($current);
             }
-        }
-        if ($this->getFieldSetting('filter_by_role')) {
+        } elseif ($this->getFieldSetting('filter_by_role')) {
             $current = '';
             $fields = $form_state->getStorage()['field_storage']['#parents']['#fields'];
             foreach ($fields as $field_name => $my_field) {
@@ -50,8 +49,7 @@ class TeachersDefaultWidget extends TpeduWidgetBase
             if (!empty($current)) {
                 $teachers = get_teachers_of_role($current);
             }
-        }
-        if ($this->getFieldSetting('filter_by_domain')) {
+        } elseif ($this->getFieldSetting('filter_by_domain')) {
             $current = '';
             $fields = $form_state->getStorage()['field_storage']['#parents']['#fields'];
             foreach ($fields as $field_name => $my_field) {
@@ -65,8 +63,7 @@ class TeachersDefaultWidget extends TpeduWidgetBase
             if (!empty($current)) {
                 $teachers = get_teachers_of_domain($current);
             }
-        }
-        if ($this->getFieldSetting('filter_by_subject')) {
+        } elseif ($this->getFieldSetting('filter_by_subject')) {
             $current = '';
             $fields = $form_state->getStorage()['field_storage']['#parents']['#fields'];
             foreach ($fields as $field_name => $my_field) {
@@ -80,8 +77,7 @@ class TeachersDefaultWidget extends TpeduWidgetBase
             if (!empty($current)) {
                 $teachers = get_teachers_of_subject($current);
             }
-        }
-        if ($this->getFieldSetting('filter_by_grade')) {
+        } elseif ($this->getFieldSetting('filter_by_grade')) {
             $current = '';
             $fields = $form_state->getStorage()['field_storage']['#parents']['#fields'];
             foreach ($fields as $field_name => $my_field) {
@@ -95,8 +91,7 @@ class TeachersDefaultWidget extends TpeduWidgetBase
             if (!empty($current)) {
                 $teachers = get_teachers_of_grade($current);
             }
-        }
-        if ($this->getFieldSetting('filter_by_class')) {
+        } elseif ($this->getFieldSetting('filter_by_class')) {
             $current = '';
             $fields = $form_state->getStorage()['field_storage']['#parents']['#fields'];
             foreach ($fields as $field_name => $my_field) {
@@ -110,14 +105,16 @@ class TeachersDefaultWidget extends TpeduWidgetBase
             if (!empty($current)) {
                 $teachers = get_teachers_of_class($current);
             }
-        }
-        if (empty($teachers)) {
+        } else {
             $teachers = all_teachers();
         }
-        usort($teachers, function ($a, $b) { return strcmp($a->realname, $b->realname); });
-        foreach ($teachers as $t) {
-            $options[$t->uuid] = $t->role_name.' '.$t->realname;
+        if (!empty($teachers)) {
+            usort($teachers, function ($a, $b) { return strcmp($a->realname, $b->realname); });
+            foreach ($teachers as $t) {
+                $options[$t->uuid] = $t->role_name.' '.$t->realname;
+            }
         }
+        $this->options = $options;
 
         return $options;
     }
