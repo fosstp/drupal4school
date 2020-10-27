@@ -89,7 +89,7 @@ class ClassesDefaultWidget extends TpeduWidgetBase
         $students = [];
         if ($settings['filter_by_class'] && $myclass) {
             $students = get_students_of_class($myclass);
-            usort($students, function ($a, $b) { return ($a->seat - $b->seat) ? -1 : 1; });
+            usort($students, function ($a, $b) { return intval($a->seat) < intval($b->seat) ? -1 : 1; });
             foreach ($students as $s) {
                 $values[$s->uuid] = $s->seat.' '.$s->realname;
             }
@@ -125,6 +125,8 @@ class ClassesDefaultWidget extends TpeduWidgetBase
                 $filter = $settings['filter_by_class'];
                 if ($filter) {
                     $target = $form[$field_name]['widget'];
+                    $values = array_filter(array_values($form_state->getValue($field_name)));
+                    $target['#default_value'] = $values;
                     $element_id = 'edit-'.str_replace('_', '-', $field_name);
                     $target['#id'] = $element_id;
                     if ($target['#type'] == 'checkboxes') {
@@ -147,14 +149,9 @@ class ClassesDefaultWidget extends TpeduWidgetBase
                                 '#name' => $field_name.'['.$k.']',
                                 '#title' => $v,
                                 '#return_value' => $k,
-                                '#default_value' => null,
+                                '#default_value' => in_array($k, $values) ? $k : null,
                                 '#attributes' => $target['#attributes'],
                             ];
-                            foreach (array_values((array) $target['#value']) as $default_value) {
-                                if ($k == $default_value) {
-                                    $tarhget[$k]['#default_value'] = $k;
-                                }
-                            }
                         }
                         $inline = $settings['inline_columns'];
                         $target = $this->display_inline($target, $inline);
