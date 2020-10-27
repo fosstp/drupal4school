@@ -34,19 +34,43 @@ class ClassesDefaultWidget extends TpeduWidgetBase
         return $element;
     }
 
-    protected function getOptions()
+    protected function getOptions(FormStateInterface $form_state)
     {
         $classes = [];
-        if ($this->getFieldSetting('filter_by_subject') && $this->getFieldSetting('subject')) {
-            $classes = get_classes_of_subject($this->getFieldSetting('subject'));
+        if ($this->getFieldSetting('filter_by_subject')) {
+            $current = '';
+            $fields = $form_state->getStorage()['field_storage']['#parents']['#fields'];
+            foreach ($fields as $field_name => $my_field) {
+                if (isset($my_field['field_type']) && $my_field['field_type'] == 'tpedu_subjects') {
+                    $current = $form_state->getValue($field_name);
+                }
+            }
+            if (empty($current)) {
+                $current = $this->getFieldSetting('subject');
+            }
+            if (!empty($current)) {
+                $classes = get_classes_of_subject($current);
+            }
         }
-        if ($this->getFieldSetting('filter_by_grade') && $this->getFieldSetting('grade')) {
-            $grades = explode(',', $this->getFieldSetting('grade'));
-            foreach ($grades as $g) {
-                $classes = get_classes_of_grade($g);
-                if ($classes) {
-                    foreach ($classes as $c) {
-                        $classes[] = $c;
+        if ($this->getFieldSetting('filter_by_grade')) {
+            $current = '';
+            $fields = $form_state->getStorage()['field_storage']['#parents']['#fields'];
+            foreach ($fields as $field_name => $my_field) {
+                if (isset($my_field['field_type']) && $my_field['field_type'] == 'tpedu_grade') {
+                    $current = $form_state->getValue($field_name);
+                }
+            }
+            if (!empty($current)) {
+                $classes = get_classes_of_grade($current);
+            } else {
+                $current = $this->getFieldSetting('grade');
+                $grades = explode(',', $this->getFieldSetting('grade'));
+                foreach ($grades as $g) {
+                    $classes = get_classes_of_grade($g);
+                    if ($classes) {
+                        foreach ($classes as $c) {
+                            $classes[] = $c;
+                        }
                     }
                 }
             }

@@ -31,18 +31,16 @@ class GradeDefaultWidget extends TpeduWidgetBase
         return $element;
     }
 
-    protected function getOptions(FieldableEntityInterface $entity = null)
+    protected function getOptions(FormStateInterface $form_state)
     {
-        if (!isset($this->options)) {
-            $grades = all_grade();
-            usort($grades, function ($a, $b) { return strcmp($a->grade, $b->grade); });
-            foreach ($grades as $g) {
-                $options[$g->grade] = $g->grade.'年級';
-            }
-            $this->options = $options;
+        $options = [];
+        $grades = all_grade();
+        usort($grades, function ($a, $b) { return strcmp($a->grade, $b->grade); });
+        foreach ($grades as $g) {
+            $options[$g->grade] = $g->grade.'年級';
         }
 
-        return $this->options;
+        return $options;
     }
 
     protected function getClassesOptions(array $settings, $grade)

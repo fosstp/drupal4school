@@ -87,7 +87,7 @@ class TpeduWidgetBase extends WidgetBase
         $element['#delta'] = $delta;
         $element['#weight'] = $delta;
         $element['#key_column'] = $this->column;
-        $options = $this->getOptions();
+        $options = $this->getOptions($form_state);
         $element['#options'] = $options;
         $this->required = $this->fieldDefinition->isRequired();
         $this->multiple = $this->fieldDefinition->getFieldStorageDefinition()->isMultiple();

@@ -32,11 +32,24 @@ class RolesDefaultWidget extends TpeduWidgetBase
         return $element;
     }
 
-    protected function getOptions()
+    protected function getOptions(FormStateInterface $form_state)
     {
+        $options = [];
         $roles = [];
-        if ($this->getFieldSetting('filter_by_unit') && $this->getFieldSetting('unit')) {
-            $roles = get_roles_of_unit($this->getFieldSetting('unit'));
+        if ($this->getFieldSetting('filter_by_unit')) {
+            $current = '';
+            $fields = $form_state->getStorage()['field_storage']['#parents']['#fields'];
+            foreach ($fields as $field_name => $my_field) {
+                if (isset($my_field['field_type']) && $my_field['field_type'] == 'tpedu_units') {
+                    $current = $form_state->getValue($field_name);
+                }
+            }
+            if (empty($current)) {
+                $current = $this->getFieldSetting('unit');
+            }
+            if (!empty($current)) {
+                $roles = get_roles_of_unit($current);
+            }
         }
         if ($this->getFieldSetting('filter_by_current_user')) {
             $account = User::load(\Drupal::currentUser()->id());
@@ -48,7 +61,6 @@ class RolesDefaultWidget extends TpeduWidgetBase
             $roles = all_roles();
         }
         usort($roles, function ($a, $b) { return strcmp($a->id, $b->id); });
-        $options = [];
         foreach ($roles as $r) {
             $options[$r->id] = $r->name;
         }

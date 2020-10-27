@@ -17,20 +17,25 @@ use Drupal\user\Entity\User;
  */
 class StudentsDefaultWidget extends TpeduWidgetBase
 {
-    protected function getOptions()
+    protected function getOptions(FormStateInterface $form_state)
     {
         $options = [];
         $students = [];
-        $class = $this->getFieldSetting('class');
-        if (empty($class)) {
-            $class = '101';
-        }
-        if ($this->getFieldSetting('filter_by_class') && !empty($class)) {
-            $students = get_students_of_class($class);
-            usort($students, function ($a, $b) { return intval($a->seat) < intval($b->seat) ? -1 : 1; });
-            foreach ($students as $r) {
-                $options[$r->uuid] = $r->seat.' '.$r->realname;
+        if ($this->getFieldSetting('filter_by_class')) {
+            $current = '';
+            $fields = $form_state->getStorage()['field_storage']['#parents']['#fields'];
+            foreach ($fields as $field_name => $my_field) {
+                if (isset($my_field['field_type']) && $my_field['field_type'] == 'tpedu_classes') {
+                    $current = $form_state->getValue($field_name);
+                }
             }
+            if (empty($current)) {
+                $current = $this->getFieldSetting('class');
+                if (empty($current)) {
+                    $current = '101';
+                }
+            }
+            $students = get_students_of_class($current_class);
         }
         if ($this->getFieldSetting('filter_by_current_user')) {
             $account = User::load(\Drupal::currentUser()->id());
@@ -38,11 +43,13 @@ class StudentsDefaultWidget extends TpeduWidgetBase
                 $user = get_user($account->get('uuid')->value);
                 if (!empty($user->class)) {
                     $students = get_students_of_class($user->class);
-                    usort($students, function ($a, $b) { return intval($a->seat) < intval($b->seat) ? -1 : 1; });
-                    foreach ($students as $r) {
-                        $options[$r->uuid] = $r->seat.' '.$r->realname;
-                    }
                 }
+            }
+        }
+        if (!empty($students)) {
+            usort($students, function ($a, $b) { return intval($a->seat) < intval($b->seat) ? -1 : 1; });
+            foreach ($students as $r) {
+                $options[$r->uuid] = $r->seat.' '.$r->realname;
             }
         }
 

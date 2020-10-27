@@ -32,14 +32,39 @@ class SubjectsDefaultWidget extends TpeduWidgetBase
         return $element;
     }
 
-    protected function getOptions()
+    protected function getOptions(FormStateInterface $form_state)
     {
+        $options = [];
         $subjects = [];
-        if ($this->getFieldSetting('filter_by_domain') && $this->getFieldSetting('domain')) {
-            $subjects = get_subjects_of_domain($this->getFieldSetting('domain'));
+        if ($this->getFieldSetting('filter_by_domain')) {
+            $current = '';
+            $fields = $form_state->getStorage()['field_storage']['#parents']['#fields'];
+            foreach ($fields as $field_name => $my_field) {
+                if (isset($my_field['field_type']) && $my_field['field_type'] == 'tpedu_domain') {
+                    $current = $form_state->getValue($field_name);
+                }
+            }
+            if (empty($current)) {
+                $current = $this->getFieldSetting('domain');
+            }
+            if (!empty($current)) {
+                $subjects = get_subjects_of_domain($current);
+            }
         }
-        if ($this->getFieldSetting('filter_by_class') && $this->getFieldSetting('class')) {
-            $subjects = get_subjects_of_class($this->getFieldSetting('class'));
+        if ($this->getFieldSetting('filter_by_class')) {
+            $current = '';
+            $fields = $form_state->getStorage()['field_storage']['#parents']['#fields'];
+            foreach ($fields as $field_name => $my_field) {
+                if (isset($my_field['field_type']) && $my_field['field_type'] == 'tpedu_classes') {
+                    $current = $form_state->getValue($field_name);
+                }
+            }
+            if (empty($current)) {
+                $current = $this->getFieldSetting('class');
+            }
+            if (!empty($current)) {
+                $subjects = get_subjects_of_class($current);
+            }
         }
         if ($this->getFieldSetting('filter_by_current_user')) {
             $account = User::load(\Drupal::currentUser()->id());
@@ -51,7 +76,6 @@ class SubjectsDefaultWidget extends TpeduWidgetBase
             $subjects = all_subjects();
         }
         usort($subjects, function ($a, $b) { return strcmp($a->id, $b->id); });
-        $options = [];
         foreach ($subjects as $r) {
             $options[$r->id] = $r->name;
         }

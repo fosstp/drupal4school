@@ -32,7 +32,7 @@ class UnitsDefaultWidget extends TpeduWidgetBase
         return $element;
     }
 
-    protected function getOptions(FieldableEntityInterface $entity = null)
+    protected function getOptions(FormStateInterface $form_state)
     {
         $account = User::load(\Drupal::currentUser()->id());
         if ($account->get('init')->value == 'tpedu') {
@@ -48,9 +48,8 @@ class UnitsDefaultWidget extends TpeduWidgetBase
         foreach ($units as $o) {
             $options[$o->id] = $o->name;
         }
-        $this->options = $options;
 
-        return $this->options;
+        return $options;
     }
 
     protected function getRolesOptions(array $settings, $unit)
