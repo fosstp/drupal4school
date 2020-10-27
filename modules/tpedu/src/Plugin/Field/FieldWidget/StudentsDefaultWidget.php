@@ -2,6 +2,7 @@
 
 namespace Drupal\tpedu\Plugin\Field\FieldWidget;
 
+use Drupal\Core\Form\FormState;
 use Drupal\user\Entity\User;
 
 /**
@@ -17,7 +18,7 @@ use Drupal\user\Entity\User;
  */
 class StudentsDefaultWidget extends TpeduWidgetBase
 {
-    protected function getOptions(FormStateInterface $form_state)
+    protected function getOptions(FormState $form_state)
     {
         $options = [];
         $students = [];

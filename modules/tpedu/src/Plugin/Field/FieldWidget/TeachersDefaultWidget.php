@@ -2,6 +2,8 @@
 
 namespace Drupal\tpedu\Plugin\Field\FieldWidget;
 
+use Drupal\Core\Form\FormState;
+
 /**
  * Plugin implementation of the 'classes_default' widget.
  *
@@ -15,7 +17,7 @@ namespace Drupal\tpedu\Plugin\Field\FieldWidget;
  */
 class TeachersDefaultWidget extends TpeduWidgetBase
 {
-    protected function getOptions(FormStateInterface $form_state)
+    protected function getOptions(FormState $form_state)
     {
         $options = [];
         $teachers = [];

@@ -6,6 +6,7 @@ use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\ReplaceCommand;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Form\FormState;
 use Drupal\user\Entity\User;
 
 /**
@@ -34,7 +35,7 @@ class ClassesDefaultWidget extends TpeduWidgetBase
         return $element;
     }
 
-    protected function getOptions(FormStateInterface $form_state)
+    protected function getOptions(FormState $form_state)
     {
         $classes = [];
         if ($this->getFieldSetting('filter_by_subject')) {
