@@ -674,10 +674,10 @@ display:
           hierarchy: false
           error_message: true
           plugin_id: taxonomy_index_tid
-        field_department_dept_id:
-          id: field_department_dept_id
+        field_department_value:
+          id: field_department_value
           table: node__field_department
-          field: field_department_dept_id
+          field: field_department_value
           relationship: none
           group_type: group
           admin_label: ''
@@ -686,14 +686,14 @@ display:
           group: 1
           exposed: true
           expose:
-            operator_id: field_department_dept_id_op
+            operator_id: field_department_value_op
             label: 公告單位
             description: ''
             use_operator: false
-            operator: field_department_dept_id_op
+            operator: field_department_value_op
             operator_limit_selection: false
             operator_list: {  }
-            identifier: field_department_dept_id
+            identifier: field_department_value
             required: false
             remember: false
             multiple: false
@@ -707,7 +707,7 @@ display:
           group_info:
             label: 公告單位
             description: ''
-            identifier: field_department_dept_id
+            identifier: field_department_value
             optional: true
             widget: select
             multiple: false

@@ -21,8 +21,12 @@ class StudentsDefaultWidget extends TpeduWidgetBase
     {
         $options = [];
         $students = [];
-        if ($this->getFieldSetting('filter_by_class') && $this->getFieldSetting('class')) {
-            $students = get_students_of_class($this->getFieldSetting('class'));
+        $class = $this->getFieldSetting('class');
+        if (empty($class)) {
+            $class = '101';
+        }
+        if ($this->getFieldSetting('filter_by_class') && !empty($class)) {
+            $students = get_students_of_class($class);
             usort($students, function ($a, $b) { return ($a->seat - $b->seat) ? -1 : 1; });
             foreach ($students as $r) {
                 $options[$r->uuid] = $r->seat.' '.$r->realname;

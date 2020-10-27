@@ -25,8 +25,10 @@ class ClassesDefaultWidget extends TpeduWidgetBase
     {
         $element = parent::formElement($items, $delta, $element, $form, $form_state);
         if (!$this->multiple) {
-            $element['#ajax']['callback'] = [$this, 'reload_class_ajax_callback'];
-            $element['#ajax']['event'] = 'change';
+            $element['#ajax'] = [
+                'callback' => [$this, 'reload_class_ajax_callback'],
+                'event' => 'change',
+            ];
         }
 
         return $element;
@@ -145,8 +147,14 @@ class ClassesDefaultWidget extends TpeduWidgetBase
                                 '#name' => $field_name.'['.$k.']',
                                 '#title' => $v,
                                 '#return_value' => $k,
+                                '#default_value' => null,
                                 '#attributes' => $target['#attributes'],
                             ];
+                            foreach (array_values((array) $target['#value']) as $default_value) {
+                                if ($k == $default_value) {
+                                    $tarhget[$k]['#default_value'] = $k;
+                                }
+                            }
                         }
                         $inline = $settings['inline_columns'];
                         $target = $this->display_inline($target, $inline);
