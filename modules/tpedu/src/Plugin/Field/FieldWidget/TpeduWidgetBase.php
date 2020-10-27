@@ -88,7 +88,7 @@ class TpeduWidgetBase extends WidgetBase
         $element['#weight'] = $delta;
         $element['#key_column'] = $this->column;
         $this->getOptions($form_state);
-        $element['#options'] = $options;
+        $element['#options'] = $this->options;
         $this->required = $this->fieldDefinition->isRequired();
         $this->multiple = $this->fieldDefinition->getFieldStorageDefinition()->isMultiple();
         $this->has_value = isset($items[0]->{$this->column});
@@ -192,16 +192,18 @@ class TpeduWidgetBase extends WidgetBase
 
     public function display_inline(array &$element, $inline = 10)
     {
-        $element['#attached']['library'][] = 'tpedu/tpedu_fields';
-        $column = 0;
-        foreach ($element['#options'] as $key => $choice) {
-            if ($key === 0) {
-                $key = '0';
+        if (is_array($element['#options']) && !empty($element['#options'])) {
+            $element['#attached']['library'][] = 'tpedu/tpedu_fields';
+            $column = 0;
+            foreach ($element['#options'] as $key => $choice) {
+                if ($key === 0) {
+                    $key = '0';
+                }
+                $style = ($column % $inline) ? 'checkbox-columns' : 'checkbox-columns-clear';
+                $element[$key]['#prefix'] = '<div class="'.$style.'">';
+                $element[$key]['#suffix'] = '</div>';
+                ++$column;
             }
-            $style = ($column % $inline) ? 'checkbox-columns' : 'checkbox-columns-clear';
-            $element[$key]['#prefix'] = '<div class="'.$style.'">';
-            $element[$key]['#suffix'] = '</div>';
-            ++$column;
         }
 
         return $element;
