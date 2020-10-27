@@ -140,10 +140,10 @@ display:
           hide_empty: false
           empty_zero: false
           hide_alter_empty: true
-          click_sort_column: dept_id
+          click_sort_column: value
           type: units_default
           settings: {  }
-          group_column: dept_id
+          group_column: value
           group_columns: {  }
           group_rows: true
           delta_limit: 0
