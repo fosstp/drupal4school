@@ -5,14 +5,13 @@ services:
     image: traefik
     volumes:
     - /var/run/docker.sock:/var/run/docker.sock
-    - /nas_storage/traefik:/etc/traefik
-    - /nas_storage/letsencrypt_ssl:/etc/letsencrypt
+    - /storage/traefik:/etc/traefik
+    - /storage/certs:/etc/letsencrypt
     networks:
     - core-infra
     ports:
     - 80:80
     - 443:443
-    - 8080:8080
     deploy:
       placement:
         constraints: [node.role == manager]
@@ -49,7 +48,7 @@ services:
       AGENT_CLUSTER_ADDR: tasks.agent
     volumes:
     - /var/run/docker.sock:/var/run/docker.sock
-    - /nas_storage/volumes:/var/lib/docker/volumes
+    - /storage/volumes:/var/lib/docker/volumes
     networks:
     - core-infra
     deploy:
@@ -62,8 +61,7 @@ services:
     ports:
     - "9000:9000"
     volumes:
-    - /nas_storage/portainer:/data
-    - /nas_storage/letsencrypt_ssl:/certs
+    - /storage/portainer:/data
     networks:
     - core-infra
     deploy:
