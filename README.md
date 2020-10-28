@@ -35,10 +35,8 @@ drupal/console 尚未完全支援 drupal 9，因此改用 drush 10，兩者的�
 * 建立核心服務：
     `docker stack deploy --compose-file=swarm-core.yml core`
 * 在 DNS 為管理頁面加入紀錄：
-
-`traefik.貴校網域.tp.edu.tw
-portainer.貴校網域.tp.edu.tw`
-
+    `traefik.貴校網域.tp.edu.tw
+     portainer.貴校網域.tp.edu.tw`
 * 使用瀏覽器連結上述管理頁面
 
 ## docker-compose
