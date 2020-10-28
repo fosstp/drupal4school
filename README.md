@@ -17,11 +17,11 @@ drupal/console 尚未完全支援 drupal 9，因此改用 drush 10，兩者的�
 在 Windows 或 Mac 工作站上進行架站測試與套件開發，請先安裝 [docker desktop](https://www.docker.com/products/docker-desktop) ，然後啟動主控台，執行底下介紹的 docker-compose 指令。
 
 ## 單機運作環境
-請依照 docker 官方文件安裝 [docker engine](https://docs.docker.com/engine/install/)和[docker compose](https://docs.docker.com/compose/install/)，然後在文字模式執行底下介紹的 docker-compose 指令。
+請依照 docker 官方文件安裝 [docker engine](https://docs.docker.com/engine/install/) 和 [docker compose](https://docs.docker.com/compose/install/)，然後在文字模式執行底下介紹的 docker-compose 指令。
 
 ## 私有雲運作環境
 *   在 NAS 上建立 NFS 共享資料夾，並掛載到所有的集群電腦上，掛載點為 /nas_storage
-*   在所有的集群電腦上安裝 [docker engine](https://docs.docker.com/engine/install/)和[docker compose](https://docs.docker.com/compose/install/)
+*   在所有的集群電腦上安裝 [docker engine](https://docs.docker.com/engine/install/) 和 [docker compose](https://docs.docker.com/compose/install/)
 *   啟用 Docker Swarm：
 
         docker swarm init
