@@ -48,17 +48,17 @@ drupal/console 尚未完全支援 drupal 9，因此改用 drush 10，兩者的�
 ## docker-compose
 要架設一個 drupal 網站最簡單的方法就是使 docker-compose 指令。請先下載 [docker-compose.yml 範例檔](https://github.com/fosstp/drupal4school/blob/master/docker-compose.yml)，下載完成後請修改檔案中的環境變數、磁碟掛載路徑...等等參數，然後再執行底下的指令：
 
-    `docker-compose up -d`
+    docker-compose up -d
 
 要移除所有啟動的容器則使用以下指令：
 
-    `docker-compose down`
+    docker-compose down
 
 要將 drupal 容器更新到最新版，而不影響已經運作之站台（保留所有站台資料和模組設定），請用以下指令：
 
-    `docker pull fosstp/drupal`
+    docker pull fosstp/drupal
 
-    `docker-compose up -d`
+    docker-compose up -d
 
 環境變數說明如下：
 * DB_HOST: 資料庫容器名稱，請直接使用預設值「mysql」，除非您要使用獨立資料庫（例如：已存在之容器、獨立主機、Vmware 虛擬機或其它線上資料庫）。
@@ -75,22 +75,22 @@ drupal/console 尚未完全支援 drupal 9，因此改用 drush 10，兩者的�
 
 以上環境變數將透過 drush 或 drupal console 自動為您安裝網站，無需透過網頁進行任何設定，網站將直接啟用。如要變更以上參數，必須將所有舊容器移除重新啟動（所有資料將會遺失，一切重來）：
 
-    `docker-compose down`
+    docker-compose down
 
-    `docker-compose up -d`
+    docker-compose up -d
 
 ## 手動建立 Drupal 容器
 您可以依照以下步驟，手動建立所有必要的容器。 使用此映像檔的基本語法如下：
 
-    `docker run --name drupal -p 80:80 -d fosstp/drupal`
+    docker run --name drupal -p 80:80 -d fosstp/drupal
 
 要建立舊版的 drupal 環境，請在最後面加上版序，例如：
 
-    `docker run --name drupal -p 80:80 -d fosstp/drupal:8`
+    docker run --name drupal -p 80:80 -d fosstp/drupal:8
 
 或
 
-    `docker run --name drupal -p 80:80 -d fosstp/drupal:7`
+    docker run --name drupal -p 80:80 -d fosstp/drupal:7
 
 其中 --name 為容器名稱，範例為 drupal， -p 指定對外連線埠號，範例為 80， -d 指定來源映像檔，範例為本專案所建立的映像檔 fosstp/drupal。
 
@@ -101,7 +101,7 @@ drupal/console 尚未完全支援 drupal 9，因此改用 drush 10，兩者的�
 ## 手動建立 MySQL 容器
 請使用下列指令建立 mysql 容器：
 
-    `docker run --name mysql -e MYSQL_DATABASE=drupal -e MYSQL_ROOT_PASSWORD=dbpassword -d mysql --default-authentication-plugin=mysql_native_password`
+    docker run --name mysql -e MYSQL_DATABASE=drupal -e MYSQL_ROOT_PASSWORD=dbpassword -d mysql --default-authentication-plugin=mysql_native_password
 
 上述指令之說明如下：
 
@@ -112,6 +112,6 @@ drupal/console 尚未完全支援 drupal 9，因此改用 drush 10，兩者的�
 ## 手動建立 phpMyAdmin 容器
 我們建議您使用以下指令，安裝 phpmyadmin 容器，作為管理資料庫之用：
 
-    `docker run --name phpmyadmin --link mysql:db -p 8080:80 -d phpmyadmin`
+    docker run --name phpmyadmin --link mysql:db -p 8080:80 -d phpmyadmin
 
 在上面的範例中，我們使用 --link 參數將 mysql 容器指派給 phpmyadmin 容器，並且將主機別名設定為 db。當 phpmyadmin 容器啟動時，會自動連上 mysql 容器，但您仍然需要自己輸入管理員 root 及其密碼 dbpassword。
