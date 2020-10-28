@@ -23,17 +23,19 @@ drupal/console 尚未完全支援 drupal 9，因此改用 drush 10，兩者的�
 * 在 NAS 上建立 NFS 共享資料夾，並掛載到所有的集群電腦上，掛載點為 /nas_storage
 * 在所有的集群電腦上安裝 Docker，安裝文件請參考 https://docs.docker.com/engine/install/
 * 啟用 Docker Swarm：
-    <code>docker swarm init</code>
+    `docker swarm init`
 * 建立 overlay 網路：
-    <code>docker network create -d overlay --attachable core-infra</code>
+    `docker network create -d overlay --attachable core-infra`
 * 下載組態檔 [swarm-core.yml](https://raw.githubusercontent.com/fosstp/drupal4school/master/swarm-core.yml) 並修改組態中的網址設定：
 ** 將管理員郵件 your@mail.com 修改為您的郵件地址
 ** 將網域名稱 xxps 修改為貴校的網域
 * 建立核心服務：
-    <code>docker stack deploy --compose-file=swarm-core.yml core</code>
+    `docker stack deploy --compose-file=swarm-core.yml core`
 * 在 DNS 加入以下紀錄：
-** traefik.貴校網域.tp.edu.tw
-** portainer.貴校網域.tp.edu.tw
+
+> traefik.貴校網域.tp.edu.tw
+> portainer.貴校網域.tp.edu.tw
+
 * 使用瀏覽器連結管理頁面
 
 ## docker-compose
