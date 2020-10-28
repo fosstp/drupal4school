@@ -31,7 +31,7 @@ drupal/console 尚未完全支援 drupal 9，因此改用 drush 10，兩者的�
 *   建立 docker swarm 儲存池，可透過 NFS 掛載 NAS 資料夾或使用本地空間：
 
         mkdir /storage
-*   在儲存池內建立 Volume：volumes、certs、traefik、portainer
+*   在儲存池內建立 Volume：certs、traefik、portainer
 *   下載組態檔 [swarm-core.yml](https://raw.githubusercontent.com/fosstp/drupal4school/master/swarm-core.yml) 並修改組態中的網址設定：
     *   將管理員郵件 your@mail.com 修改為您的郵件地址
     *   將網域名稱 xxps 修改為貴校的網域
