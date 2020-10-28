@@ -48,7 +48,6 @@ services:
       AGENT_CLUSTER_ADDR: tasks.agent
     volumes:
     - /var/run/docker.sock:/var/run/docker.sock
-    - /storage/volumes:/var/lib/docker/volumes
     networks:
     - core-infra
     deploy:
