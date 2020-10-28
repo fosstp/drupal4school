@@ -20,24 +20,26 @@ drupal/console 尚未完全支援 drupal 9，因此改用 drush 10，兩者的�
 請依照 docker 官方文件安裝 [docker engine](https://docs.docker.com/engine/install/)和[docker compose](https://docs.docker.com/compose/install/)，然後在文字模式執行底下介紹的 docker-compose 指令。
 
 ## 私有雲運作環境
-* 在 NAS 上建立 NFS 共享資料夾，並掛載到所有的集群電腦上，掛載點為 /nas_storage
-* 在所有的集群電腦上安裝 Docker，安裝文件請參考 https://docs.docker.com/engine/install/
-* 啟用 Docker Swarm：
-    `docker swarm init`
-* 建立 overlay 網路：
-    `docker network create -d overlay --attachable core-infra`
-* 建立 docker swarm 儲存池，可透過 NFS 掛載 NAS 資料夾或使用本地空間：
-    `mkdir /storage`
-* 在儲存池內建立 Volume：volumes、certs、traefik、portainer
-* 下載組態檔 [swarm-core.yml](https://raw.githubusercontent.com/fosstp/drupal4school/master/swarm-core.yml) 並修改組態中的網址設定：
-** 將管理員郵件 your@mail.com 修改為您的郵件地址
-** 將網域名稱 xxps 修改為貴校的網域
-* 建立核心服務：
-    `docker stack deploy --compose-file=swarm-core.yml core`
-* 在 DNS 為管理頁面加入紀錄：
-    `traefik.貴校網域.tp.edu.tw
-     portainer.貴校網域.tp.edu.tw`
-* 使用瀏覽器連結上述管理頁面
+*   在 NAS 上建立 NFS 共享資料夾，並掛載到所有的集群電腦上，掛載點為 /nas_storage
+*   在所有的集群電腦上安裝 Docker，安裝文件請參考 https://docs.docker.com/engine/install/
+*   啟用 Docker Swarm：
+        docker swarm init
+*   建立 overlay 網路：
+        `docker network create -d overlay --attachable core-infra`
+*   建立 docker swarm 儲存池，可透過 NFS 掛載 NAS 資料夾或使用本地空間：
+        `mkdir /storage`
+*   在儲存池內建立 Volume：volumes、certs、traefik、portainer
+*   下載組態檔 [swarm-core.yml](https://raw.githubusercontent.com/fosstp/drupal4school/master/swarm-core.yml) 並修改組態中的網址設定：
+    *   將管理員郵件 your@mail.com 修改為您的郵件地址
+    *   將網域名稱 xxps 修改為貴校的網域
+*   建立核心服務：
+        `docker stack deploy --compose-file=swarm-core.yml core`
+*   在 DNS 為管理頁面加入紀錄：
+
+    >traefik.貴校網域.tp.edu.tw
+    >portainer.貴校網域.tp.edu.tw
+    
+*   使用瀏覽器連結上述管理頁面
 
 ## docker-compose
 要架設一個 drupal 網站最簡單的方法就是使 docker-compose 指令。請先下載 [docker-compose.yml 範例檔](https://github.com/fosstp/drupal4school/blob/master/docker-compose.yml)，下載完成後請修改檔案中的環境變數、磁碟掛載路徑...等等參數，然後再執行底下的指令：
