@@ -1,0 +1,90 @@
+version: '3.2'
+
+services:
+  http_proxy:
+    image: traefik
+    volumes:
+    - /nas_storage/traefik:/etc/traefik
+    - /var/run/docker.sock:/var/run/docker.sock
+    - /nas_storage/letsencrypt_ssl:/etc/letsencrypt
+    networks:
+    - core-infra
+    ports:
+    - 80:80
+    - 443:443
+    - 8080:8080
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+      labels:
+        traefik.enable: "true"
+        traefik.http.services.proxy.loadbalancer.server.port: "8080"
+        traefik.http.services.proxy.loadbalancer.server.scheme: "http"
+        traefik.http.middlewares.https_redirect.redirectscheme.scheme: "https"
+        traefik.http.middlewares.traefik_admin.digestauth.users: "dockers:traefik:d12f7f9e06ba246de8eb2f4243f2bd07"
+        traefik.http.routers.api_http.entrypoints: "web"
+        traefik.http.routers.api_http.rule: "Host(`traefik.xxps.tp.edu.tw`)"
+        traefik.http.routers.api_http.middlewares: "https_redirect"
+        traefik.http.routers.api_https.entrypoints: "web-secure"
+        traefik.http.routers.api_https.rule: "Host(`traefik.xxps.tp.edu.tw`)"
+        traefik.http.routers.api_https.middlewares: "traefik_admin"
+        traefik.http.routers.api_https.tls: "true"
+        traefik.http.routers.api_https.tls.certresolver: "letsencrypt"
+        traefik.http.routers.api_https.service: "api@internal"
+    command:
+    - "--providers.docker.endpoint=unix:///var/run/docker.sock"
+    - "--providers.docker.swarmMode=true"
+    - "--providers.docker.exposedByDefault=false"
+    - "--providers.docker.network=core-infra"
+    - "--entryPoints.web.address=:80"
+    - "--entryPoints.web-secure.address=:443"
+    - "--certificatesResolvers.letsencrypt.acme.email=leejoneshane@gmail.com"
+    - "--certificatesResolvers.letsencrypt.acme.storage=/etc/letsencrypt/acme.json"
+    - "--certificatesResolvers.letsencrypt.acme.tlsChallenge=true"
+    - "--certificatesResolvers.letsencrypt.acme.httpChallenge.entryPoint=web"
+    - "--api.insecure=true"
+    - "--api.dashboard=true"
+    
+  agent:
+    image: portainer/agent
+    environment:
+      AGENT_CLUSTER_ADDR: tasks.agent
+    volumes:
+    - /var/run/docker.sock:/var/run/docker.sock
+    - /storage/volumes:/var/lib/docker/volumes
+    networks:
+    - core-infra
+    deploy:
+      mode: global
+      placement:
+        constraints: [node.platform.os == linux]
+
+  portainer:
+    image: portainer/portainer
+    ports:
+    - "9000:9000"
+    volumes:
+    - /nas_storage/portainer:/data
+    - /nas_storage/letsencrypt_ssl:/certs
+    networks:
+    - core-infra
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints: [node.role == manager]
+      labels:
+        traefik.enable: "true"
+        traefik.http.services.portainer.loadbalancer.server.port: "9000"
+        traefik.http.services.portainer.loadbalancer.server.scheme: "http"
+        traefik.http.routers.portainer.entrypoints: "web"
+        traefik.http.routers.portainer.rule: "Host(`portainer.xxps.tp.edu.tw`)"
+        traefik.http.routers.portainer.middlewares: "https_redirect"
+        traefik.http.routers.portainer-secure.entrypoints: "web-secure"
+        traefik.http.routers.portainer-secure.rule: "Host(`portainer.xxps.tp.edu.tw`)"
+        traefik.http.routers.portainer-secure.tls: "true"
+        traefik.http.routers.portainer-secure.tls.certresolver: "letsencrypt"
+
+networks:
+  core-infra:
+    external: true
