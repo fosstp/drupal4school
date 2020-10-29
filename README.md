@@ -1,5 +1,5 @@
 # Drupal學校架站包計劃（D4S: Drupal for School）
-這是一個 [docker](https://www.docker.com/) 映像檔，此映像檔內容包含：debian 10.2(buster-slim) + php 7.3 + apache 2.4 + drupal 9.0.６ + drush 10 + D4S 專案模組。
+這是一個 [docker](https://www.docker.com/) 映像檔，此映像檔內容包含：debian 10.2(buster-slim) + php 7.3 + apache 2.4 + drupal 9.0.7 + drush 10 + D4S 專案模組 + D4S Bootstrap 版型（開發中，請勿啟用）。
 目前已納入臺北市校園單一身分驗證服務的各級學程所有學校都可以使用，不再受限於各別校務行政系統的開放性。
 
 drupal/console 尚未完全支援 drupal 9，因此改用 drush 10，兩者的差別請看[這篇文章](https://www.cmsdrupal.com/blog/drupal-console-vs-drush-should-you-run-both-or-stick-one-each-cli-tools-most-powerful-commands)。
