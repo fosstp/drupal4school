@@ -1,23 +1,23 @@
 /* ---------- Color Module Styles ----------- */
 body {
   color: #3b3b3b;
-  background: #292929;
+  background: #ffffff;
 }
 
 #page,
 #main-wrapper,
 .region-primary-menu .menu-item a.is-active,
 .region-primary-menu .menu-item--active-trail a {
-  background-color: #fff;
+  background-color: #ffffff;
 }
 
 .tabs ul.primary li a.is-active {
-  background-color: #fff;
+  background-color: #ffffff;
 }
 
 .tabs ul.primary li.is-active a {
-  background-color: #fff;
-  border-bottom-color: #fff;
+  background-color: #ffffff;
+  border-bottom-color: #ffffff;
 }
 
 #header-brand {
