@@ -25,26 +25,20 @@
 
             $colorPreview.find('.color-preview-page-title, .color-preview-main h2, .color-preview .preview-content').css('color', $colorPalette.find('input[name="palette[text]"]').val());
             $colorPreview.find('.color-preview-content a').css('color', $colorPalette.find('input[name="palette[link]"]').val());
-            $colorPreview.find('.preview-button').css('background-color', $colorPalette.find('input[name="palette[button]"]').val());
-            $colorPreview.find('.preview-button').css('border-color', $colorPalette.find('input[name="palette[button]"]').val());
-            $colorPreview.find('.preview-button').hover(function () {
-                    $(this).css('background-color', $colorPalette.find('input[name="palette[buttonhover]"]').val());
-                },
-                function () {
-                    $(this).css('background-color', $colorPalette.find('input[name="palette[button]"]').val());
-                });
+            $colorPreview.find('.color-preview-subcontent').css('background-color', $colorPalette.find('input[name="palette[sub]"]').val());
 
             var $colorPreviewBlock = $colorPreview.find('.color-preview-sidebar .color-preview-block');
             $colorPreviewBlock.css('background-color', $colorPalette.find('input[name="palette[sidebar]"]').val());
             $colorPreviewBlock.css('border-color', $colorPalette.find('input[name="palette[sidebarborders]"]').val());
 
             $colorPreview.find('.color-preview-footer-wrapper').css('background-color', $colorPalette.find('input[name="palette[footer]"]').val());
+            $colorPreview.find('.color-preview-modal-wrapper').css('background-color', $colorPalette.find('input[name="palette[modal]"]').val());
 
             var gradientStart = $colorPalette.find('input[name="palette[top]"]').val();
             var gradientEnd = $colorPalette.find('input[name="palette[bottom]"]').val();
 
-            $colorPreview.find('.color-preview-header-top').css('background-color', $colorPalette.find('input[name="palette[top]"]').val());
-            $colorPreview.find('.color-preview-header').css('background-color', $colorPalette.find('input[name="palette[bottom]"]').val());
+            $colorPreview.find('.color-preview-header-top').css('background-color', gradientStart);
+            $colorPreview.find('.color-preview-main-menu').css('background-color', gradientEnd);
 
             $colorPreview.find('.color-preview-site-name').css('color', $colorPalette.find('input[name="palette[titleslogan]"]').val());
         }

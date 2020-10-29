@@ -62,15 +62,16 @@ a:active {
   border-color: #f9f9f9;
 }
 
-.page-footer {
+#page-footer {
   background-color: #888888;
 }
 
-.page-footer-sub {
+#page-footer-sub {
   background-color: #024268;
 }
 
 .region-modal-container {
+  color: #fffeff;
   background-color: #292929;
 }
 
