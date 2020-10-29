@@ -5,3 +5,4 @@ sites/*/files
 sites/*/private
 sites/simpletest
 */Icon
+*/.DS_Store
