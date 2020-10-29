@@ -1,0 +1,89 @@
+/* ---------------------------------------------------------------------------*/
+/* MOBILE FIRST - layout/_footer.scss                                         */
+/* ---------------------------------------------------------------------------*/
+@charset "UTF-8";
+/////////////////////////////////////////////////////////// BREAKPOINT MEDIUM UP
+@include media-breakpoint-up(xs) {
+  //////////////////////////////////////////////////////////////////////////////
+  // [ COMMON ]
+  #page-footer {
+    box-shadow: 0 -4px 4px -2px rgba(0,0,0,.4);
+    .region {
+      padding: .5rem;
+    }
+  }
+
+  footer {
+    h2 {
+      color         : $white;
+      font-size     : 1.5rem;
+      border-bottom : 1px dotted $white;
+      margin-bottom : 1.5rem;
+      padding-bottom: .75rem;
+
+    }
+    .region-footer-left .block {
+      i {
+        font-size   : 2.5rem;
+        margin-right: .5rem;
+      }
+      // icon contact list
+      ul {
+        overflow     : hidden;
+        list-style   : none;
+        padding-left : .25rem;
+        margin-bottom: 0;
+        li:nth-child(-n+4):before {
+          content         : '';
+          width           : 25px;
+          height          : 25px;
+          display         : inline-block;
+          background-color: $gray-200;
+          transition      : $transition-base;
+          position        : absolute;
+        }
+        li:hover {
+          &:before {
+            background-color: $primary;
+          }
+        }
+        li:nth-child(1):before {
+          mask     : url('../icon/link.svg');
+          mask-size: cover;
+        }
+        li:nth-child(2):before {
+          mask     : url('../icon/send-1.svg');
+          mask-size: cover;
+        }
+        li:nth-child(3):before {
+          mask     : url('../icon/phone-alt-solid.svg');
+          mask-size: cover;
+          transform: rotatey(180deg);
+        }
+        li:nth-child(4):before {
+          mask     : url('../icon/map-pin.svg');
+          mask-size: cover;
+        }
+        a {
+          color          : rgba(255, 255, 255, 0.5);
+          transition     : $transition-base;
+          display        : inline-block;
+          text-decoration: none;
+          &:hover {
+            color: $white;
+          }
+        }
+        li {
+          margin-bottom: .85rem;
+          margin-left  : 2.5rem;
+          &:last-child {
+            margin-bottom: 0;
+          }
+          &:before {
+            margin-left: -2.5rem;
+          }
+        }
+      }
+    }
+  }
+}

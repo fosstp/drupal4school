@@ -1,0 +1,29 @@
+/* ---------------------------------------------------------------------------*/
+/* MOBILE FIRST - page/_page-login.scss                                     */
+/* ---------------------------------------------------------------------------*/
+@charset "UTF-8";
+////////////////////////////////////////////////////// BREAKPOINT EXTRA SMALL UP
+@include media-breakpoint-up(xs) {
+  //////////////////////////////////////////////////////////////////////////////
+  // [ COMMON ]
+  .form-login {
+    .block-local-tasks-block .nav-pills {
+      justify-content: center;
+    }
+    .page-title {
+      font-size: 1.75rem;
+      &:before {
+        content         : '';
+        width           : 30px;
+        height          : 30px;
+        display         : inline-block;
+        background-color: $primary;
+        transform       : translateY(2px);
+        margin-right    : .75rem;
+        mask            : url('../icon/key.svg');
+        mask-size       : contain;
+        mask-repeat     : no-repeat;
+      }
+    }
+  }
+}

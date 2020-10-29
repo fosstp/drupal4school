@@ -1,0 +1,17 @@
+/* ---------------------------------------------------------------------------*/
+/* MOBILE FIRST - drupal/block/_syndicate .scss                               */
+/* ---------------------------------------------------------------------------*/
+@charset "UTF-8";
+////////////////////////////////////////////////////// BREAKPOINT EXTRA SMALL UP
+@include media-breakpoint-up(xs) {
+  //////////////////////////////////////////////////////////////////////////////
+  // [ SYNDICATE ]
+  .feed-icon {
+    width          : 25px;
+    height         : 25px;
+    background-size: auto;
+    background-size: cover;
+    margin-top     : 1rem;
+    margin-left    : auto;
+  }
+}

@@ -1,0 +1,187 @@
+/* ---------------------------------------------------------------------------*/
+/* MOBILE FIRST - content/_article.scss                                       */
+/* ---------------------------------------------------------------------------*/
+@charset "UTF-8";
+
+////////////////////////////////////////////////////// BREAKPOINT EXTRA SMALL UP
+@include media-breakpoint-up(xs) {
+  // ///////////////////////////////////////////////////////////////////////////
+  // [ COMMON ]
+  #page-content {
+    overflow: hidden;
+  }
+  article.node {
+    &.node--unpublished {
+      background-color: #f8f9fa;
+      padding         : 1rem;
+      border-radius   : $border-radius;
+      .entity-moderation-form {
+        background-color: #f8f9fa;
+      }
+    }
+    // READ MORE LINK
+    .node-readmore {
+      &:before {
+        mask            : url('../icon/plus.svg');
+        mask-size       : cover;
+        mask-repeat     : no-repeat;
+        content         : '';
+        width           : 16px;
+        height          : 16px;
+        display         : inline-block;
+        background-color: $primary;
+        transform       : translateY(2px);
+        transition      : $transition-base;
+        margin-right    : .5rem;
+      }
+      &:hover:before {
+        background-color: darken($primary, 15%);
+      }
+
+    }
+    // [ ORDERED LIST ]
+    ul:not([class]) {
+      padding-left: 1rem;
+      li::marker {
+        color: $primary;
+      }
+      ul {
+        padding-left: .75rem;
+      }
+    }
+    // [ UNORDERED LIST ]
+    ol:not([class]) {
+      padding-left: 1rem;
+      line-height : 1.75rem;
+      li::marker {
+        color: $primary;
+      }
+    }
+    // [ MAKE ARTICLE IMAGE RESPONSIVE ]
+    img {
+      max-width: 100%;
+    }
+
+    img[class*="image-style"] {
+      height       : auto;
+      float        : left;
+      margin-right : 15px;
+      margin-top   : 8px;
+      border-radius: $border-radius;
+    }
+
+    // [ Drupal HP VIEW IMAGE ]
+    img[class="image-style-medium"],
+    img[class="image-style-large"] {
+      max-width: 40%;
+    }
+    // [ ARTICLE META-DATA : AUTHOR, DATE ]
+    .node__meta {
+      height       : 35px;
+      margin-bottom: 10px;
+      display      : table;
+      .profile img {
+        float        : left;
+        border-radius: 50%;
+        max-width    : 100%;
+        height       : 35px;
+        width        : auto;
+        margin       : 0 10px 0 0;
+
+      }
+      .node__submitted {
+        height        : 35px;
+        color         : $gray-500;
+        font-size     : 90%;
+        display       : table-cell;
+        vertical-align: middle;
+
+      }
+    }
+    // [ RELATED LINKS ]
+    .node__links {
+      a {
+        text-decoration: none;
+      }
+      margin-top: .5rem;
+      text-align: right;
+      ul.inline li {
+        display: block;
+      }
+    }
+
+    // [ TAGS TAXONOMY ]
+    .field--name-field-tags,
+    .field--name-taxonomy-forums {
+      margin-top: .75rem;
+      display   : inline-block;
+      font-size : 90%;
+      //title
+      .field__label {
+        position   : relative;
+        display    : inline-block;
+        font-weight: normal;
+        &:before {
+          mask            : url('../icon/tag.svg');
+          mask-size       : cover;
+          content         : '';
+          width           : 16px;
+          height          : 16px;
+          display         : inline-block;
+          background-color: $body-color;
+          transition      : $transition-base;
+          margin-right    : .5rem;
+          left            : -27px;
+          top             : -2px;
+          transform       : translateY(2px);
+        }
+        &:after {
+          content: ' : ';
+        }
+      }
+      //taxonomy item
+      .field__item,
+      .field__items {
+        display: inline;
+        &:after {
+          content: ', ';
+        }
+        &:last-child {
+          &:after {
+            content: none;
+          }
+        }
+      }
+    }
+  }
+}
+
+/////////////////////////////////////////////////////////// BREAKPOINT MEDIUM UP
+@include media-breakpoint-up(md) {
+  article.node {
+    .node__links {
+      ul.inline li {
+        display: inline;
+      }
+
+    }
+    // [ ORDERED LIST ]
+    ul:not([class]) {
+      padding-left: 2rem;
+      li::marker {
+        color: $primary;
+      }
+      ul {
+        padding-left: 1.4rem;
+      }
+    }
+    // [ UNORDERED LIST ]
+    ol:not([class]) {
+      padding-left: 2rem;
+      line-height : 1.75rem;
+      li::marker {
+        color: $primary;
+      }
+    }
+  }
+}

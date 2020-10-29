@@ -1,0 +1,35 @@
+/* ---------------------------------------------------------------------------*/
+/* MOBILE FIRST - page/_page-taxonomy.scss                                  */
+/* ---------------------------------------------------------------------------*/
+@charset "UTF-8";
+////////////////////////////////////////////////////// BREAKPOINT EXTRA SMALL UP
+@include media-breakpoint-up(xs) {
+  //////////////////////////////////////////////////////////////////////////////
+  // [ COMMON ]
+  .path-taxonomy {
+
+    article.node .text-formatted {
+      text-align: justify;
+    }
+    .views-row:nth-of-type(n+2) {
+      margin-top : 2rem;
+      margin-left: 0;
+      border-top : 2px solid $gray-400;
+      padding-top: 1.5rem;
+    }
+    h1 {
+      &:before {
+        mask            : url('../icon/tag.svg');
+        mask-size       : contain;
+        mask-repeat     : no-repeat;
+        transform       : translateY(4px);
+        content         : '';
+        width           : 40px;
+        height          : 40px;
+        display         : inline-block;
+        background-color: $secondary;
+        margin-right    : 1rem;
+      }
+    }
+  }
+}

@@ -24,7 +24,7 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
     && echo "date.timezone = Asia/Taipei" > /usr/local/etc/php/conf.d/timezone.ini \
     && echo "post_max_size = 10M\nupload_max_filesize = 10M\nextension = uploadprogress" > /usr/local/etc/php/conf.d/upload.ini \
     && echo "memory_limit = -1" > /usr/local/etc/php/conf.d/memory.ini \
-    && echo "max_execution_time = 300" > /usr/local/etc/php/conf.d/execution_time.ini \
+    && echo "max_execution_time = 3000" > /usr/local/etc/php/conf.d/execution_time.ini \
     && cd /opt/drupal \
     && cp -rp /opt/drupal/web/sites /root/sites \
 #    && composer require drupal/date_recur:^3.0 drupal/date_recur_modular:^3.0 cache/filesystem-adapter google/apiclient:^2.0 drupal/console:~1.0 --prefer-dist --optimize-autoloader \

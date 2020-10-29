@@ -1,0 +1,17 @@
+uuid: 3206763b-4db7-42ff-b548-68bb1d5fd424
+langcode: en
+status: true
+dependencies: {  }
+_core:
+  default_config_hash: SQI-GSXTFfpHfGINPOLKFcMcbjZJwymDXmMjjgSXfwc
+name: wide
+label: wide
+effects:
+  b3155e9c-7880-457a-81df-e29f4d6240d8:
+    uuid: b3155e9c-7880-457a-81df-e29f4d6240d8
+    id: image_scale_and_crop
+    weight: 1
+    data:
+      width: 600
+      height: 200
+      anchor: center-center

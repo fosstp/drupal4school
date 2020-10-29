@@ -1,0 +1,31 @@
+/* ---------------------------------------------------------------------------*/
+/* MOBILE FIRST - content/_forum.scss                                       */
+/* ---------------------------------------------------------------------------*/
+@charset "UTF-8";
+
+////////////////////////////////////////////////////// BREAKPOINT EXTRA SMALL UP
+@include media-breakpoint-up(xs) {
+  //////////////////////////////////////////////////////////////////////////////
+  // [ HTML TAG ]
+  .statistics-counter {
+    display  : inline-block !important;
+    font-size: 90%;
+    color    : $gray-500;
+    &:before {
+      content         : '';
+      margin-right    : .5rem;
+      display         : inline-block;
+      background-color: $gray-500;
+      transform       : translateY(6px);
+      width           : 25px;
+      height          : 25px;
+      mask            : url('../icon/eye-fill.svg');
+      mask-size       : cover;
+      mask-repeat     : no-repeat;
+    }
+  }
+
+  article .node__links li {
+    display: inline-block !important;
+  }
+}

@@ -1,0 +1,210 @@
+/* ---------------------------------------------------------------------------*/
+/* MOBILE FIRST -  layout/header/_header-menu--main-nav.scss                  */
+/* ---------------------------------------------------------------------------*/
+@charset "UTF-8";
+////////////////////////////////////////////////////// BREAKPOINT EXTRA SMALL UP
+@include media-breakpoint-up(xs) {
+  //////////////////////////////////////////////////////////////////////////////
+  // [ COMMON ]
+  #menu-main {
+    a {
+      text-decoration: none;
+    }
+    // contextual link reset
+    .contextual-region {
+      position: inherit;
+    }
+    position : relative;
+    .menu--main {
+      width: 100%;
+    }
+    font-size: 1rem;
+    .nav-item {
+      border-top  : 1px solid $gray-600;
+      padding-left: 1rem;
+    }
+    // [ DROPDOWN ]
+    .dropdown-menu {
+      background-color: $secondary;
+      border          : 0;
+      border-radius   : 0;
+      padding-left    : 1rem;
+      .dropdown-item {
+        color      : $white;
+        font-weight: 300;
+        font-size  : 1rem;
+        &:hover {
+          background-color: lighten($primary,10%);
+        }
+      }
+    }
+
+    // [ MAIN NAVIGATION - BRANDING ]
+    .navbar-brand {
+      font-size: 1.5rem;
+    }
+    .hide-logo {
+      display: inline-block;
+    }
+    .show-logo {
+      display: inline-block;
+    }
+    .slogan {
+      font-size: 1rem;
+    }
+  }
+}
+
+////////////////////////////////////////////////////////// BREAKPOINT SMALL DOWN
+@include media-breakpoint-down(sm) {
+  //////////////////////////////////////////////////////////////////////////////
+  // [ MAIN NAVIGATION - COMMON ]
+  #menu-main {
+    .dropdown {
+      // submenu
+      .dropdown-item {
+        padding-left: .5rem;
+        border-left : 2px solid rgba(255, 255, 255, 0.75);
+      }
+
+      > .dropdown-toggle:after {
+        content: none;
+        border : 0;
+      }
+
+      // mobile menu arrow animation
+      > .dropdown-toggle:after {
+        border-style  : solid;
+        border-width  : .25em .25em 0 0;
+        content       : '';
+        display       : inline-block;
+        height        : .75em;
+        float         : right;
+        margin-right  : .75rem;
+        top           : 5px;
+        position      : relative;
+        transform     : rotate(45deg);
+        vertical-align: top;
+        width         : .75em;
+        transition    : 300ms ease all;
+      }
+      .dropdown-toggle.active-menu:after {
+        left     : 0;
+        transform: rotate(135deg);
+      }
+    }
+  }
+
+}
+/////////////////////////////////////////////////////////// BREAKPOINT MEDIUM UP
+@include media-breakpoint-up(md) {
+  //////////////////////////////////////////////////////////////////////////////
+  // [DROPDOWN MENU SLIDE UP ANIMATION]
+  @keyframes slideIn {
+    0% {
+      transform: translateY(1rem);
+      opacity  : 0;
+    }
+    100% {
+      transform: translateY(0rem);
+      opacity  : 1;
+    }
+    0% {
+      transform: translateY(1rem);
+      opacity  : 0;
+    }
+  }
+
+  .slideIn {
+    -webkit-animation-name: slideIn;
+    animation-name        : slideIn;
+  }
+
+  .animate {
+    animation-duration         : .2s;
+    -webkit-animation-duration : .2s;
+    animation-fill-mode        : both;
+    -webkit-animation-fill-mode: both;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  // [ COMMON]
+  #menu-main {
+    .menu--main {
+      width: auto;
+    }
+    .nav-item {
+      border-top: 0;
+      .nav-item {
+        padding-left: .25rem;
+      }
+    }
+    // dropdown
+    .dropdown-item {
+      padding-left: 1rem;
+    }
+    .nav-item.dropdown.show {
+      z-index: 2;
+    }
+    .dropdown.show:before {
+      content: none;
+    }
+    .dropdown-menu {
+      margin-top      : .6rem;
+      padding-left    : 0;
+      background-color: $primary;
+      border          : 0;
+      z-index         : 2;
+      &:after {
+        bottom             : 100%;
+        left               : 30%;
+        border             : solid transparent;
+        content            : ' ';
+        height             : 0;
+        width              : 0;
+        position           : absolute;
+        pointer-events     : none;
+        border-color       : rgba(136, 183, 213, 0);
+        border-bottom-color: $primary;
+        border-width       : 8px;
+        margin-left        : -20px;
+        margin-top         : 1rem;
+      }
+    }
+
+    // [ BORDER BOTTOM ANIMATION ]
+    a.nav-item {
+      position: relative;
+      &:before {
+        content           : '';
+        position          : absolute;
+        width             : 100%;
+        height            : 2px;
+        bottom            : 0;
+        left              : 0;
+        background-color  : $primary;
+        -webkit-transform : scaleX(0);
+        transform         : scaleX(0);
+        -webkit-transition: all .3s ease-in-out 0s;
+        transition        : all .3s ease-in-out 0s;
+      }
+    }
+    a.nav-item:not(.is-active) {
+      &:before {
+        visibility: hidden;
+      }
+      &:hover:before {
+        visibility       : visible;
+        -webkit-transform: scaleX(1);
+        transform        : scaleX(1);
+      }
+    }
+    a.nav-item.is-active {
+      &:before {
+        visibility       : visible;
+        -webkit-transform: scaleX(1);
+        transform        : scaleX(1);
+      }
+    }
+  }
+}

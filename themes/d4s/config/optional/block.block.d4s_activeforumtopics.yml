@@ -1,0 +1,29 @@
+status: true
+dependencies:
+  module:
+    - forum
+    - node
+  theme:
+    - d4s
+id: d4s_activeforumtopics
+theme: d4s
+region: sidebar_right
+weight: -11
+provider: null
+plugin: forum_active_block
+settings:
+  id: forum_active_block
+  label: 'Active forum topics'
+  provider: forum
+  label_display: visible
+  properties:
+    administrative: '1'
+  block_count: 5
+visibility:
+  node_type:
+    id: node_type
+    bundles:
+      forum: forum
+    negate: false
+    context_mapping:
+      node: '@node.node_route_context:node'

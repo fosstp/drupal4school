@@ -1,0 +1,28 @@
+color.preview:
+  css:
+    theme:
+      color/preview.css: {}
+  js:
+    color/preview.js: {}
+  dependencies:
+    - color/drupal.color
+global-styling:
+  css:
+    theme:
+      assets/css/style.css: {}
+      assets/css/colors.css: {}
+      //fonts.googleapis.com/css?family=Roboto:300,400,500,700,900&display=swap: {}
+  js:
+    /core/assets/vendor/popperjs/popper.min.js: {}
+    //stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js: {}
+    assets/js/global.js: {}
+  dependencies:
+    - core/drupal
+    - core/jquery
+    - core/jquery.once
+
+custom-styling:
+  version: VERSION
+  css:
+    theme:
+      public://d4s-custom.css: {}

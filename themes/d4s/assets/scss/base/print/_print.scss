@@ -1,0 +1,101 @@
+/* ---------------------------------------------------------------------------*/
+/* MOBILE FIRST - base/print/_print.scss                                             */
+/* ---------------------------------------------------------------------------*/
+@charset "UTF-8";
+////////////////////////////////////////////////////// BREAKPOINT EXTRA SMALL UP
+@include media-breakpoint-up(xs) {
+  //////////////////////////////////////////////////////////////////////////////
+  // [ COMMON ]
+  @media print {
+    body {
+      padding-top: 0 !important;
+    }
+    p {
+      orphans: 3 !important;
+    }
+    script,
+    style {
+      display: none;
+    }
+    .row {
+      display: block;
+    }
+    //Safari bug
+    .container {
+      width: auto;
+    }
+    //comment-form
+    #comment-form {
+      display: none;
+    }
+    //statistics counter
+    .node__links li.statistics-counter {
+      visibility: hidden !important;
+    }
+    // icon header frontpage
+    .path-frontpage article.node > h2::before {
+      content: none;
+    }
+    // header link
+    h1 a,
+    h2 a,
+    h3 a,
+    h4 a,
+    h5 a,
+    h6 a {
+      text-decoration: none !important;
+      padding-left   : 0 !important;
+      &:before {
+        content: none !important;
+      }
+    }
+    // Link
+    a {
+      color          : $body-color !important;
+      text-decoration: underline !important;
+    }
+    // write links
+    .field--name-body li a[href]:after,
+    .field--name-body p a[href]:after {
+      content: ' [LINK: ' attr(href) '] ';
+    }
+
+    // no toolbar
+    #toolbar-administration {
+      display: none;
+    }
+    // header branding
+    #header-brand a.navbar-brand {
+      font-size      : 2.5rem;
+      text-decoration: none !important;
+    }
+    ////////////////////////////////////////////////////////////////////////////
+    // [ NODE CONTENT ]
+    // tags margin
+    .field--name-field-tags .field__label {
+      margin-left: 0 !important;
+    }
+    // content related links
+    .node__content .node__links {
+      display: none !important;
+    }
+    ////////////////////////////////////////////////////////////////////////////
+    // [ COMMENT ]
+    #comment-container {
+      padding: 0 !important;
+    }
+    label.form-required {
+      display: none;
+    }
+    .form-item-comment-body-0-format {
+      margin-top: 1.5rem;
+    }
+    #comment-container .indented article {
+      padding-left: 1rem !important;
+      border-left : 2px solid $gray-500;
+    }
+    .comment-body .links {
+      display: none !important;
+    }
+  }
+}

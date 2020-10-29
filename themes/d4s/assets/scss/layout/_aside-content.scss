@@ -1,0 +1,162 @@
+/* ---------------------------------------------------------------------------*/
+/* MOBILE FIRST - layout/_aside-content.scss                                  */
+/* ---------------------------------------------------------------------------*/
+@charset "UTF-8";
+/////////////////////////////////////////////////////////// BREAKPOINT MEDIUM UP
+@include media-breakpoint-up(xs) {
+  //////////////////////////////////////////////////////////////////////////////
+  // [ STICKY COMPATIBILITY WITH TOOLBAR ]
+  aside.sticky-top:before {
+    display   : block;
+    content   : ' ';
+    margin-top: -35px;
+    height    : 35px;
+    visibility: hidden;
+    z-index   : 0;
+  }
+  aside.sticky-top {
+    z-index: 0;
+    top    : 35px;
+  }
+  .toolbar-horizontal aside.sticky-top,
+  .toolbar-vertical.toolbar-tray-open aside.sticky-top {
+    top: 55px;
+    &:before {
+      display   : block;
+      content   : ' ';
+      margin-top: -55px;
+      height    : 55px;
+      visibility: hidden;
+    }
+  }
+  .toolbar-horizontal.toolbar-tray-open aside.sticky-top {
+    top: 75px;
+    &:before {
+      display   : block;
+      content   : ' ';
+      margin-top: -75px;
+      height    : 75px;
+      visibility: hidden;
+    }
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// [ CONTENT ASIDE COMMON ]
+#content-aside {
+  div[id^="block-"],
+  nav[id^="block-"] {
+    background-color: $gray-100;
+    padding         : 1rem;
+    border-radius   : $border-radius;
+    margin-bottom   : .75rem;
+  }
+  a {
+    text-decoration: none;
+  }
+  ul:not(.contextual-links) {
+    padding-left : .5rem;
+    margin-left  : 0;
+    margin-bottom: 0;
+    line-height  : 1.5rem;
+  }
+  ul:not(.contextual-links) li {
+    margin-left: 0;
+    list-style : none;
+  }
+  ul:not(.contextual-links) a {
+    font-size : 90%;
+    transition: $transition-base;
+  }
+
+  .view-who-s-online .view-header,
+  div[id*="comments-recent"] .views-field-changed,
+  div[id*="comments-recent"] .view-empty,
+  div[id*="content-recent"] .view-empty,
+  div[id*="content-recent"] .views-field-changed {
+    color    : $gray-600;
+    font-size: 80%;
+  }
+
+  // clock icon for recent comment and content
+  div[id*="comments-recent"] .views-field-changed,
+  div[id*="content-recent"] .views-field-changed {
+    position: relative;
+    &:before {
+      content         : '';
+      width           : 15px;
+      height          : 15px;
+      display         : inline-block;
+      background-color: $gray-600;
+      transition      : $transition-base;
+      transform       : translateY(2px);
+      mask            : url('../icon/clock.svg');
+      mask-size       : contain;
+      mask-repeat     : no-repeat;
+      margin-right    : .2rem;
+    }
+  }
+
+  // border top for recent comment and content
+  div[id*="comments-recent"],
+  div[id*="content-recent"] {
+    ul:not(.contextual-links) li:nth-child(n+2) {
+      border-top : 1px solid $gray-300;
+      padding-top: .25rem;
+      margin-top : .25rem;
+    }
+  }
+  //Forum plus link
+  div[id*="newforumtopics"] .more-link,
+  div[id*="activeforumtopics"] .more-link {
+    position: relative;
+    height  : 30px;
+    a {
+      font-size: 0;
+      height   : 24px;
+      width    : 24px;
+      display  : inline-block;
+      position : absolute;
+      right    : 20px;
+      z-index  : 1;
+      top      : -10px;
+      &:before {
+        content         : '';
+        width           : 20px;
+        height          : 20px;
+        display         : inline-block;
+        background-color: $primary;
+        margin-right    : .35rem;
+        transform       : translateY(4px);
+        transition      : $transition-base;
+        mask            : url('../icon/plus.svg');
+        mask-size       : contain;
+        mask-repeat     : no-repeat;
+      }
+    }
+  }
+
+  // book block: make active page link more visible
+  div[id*="booknavigation"] .menu-item.menu-item--active-trail:not(.menu-item--expanded) {
+    font-weight: 600;
+  }
+  // target all block in content aside
+  .block {
+    h2 {
+      font-size    : 1.5rem;
+      position     : relative;
+      color        : $secondary;
+      margin-bottom: 0;
+      &:before {
+        content         : '';
+        width           : 20px;
+        height          : 8px;
+        display         : inline-block;
+        background-color: $secondary;
+        margin-left     : -1.5rem;
+        margin-right    : .5rem;
+        transform       : translateY(-2px);
+      }
+    }
+  }
+}

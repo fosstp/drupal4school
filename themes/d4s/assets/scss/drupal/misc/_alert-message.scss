@@ -1,0 +1,51 @@
+/* ---------------------------------------------------------------------------*/
+/* MOBILE FIRST - drupal/misc/_alert-message.scss                             */
+/* ---------------------------------------------------------------------------*/
+@charset "UTF-8";
+////////////////////////////////////////////////////// BREAKPOINT EXTRA SMALL UP
+@include media-breakpoint-up(xs) {
+  //////////////////////////////////////////////////////////////////////////////
+  // [ BOX ]
+  .alert {
+    margin      : 1rem auto;
+    .placeholder {
+      font-weight: 500;
+      a {
+        transition     : $transition-base;
+        text-decoration: none;
+      }
+
+    }
+    position    : relative;
+    padding-left: 4rem;
+    &:before {
+      content    : '';
+      width      : 35px;
+      height     : 35px;
+      position   : absolute;
+      margin-left: -3rem;
+      top        : 50%;
+      transform  : translateY(-50%);
+    }
+    // [ ICON ]
+    &.alert-danger:before {
+      mask            : url('../icon/x-circle-fill.svg');
+      mask-size       : cover;
+      background-color: $red;
+    }
+    &.alert-primary:before {
+      mask            : url('../icon/info-fill.svg');
+      mask-size       : cover;
+      background-color: $cyan;
+    }
+    &.alert-warning:before {
+      mask            : url('../icon/alert-circle-fill.svg');
+      mask-size       : cover;
+      background-color: $yellow;
+    }
+    // close button
+    .close {
+      transition: $transition-base;
+    }
+  }
+}

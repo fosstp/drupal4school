@@ -1,0 +1,21 @@
+/* ---------------------------------------------------------------------------*/
+/* MOBILE FIRST - drupal/module/_contextual-links.scss                        */
+/* ---------------------------------------------------------------------------*/
+@charset "UTF-8";
+////////////////////////////////////////////////////// BREAKPOINT EXTRA SMALL UP
+@include media-breakpoint-up(xs) {
+  //////////////////////////////////////////////////////////////////////////////
+  // [ STICKY TOP NAVBAR BUTTON VISIBILITY ]
+  #header-menu .contextual .trigger,
+  #header-menu .contextual-links {
+    margin-right: -2rem;
+  }
+  #header-menu .menu--main .contextual .contextual-links,
+  #header-menu .menu--main .contextual .trigger {
+    margin-right: 0;
+  }
+
+  .region-modal-container .contextual {
+    top: -1px;
+  }
+}

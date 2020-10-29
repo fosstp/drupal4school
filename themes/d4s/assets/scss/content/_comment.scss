@@ -1,0 +1,176 @@
+/* ---------------------------------------------------------------------------*/
+/* MOBILE FIRST - content/_comment.scss                                       */
+/* ---------------------------------------------------------------------------*/
+@charset "UTF-8";
+
+////////////////////////////////////////////////////// BREAKPOINT EXTRA SMALL UP
+@include media-breakpoint-up(xs) {
+
+  //////////////////////////////////////////////////////////////////////////////
+  // [ GLOBAL COMMENT ]
+  article.comment {
+    background-color: $gray-100;
+    padding         : 1rem 1.5rem .5rem;
+    margin-bottom   : 1.5rem;
+    border-radius   : $border-radius;
+    .field--name-user-picture img {
+      border-radius: 50% !important;
+      border       : 3px solid white;
+      height       : auto;
+      width        : 75px;
+      float        : left;
+      margin-top   : 5px;
+      margin-right : 10px;
+    }
+    .comment-title {
+      margin-bottom: 0;
+      mark {
+        border-radius: $border-radius;
+        padding      : .1rem .5rem;
+        font-size    : 60%;
+      }
+    }
+    div[class*="comment-body-0-format"] {
+      margin-top: 1.5rem;
+    }
+    .comment-title a {
+      font-size: 1.65rem;
+      &:before {
+        content         : '';
+        width           : 30px;
+        height          : 30px;
+        display         : inline-block;
+        background-color: $primary;
+        transform       : translateY(5px);
+        margin-right    : .5rem;
+        mask            : url('../icon/comment.svg');
+        mask-size       : contain;
+        mask-repeat     : no-repeat;
+      }
+    }
+
+    footer {
+      color    : $gray-500;
+      font-size: 90%;
+      margin   : .25rem 0;
+      .comment__submitted {
+        margin-bottom: 0;
+      }
+    }
+    .links {
+      display   : block;
+      text-align: right;
+      font-size : 90%;
+      margin-top: .5rem;
+      a {
+        text-decoration: none;
+      }
+    }
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  // [ NEW COMMENT FORM ]
+  .comment-comment-form {
+    .form-actions .button {
+      margin-top: 0;
+    }
+    .filter-wrapper {
+      padding: 0;
+    }
+    margin-top      : 1rem;
+    border-radius   : $border-radius;
+    background-color: $gray-100;
+    padding         : 2rem;
+  }
+  .comment-new-container {
+    #comment-form {
+      padding: 0;
+    }
+    .title {
+      font-size: 1.5rem;
+    }
+    label.form-required {
+      display: none;
+    }
+    //guidelines
+    .filter-help {
+      font-size: 90%;
+    }
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  // [ COMMENT CONTAINER ]
+  #comment-container {
+    .indented {
+      position: relative;
+      > article {
+        margin-left: .5rem;
+      }
+    }
+    .field--name-comment-body {
+      p:last-child {
+        margin-bottom: .25rem;
+      }
+    }
+    label.form-required {
+      display: none;
+    }
+    // Second Level
+    .indented .comment-title a:before {
+      mask       : url('../icon/reply.svg');
+      mask-size  : contain;
+      mask-repeat: no-repeat;
+    }
+    .comment-new-title {
+      font-size: 2rem;
+    }
+
+    .comment-title-main {
+      font-size: 2.25rem;
+    }
+  }
+  #comment-form,
+  .field--type-comment {
+
+    .form-item-comment-body-0-format {
+      margin-top: 2rem;
+    }
+    .js-form-wrapper {
+      border: none;
+      ul {
+        margin     : .75rem 0;
+        list-style : none;
+        line-height: 1.5rem;
+        li {
+          margin   : .5rem 0;
+          font-size: 80%;
+          margin   : 0;
+        }
+        // First Level
+        li {
+          &:before {
+            font-size     : 2rem;
+            color         : $primary;
+            vertical-align: -6px;
+            margin-right  : 8px;
+            display       : inline-block;
+            content       : '•';
+          }
+        }
+      }
+    }
+  }
+}
+
+/////////////////////////////////////////////////////////// BREAKPOINT MEDIUM UP
+@include media-breakpoint-up(md) {
+  //////////////////////////////////////////////////////////////////////////////
+  // [ COMMON ]
+  #comment-container {
+    .indented {
+      > article {
+        margin-left: 1.5rem;
+      }
+    }
+  }
+}

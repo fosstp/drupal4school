@@ -1,0 +1,122 @@
+/* ---------------------------------------------------------------------------*/
+/* MOBILE FIRST - base/_base.scss                                             */
+/* ---------------------------------------------------------------------------*/
+@charset "UTF-8";
+////////////////////////////////////////////////////// BREAKPOINT EXTRA SMALL UP
+@include media-breakpoint-up(xs) {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  ::selection {
+    background: $primary;
+    color     : white;
+  }
+  /* The emerging W3C standard
+       that is currently Firefox-only */
+  * {
+    scrollbar-color: $primary transparent;
+  }
+
+  /* Works on Chrome/Edge/Safari */
+  *::-webkit-scrollbar {
+    width: 12px;
+  }
+  *::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  *::-webkit-scrollbar-thumb {
+    background-color: $primary;
+    border-radius   : 0;
+    border          : 3px solid transparent;
+  }
+
+  // [ DETAILS ]
+  details {
+    padding: 0 1rem;
+    summary {
+      margin-left: -1rem;
+    }
+  }
+  // [ HEADERS MIXINS ]
+  #{headings(1, 6)} {
+    color: $secondary;
+    a {
+      text-decoration-line: none;
+      color               : $secondary;
+      &:hover {
+        color               : lighten($secondary, 15%);
+        text-decoration-line: none;
+      }
+    }
+  }
+  ////////////////////////////////////////////////////////////////////////////
+  // [ LINK ]
+  a {
+    transition: $transition-base;
+  }
+
+}
+//////////////////////////////////////////////////////////// BREAKPOINT SMALL UP
+@include media-breakpoint-up(sm) {
+  //////////////////////////////////////////////////////////////////////////////
+  // [ COMMON ]
+  body {
+    font-size: $font-size-base-sm;
+  }
+}
+
+/////////////////////////////////////////////////////////// BREAKPOINT MEDIUM UP
+@include media-breakpoint-up(md) {
+  //////////////////////////////////////////////////////////////////////////////
+  // [ PARAGRAPHE ]
+  body {
+    font-size: $font-size-base-md;
+  }
+
+  #page-content {
+    p {
+      text-align: justify;
+    }
+    ////////////////////////////////////////////////////////////////////////////
+    // [ LIST ]
+
+    // [ ORDERED LIST ]
+    ul:not([class]) {
+      padding-left: 2.5rem;
+      line-height : 1.75rem;
+      li::marker {
+        color    : $primary;
+        font-size: 1.25em;
+      }
+      ul {
+        padding-left: 1.5rem;
+      }
+    }
+    // [ UNORDERED LIST ]
+    ol:not([class]) {
+      line-height: 1.75rem;
+      li::marker {
+        color    : $primary;
+        font-size: 1em;
+      }
+    }
+  }
+}
+//////////////////////////////////////////////////////////// BREAKPOINT LARGE UP
+@include media-breakpoint-up(lg) {
+  //////////////////////////////////////////////////////////////////////////////
+  // [ COMMON ]
+  body {
+    font-size: $font-size-base-lg;
+  }
+}
+
+////////////////////////////////////////////////////// BREAKPOINT EXTRA LARGE UP
+@include media-breakpoint-up(xl) {
+  //////////////////////////////////////////////////////////////////////////////
+  // [ COMMON ]
+  body {
+    font-size: $font-size-base-xl;
+  }
+}

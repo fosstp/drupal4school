@@ -1,0 +1,17 @@
+/* ---------------------------------------------------------------------------*/
+/* MOBILE FIRST - page/_page-activity.scss                                      */
+/* ---------------------------------------------------------------------------*/
+@charset "UTF-8";
+////////////////////////////////////////////////////// BREAKPOINT EXTRA SMALL UP
+@include media-breakpoint-up(xs) {
+  //////////////////////////////////////////////////////////////////////////////
+  // [ COMMON ]
+  .path-activity {
+    .marker {
+      color           : $white;
+      margin-left     : .5rem;
+      background-color: lighten($red,10%);
+      padding         : .1rem .4rem;
+    }
+  }
+}

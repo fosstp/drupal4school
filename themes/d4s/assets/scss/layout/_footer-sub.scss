@@ -1,0 +1,71 @@
+/* ---------------------------------------------------------------------------*/
+/* MOBILE FIRST - layout/_footer-sub.scss                                     */
+/* ---------------------------------------------------------------------------*/
+@charset "UTF-8";
+/////////////////////////////////////////////////////////// BREAKPOINT MEDIUM UP
+@include media-breakpoint-up(xs) {
+  //////////////////////////////////////////////////////////////////////////////
+  // [ BOOTSTRAP & DRUPAL LINK ICON ]
+  #page-footer-sub {
+    p {
+      margin-bottom: 0;
+    }
+    .region {
+      padding-top   : .5rem;
+      padding-bottom: .5rem;
+    }
+    span {
+      position: relative;
+    }
+    .region-footer-sub-right {
+      margin-left: -40px;
+    }
+    a[href="https://www.drupal.org"] {
+      &:hover {
+        color: #7cbc48;
+      }
+      &:after {
+        content         : '';
+        display         : inline-block;
+        width           : 30px;
+        height          : 35px;
+        margin-left     : .75rem;
+        mask            : url('../icon/logo-drupal.svg');
+        mask-size       : contain;
+        mask-repeat     : no-repeat;
+        background-color: white;
+        transition      : $transition-base;
+        transform       : translateY(7px);
+        position        : absolute;
+        bottom          : 3px;
+      }
+      &:hover:after {
+        background-color: #7cbc48;
+      }
+    }
+    // windows Edge V18 dont support mask attribute
+    @supports (-ms-ime-align:auto) {
+      a[href="https://www.drupal.org"]:after {
+        background-image : url('../image/octogone.png');
+        mask             : none;
+        display          : inline-block;
+        background-color : transparent;
+        background-repeat: no-repeat;
+        width            : 30px;
+        height           : 35px;
+        background-size  : contain;
+        position         : absolute;
+        top              : 0;
+      }
+    }
+    // Link
+    a {
+      color          : $white;
+      text-decoration: none;
+      transition     : $transition-base;
+      &:hover {
+        color: darken($white, 15%);
+      }
+    }
+  }
+}

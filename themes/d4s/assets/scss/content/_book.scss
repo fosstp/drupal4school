@@ -1,0 +1,200 @@
+/* ---------------------------------------------------------------------------*/
+/* MOBILE FIRST - content/_book.scss                                       */
+/* ---------------------------------------------------------------------------*/
+@charset "UTF-8";
+
+////////////////////////////////////////////////////// BREAKPOINT EXTRA SMALL UP
+@include media-breakpoint-up(xs) {
+  //////////////////////////////////////////////////////////////////////////////
+  // [ COMMON ]
+  .page-node-type-book {
+
+    .book-pager__item--next a,
+    .book-pager__item--previous a {
+      white-space  : nowrap;
+      overflow     : hidden;
+      text-overflow: ellipsis;
+      max-width    : 100px;
+      display      : inline-block;
+
+    }
+    //hierarchie
+    .book-navigation {
+      .menu {
+        margin-left: 0;
+      }
+      a {
+        text-decoration: none;
+      }
+      .menu-item:before {
+        content         : '';
+        width           : 24px;
+        height          : 24px;
+        display         : inline-block;
+        background-color: $primary;
+        transform       : translateY(5px);
+        mask            : url('../icon/file-text.svg');
+        mask-size       : contain;
+        mask-repeat     : no-repeat;
+      }
+      .menu-item--collapsed {
+        list-style      : none;
+        list-style-image: none;
+        &:before {
+          content         : '';
+          width           : 24px;
+          height          : 24px;
+          display         : inline-block;
+          background-color: $primary;
+          transform       : translateY(5px);
+          mask            : url('../icon/bookmark.svg');
+          mask-size       : contain;
+          mask-repeat     : no-repeat;
+        }
+      }
+    }
+
+    //navigation
+    .book-pager {
+      background-color: $gray-100;
+      padding         : .75rem;
+      font-size       : 90%;
+      border-radius   : $border-radius;
+      .book-pager__item {
+        position: relative;
+      }
+      .book-pager__item--previous {
+        padding-left: 2rem;
+        a:before {
+          top             : -5px;
+          left            : 0;
+          content         : '';
+          width           : 24px;
+          height          : 24px;
+          display         : inline-block;
+          background-color: $primary;
+          transform       : translateY(5px);
+          margin-right    : .5rem;
+          mask            : url('../icon/arrow-left-circle.svg');
+          mask-size       : contain;
+          mask-repeat     : no-repeat;
+          position        : absolute;
+        }
+      }
+      .book-pager__item--center {
+        position: relative;
+        a {
+          font-size: 0;
+          height   : 24px;
+          width    : 24px;
+          display  : inline-block;
+          position : absolute;
+          left     : 0;
+          z-index  : 1;
+          top      : -5px;
+          &:after {
+            content         : '';
+            width           : 24px;
+            height          : 24px;
+            display         : inline-block;
+            background-color: $primary;
+            transform       : translateY(5px);
+            margin-right    : .5rem;
+            mask            : url('../icon/arrow-up-circle.svg');
+            mask-size       : contain;
+            mask-repeat     : no-repeat;
+          }
+        }
+      }
+    }
+    .book-pager__item--next {
+      padding-right: 2rem;
+      a:before {
+        top             : -5px;
+        right           : 0;
+        content         : '';
+        width           : 24px;
+        height          : 24px;
+        display         : inline-block;
+        background-color: $primary;
+        transform       : translateY(5px);
+        margin-left     : .5rem;
+        mask            : url('../icon/arrow-right-circle.svg');
+        mask-size       : contain;
+        mask-repeat     : no-repeat;
+        position        : absolute;
+      }
+    }
+    //related link
+    .node__links {
+      ul {
+        display: inline-block;
+      }
+      .book-add-child {
+        position    : relative;
+        margin-right: 1rem;
+        display     : inline !important;
+        a {
+          font-size: 0;
+          height   : 24px;
+          width    : 24px;
+          display  : inline-block;
+          position : absolute;
+          left     : 0;
+          z-index  : 1;
+          &:after {
+            content         : '';
+            width           : 24px;
+            height          : 24px;
+            display         : inline-block;
+            background-color: $primary;
+            transform       : translateY(5px);
+            margin-right    : .5rem;
+            mask            : url('../icon/file-plus.svg');
+            mask-size       : contain;
+            mask-repeat     : no-repeat;
+          }
+        }
+      }
+      .book-printer {
+        position    : relative;
+        margin-right: .5rem;
+        display     : inline !important;
+        a {
+          font-size: 0;
+          height   : 24px;
+          width    : 24px;
+          display  : inline-block;
+          position : absolute;
+          left     : 0;
+          z-index  : 1;
+          &:after {
+            content         : '';
+            width           : 24px;
+            height          : 24px;
+            display         : inline-block;
+            background-color: $primary;
+            transform       : translateY(5px);
+            margin-right    : .5rem;
+            mask            : url('../icon/printer.svg');
+            mask-size       : contain;
+            mask-repeat     : no-repeat;
+          }
+        }
+      }
+    }
+  }
+}
+
+/////////////////////////////////////////////////////////// BREAKPOINT MEDIUM UP
+@include media-breakpoint-up(md) {
+  //////////////////////////////////////////////////////////////////////////////
+  // [ COMMON ]
+  .page-node-type-book {
+    .book-pager__item--next a,
+    .book-pager__item--previous a {
+      max-width: 250px;
+
+    }
+  }
+}

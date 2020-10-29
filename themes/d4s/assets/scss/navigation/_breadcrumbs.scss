@@ -1,0 +1,24 @@
+/* ---------------------------------------------------------------------------*/
+/* MOBILE FIRST - drupal/misc/_alert-message.scss                             */
+/* ---------------------------------------------------------------------------*/
+@charset "UTF-8";
+////////////////////////////////////////////////////// BREAKPOINT EXTRA SMALL UP
+@include media-breakpoint-up(xs) {
+  //////////////////////////////////////////////////////////////////////////////
+  // [ COMMON ]
+  ol.breadcrumb .breadcrumb-item {
+    white-space  : nowrap;
+    overflow     : hidden;
+    text-overflow: ellipsis;
+    max-width    : 100px;
+  }
+}
+
+/////////////////////////////////////////////////////////// BREAKPOINT MEDIUM UP
+@include media-breakpoint-up(md) {
+  //////////////////////////////////////////////////////////////////////////////
+  // [ COMMON ]
+  ol.breadcrumb .breadcrumb-item {
+    max-width: 200px;
+  }
+}

@@ -1,0 +1,268 @@
+/* ---------------------------------------------------------------------------*/
+/* MOBILE FIRST - content/_forum.scss                                       */
+/* ---------------------------------------------------------------------------*/
+@charset "UTF-8";
+
+////////////////////////////////////////////////////// BREAKPOINT EXTRA SMALL UP
+@include media-breakpoint-up(xs) {
+  //////////////////////////////////////////////////////////////////////////////
+  // [ HTML TAG ]
+  .page-node-type-forum,
+  .path-forum {
+
+    .forum__last-reply,
+    .forum__posts,
+    .forum__topics {
+      font-size: 85%;
+    }
+    .forum__posts {
+      min-width: 5.5rem;
+    }
+    .forum__last-reply {
+      min-width: 9rem;
+    }
+    .forum__topics {
+      min-width: 6.5rem;
+    }
+    .forum__replies {
+      min-width: 2.5rem;
+    }
+    .table-hover tbody tr:hover {
+      color           : #90a0b0;
+      background-color: #f9f9f9;
+    }
+    table {
+      border-collapse: collapse;
+      border-spacing : 0;
+    }
+    table td {
+      border-top: 1px solid #f1f1f1;
+    }
+
+    thead th {
+      background-color: $secondary;
+      border          : 0;
+      color           : white;
+      a {
+        color: white;
+      }
+    }
+    thead th:first-child {
+      border-radius: $border-radius 0 0 0;
+    }
+    thead th:last-child {
+      border-radius: 0 $border-radius 0 0;
+    }
+    tfoot tr th {
+      background-color: $secondary !important;
+      min-height      : 2.5rem;
+      color           : white;
+      a {
+        color: white;
+      }
+    }
+    tfoot tr th:first-child {
+      border-radius: 0 0 0 $border-radius;
+    }
+    tfoot tr th:last-child {
+      border-radius: 0 0 $border-radius 0;
+    }
+    .indented {
+      margin-left: 1.5rem;
+      .forum__description {
+        margin-left: -1rem;
+        margin-top : 1rem;
+      }
+    }
+    .forum {
+      .table {
+        .indented {
+          .forum__icon:before {
+            content    : url('../image/arrow-corner-right.png');
+            width      : 16px;
+            height     : 16px;
+            display    : inline-block;
+            transform  : translateY(13px);
+            margin-left: -1.5rem;
+          }
+        }
+      }
+      a {
+        text-decoration: none;
+      }
+      .container {
+        background-color: $gray-100;
+      }
+    }
+    //icon forums
+    tr[id*="forum-list"] .forum__icon {
+      background-image: url('../image/forum-icons.png');
+      transform       : translateY(-5px);
+      width           : 42px;
+      height          : 36px;
+      &[class*="default"] {
+        background-position: 0;
+      }
+      &[class*="new"] {
+        background-position: -42px 0;
+      }
+      &[class*="sticky"] {
+        background-position: -168px 0;
+      }
+      &[class*="closed"] {
+        background-position: -210px 0;
+      }
+      &[class*="hot"] {
+        background-position: -84px 0;
+      }
+      &[class*="hot-new"] {
+        background-position: -126px 0;
+      }
+    }
+
+    // Icons forum topics
+    .forum__topic .forum__icon {
+      float            : left;
+      width            : 32px;
+      height           : 36px;
+      transform        : translateY(5px);
+      background-repeat: no-repeat;
+      background-image : url('../image/forum-topics-icons.png');
+      margin-right     : .5rem;
+      &[class*="default"] {
+        background-position: 0;
+      }
+      &[class*="new"] {
+        background-position: -32px 0;
+      }
+      &[class*="sticky"] {
+        background-position: -128px 0;
+      }
+      &[class*="closed"] {
+        background-position: -160px 0;
+      }
+      &[class*="hot"] {
+        background-position: -64px 0;
+      }
+      &[class*="hot-new"] {
+        background-position: -96px 0;
+      }
+    }
+
+    //forum DESCRIPTION
+    .forum__description {
+      min-width: 25rem;
+      margin   : .65em;
+    }
+    //forum topics
+    .forum__topic {
+      min-width: 25rem;
+    }
+    .forum__topic .submitted {
+      font-size: 85%;
+    }
+    //actions Links
+    .action-links a {
+      border       : 1px solid $primary;
+      border-radius: $border-radius;
+    }
+    //forum
+    .comment-comment-forum-form {
+      margin-top      : 1rem;
+      border-radius   : $border-radius;
+      background-color: $gray-100;
+      padding         : 1rem;
+    }
+
+    // Forum article
+    article.node--type-forum {
+      //forum tag
+      .field--name-taxonomy-forums {
+        margin: .5rem 0;
+
+        // [ TAGS TAXONOMY ]
+        .field--name-field-tags {
+          margin-top: .75rem;
+        }
+        //title
+        .field__item {
+          display: inline;
+          a {
+            text-decoration: none;
+          }
+        }
+        .field__label {
+          position   : relative;
+          display    : inline;
+          font-weight: normal;
+          &:before {
+            mask            : url('../icon/tag.svg');
+            mask-size       : cover;
+            content         : '';
+            width           : 16px;
+            height          : 16px;
+            display         : inline-block;
+            background-color: $body-color;
+            transition      : $transition-base;
+            margin-right    : .5rem;
+            transform       : translateY(2px);
+          }
+          &:after {
+            content: ' : ';
+          }
+        }
+      }
+    }
+  }
+  /////////////////////////////////////////////////////////////////////////////
+  // [ CUSTOM ]
+  .paragraph--type--text p.dropcaps::first-letter,
+  body.cke_editable p.dropcaps::first-letter {
+    display    : block;
+    float      : left;
+    margin     : 0 1rem 0 0;
+    font-size  : 5rem;
+    line-height: 1;
+    font-weight: bold;
+  }
+
+}
+
+//////////////////////////////////////////////////////////// BREAKPOINT SMALL UP
+@include media-breakpoint-up(sm) {
+  //////////////////////////////////////////////////////////////////////////////
+  // [ COMMON ]
+  .page-node-type-forum,
+  .path-forum {
+    .forum__topics {
+      min-width: 7.5rem;
+    }
+    .forum__replies {
+      min-width: 2.5rem;
+    }
+  }
+}
+/////////////////////////////////////////////////////////// BREAKPOINT MEDIUM UP
+@include media-breakpoint-up(md) {
+
+  .page-node-type-forum,
+  .path-forum {
+    .comment-comment-forum-form {
+      padding: 2rem;
+    }
+    .forum__topics {
+      min-width: 8rem;
+    }
+  }
+}
+//////////////////////////////////////////////////////////// BREAKPOINT LARGE UP
+@include media-breakpoint-up(lg) {
+  //////////////////////////////////////////////////////////////////////////////
+  // [ COMMON ]
+  .page-node-type-forum,
+  .path-forum {
+    .forum__last-reply {
+      min-width: 11rem;
+    }
+  }
+}

@@ -1,0 +1,23 @@
+/* ---------------------------------------------------------------------------*/
+/* MOBILE FIRST - layout/header/_header-brand.scss                            */
+/* ---------------------------------------------------------------------------*/
+@charset "UTF-8";
+////////////////////////////////////////////////////// BREAKPOINT EXTRA SMALL UP
+@include media-breakpoint-up(xs) {
+  //////////////////////////////////////////////////////////////////////////////
+  // [ COMMON ]
+
+  #header-brand {
+    img.logo {
+      max-height: 80px;
+      min-width : 80px;
+    }
+    a.navbar-brand {
+      font-weight    : 500;
+      color          : white;
+      font-size      : 1.5rem;
+      text-transform : uppercase;
+      text-decoration: none;
+    }
+  }
+}

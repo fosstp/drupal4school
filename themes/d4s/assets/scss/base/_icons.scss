@@ -1,0 +1,129 @@
+/* ---------------------------------------------------------------------------*/
+/* MOBILE FIRST - base/_icons.scss                                            */
+/* ---------------------------------------------------------------------------*/
+@charset "UTF-8";
+////////////////////////////////////////////////////// BREAKPOINT EXTRA SMALL UP
+@include media-breakpoint-up(xs) {
+  //////////////////////////////////////////////////////////////////////////////
+  // [ VENDOR ]
+  .bootstrap {
+    color     : $white;
+    transition: $transition-base;
+    &:hover:before {
+      background-color: $bootstrap;
+    }
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  // [ SOCIAL MEDIA ICON ]
+  a[class^="social-media-round-"] {
+    font-size: 0;
+    &:before {
+      content   : '';
+      width     : 40px;
+      height    : 40px;
+      display   : inline-block;
+      transition: $transition-base;
+    }
+  }
+  .social-media-round-facebook {
+    &:before {
+      mask            : url('../icon/social-media-round/facebook.svg');
+      mask-size       : contain;
+      mask-repeat     : no-repeat;
+      background-color: $facebook;
+    }
+    &:hover:before {
+      background-color: lighten($facebook,10%);
+    }
+  }
+  .social-media-round-messenger {
+    &:before {
+      mask            : url('../icon/social-media-round/messenger.svg');
+      mask-size       : contain;
+      mask-repeat     : no-repeat;
+      background-color: $messenger;
+    }
+    &:hover:before {
+      background-color: lighten($messenger,10%);
+    }
+  }
+
+  .social-media-round-instagram {
+    &:before {
+      mask            : url('../icon/social-media-round/instagram.svg');
+      mask-size       : contain;
+      mask-repeat     : no-repeat;
+      background-color: $instagram;
+    }
+    &:hover:before {
+      background-color: lighten($instagram,10%);
+    }
+  }
+  .social-media-round-twitter {
+    &:before {
+      mask            : url('../icon/social-media-round/twitter.svg');
+      mask-size       : contain;
+      mask-repeat     : no-repeat;
+      background-color: $twitter;
+    }
+    &:hover:before {
+      background-color: lighten($twitter,10%);
+    }
+  }
+  .social-media-round-whatsapp {
+    &:before {
+      mask            : url('../icon/social-media-round/whatsapp.svg');
+      mask-size       : contain;
+      mask-repeat     : no-repeat;
+      background-color: $whatsapp;
+    }
+    &:hover:before {
+      background-color: lighten($whatsapp,10%);
+    }
+  }
+  .social-media-round-youtube {
+    &:before {
+      mask            : url('../icon/social-media-round/youtube.svg');
+      mask-size       : contain;
+      mask-repeat     : no-repeat;
+      background-color: $youtube;
+    }
+    &:hover:before {
+      background-color: lighten($youtube,10%);
+    }
+  }
+  .social-media-round-linkedin {
+    &:before {
+      mask            : url('../icon/social-media-round/linkedin.svg');
+      mask-size       : contain;
+      mask-repeat     : no-repeat;
+      background-color: $linkedin;
+    }
+    &:hover:before {
+      background-color: lighten($linkedin,10%);
+    }
+  }
+  .social-media-round-skype {
+    &:before {
+      mask            : url('../icon/social-media-round/skype.svg');
+      mask-size       : contain;
+      mask-repeat     : no-repeat;
+      background-color: $skype;
+    }
+    &:hover:before {
+      background-color: lighten($skype,10%);
+    }
+  }
+  .social-media-round-snapchat {
+    &:before {
+      mask            : url('../icon/social-media-round/snapchat.svg');
+      mask-size       : contain;
+      mask-repeat     : no-repeat;
+      background-color: darken($snapchat,10%);
+    }
+    &:hover:before {
+      background-color: darken($snapchat,5%);
+    }
+  }
+}

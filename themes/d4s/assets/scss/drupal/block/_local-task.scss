@@ -1,0 +1,40 @@
+/* ---------------------------------------------------------------------------*/
+/* MOBILE FIRST - drupal/block/_local-task.scss                               */
+/* ---------------------------------------------------------------------------*/
+@charset "UTF-8";
+////////////////////////////////////////////////////// BREAKPOINT EXTRA SMALL UP
+@include media-breakpoint-up(xs) {
+  //////////////////////////////////////////////////////////////////////////////
+  // [ LOCAL TASKS ]
+  .block-local-tasks-block {
+    li {
+      transition: $transition-base;
+      border    : 1px solid transparent;
+    }
+    li.active {
+      background-color: $primary;
+      border-color    : $primary;
+      border-radius   : $border-radius;
+      border          : 1px solid transparent;
+      a {
+        color: #fff;
+      }
+      &:hover {
+        background-color: darken($primary,10%);
+      }
+
+    }
+    li:hover {
+      border-color : $primary;
+      border-radius: $border-radius;
+      border       : 1px solid $primary;
+    }
+  }
+  .tabs a.is-active {
+    background-color: transparent;
+  }
+  .tabs a:focus,
+  .tabs a:hover {
+    background-color: transparent;
+  }
+}

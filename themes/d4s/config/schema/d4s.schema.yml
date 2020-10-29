@@ -1,0 +1,7 @@
+d4s.settings:
+  type: theme_settings
+  label: '版型設定'
+  mapping:
+    fluid:
+      type: integer
+      label: '彈性寬度'

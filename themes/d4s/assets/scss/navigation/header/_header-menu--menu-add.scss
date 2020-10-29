@@ -1,0 +1,241 @@
+/* ---------------------------------------------------------------------------*/
+/* MOBILE FIRST -  layout/header/_header-menu--main-additional.scss           */
+/* ---------------------------------------------------------------------------*/
+@charset "UTF-8";
+////////////////////////////////////////////////////// BREAKPOINT EXTRA SMALL UP
+@include media-breakpoint-up(xs) {
+  //////////////////////////////////////////////////////////////////////////////
+  // [ COMMON ]
+  #menu-add {
+    height     : 3.25rem;
+    padding-top: 14px;
+    text-align : center;
+    // target all direct child
+    > .region div[id^="block"],
+     > .region nav[id^="block"] {
+      position      : relative;
+      display       : inline-block;
+      margin        : 0 2px;
+      vertical-align: top;
+    }
+    button a,
+    ul:not(.contextual-links) a {
+      // hide text
+      font-size: 0;
+      // add icon container
+      &:before {
+        content         : '';
+        margin-left     : .25rem;
+        display         : inline-block;
+        background-color: $white;
+        width           : 30px;
+        height          : 30px;
+        transition      : $transition-base;
+        mask            : url('../icon/default.svg');
+        mask-size       : cover;
+      }
+      // hoover effect
+      &:hover:before {
+        background-color: $primary;
+      }
+
+      // icons
+      &[href*='user'] {
+        &:before {
+          mask     : url('../icon/user.svg');
+          mask-size: cover;
+        }
+      }
+      &[href*='user/login'] {
+        &:before {
+          mask     : url('../icon/user.svg');
+          mask-size: cover;
+        }
+      }
+      &[href*='user/logout'] {
+        &:before {
+          mask     : url('../icon/logout.svg');
+          mask-size: cover;
+        }
+      }
+      &[href*='rss'] {
+        &:before {
+          mask     : url('../icon/rss.svg');
+          mask-size: cover;
+        }
+      }
+      &[href*='contact'] {
+        &:before {
+          mask     : url('../icon/send.svg');
+          mask-size: cover;
+        }
+      }
+
+      &[href*='language'] {
+        &:before {
+          mask     : url('../icon/language.svg');
+          mask-size: cover;
+        }
+      }
+    }
+    //////////////////////////////////////////////////////////////////////////////
+    // [ MENU LANGUAGE ]
+    .block-language {
+      width: 30px;
+      // dropdown toggle
+      .dropdown-toggle:after {
+        border: 0;
+      }
+      // [DROPDOWN MENU SLIDE UP ANIMATION]
+      @keyframes slideIn {
+        0% {
+          transform: translateY(1rem);
+          opacity  : 0;
+        }
+        100% {
+          transform: translateY(0rem);
+          opacity  : 1;
+        }
+        0% {
+          transform: translateY(1rem);
+          opacity  : 0;
+        }
+      }
+
+      .slideIn {
+        -webkit-animation-name: slideIn;
+        animation-name        : slideIn;
+      }
+
+      .animate {
+        animation-duration         : .2s;
+        -webkit-animation-duration : .2s;
+        animation-fill-mode        : both;
+        -webkit-animation-fill-mode: both;
+      }
+      // dropdown
+      .dropdown {
+        height: 39px;
+        button {
+          padding: 0;
+          &:focus {
+            box-shadow: none;
+          }
+        }
+        .btn {
+          vertical-align: unset;
+          padding-left  : 0;
+        }
+        .dropdown-menu {
+          padding      : 5px;
+          min-width    : inherit;
+          background   : white;
+          border-radius: $border-radius;
+          border       : 0;
+          margin-bottom: .5rem;
+          margin-left  : -0.25rem;
+          ul {
+            margin-bottom: 0;
+            &.show {
+              display: block;
+            }
+          }
+          ul li:not(:first-of-type) {
+            margin-top: 5px;
+          }
+          //Flags
+          #language-selector a,
+          ul:not(.contextual-links) a {
+            font-size        : 0;
+            height           : 28px;
+            width            : 40px;
+            display          : block;
+            background-size  : contain;
+            background-repeat: no-repeat;
+            &:hover {
+              background-color: transparent;
+            }
+            &:before {
+              background-color: transparent;
+            }
+            &[hreflang="fr"] {
+              background-image: url('../image/flags/France.png');
+            }
+            &[hreflang="en"] {
+              background-image: url('../image/flags/United-Kingdom.png');
+            }
+            &[hreflang="es"] {
+              background-image: url('../image/flags/Spain.png');
+            }
+            &[hreflang="de"] {
+              background-image: url('../image/flags/Germany.png');
+            }
+            &[hreflang="nl"] {
+              background-image: url('../image/flags/Netherlands.png');
+            }
+            &[hreflang="it"] {
+              background-image: url('../image/flags/Italy.png');
+            }
+            &[hreflang="pt-pt"] {
+              background-image: url('../image/flags/Portugal.png');
+            }
+            &[hreflang="pt-br"] {
+              background-image: url('../image/flags/Brazil.png');
+            }
+            &[hreflang="ru"] {
+              background-image: url('../image/flags/Russia.png');
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+/////////////////////////////////////////////////////////// BREAKPOINT MEDIUM UP
+@include media-breakpoint-up(md) {
+  //////////////////////////////////////////////////////////////////////////////
+  // [ COMMON ]
+  #menu-add {
+    height     : 40px;
+    padding-top: 7px;
+    button a,
+    ul:not(.contextual-links) a {
+      &:before {
+        width : 25px;
+        height: 25px;
+      }
+    }
+    .block-language .dropdown {
+      .dropdown-menu {
+        padding      : 5px;
+        min-width    : inherit;
+        border-radius: 0;
+        background   : $primary;
+        margin-bottom: inherit;
+        margin-left  : inherit;
+        &:after {
+          bottom             : 100%;
+          left               : 30%;
+          border             : solid transparent;
+          content            : ' ';
+          height             : 0;
+          width              : 0;
+          position           : absolute;
+          pointer-events     : none;
+          border-color       : rgba(136, 183, 213, 0);
+          border-bottom-color: $primary;
+          border-width       : 8px;
+          margin-top         : 1rem;
+        }
+
+        #language-selector a,
+        ul:not(.contextual-links) a {
+          font-size: 0;
+          height   : 21px;
+          width    : 30px;
+        }
+      }
+    }
+  }
+}

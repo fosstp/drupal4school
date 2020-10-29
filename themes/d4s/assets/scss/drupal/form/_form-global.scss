@@ -1,0 +1,74 @@
+/* ---------------------------------------------------------------------------*/
+/* MOBILE FIRST - drupal/form/_form-global.scss                               */
+/* ---------------------------------------------------------------------------*/
+@charset "UTF-8";
+////////////////////////////////////////////////////// BREAKPOINT EXTRA SMALL UP
+@include media-breakpoint-up(xs) {
+  //////////////////////////////////////////////////////////////////////////////
+  // [ FORM GLOBAL ]
+  .form-item {
+    padding-left: 0;
+  }
+  .custom-checkbox label {
+    margin-left: 1.5rem;
+  }
+  .js-form-item > .custom-control-label:first-child {
+    &:before {
+      content: none;
+    }
+    &:after {
+      content: none;
+    }
+  }
+  label.option {
+    display: inline-block;
+  }
+  select {
+    appearance: none;
+  }
+  .form-control {
+    height: auto;
+  }
+  //input default margin reset
+  .form-actions {
+    margin-top   : 0;
+    margin-bottom: 0;
+    .button {
+      margin: 1rem 1rem 0 0;
+    }
+  }
+  // [ INPUT FILE ]
+  .wrapper-input-file {
+    overflow: hidden;
+    position: relative;
+    display : inline-block;
+    input {
+      cursor    : inherit;
+      display   : block;
+      filter: alpha(opacity=0);
+      min-height: 100%;
+      min-width : 100%;
+      opacity   : 0;
+      position  : absolute;
+      right     : 0;
+      text-align: right;
+      top       : 0;
+    }
+    // [ LABEL ]
+    input + label {
+      background-color: $primary;
+      border-radius   : $border-radius;
+      color           : #fff;
+      display         : inline-block;
+      padding         : .5rem 1rem;
+      transition      : $transition-base;
+      cursor          : pointer;
+      margin-bottom   : 0;
+    }
+
+    input + label:hover,
+    input:focus + label {
+      background-color: darken($primary, 10%);
+    }
+  }
+}

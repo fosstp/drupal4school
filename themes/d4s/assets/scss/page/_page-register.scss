@@ -1,0 +1,89 @@
+/* ---------------------------------------------------------------------------*/
+/* MOBILE FIRST - page/_page-register.scss                                  */
+/* ---------------------------------------------------------------------------*/
+@charset "UTF-8";
+////////////////////////////////////////////////////// BREAKPOINT EXTRA SMALL UP
+@include media-breakpoint-up(xs) {
+  //////////////////////////////////////////////////////////////////////////////
+  // [ COMMON ]
+  .form-register {
+
+    .block-local-tasks-block .nav-pills {
+      justify-content: center;
+    }
+    .page-title {
+      font-size: 1.75rem;
+      &:before {
+        content         : '';
+        width           : 30px;
+        height          : 30px;
+        display         : inline-block;
+        background-color: $primary;
+        transform       : translateY(2px);
+        margin-right    : .75rem;
+        mask            : url('../icon/user.svg');
+        mask-size       : contain;
+        mask-repeat     : no-repeat;
+      }
+    }
+    //upload file button
+    .wrapper-input-file {
+      overflow: hidden;
+      position: relative;
+      display : inline-block;
+      cursor  : pointer;
+      input {
+        cursor    : inherit;
+        display   : block;
+        filter: alpha(opacity=0);
+        min-height: 100%;
+        min-width : 100%;
+        opacity   : 0;
+        position  : absolute;
+        right     : 0;
+        text-align: right;
+        top       : 0;
+      }
+      input + label {
+        background-color: $primary;
+        border-radius   : $border-radius;
+        color           : #fff;
+        display         : inline-block;
+        padding         : .5rem 1rem;
+        transition      : $transition-base;
+      }
+
+      input + label:hover,
+      input:focus + label {
+        background-color: darken($primary, 10%);
+      }
+    }
+    // fine tunning
+    #edit-user-picture-0--label {
+      margin-bottom: 1rem;
+    }
+    #edit-user-picture-0--description {
+      margin-top: .75rem;
+    }
+    .details-wrapper {
+      padding: 0;
+    }
+    .description {
+      margin-left: 0;
+    }
+    .option,
+    label[id*="edit-user-picture"] {
+      font-weight: bold;
+    }
+    .form-checkbox,
+    .js-form-file {
+      height          : auto;
+      background-color: transparent;
+      border          : none;
+    }
+    .form-type-checkbox {
+      margin-top: 0;
+    }
+  }
+
+}

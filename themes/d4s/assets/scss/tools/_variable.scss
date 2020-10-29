@@ -1,0 +1,218 @@
+// ---------------------------------------------------------------------------//
+// MOBILE FIRST - CUSTOM VARIABLE CREATION & AND BOOSTRAP VARIABLE OVERWRITE  //
+// ---------------------------------------------------------------------------//
+
+// Past variable from bootrap distribution here to overwrite them. find them in the file "PATHTOYOURBOOTSTRAPFOLDER/scss/_variables.scss"
+
+////////////////////////////////////////////////////////////////////////////////
+// GRID BREAKPOINTS
+$grid-breakpoints: (
+  xs: 0,
+  vs: 444px,
+  sm: 576px,
+  md: 768px,
+  lg: 992px,
+  xl: 1200px
+) ;
+// GRID ORIENTATION
+$grid-orientation: (
+  landscape: landscape,
+  portrait : portrait
+) ;
+
+// GRID CONTAINERS
+$container-max-widths: (
+  vs: 420px,
+  sm: 540px,
+  md: 720px,
+  lg: 960px,
+  xl: 1140px
+) ;
+
+////////////////////////////////////////////////////////////////////////////////
+// [ SPACER ]
+$spacer: 1rem;
+$spacers: ();
+$spacers: map-merge((0: 0, 1: ($spacer * .25), 2: ($spacer * .5), 3: $spacer, 4: ($spacer * 1.5), 5: ($spacer * 3), 6: ($spacer * 4.5), 7: ($spacer * 6)), $spacers);
+
+////////////////////////////////////////////////////////////////////////////////
+// [ COLORS ]
+
+// CUSTOM COLORS
+
+// SOCIAL MEDIA COLORS
+$instagram: #e4405f;
+$facebook: #3b5999;
+$messenger: #0084ff;
+$youtube: #cd201f;
+$twitter: #55acee;
+$linkedin: #0077B5;
+$snapchat: #FFFC00;
+$whatsapp: #25D366;
+$skype: #00AFF0;
+
+// VENDOR
+$bootstrap: #563d7c;
+
+// BOOTSTRAP COLORS
+$primary: #33a1fd ;
+$secondary: #373F51 ;
+$white: #fff;
+$blue: #007bff;
+$indigo: #6610f2;
+$purple: #6f42c1;
+$pink: #e83e8c;
+$red: #dc3545;
+$orange: #fd7e14;
+$yellow: #ffc107;
+$green: #28a745;
+$teal: #20c997;
+$cyan: #17a2b8;
+
+// BOOTSTRAP GRAY'S
+$gray-100: #f8f9fa;
+$gray-200: #e9ecef;
+$gray-300: #dee2e6;
+$gray-400: #ced4da;
+$gray-500: #adb5bd;
+$gray-600: #6c757d;
+$gray-700: #495057;
+$gray-800: #343a40;
+$gray-900: #212529;
+$gray: $gray-600;
+$gray-dark: $gray-800;
+$black: #000;
+
+// THEME COLOR
+$theme-colors: (
+
+  //Bootstrap native
+  primary  : $primary,
+  secondary: $secondary,
+  success  : $green,
+  info     : $cyan,
+  warning  : $yellow,
+  danger   : $red,
+  light    : $gray-100,
+  dark     : $gray-800,
+  black    : $black,
+
+  //Social media
+  instagram: $instagram,
+  facebook : $facebook,
+  messenger: $messenger,
+  youtube  : $youtube,
+  twitter  : $twitter,
+  linkedin : $linkedin,
+  snapchat : $snapchat,
+  whatsapp : $whatsapp,
+  skype    : $skype,
+
+  //Gray
+  gray-100 : $gray-100,
+  gray-200 : $gray-200,
+  gray-300 : $gray-300,
+  gray-400 : $gray-400,
+  gray-500 : $gray-500,
+  gray-600 : $gray-600,
+  gray-700 : $gray-700,
+  gray-800 : $gray-800,
+  gray-900 : $gray-900,
+
+  //Vendor
+  bootstrap: $bootstrap,
+) ;
+
+////////////////////////////////////////////////////////////////////////////////
+// [ PROPERTIES ]
+
+// BODY
+$body-bg: $white;
+$body-color: $gray;
+
+// FONT
+$font-family-sans-serif: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", 'Noto Color Emoji' ;
+$font-family-monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace ;
+$font-family-base: $font-family-sans-serif ;
+$enable-responsive-font-sizes: true;
+$font-size-base: 1rem;
+$font-size-lg: $font-size-base * 1.25 ;
+$font-size-sm: $font-size-base * .875 ;
+$font-size-base-sm: $font-size-base * 1.05;
+$font-size-base-md: $font-size-base * 1.1;
+$font-size-base-lg: $font-size-base * 1.15;
+$font-size-base-xl: $font-size-base * 1.20;
+$line-height-base: 1.35;
+$font-weight-lighter: lighter;
+$font-weight-light: 300;
+$font-weight-normal: 400;
+$font-weight-bold: 700;
+$font-weight-bolder: bolder;
+$font-weight-base: $font-weight-light;
+$text-muted: $gray-600;
+
+// DISPLAY SIZE
+$display1-size: 6rem;
+$display2-size: 5.5rem;
+$display3-size: 4.5rem;
+$display4-size: 3.5rem;
+$display5-size: .25rem;
+
+// BORDER
+$border-radius: .2rem;
+$border-width: 1px;
+$border-color: $gray-500;
+
+// TRANSITION
+$transition-base: all .2s ease-in-out;
+$transition-fast: all .1s ease-in-out;
+$transition-fade: opacity .15s linear;
+$transition-collapse: height .35s ease;
+
+// LINKS
+$link-color: $primary;
+$link-decoration: none;
+$link-hover-color: darken($link-color, 15%);
+$link-hover-decoration: none;
+
+// HEADING
+$headings-color: null;
+$headings-font-family: null;
+$font-size-heading-base: .85rem;
+
+// BUTTONS
+$input-btn-padding-y: .375rem;
+$input-btn-padding-x: 1rem;
+$input-btn-font-family: null;
+$btn-font-weight: $font-weight-light;
+$input-btn-font-size: $font-size-base;
+$input-btn-line-height: $line-height-base;
+$input-btn-border-width: $border-width;
+
+// COMMENTS
+$comment-spacer-x: 1.25em;
+$comment-spacer-y: 1.25em;
+
+// TABLES
+$table-border-color: $gray-400;
+$table-head-bg: $gray-100;
+$table-head-color: $primary;
+$table-head-color: $gray;
+$table-accent-bg: $gray-100;
+$table-striped-order: odd;
+$table-cell-padding: .65rem;
+$table-color: darken($gray-100, 35%);
+$table-bg: null;
+
+// GENERAL OPTIONS ENABLE
+$enable-rounded: true;
+$enable-shadows: false;
+$enable-gradients: false;
+$enable-transitions: true;
+$enable-print-styles: true;
+
+// OTHER OPTIONS
+$paragraph-margin-bottom: 1rem;
+$spinner-width: 2rem;
+$breadcrumb-divider: quote("/");
+

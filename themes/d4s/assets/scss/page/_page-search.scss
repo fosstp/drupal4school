@@ -1,0 +1,96 @@
+/* ---------------------------------------------------------------------------*/
+/* MOBILE FIRST - page/_page-search.scss                                    */
+/* ---------------------------------------------------------------------------*/
+@charset "UTF-8";
+////////////////////////////////////////////////////// BREAKPOINT EXTRA SMALL UP
+@include media-breakpoint-up(xs) {
+  //////////////////////////////////////////////////////////////////////////////
+  // [ COMMON ]
+  .path-search #page-content {
+    .item-list > h3 {
+      color     : $danger;
+      margin-top: 1rem;
+      &:before {
+        content         : '';
+        width           : 50px;
+        height          : 50px;
+        display         : inline-block;
+        background-color: $danger;
+        transition      : $transition-base;
+        margin-right    : .5rem;
+        mask            : url('../icon/x-circle-fill.svg');
+        mask-size       : contain;
+        mask-repeat     : no-repeat;
+        transform       : translateY(15px);
+      }
+
+    }
+    h1 {
+      margin-bottom: 1.5rem;
+    }
+    label[for*="edit-keys"] {
+      display: none;
+    }
+    #edit-basic {
+      display: inline-block;
+    }
+    .search-help-link {
+      display: inline-block;
+      margin : 1rem 0;
+    }
+    #edit-submit {
+      margin-left: .5rem;
+      margin-top : -4px;
+    }
+    .form-search {
+      max-width: 9rem;
+      display  : inline-block;
+    }
+    h1 {
+      &:before {
+        content         : '';
+        width           : 50px;
+        height          : 50px;
+        display         : inline-block;
+        background-color: $secondary;
+        transition      : $transition-base;
+        margin-right    : .5rem;
+        transform       : translateY(10px);
+        mask            : url('../icon/search.svg');
+        mask-size       : contain;
+        mask-repeat     : no-repeat;
+      }
+    }
+    details {
+      margin-bottom: 3rem;
+    }
+    h2 {
+      color : $secondary;
+      margin: 1rem 0;
+    }
+    .search-results {
+      padding-left: 0;
+      li {
+        margin-left: 0;
+        border-top : 1px solid $gray-400;
+        padding    : 1.5rem 0 1rem;
+        &:last-of-type {
+          border-bottom: 1px solid $gray-400;
+        }
+      }
+    }
+    .search-result__info {
+      font-size: 90%;
+      color    : $gray-500;
+    }
+  }
+}
+
+/////////////////////////////////////////////////////// BREAKPOINT VERY SMALL UP
+@include media-breakpoint-up(vs) {
+  //////////////////////////////////////////////////////////////////////////////
+  // [ COMMON ]
+  .item-list > h3 {
+    margin-top: 3rem;
+  }
+}

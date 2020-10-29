@@ -1,0 +1,67 @@
+/* ---------------------------------------------------------------------------*/
+/* MOBILE FIRST - base/print/_print.scss                                             */
+/* ---------------------------------------------------------------------------*/
+@charset "UTF-8";
+////////////////////////////////////////////////////// BREAKPOINT EXTRA SMALL UP
+@include media-breakpoint-up(xs) {
+  //////////////////////////////////////////////////////////////////////////////
+  // [ COMMON ]
+  @media print {
+    // printing class
+    .d-print-block {
+      display: block;
+    }
+    .d-print-inline-block {
+      display: inline-block;
+    }
+    .col-print-1 {
+      display  : block;
+      max-width: 8%;
+    }
+    .col-print-2 {
+      display  : block;
+      max-width: 16%;
+    }
+    .col-print-3 {
+      display  : block;
+      max-width: 25%;
+    }
+    .col-print-4 {
+      display  : block;
+      max-width: 33%;
+    }
+    .col-print-5 {
+      display  : block;
+      max-width: 42%;
+    }
+    .col-print-6 {
+      display  : block;
+      max-width: 50%;
+    }
+    .col-print-7 {
+      display  : block;
+      max-width: 58%;
+    }
+    .col-print-8 {
+      display  : block;
+      max-width: 66%;
+    }
+    .col-print-9 {
+      display  : block;
+      max-width: 75%;
+    }
+    .col-print-10 {
+      display  : block;
+      max-width: 83%;
+    }
+    .col-print-11 {
+      display  : block;
+      max-width: 92%;
+    }
+    .col-print-12 {
+      display  : block;
+      max-width: 100%;
+
+    }
+  }
+}

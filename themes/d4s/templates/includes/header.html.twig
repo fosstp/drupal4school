@@ -1,0 +1,64 @@
+<!-- HEADER -->
+{% if page.header_special %}
+  <header class="bg-secondary" role="special-message">
+    {{ page.header_special }}
+  </header>
+{% endif %}
+<header class="bg-secondary pt-3 " role="banner-brand" id="header-brand">
+  <div class="{{ container }}">
+
+    <!-- branding header -->
+    <div class="d-flex flex-md-column align-items-md-start">
+      <div class="d-md-flex">
+        <div class="d-none d-md-flex align-items-center">
+          <a class="navbar-brand d-flex text-white align-items-center" href="{{ front_page }}"><img class="text-white mr-3 logo" src="{{ logopath }}">{{ site_name }}</a>
+        </div>
+        <div>
+          <p class="d-flex align-items-center text-white h-100 pl-md-3 text-center text-md-left slogan">{{ site_slogan }}</p>
+        </div>
+      </div>
+    </div>
+    <!-- branding header -->
+
+  </div>
+</header>
+<header class="sticky-top d-print-none" role="header-menu" id="header-menu">
+  <nav role="main-navigation" class="navbar navbar-dark navbar-expand-md bg-secondary px-0 px-md-3 mb-2 mb-md-0">
+    <div class="{{ container }}">
+
+      <!-- Sticky bar logo -->
+      <div class="ml-3 ml-md-0">
+        <a class="navbar-brand mr-2 d-flex align-items-center py-0" href="{{ front_page }}"><img class="navbar-brand mr-2 hide-logo logo" src="{{ logopath }}"/>
+          <span class="d-md-none">{{ site_name }}</span></a>
+      </div>
+      <!-- Sticky bar logo -->
+
+      <!-- button collapse -->
+      <button data-toggle="collapse" class="navbar-toggler ml-auto mr-3 mr-sm-0" data-target="#navigation-container">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <!-- button collapse -->
+
+      <!-- navbar collapse / mobile Menu -->
+      <div class="collapse navbar-collapse position-relative justify-content-between" id="navigation-container">
+
+        <!-- nav_main -->
+        <div id="menu-main" class="search-effect">
+          {{ page.nav_main }}
+        </div>
+        <!-- nav_main -->
+
+        <!-- nav_additional -->
+        <div id="menu-add">
+          {{ page.nav_add }}
+        </div>
+        <!-- nav_additional -->
+
+      </div>
+      <!-- navbar collapse / mobile Menu -->
+
+    </div>
+  </nav>
+</header>
+<!-- HEADER -->

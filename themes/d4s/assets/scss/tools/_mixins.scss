@@ -1,0 +1,30 @@
+// ---------------------------------------------------------------------------//
+// MIXINS                                                                     //
+// ---------------------------------------------------------------------------//
+@charset "UTF-8";
+// [ ADD ORIENTATION TO MEDIA QUERY ]
+@mixin orientation($direction) {
+
+  $orientation-landscape: '(orientation:landscape)';
+  $orientation-portrait : '(orientation:portrait)';
+
+  @if $direction == landscape {
+    @media #{$orientation-landscape} {
+      @content;
+    }
+  }
+  @if $direction == portrait {
+    @media #{$orientation-portrait} {
+      @content;
+    }
+  }
+}
+
+// Setup the function in your functions or helpers files, wherever you keep these bits.
+@function headings($from:1, $to:6) {
+  @if $from == $to {
+    @return 'h#{$from}';
+  } @else {
+    @return 'h#{$from},' + headings($from+1, $to);
+  }
+}

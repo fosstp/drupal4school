@@ -1,0 +1,66 @@
+/* ---------------------------------------------------------------------------*/
+/* MOBILE FIRST -  layout/header/_header-menu.scss                            */
+/* ---------------------------------------------------------------------------*/
+@charset "UTF-8";
+////////////////////////////////////////////////////// BREAKPOINT EXTRA SMALL UP
+@include media-breakpoint-up(xs) {
+  @include orientation(landscape) {
+    ////////////////////////////////////////////////////// ORIENTATION LANDSCAPE
+    #header-menu.sticky-top {
+      position: relative;
+    }
+  }
+  //////////////////////////////////////////////////////////////////////////////
+  // [ COMMON ]
+  #header-menu {
+    a.navbar-brand {
+      font-weight    : 500;
+      color          : white;
+      text-transform : uppercase;
+      text-decoration: none;
+    }
+    // bottom shadow
+    box-shadow: 0 4px 4px -2px rgba(0,0,0,.3);
+    // Toggler
+    .navbar-toggler {
+      border   : none;
+      padding  : 0;
+      font-size: 1.5rem;
+    }
+
+    // border for mobile menu
+    .nav.navbar-nav {
+      li.nav-item {
+        border-top  : none;
+        padding-left: 0;
+        &:nth-last-child(1) {
+          border-bottom: none;
+        }
+      }
+    }
+    // logo size
+    .logo {
+      max-height: 80px;
+      min-width : 80px;
+      padding   : 0;
+    }
+  }
+}
+/////////////////////////////////////////////////////////// BREAKPOINT MEDIUM UP
+@include media-breakpoint-up(md) {
+  //////////////////////////////////////////////////////////////////////////////
+  // [ ORIENTATION ]
+  @include orientation(landscape) {
+    ////////////////////////////////////////////////////// ORIENTATION LANDSCAPE
+    #header-menu.sticky-top {
+      position: sticky;
+    }
+  }
+  //////////////////////////////////////////////////////////////////////////////
+  // [ COMMON ]
+  #header-menu {
+    .hide-logo {
+      display: none;
+    }
+  }
+}

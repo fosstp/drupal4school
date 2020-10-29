@@ -1,0 +1,72 @@
+/* ---------------------------------------------------------------------------*/
+/* ADMINIMAL THEME CUSTOM.SCSS                                                */
+/* ---------------------------------------------------------------------------*/
+
+/* toolbar bar */
+.adminimal .toolbar .toolbar-menu,
+.adminimal-admin-toolbar .toolbar .toolbar-bar {
+  background-color: #222733;
+}
+
+/* toolbar tray */
+.adminimal .toolbar .toolbar-bar,
+.adminimal-admin-toolbar .toolbar .toolbar-bar .toolbar-tab > .toolbar-item.is-active,
+.adminimal-admin-toolbar .toolbar .toolbar-bar .toolbar-tab > .toolbar-item:focus,
+.adminimal-admin-toolbar .toolbar .toolbar-toggle-orientation,
+.adminimal-admin-toolbar .toolbar .toolbar-tray,
+.adminimal-admin-toolbar .toolbar-tray .toolbar-menu li {
+  background-color: #2d3342;
+}
+
+/* page title */
+.adminimal-admin-toolbar .content-header {
+  background-color: #373f51;
+}
+.adminimal-admin-toolbar .toolbar .menu-item:hover {
+  background-color: #2d3342;
+}
+/* Hover / active link */
+
+.adminimal-admin-toolbar .toolbar-tray .toolbar-menu li {
+  background: #2d3342;
+  background-color: #2d3342;
+}
+.adminimal-admin-toolbar .toolbar .toolbar-tray-vertical .toolbar-menu a:focus,
+.adminimal-admin-toolbar .toolbar .toolbar-tray-vertical .toolbar-menu a:hover {
+  background: #33a1fd;
+}
+.adminimal-admin-toolbar .toolbar .toolbar-bar .toolbar-tab:not(.workspaces-toolbar-tab) > .toolbar-item:hover,
+.adminimal-admin-toolbar .toolbar .toolbar-menu .toolbar-menu a.is-active,
+.adminimal-admin-toolbar .toolbar .toolbar-menu a:hover {
+  background-color: #33a1fd;
+}
+.adminimal-admin-toolbar .toolbar-tray-horizontal .menu-item--expanded:hover > .toolbar-box > a,
+.adminimal-admin-toolbar .toolbar-tray-horizontal .menu-item--expanded:hover > a {
+  background: #33a1fd;
+}
+/* Hover / active link */
+.adminimal .toolbar .toolbar-bar .toolbar-tab:not(.workspaces-toolbar-tab) > .toolbar-item:hover,
+.adminimal .toolbar .toolbar-menu .toolbar-menu a.is-active,
+.adminimal .toolbar .toolbar-menu a:hover {
+  background-color: #33a1fd;
+}
+.adminimal-admin-toolbar .toolbar-tray-horizontal .menu-item a:focus {
+  background-color: #373f51;
+}
+.adminimal-admin-toolbar .level-1 .toolbar-handle.open,
+.adminimal-admin-toolbar .toolbar-tray-vertical .level-2 {
+  background: #383d4c !important;
+}
+.adminimal-admin-toolbar .level-2 .toolbar-handle.open,
+.adminimal-admin-toolbar .toolbar-tray-vertical .level-3 {
+  background: #424755 !important;
+}
+.adminimal-admin-toolbar .level-3 .toolbar-handle.open,
+.adminimal-admin-toolbar .toolbar-tray-vertical .level-4 {
+  background: #4c515e !important;
+}
+
+.adminimal-admin-toolbar .level-4 .toolbar-handle.open,
+.adminimal-admin-toolbar .toolbar-tray-vertical .level-5 {
+  background: #575c68 !important;
+}
