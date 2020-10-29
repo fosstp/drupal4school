@@ -1,0 +1,30 @@
+d4s_bootstrap.extra_small:
+  label: 'Extra small'
+  mediaQuery: 'all and (min-width: 0px)'
+  weight: 4
+  multipliers:
+    - 1x
+d4s_bootstrap.small:
+  label: Small
+  mediaQuery: 'all and (min-width: 576px)'
+  weight: 3
+  multipliers:
+    - 1x
+d4s_bootstrap.medium:
+  label: Medium
+  mediaQuery: 'all and (min-width: 768px)'
+  weight: 2
+  multipliers:
+    - 1x
+d4s_bootstrap.large:
+  label: Large
+  mediaQuery: 'all and (min-width: 992px)'
+  weight: 1
+  multipliers:
+    - 1x
+d4s_bootstrap.extra_large:
+  label: 'Extra large'
+  mediaQuery: 'all and (min-width: 1200px)'
+  weight: 0
+  multipliers:
+    - 1x

@@ -1,0 +1,24 @@
+name: 'D4S'
+type: theme
+description: 'A pragmatic Bootstrap 4 theme for Drupal 8 and Drupal 9. This theme aims to provide users with the best possible experience out of the box. It also aim to be a Bootstrap 4 base solution for developers with SCSS files provided. Created by octogone.dev. Modify by leejoneshane.'
+version: 9.x-1.0
+core: 8.x
+core_version_requirement: ^8 || ^9
+base theme: classy
+libraries:
+  - d4s_bootstrap/global-styling
+regions:
+  header_special: 'Header - special'
+  nav_main: 'Navigation - Main'
+  nav_add: 'Navigation - Additional '
+  content_before: 'Content - before'
+  content: 'Content - main '
+  content_after: 'Content - after'
+  sidebar_right: 'Content - Sidebar'
+  footer_left: 'Footer - left box'
+  footer_center: 'Footer - center box'
+  footer_right: 'Footer - right box'
+  footer_sub_left: 'Footer sub - left box'
+  footer_sub_center: 'Footer sub - center box'
+  footer_sub_right: 'Footer sub - right box'
+  modal_container: 'Modal box container'
