@@ -5,7 +5,6 @@
  * Functions to support theming in the Bootstrap for Drupal theme.
  */
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Link;
 use Drupal\Core\Url;
 
 /**
@@ -92,63 +91,60 @@ function d4s_bootstrap_form_system_theme_settings_alter(&$form, FormStateInterfa
     // Get d4s_bootstrap theme path.
     global $base_url;
     $d4s_bootstrap_path = drupal_get_path('theme', 'd4s_bootstrap');
-    $custom_css_path = 'public://d4s_bootstrap-custom.css';
+    $custom_css_path = 'public://d4s-custom.css';
     $custom_css_dir = str_replace($base_url.'/', '', file_create_url($custom_css_path));
     $custom_css_url = file_create_url($custom_css_path);
 
-    $form['d4s_bootstrap_custom'] = [
-    '#type' => 'fieldset',
-    '#title' => t('Customization'),
-    '#weight' => -10,
-  ];
+    $form['d4s_bootstrap'] = [
+        '#type' => 'fieldset',
+        '#title' => '樣式設定',
+        '#weight' => -10,
+    ];
 
-    $form['d4s_bootstrap_custom']['fluid'] = [
-    '#type' => 'checkbox',
-    '#title' => t('Fluid container'),
-    '#default_value' => theme_get_setting('fluid'),
-    '#description' => t('Use <code>.container-fluid</code> class. See @bootstrap_fluid_containers_link.', [
-      '@bootstrap_fluid_containers_link' => Link::fromTextAndUrl('Containers in the Bootstrap 4 documentation', Url::fromUri('https://getbootstrap.com/docs/4.3/layout/overview/', ['absolute' => true, 'fragment' => 'containers']))->toString(),
-    ]),
-  ];
+    $form['d4s_bootstrap']['fluid'] = [
+        '#type' => 'checkbox',
+        '#title' => '自適應寬度',
+        '#default_value' => theme_get_setting('fluid'),
+        '#description' => '使用 <code>.container-fluid</code> 代替 <code>.container</code> 樣式. 詳見 <a href="'.Url::fromUri('https://getbootstrap.com/docs/4.3/layout/overview/', ['absolute' => true, 'fragment' => 'containers'])->toString().'">Bootstrap 4 文件</a>。',
+    ];
 
-    $form['d4s_bootstrap_custom']['custom_css'] = [
-    '#type' => 'checkbox',
-    '#title' => t('Use "d4s_bootstrap-custom.css"'),
-    '#description' => t('Include d4s_bootstrap-custom.css file to override or add custom css code without subthememing/hacking d4s_bootstrap Theme.'),
-    '#default_value' => theme_get_setting('custom_css'),
-  ];
+    $form['d4s_bootstrap']['custom_css'] = [
+        '#type' => 'checkbox',
+        '#title' => '啟用自定義樣式',
+        '#description' => '引用 d4s-custom.css 樣式檔，以複寫或新增 Bootstrap 4 預設樣式。',
+        '#default_value' => theme_get_setting('custom_css'),
+    ];
 
-    $form['d4s_bootstrap_custom']['d4s_bootstrap_custom_check'] = [
-    '#type' => 'fieldset',
-    '#title' => t('Custom CSS file check'),
-    '#weight' => 50,
-    '#states' => [
-      // Hide the settings when the cancel notify checkbox is disabled.
-      'visible' => [
-        ':input[name="custom_css"]' => ['checked' => true],
-      ],
-    ],
-  ];
+    $form['d4s_bootstrap']['custom_check'] = [
+        '#type' => 'fieldset',
+        '#title' => '自定義樣式檢查',
+        '#weight' => 50,
+        '#states' => [
+            'visible' => [
+                ':input[name="custom_css"]' => ['checked' => true],
+            ],
+        ],
+    ];
 
     if (file_exists($custom_css_path)) {
-        $form['d4s_bootstrap_custom']['d4s_bootstrap_custom_check']['custom_css_description'] = [
-      '#type' => 'container',
-      '#attributes' => [
-        'class' => ['messages', 'messages--status'],
-      ],
-      'message' => [
-        '#markup' => t('Custom CSS file Found in: @css', ['@css' => $custom_css_dir]),
-      ],
-    ];
+        $form['d4s_bootstrap']['custom_check']['custom_css_description'] = [
+            '#type' => 'container',
+            '#attributes' => [
+                'class' => ['messages', 'messages--status'],
+            ],
+            'message' => [
+                '#markup' => "找到自定義樣式檔，位於： $custom_css_dir 。",
+            ],
+        ];
     } else {
-        $form['d4s_bootstrap_custom']['d4s_bootstrap_custom_check']['custom_css_not_found'] = [
-      '#type' => 'container',
-      '#attributes' => [
-        'class' => ['messages', 'messages--error'],
-      ],
-      'message' => [
-        '#markup' => t('Custom CSS file not found. You must create the @css file manually.', ['@css' => $custom_css_dir]),
-      ],
-    ];
+        $form['d4s_bootstrap']['custom_check']['custom_css_not_found'] = [
+            '#type' => 'container',
+            '#attributes' => [
+                'class' => ['messages', 'messages--error'],
+            ],
+            'message' => [
+                '#markup' => "找不到自定義樣式檔，請自行建立 $custom_css_dir 檔案。",
+            ],
+        ];
     }
 }
