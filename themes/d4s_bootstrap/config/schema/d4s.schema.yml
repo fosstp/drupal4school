@@ -4,4 +4,4 @@ d4s_bootstrap.settings:
   mapping:
     fluid:
       type: boolean
-      label: '彈性寬度'
+      label: '自適應寬度'

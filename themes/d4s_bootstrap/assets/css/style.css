@@ -90,9 +90,7 @@ body {
   font-size: 1rem;
   font-weight: 300;
   line-height: 1.35;
-  color: #6c757d;
   text-align: left;
-  background-color: #fff;
 }
 
 [tabindex="-1"]:focus:not(:focus-visible) {
@@ -190,12 +188,15 @@ sup {
 }
 
 a {
-  color: #33a1fd;
   text-decoration: none;
   background-color: transparent;
 }
-a:hover {
-  color: #027ce1;
+a:hover,
+a:focus {
+  text-decoration: none;
+}
+
+a:active {
   text-decoration: none;
 }
 
@@ -523,7 +524,7 @@ small,
 mark,
 .mark {
   padding: 0.2em;
-  background-color: #fcf8e3;
+  background-color: #fff;
 }
 
 .list-unstyled {

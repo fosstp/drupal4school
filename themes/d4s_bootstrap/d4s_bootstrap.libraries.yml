@@ -1,4 +1,5 @@
 color.preview:
+  version: VERSION
   css:
     theme:
       color/preview.css: {}
@@ -6,7 +7,9 @@ color.preview:
     color/preview.js: {}
   dependencies:
     - color/drupal.color
+
 global-styling:
+  version: VERSION
   css:
     theme:
       assets/css/style.css: {}
