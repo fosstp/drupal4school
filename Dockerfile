@@ -36,9 +36,9 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
     && mv drush.phar /usr/local/bin/drush \
     && chmod +x /usr/local/bin/drush
 
-ADD modules /opt/drupal/web/modules
-RUN cp -rp /opt/drupal/web/modules /root/modules \
-    && mkdir -p /opt/drupal/web/sites/default/files \
+ADD modules /root/modules
+ADD themes /root/themes
+RUN mkdir -p /opt/drupal/web/sites/default/files \
     && chown -R www-data:www-data /opt/drupal/web \
     && chmod -R 750 /opt/drupal/web \
     && chmod -R 777 /opt/drupal/web/sites

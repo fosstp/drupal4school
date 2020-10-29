@@ -24,6 +24,7 @@ if [ ! -d "/opt/drupal/web/sites/default/files/gsync" ]; then
 fi
 
 cp -rp /root/modules/* /opt/drupal/web/modules
+cp -rp /root/themes/* /opt/drupal/web/themes
 
 chown -R www-data:www-data /opt/drupal/web
 chmod -R 750 /opt/drupal/web
