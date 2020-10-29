@@ -1,7 +1,7 @@
 name: 'D4S'
 type: theme
 description: 'A pragmatic Bootstrap 4 theme for Drupal 8 and Drupal 9. This theme aims to provide users with the best possible experience out of the box. It also aim to be a Bootstrap 4 base solution for developers with SCSS files provided. Created by octogone.dev. Modify by leejoneshane.'
-version: 1.0
+version: 9.x-1.0
 core: 8.x
 core_version_requirement: ^8 || ^9
 base theme: classy
