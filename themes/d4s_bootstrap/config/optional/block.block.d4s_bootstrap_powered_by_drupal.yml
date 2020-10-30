@@ -1,0 +1,19 @@
+langcode: zh-hant
+status: false
+dependencies:
+  module:
+    - system
+  theme:
+    - d4s_bootstrap
+id: d4s_bootstrap_powered_by_drupal
+theme: d4s_bootstrap
+region: footer_sub_right
+weight: 0
+provider: null
+plugin: system_powered_by_block
+settings:
+  id: system_powered_by_block
+  label: 'Powered by Drupal'
+  provider: system
+  label_display: '0'
+visibility: {  }

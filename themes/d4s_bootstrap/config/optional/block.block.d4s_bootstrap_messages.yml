@@ -1,0 +1,19 @@
+langcode: zh-hant
+status: true
+dependencies:
+  module:
+    - system
+  theme:
+    - d4s_bootstrap
+id: d4s_bootstrap_messages
+theme: d4s_bootstrap
+region: content_before
+weight: -11
+provider: null
+plugin: system_messages_block
+settings:
+  id: system_messages_block
+  label: 提示訊息
+  provider: system
+  label_display: '0'
+visibility: {  }

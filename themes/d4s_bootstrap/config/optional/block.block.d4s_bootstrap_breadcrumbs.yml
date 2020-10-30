@@ -1,0 +1,19 @@
+langcode: zh-hant
+status: true
+dependencies:
+  module:
+    - system
+  theme:
+    - d4s_bootstrap
+id: d4s_bootstrap_breadcrumbs
+theme: d4s_bootstrap
+region: content_before
+weight: -9
+provider: null
+plugin: system_breadcrumb_block
+settings:
+  id: system_breadcrumb_block
+  label: 快捷列
+  provider: system
+  label_display: '0'
+visibility: {  }

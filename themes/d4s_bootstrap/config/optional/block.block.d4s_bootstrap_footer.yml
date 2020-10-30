@@ -1,0 +1,24 @@
+langcode: zh-hant
+status: true
+dependencies:
+  config:
+    - system.menu.footer
+  module:
+    - system
+  theme:
+    - d4s_bootstrap
+id: d4s_bootstrap_footer
+theme: d4s_bootstrap
+region: nav_add
+weight: -12
+provider: null
+plugin: 'system_menu_block:footer'
+settings:
+  id: 'system_menu_block:footer'
+  label: 頁尾
+  provider: system
+  label_display: '0'
+  level: 1
+  depth: 0
+  expand_all_items: false
+visibility: {  }

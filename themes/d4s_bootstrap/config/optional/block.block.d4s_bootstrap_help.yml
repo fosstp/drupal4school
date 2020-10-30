@@ -1,0 +1,19 @@
+langcode: zh-hant
+status: true
+dependencies:
+  module:
+    - help
+  theme:
+    - d4s_bootstrap
+id: d4s_bootstrap_help
+theme: d4s_bootstrap
+region: content_before
+weight: -12
+provider: null
+plugin: help_block
+settings:
+  id: help_block
+  label: 說明
+  provider: help
+  label_display: '0'
+visibility: {  }

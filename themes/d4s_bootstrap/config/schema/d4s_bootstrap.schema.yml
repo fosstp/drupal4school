@@ -5,3 +5,6 @@ d4s_bootstrap.settings:
     fluid:
       type: boolean
       label: '自適應寬度'
+    custom_css:
+      type: boolean
+      label: '自訂樣式檔'

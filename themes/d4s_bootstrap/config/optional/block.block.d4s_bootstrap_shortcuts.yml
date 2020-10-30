@@ -1,0 +1,19 @@
+langcode: zh-hant
+status: false
+dependencies:
+  module:
+    - shortcut
+  theme:
+    - d4s_bootstrap
+id: d4s_bootstrap_shortcuts
+theme: d4s_bootstrap
+region: sidebar_right
+weight: -11
+provider: null
+plugin: shortcuts
+settings:
+  id: shortcuts
+  label: 捷徑
+  provider: shortcut
+  label_display: visible
+visibility: {  }
