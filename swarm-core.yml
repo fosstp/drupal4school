@@ -57,8 +57,6 @@ services:
 
   portainer:
     image: portainer/portainer
-    ports:
-    - "9000:9000"
     volumes:
     - /storage/portainer:/data
     networks:
