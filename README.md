@@ -43,7 +43,10 @@ drupal/console 尚未完全支援 drupal 9，因此改用 drush 10，兩者的�
     >traefik.貴校網域.tp.edu.tw
     
     >portainer.貴校網域.tp.edu.tw
-*   使用瀏覽器連結上述管理頁面
+*   在 Swarm 中部署 drupal4school，首先在儲存池內建立 Volume：mysql、drupal/modules、drupal/themes、drupal/sites
+*   下載組態檔 [swarm-drupal.yml](https://raw.githubusercontent.com/fosstp/drupal4school/master/swarm-drupal.yml) 並修改組態中的網址設定，將網域名稱 xxps 修改為貴校的網域，另外需修改站台相關環境變數，詳細說明請看下一小節
+*   登入 portainer 管理頁面，點選 Swarm 集群，進入 Swarm 集群後點選左側選單中的 Stack，新增一個 Stack 名稱為 drupal
+*   將修改後的 swarm-drupal.yml 所有內容複製起來，貼到剛剛的 stack 中，然後按最下面的「Deploy the stack」按鈕，d4s 將會自動啟動（需約 10 分鐘）
 
 ## docker-compose
 要架設一個 drupal 網站最簡單的方法就是使 docker-compose 指令。請先下載 [docker-compose.yml 範例檔](https://github.com/fosstp/drupal4school/blob/master/docker-compose.yml)，下載完成後請修改檔案中的環境變數、磁碟掛載路徑...等等參數，然後再執行底下的指令：
