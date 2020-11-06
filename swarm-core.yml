@@ -58,6 +58,7 @@ services:
   portainer:
     image: portainer/portainer
     volumes:
+    - /var/run/docker.sock:/var/run/docker.sock
     - /storage/portainer:/data
     networks:
     - core-infra
