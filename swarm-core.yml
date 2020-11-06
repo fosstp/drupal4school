@@ -1,7 +1,7 @@
 version: '3.2'
 
 services:
-  http_proxy:
+  traefik:
     image: traefik
     volumes:
     - /var/run/docker.sock:/var/run/docker.sock
