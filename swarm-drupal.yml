@@ -23,16 +23,16 @@ services:
     deploy:
       labels:
         traefik.enable: "true"
-        traefik.http.services.drupal.loadbalancer.server.port: "80"
-        traefik.http.services.drupal.loadbalancer.server.scheme: "http"
+        traefik.http.services.phpmyadmin.loadbalancer.server.port: "80"
+        traefik.http.services.phpmyadmin.loadbalancer.server.scheme: "http"
         traefik.http.middlewares.https_redirect.redirectscheme.scheme: "https"
-        traefik.http.routers.drupal_http.entrypoints: "web"
-        traefik.http.routers.drupal_http.rule: "Host(`sqladm.xxps.tp.edu.tw`)"
-        traefik.http.routers.drupal_http.middlewares: "https_redirect"
-        traefik.http.routers.drupal_https.entrypoints: "web-secure"
-        traefik.http.routers.drupal_https.rule: "Host(`sqladm.xxps.tp.edu.tw`)"
-        traefik.http.routers.drupal_https.tls: "true"
-        traefik.http.routers.drupal_https.tls.certresolver: "letsencrypt"
+        traefik.http.routers.phpmyadmin_http.entrypoints: "web"
+        traefik.http.routers.phpmyadmin_http.rule: "Host(`sqladm.xxps.tp.edu.tw`)"
+        traefik.http.routers.phpmyadmin_http.middlewares: "https_redirect"
+        traefik.http.routers.phpmyadmin_https.entrypoints: "web-secure"
+        traefik.http.routers.phpmyadmin_https.rule: "Host(`sqladm.xxps.tp.edu.tw`)"
+        traefik.http.routers.phpmyadmin_https.tls: "true"
+        traefik.http.routers.phpmyadmin_https.tls.certresolver: "letsencrypt"
 
   drupal:
     image: fosstp/drupal
