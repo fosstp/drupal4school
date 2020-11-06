@@ -42,17 +42,3 @@ services:
     depends_on:
       - mysql
     restart: always
-#底下為 traefik 設定稿範本，如果您未啟用 traefik 容器，以下設定將不會有任何作用。如果您想使用 traefik 請務必修改 Host() 內的網址 
-    deploy:
-      labels:
-        traefik.enable: "true"
-        traefik.http.services.drupal.loadbalancer.server.port: "80"
-        traefik.http.services.drupal.loadbalancer.server.scheme: "http"
-        traefik.http.middlewares.https_redirect.redirectscheme.scheme: "https"
-        traefik.http.routers.drupal_http.entrypoints: "web"
-        traefik.http.routers.drupal_http.rule: "Host(`www.xxps.tp.edu.tw`)"
-        traefik.http.routers.drupal_http.middlewares: "https_redirect"
-        traefik.http.routers.drupal_https.entrypoints: "web-secure"
-        traefik.http.routers.drupal_https.rule: "Host(`www.xxps.tp.edu.tw`)"
-        traefik.http.routers.drupal_https.tls: "true"
-        traefik.http.routers.drupal_https.tls.certresolver: "letsencrypt"
