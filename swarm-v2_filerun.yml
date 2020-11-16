@@ -1,0 +1,34 @@
+version: '3'
+services:
+  filerun:
+    image: afian/filerun
+    environment:
+      FR_DB_HOST: mysql
+      FR_DB_PORT: 3306
+      FR_DB_NAME: filerun
+      FR_DB_USER: root
+      FR_DB_PASS: dbpasswd
+      APACHE_RUN_USER: www-data
+      APACHE_RUN_USER_ID: 33
+      APACHE_RUN_GROUP: www-data
+      APACHE_RUN_GROUP_ID: 33
+    networks:
+    - core-infra
+    volumes:
+    - /storage/drupal:/user-files
+    deploy:
+      labels:
+        traefik.enable: "true"
+        traefik.http.services.filerun.loadbalancer.server.port: "80"
+        traefik.http.services.filerun.loadbalancer.server.scheme: "http"
+        traefik.http.routers.fs_http.entrypoints: "web"
+        traefik.http.routers.fs_http.rule: "Host(`fs.meps.tp.edu.tw`)"
+        traefik.http.routers.fs_http.middlewares: "https_redirect"
+        traefik.http.routers.fs_https.entrypoints: "web-secure"
+        traefik.http.routers.fs_https.rule: "Host(`fs.meps.tp.edu.tw`)"
+        traefik.http.routers.fs_https.tls: "true"
+        traefik.http.routers.drupal_https.tls.certresolver: "letsencrypt"
+
+networks:
+  core-infra:
+    external: true

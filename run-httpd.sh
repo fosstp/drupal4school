@@ -23,6 +23,7 @@ if [ ! -d "/opt/drupal/web/sites/default/files/gsync" ]; then
     mkdir -p /opt/drupal/web/sites/default/files/gsync
 fi
 
+cp -rp /root/core/* /opt/drupal/web/core
 cp -rp /root/modules/* /opt/drupal/web/modules
 cp -rp /root/themes/* /opt/drupal/web/themes
 

@@ -27,6 +27,7 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
     && echo "max_execution_time = 3000" > /usr/local/etc/php/conf.d/execution_time.ini \
     && cd /opt/drupal \
     && cp -rp /opt/drupal/web/sites /root/sites \
+    && cp -rp /opt/drupal/web/core /root/core \
 #    && composer require drupal/date_recur:^3.0 drupal/date_recur_modular:^3.0 cache/filesystem-adapter google/apiclient:^2.0 drupal/console:~1.0 --prefer-dist --optimize-autoloader \
 #    && curl https://drupalconsole.com/installer -L -o drupal.phar \
 #    && mv drupal.phar /usr/local/bin/drupal \
