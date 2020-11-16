@@ -27,7 +27,7 @@ services:
         traefik.http.routers.fs_https.entrypoints: "web-secure"
         traefik.http.routers.fs_https.rule: "Host(`fs.meps.tp.edu.tw`)"
         traefik.http.routers.fs_https.tls: "true"
-        traefik.http.routers.drupal_https.tls.certresolver: "letsencrypt"
+        traefik.http.routers.fs_https.tls.certresolver: "letsencrypt"
 
 networks:
   core-infra:
