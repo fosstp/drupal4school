@@ -15,6 +15,8 @@ global-styling:
       assets/css/style.css: {}
       assets/css/colors.css: {}
       //fonts.googleapis.com/css?family=Roboto:300,400,500,700,900&display=swap: {}
+      //cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/fontawesome.min.css: {}
+      //cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.4.0/font/bootstrap-icons.min.css: {}
   js:
     /core/assets/vendor/popperjs/popper.min.js: {}
     //stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js: {}
