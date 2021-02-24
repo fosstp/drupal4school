@@ -15,8 +15,8 @@ if [ ! -f "/opt/drupal/web/sites/default/settings.php" ]; then
     drush en tpedu
 fi
 
-if [ ! -d "/opt/drupal/web/sites/default/files/sync" ]; then
-    mkdir -p /opt/drupal/web/sites/default/files/sync
+if [ ! -d "/opt/drupal/web/sites/default/files/config_*/sync" ]; then
+    mkdir -p /opt/drupal/web/sites/default/files/config_*/sync
 fi
 
 if [ ! -d "/opt/drupal/web/sites/default/files/adsync" ]; then
