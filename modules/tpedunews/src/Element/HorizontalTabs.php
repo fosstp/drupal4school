@@ -110,6 +110,8 @@ class HorizontalTabs extends RenderElement
         if ($form_state->hasValue($name.'__active_tab')) {
             $element['#default_tab'] = $form_state->getValue($name.'__active_tab');
         }
+        $displayed_tab = isset($element['#default_tab']) ? $element['#default_tab'] : '';
+        $element['#default_tab'] = $displayed_tab;
         $element[$name.'__active_tab'] = [
             '#type' => 'hidden',
             '#default_value' => $element['#default_tab'],

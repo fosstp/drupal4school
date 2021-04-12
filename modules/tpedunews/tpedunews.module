@@ -17,12 +17,13 @@ function tpedunews_theme()
     return [
         'tpedunews_block' => [
             'variables' => [
-                'items' => array(),
+                'items' => [],
                 'more' => '',
             ],
         ],
         'horizontal_tabs' => [
             'render element' => 'element',
+            'template' => 'horizontal-tabs',
         ],
     ];
 }
