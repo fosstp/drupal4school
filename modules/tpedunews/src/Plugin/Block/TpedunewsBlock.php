@@ -85,19 +85,22 @@ class TpedunewsBlock extends BlockBase implements ContainerFactoryPluginInterfac
     {
         $feeds = $this->feeds();
         $k = (array_keys($feeds))[0];
-        $build['tpedunews'] = array(
+        $build['tpedunews'] = [
             '#type' => 'horizontal_tabs',
             '#default_tab' => 'feed'.$k,
-        );
+            '#tree' => true,
+        ];
         foreach ($feeds as $feed) {
-            $build['feed'.$feed->id()] = array(
+            $build['feed'.$feed->id()] = [
                 '#type' => 'details',
                 '#title' => $feed->label(),
+                '#collapsible' => true,
+                '#collapsed' => true,
                 '#group' => 'feed',
-                '#attributes' => array(
+                '#attributes' => [
                     'id' => 'feed'.$feed->id(),
-                ),
-            );
+                ],
+            ];
             $result = $this->itemStorage->getQuery()
                     ->condition('fid', $feed->id())
                     ->range(0, $this->configuration['block_count'])
@@ -106,11 +109,11 @@ class TpedunewsBlock extends BlockBase implements ContainerFactoryPluginInterfac
                     ->execute();
             if ($result) {
                 $items = $this->itemStorage->loadMultiple($result);
-                $build['feed'.$feed->id()]['items'] = array(
+                $build['feed'.$feed->id()]['items'] = [
                     '#theme' => 'tpedunews_block',
                     '#items' => $items,
                     '#more' => $feed->toUrl(),
-                );
+                ];
             }
         }
 

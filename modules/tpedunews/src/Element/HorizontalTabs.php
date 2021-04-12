@@ -63,6 +63,9 @@ class HorizontalTabs extends RenderElement
             '#process' => [
                 [$class, 'processHorizontalTabs'],
             ],
+            '#pre_render' => [
+                [$class, 'preRenderHorizontalTabs'],
+            ],
             '#theme_wrappers' => ['horizontal_tabs', 'form_element'],
         ];
     }
