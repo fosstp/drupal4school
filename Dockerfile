@@ -31,7 +31,7 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
 #    && curl https://drupalconsole.com/installer -L -o drupal.phar \
 #    && mv drupal.phar /usr/local/bin/drupal \
 #    && chmod +x /usr/local/bin/drupal
-    && composer require drupal/date_recur:^3.0 drupal/date_recur_modular:^3.0 cache/filesystem-adapter google/apiclient:^2.0 drush/drush:^10 --prefer-dist --optimize-autoloader \
+    && composer require drupal/date_recur:^3.0 drupal/date_recur_modular:^3.0 cache/filesystem-adapter google/apiclient:^2.0 drush/drush:^10 league/csv --prefer-dist --optimize-autoloader \
     && curl https://github.com/drush-ops/drush-launcher/releases/latest/download/drush.phar -L -o drush.phar \
     && mv drush.phar /usr/local/bin/drush \
     && chmod +x /usr/local/bin/drush
