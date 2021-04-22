@@ -88,15 +88,12 @@ class TpedunewsBlock extends BlockBase implements ContainerFactoryPluginInterfac
         $build['tpedunews'] = [
             '#type' => 'horizontal_tabs',
             '#default_tab' => 'feed'.$k,
-            '#tree' => true,
         ];
         foreach ($feeds as $feed) {
             $build['feed'.$feed->id()] = [
                 '#type' => 'details',
                 '#title' => $feed->label(),
-                '#collapsible' => true,
-                '#collapsed' => true,
-                '#group' => 'feed',
+                '#group' => 'tpedunews',
                 '#attributes' => [
                     'id' => 'feed'.$feed->id(),
                 ],
