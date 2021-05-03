@@ -167,7 +167,7 @@ class GeventController extends ControllerBase
         $calendars = gs_listCalendars();
         foreach ($calendars as $calendarListEntry) {
             $calId = $calendarListEntry->getId();
-            if (!strpos($calid, '#holiday') && !strpos($calid, '#contacts')) {
+            if (!strpos($calId, '#holiday') && !strpos($calId, '#contacts')) {
                 $my_calendars[$calId] = $calendarListEntry->getSummary();
                 if (empty($calendar_id)) {
                     $calendar_id = $calendarListEntry->getId();
