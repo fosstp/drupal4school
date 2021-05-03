@@ -13,7 +13,7 @@ ENV EDITOR /usr/bin/mcedit
 
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
     && apt-get update \
-    && apt-get -y --no-install-recommends install unzip git apt-utils mc libldap2-dev mariadb-client \
+    && apt-get -y --no-install-recommends install unzip git apt-utils mc libldap2-dev mariadb-client cron \
     && rm -rf /var/lib/apt/lists/* \
     && docker-php-ext-install ldap \
     && docker-php-ext-enable ldap \
