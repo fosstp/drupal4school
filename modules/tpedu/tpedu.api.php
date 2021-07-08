@@ -405,7 +405,7 @@ function fetch_units()
     $ous = api('all_units');
     if ($ous) {
         foreach ($ous as $o) {
-            if (mb_strpos($o->description, '教師') !== false) {
+            if (mb_strpos($o->description, '學校教師') !== false) {
                 $config = \Drupal::configFactory()->getEditable('tpedu.settings');
                 $config->set('sub_dept', $o->ou);
                 $config->save();
