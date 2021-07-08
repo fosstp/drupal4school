@@ -511,7 +511,7 @@ function fetch_roles()
             if ($roles) {
                 foreach ($roles as $r) {
                     $query = \Drupal::database()
-                        ->query("select * from {tpedu_roles} where id = $r->cn");
+                        ->query("select * from {tpedu_roles} where id = '$r->cn'");
                     $data = $query->fetchAll();
                     if (!$data) {
                         $fields = [
