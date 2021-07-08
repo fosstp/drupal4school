@@ -405,7 +405,7 @@ function fetch_units()
     $ous = api('all_units');
     if ($ous) {
         foreach ($ous as $o) {
-            if (mb_strpos($o->description, '科任') !== false) {
+            if (mb_strpos($o->description, '教師') !== false) {
                 $config = \Drupal::configFactory()->getEditable('tpedu.settings');
                 $config->set('sub_dept', $o->ou);
                 $config->save();
@@ -510,13 +510,18 @@ function fetch_roles()
             $roles = api('roles_of_unit', ['ou' => $o->ou]);
             if ($roles) {
                 foreach ($roles as $r) {
-                    $fields = [
-                        'id' => $r->cn,
-                        'unit' => $o->ou,
-                        'name' => $r->description,
-                        'fetch_date' => date('Y-m-d H:i:s'),
-                    ];
-                    \Drupal::database()->insert('tpedu_roles')->fields($fields)->execute();
+                    $query = \Drupal::database()
+                        ->query("select * from {tpedu_roles} where id = $r->cn");
+                    $data = $query->fetchAll();
+                    if (!$data) {
+                        $fields = [
+                            'id' => $r->cn,
+                            'unit' => $o->ou,
+                            'name' => $r->description,
+                            'fetch_date' => date('Y-m-d H:i:s'),
+                        ];
+                        \Drupal::database()->insert('tpedu_roles')->fields($fields)->execute();
+                    }
                 }
             }
         }
