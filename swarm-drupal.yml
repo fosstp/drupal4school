@@ -48,6 +48,7 @@ services:
       DB_PASSWORD: dbpassword
 #要將站台內容永久化，請啟用以下設定
     volumes:
+    - /storage/drupal/libraries:/opt/drupal/web/libraries
     - /storage/drupal/modules:/opt/drupal/web/modules
     - /storage/drupal/themes:/opt/drupal/web/themes
     - /storage/drupal/sites:/opt/drupal/web/sites
