@@ -2,12 +2,12 @@
 
 namespace Drupal\tpedu\Controller;
 
-use Drupal\Core\Routing\TrustedRedirectResponse;
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Routing\TrustedRedirectResponse;
 use Drupal\user\Entity\User;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class TpeduController extends ControllerBase
@@ -74,15 +74,32 @@ class TpeduController extends ControllerBase
     public function purge(Request $request)
     {
         $database = \Drupal::database();
-        $database->delete('tpedu_units')->execute();
-        $database->delete('tpedu_roles')->execute();
-        $database->delete('tpedu_classes')->execute();
-        $database->delete('tpedu_subjects')->execute();
-        $database->delete('tpedu_people')->execute();
-        $database->delete('tpedu_jobs')->execute();
-        $database->delete('tpedu_assignment')->execute();
+        $config = $this->config('tpedu.settings');
+        $alle = $config->get('alle_project');
+        if (empty($alle)) {
+            $database->delete('tpedu_units')->execute();
+            $database->delete('tpedu_roles')->execute();
+            $database->delete('tpedu_subjects')->execute();
+            $database->delete('tpedu_classes')->execute();
+            $database->delete('tpedu_people')->execute();
+            fetch_units();
+            fetch_roles();
+            fetch_subjects();
+            $classes = all_classes();
+            all_teachers();
+            foreach ($classes as $cls) {
+                get_students_of_class($cls);
+            }
+        } else {
+            $database->delete('tpedu_classes')->execute();
+            $classes = all_classes();
+            alle_sync_teachers();
+            foreach ($classes as $cls) {
+                alle_sync_students($cls);
+            }
+        }
         $build = [
-            '#markup' => '所有的快取資料都已經移除，快取資料將會在下一次存取時自動取得並保留在資料庫中！',
+            '#markup' => '所有的快取資料都已經重新同步，並儲存於資料庫中！',
         ];
 
         return $build;
@@ -90,8 +107,8 @@ class TpeduController extends ControllerBase
 
     public function notice(Request $request)
     {
-        return array(
+        return [
             '#theme' => 'tpedu_personal_data_notice',
-        );
+        ];
     }
 }

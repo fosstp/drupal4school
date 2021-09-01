@@ -24,7 +24,7 @@ class TpeduConfigForm extends ConfigFormBase
         global $base_url;
         $config = $this->config('tpedu.settings');
 
-        $form['helper'] = array(
+        $form['helper'] = [
             '#type' => 'markup',
             '#markup' => '<p>有關臺北市校園單一身分驗證服務，說明如下：<ol>'.
                 '<li>該服務網址為 <a href="https://ldap.tp.edu.tw">https://ldap.tp.edu.tw</a></li>'.
@@ -33,22 +33,22 @@ class TpeduConfigForm extends ConfigFormBase
                 '<li>介接專案相關問題，請洽聯絡人 電話：1999（外縣市請撥02-27208889）#1234 信箱：edu_ict.19@mail.taipei.gov.tw</li>'.
                 '<li>請以學校管理員身分登入上述網站，並從「學校管理」介面左側之「新增授權金鑰」取得全校授權金鑰，授權範圍請務必勾選 profile、school 和 schoolAdmin。</li>'.
                 '</ol></p>',
-        );
-        $form['client_id'] = array(
+        ];
+        $form['client_id'] = [
             '#type' => 'textfield',
             '#title' => '介接專案編號',
             '#default_value' => $config->get('client_id'),
             '#description' => '請向臺北市教育局申請臺北市校園單一身分驗證介接專案，並將申請通過後所核發之專案編號填寫在這個欄位。',
             '#required' => true,
-        );
-        $form['client_secret'] = array(
+        ];
+        $form['client_secret'] = [
             '#type' => 'textfield',
             '#title' => '介接專案金鑰',
             '#default_value' => $config->get('client_secret'),
             '#description' => '請填寫核發給專案的金鑰，注意：金鑰牽涉到專案的追蹤反查須妥善保存切勿外流，以避免遭到停用！',
             '#required' => true,
-        );
-        $form['admin_token'] = array(
+        ];
+        $form['admin_token'] = [
             '#type' => 'textarea',
             '#rows' => 6,
             '#cols' => 25,
@@ -56,56 +56,70 @@ class TpeduConfigForm extends ConfigFormBase
             '#default_value' => $config->get('admin_token'),
             '#description' => '請依上面說明之方法，填入全校授權金鑰',
             '#required' => true,
-        );
-        $form['refresh_days'] = array(
+        ];
+        $form['sims_notice'] = [
+            '#type' => 'markup',
+            '#markup' => '<p>全誼國小校務行政系統，介接說明如下：<ol>'.
+                '<li><font style="color:red">非國小學程，無需進行以下設定。</font></li>'.
+                '<li>進行以下設定時，模組將從全誼校務行政系統取得資料，而非透過單一身份驗證取得資料，唯登入系統時依然透過單一身份驗證。</li>'.
+                '<li>請向臺北市教育局申請全誼國小校務行政系統介接專案，類型為特權專案，申請特權專案需提供此伺服器的固定IP，授權範圍勾選「全部」。</li>'.
+                '</ol></p>',
+        ];
+        $form['alle_project'] = [
+            '#type' => 'textfield',
+            '#title' => '全誼介接專案編號',
+            '#default_value' => $config->get('alle_project'),
+            '#required' => false,
+        ];
+        $form['refresh_days'] = [
             '#type' => 'number',
             '#title' => '快取資料庫更新頻率',
             '#default_value' => $config->get('refresh_days'),
             '#description' => '透過 Data API 取得的資料將快取在資料庫中，若該筆資料保存超過更新頻率，則自動重新取得。預設為 30 天！',
-        );
-        $form['display_unit'] = array(
+        ];
+        $form['display_unit'] = [
             '#type' => 'checkbox',
             '#title' => '顯示部門名稱',
             '#default_value' => $config->get('display_unit'),
             '#description' => '預設僅顯示使用者真實姓名，當開啟此功能時，教師會顯示部門名稱，學生會顯示班級名稱。預設為不顯示！',
-        );
-        $form['display_title'] = array(
+        ];
+        $form['display_title'] = [
             '#type' => 'checkbox',
             '#title' => '顯示職稱',
             '#default_value' => $config->get('display_title'),
             '#description' => '預設僅顯示使用者真實姓名，當開啟此功能時，教師會顯示職稱，學生會顯示班級名稱。預設為不顯示！',
-        );
-        $form['allow_default_login'] = array(
+        ];
+        $form['allow_default_login'] = [
             '#type' => 'checkbox',
             '#title' => '允許使用本地端帳號登入',
             '#default_value' => $config->get('allow_default_login'),
             '#description' => '預設系統管理員帳號為本地端帳號，如果您已經將管理權限授予給單一身分驗證帳號，則可以將此功能關閉。預設為允許！',
-        );
-        $form['login_goto_url'] = array(
+        ];
+        $form['login_goto_url'] = [
             '#type' => 'textfield',
             '#title' => '登入後跳轉網址（可不填）',
             '#default_value' => $config->get('login_goto_url'),
             '#description' => '請輸入想讓使用者登入時第一個看到的頁面，例如：node/news',
-        );
-        $form['logout_goto_url'] = array(
+        ];
+        $form['logout_goto_url'] = [
             '#type' => 'textfield',
             '#title' => '登出後跳轉網址（可不填）',
             '#default_value' => $config->get('logout_goto_url'),
             '#description' => '請輸入希望使用者登出後連結到哪個頁面，如果想要一併登出單一身分驗證服務，可設定為：https://ldap.tp.edu.tw/api/v2/logout?redirect=本站登入網址',
-        );
-        $form['personal_data_notice'] = array(
+        ];
+        $form['personal_data_notice'] = [
             '#type' => 'checkbox',
             '#title' => '個資政策連結',
             '#default_value' => $config->get('personal_data_notice'),
             '#description' => '是否要在登入區塊顯示個資政策連結',
-        );
-        $form['actions'] = array(
+        ];
+        $form['actions'] = [
             '#type' => 'actions',
-            'submit' => array(
+            'submit' => [
                 '#type' => 'submit',
                 '#value' => '儲存組態',
-            ),
-        );
+            ],
+        ];
 
         return $form;
     }
@@ -130,6 +144,11 @@ class TpeduConfigForm extends ConfigFormBase
                 $config->set('enable', true);
                 $config->set('api.dc', $user->o);
                 $config->save();
+                $school = api('school');
+                if ($school->tpSims == 'alle') {
+                    $config->set('alle.sid', $school->tpUniformNumbers);
+                    $config->save();
+                }
                 fetch_units();
                 fetch_roles();
                 fetch_subjects();

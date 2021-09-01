@@ -139,6 +139,32 @@ function api($which, array $replacement = null)
     }
 }
 
+function alle($which, array $replacement = null)
+{
+    $config = \Drupal::config('tpedu.settings');
+    $dataapi = $config->get('alle.'.$which);
+    $replacement['sid'] = $config->get('alle.sid');
+    $search = [];
+    $values = [];
+    foreach ($replacement as $key => $data) {
+        $search[] = '{'.$key.'}';
+        $values[] = $data;
+    }
+    $dataapi = str_replace($search, $values, $dataapi);
+    $response = \Drupal::httpClient()->get($dataapi, [
+        'headers' => ['Authorization' => 'Special ip '.$config->get('alle.sid')],
+        'http_errors' => false,
+    ]);
+    $json = json_decode($response->getBody());
+    if ($response->getStatusCode() == 200) {
+        return $json->list;
+    } else {
+        \Drupal::logger('tpedu')->error('oauth2 api response:'.$dataapi.'=>'.$response->getBody());
+
+        return false;
+    }
+}
+
 function profile()
 {
     $user = api('profile');
@@ -320,6 +346,217 @@ function fetch_user($uuid)
     }
 }
 
+function alle_teacher_id($idno)
+{
+    $teachers = all_teachers();
+    foreach ($teachers as $teacher) {
+        alle_fetch_user($teacher);
+    }
+}
+
+function alle_student_id($idno, $cls)
+{
+    $students = alle('students_of_class', ['cls' => $cls]);
+    foreach ($students->students as $stdno) {
+        $userdata = alle('student_profile', ['stdno' => $stdno]);
+        if ($userdata[0]->idno == $idno) {
+            return $stdno;
+        }
+    }
+}
+
+function alle_fetch_user($uuid)
+{
+    $database = \Drupal::database();
+    $config = \Drupal::config('tpedu.settings');
+    $user = api('one_user', ['uuid' => $uuid]);
+    if ($user) {
+        if (is_array($user->uid)) {
+            foreach ($user->uid as $u) {
+                if (!strpos($u, '@') && !is_phone($u)) {
+                    $account = $u;
+                }
+            }
+        } else {
+            $account = $user->uid;
+        }
+        $stu = ($user->employeeType == '學生') ? 1 : 0;
+        $myid = $user->employeeNumber;
+        if (!$myid) {
+            $olddata = $database->query("select id from tpedu_people where uuid='$uuid'")->fetchField();
+            if ($olddata) {
+                $myid = $olddata;
+            } else {
+                if ($stu) {
+                    $myid = alle_student_id($user->cn, $user->tpClass);
+                } else {
+                    $myid = alle_teacher_id($user->cn);
+                }
+            }
+        }
+        $m_dept_id = '';
+        $m_dept_name = '';
+        $m_role_id = '';
+        $m_role_name = '';
+        if ($stu == 1) {
+            $database->delete('tpedu_people')->condition('uuid', $uuid)->execute();
+            $myclass = $user->tpClass;
+            $myseat = $user->tpSeat;
+            $m_dept_id = $myclass;
+            $m_dept_name = $myclass;
+            if (isset($user->tpClassTitle)) {
+                $m_dept_name = $user->tpClassTitle;
+            }
+            $m_role_id = $m_dept_id;
+            $m_role_name = $m_dept_name;
+        } else {
+            $database->delete('tpedu_people')->condition('uuid', $uuid)->execute();
+            $database->delete('tpedu_jobs')->condition('uuid', $uuid)->execute();
+            $database->delete('tpedu_assignment')->condition('uuid', $uuid)->execute();
+            $userdata = alle('teacher_info', ['teaid' => $myid]);
+            if (!empty($userdata[0]->class)) {
+                $myclass = $userdata[0]->class;
+            }
+            if (!empty($userdata[0]->job_title)) {
+                $sdept = $config->get('sub_dept');
+                foreach ($userdata[0]->job_title as $role_name) {
+                    $data = $database->query("select * from tpedu_roles where name='$role_name'")->fetchObject();
+                    if ($m_dept_id == '' && $sdept != $data->unit) {
+                        $m_dept_id = $data->unit;
+                        $m_dept_name = get_unit_name($data->unit);
+                        $m_role_id = $data->id;
+                        $m_role_name = $data->name;
+                    }
+                    $database->insert('tpedu_jobs')->fields([
+                        'uuid' => $uuid,
+                        'dept_id' => $data->unit,
+                        'role_id' => $data->id,
+                    ])->execute();
+                }
+            }
+            if (!empty($userdata[0]->subjects)) {
+                $subjects = $userdata[0]->subjects;
+                $domain = $userdata[0]->domain;
+                foreach ($subjects as $n => $subj_name) {
+                    $subj_id = $database->query("select id from tpedu_subjects where name='$subj_name'")->fetchField();
+                    if (!$subj_id) {
+                        $maxid = $database->query('select max(id) from tpedu_subjects')->fetchField();
+                        if (empty($maxid)) {
+                            $snid = 'subj01';
+                        } else {
+                            $snid = intval(substr($maxid, 4)) + 1;
+                            if ($snid < 10) {
+                                $snid = "0$snid";
+                            }
+                            $snid = "subj$snid";
+                        }
+                        if (count($subjects) == count($domain)) {
+                            $database->insert('tpedu_subjects')->fields([
+                                'id' => $snid,
+                                'domain' => $domain[$n],
+                                'name' => $subj_name,
+                            ])->execute();
+                        } else {
+                            $database->insert('tpedu_subjects')->fields([
+                                'id' => $snid,
+                                'domain' => '108',
+                                'name' => $subj_name,
+                            ])->execute();
+                        }
+                    }
+                }
+            }
+
+            $userdata = alle('teacher_subjects', ['teaid' => $myid]);
+            if (!empty($userdata[0]->classes)) {
+                foreach ($userdata[0]->classes as $cls_data) {
+                    $cls = $cls_data->id;
+                    foreach ($cls_data->subjects as $subj_id => $num) {
+                        $database->insert('tpedu_assignment')->fields([
+                            'uuid' => $uuid,
+                            'class_id' => $cls,
+                            'subject_id' => $subj_id,
+                        ])->execute();
+                    }
+                }
+            }
+        }
+        $fields = [
+            'uuid' => $uuid,
+            'idno' => $user->cn,
+            'id' => $myid,
+            'student' => $stu,
+            'account' => $account,
+            'sn' => $user->sn,
+            'gn' => $user->givenName,
+            'realname' => $user->displayName,
+            'dept_id' => $m_dept_id,
+            'dept_name' => $m_dept_name,
+            'role_id' => $m_role_id,
+            'role_name' => $m_role_name,
+            'birthdate' => date('Y-m-d H:i:s', strtotime($user->birthDate)),
+            'gender' => $user->gender,
+            'status' => $user->inetUserStatus,
+            'fetch_date' => date('Y-m-d H:i:s'),
+        ];
+        if (!empty($user->mobile)) {
+            $fields['mobile'] = $user->mobile;
+        }
+        if (!empty($user->telephoneNumber)) {
+            $fields['telephone'] = $user->telephoneNumber;
+        }
+        if (!empty($user->homePhone)) {
+            $fields['telephone'] = $user->homePhone;
+        }
+        if (!empty($user->registeredAddress)) {
+            $fields['address'] = $user->registeredAddress;
+        }
+        if (!empty($user->homePostalAddress)) {
+            $fields['address'] = $user->homePostalAddress;
+        }
+        if (!empty($user->mail)) {
+            $fields['email'] = preg_replace('/\s(?=)/', '', $user->mail);
+        }
+        if (!empty($user->wWWHomePage)) {
+            $fields['www'] = $user->wWWHomePage;
+        }
+        if (!empty($myclass)) {
+            $fields['class'] = $myclass;
+        }
+        if (!empty($myseat)) {
+            $fields['seat'] = $myseat;
+        }
+        if (!empty($user->tpCharacter)) {
+            if (is_array($user->tpCharacter)) {
+                $fields['character'] = implode(',', $user->tpCharacter);
+            } else {
+                $fields['character'] = $user->tpCharacter;
+            }
+        }
+        $database->insert('tpedu_people')->fields($fields)->execute();
+    }
+}
+
+function alle_sync_teachers()
+{
+    $uuids = api('all_teachers');
+    if ($uuids && is_array($uuids)) {
+        foreach ($uuids as $uuid) {
+            alle_fetch_user($uuid);
+        }
+    }
+}
+
+function alle_sync_students($cls)
+{
+    $uuids = api('students_of_class', ['cls' => $cls]);
+    if ($uuids && is_array($uuids)) {
+        foreach ($uuids as $uuid) {
+            alle_fetch_user($uuid);
+        }
+    }
+}
+
 function get_user($uuid)
 {
     $config = \Drupal::config('tpedu.settings');
@@ -338,7 +575,11 @@ function get_user($uuid)
     }
     $data = $query->fetchObject();
     if (!$data) {
-        fetch_user($uuid);
+        if (empty($config->get('alle_project'))) {
+            fetch_user($uuid);
+        } else {
+            alle_fetch_user($uuid);
+        }
         $query = \Drupal::database()->query("select * from {tpedu_people} where uuid='$uuid'");
         $data = $query->fetchObject();
     }
@@ -401,6 +642,9 @@ function all_teachers()
 
 function fetch_units()
 {
+    if (\Drupal::config('tpedu.settings')->get('alle_project')) {
+        return;
+    }
     \Drupal::database()->delete('tpedu_units')->execute();
     $ous = api('all_units');
     if ($ous) {
@@ -424,8 +668,13 @@ function all_units()
 {
     $config = \Drupal::config('tpedu.settings');
     $off = $config->get('refresh_days');
-    $query = \Drupal::database()
-        ->query("select * from {tpedu_units} where fetch_date > DATE_SUB(NOW(), INTERVAL $off DAY) order by id");
+    if ($config->get('alle_project')) {
+        $query = \Drupal::database()
+            ->query('select * from {tpedu_units} order by id');
+    } else {
+        $query = \Drupal::database()
+            ->query("select * from {tpedu_units} where fetch_date > DATE_SUB(NOW(), INTERVAL $off DAY) order by id");
+    }
     $data = $query->fetchAll();
     if (!$data) {
         fetch_units();
@@ -443,8 +692,13 @@ function get_unit($ou)
 {
     $config = \Drupal::config('tpedu.settings');
     $off = $config->get('refresh_days');
-    $query = \Drupal::database()
-        ->query("select * from {tpedu_units} where id='$ou' and fetch_date > DATE_SUB(NOW(), INTERVAL $off DAY)");
+    if ($config->get('alle_project')) {
+        $query = \Drupal::database()
+            ->query("select * from {tpedu_units} where id='$ou'");
+    } else {
+        $query = \Drupal::database()
+            ->query("select * from {tpedu_units} where id='$ou' and fetch_date > DATE_SUB(NOW(), INTERVAL $off DAY)");
+    }
     $data = $query->fetchObject();
     if (!$data) {
         fetch_units();
@@ -456,6 +710,13 @@ function get_unit($ou)
     }
 
     return false;
+}
+
+function get_unit_name($ou)
+{
+    $unit = get_unit($ou);
+
+    return $unit->name;
 }
 
 function get_units_of_job($uuid)
@@ -503,6 +764,9 @@ function get_teachers_of_unit($ou)
 
 function fetch_roles()
 {
+    if (\Drupal::config('tpedu.settings')->get('alle_project')) {
+        return;
+    }
     \Drupal::database()->delete('tpedu_roles')->execute();
     $ous = api('all_units');
     if ($ous) {
@@ -532,8 +796,13 @@ function all_roles()
 {
     $config = \Drupal::config('tpedu.settings');
     $off = $config->get('refresh_days');
-    $query = \Drupal::database()
-        ->query("select * from {tpedu_roles} where fetch_date > DATE_SUB(NOW(), INTERVAL $off DAY)");
+    if ($config->get('alle_project')) {
+        $query = \Drupal::database()
+            ->query('select * from {tpedu_roles} order by id');
+    } else {
+        $query = \Drupal::database()
+            ->query("select * from {tpedu_roles} where fetch_date > DATE_SUB(NOW(), INTERVAL $off DAY) order by id");
+    }
     $data = $query->fetchAll();
     if (!$data) {
         fetch_roles();
@@ -551,8 +820,13 @@ function get_roles_of_unit($ou)
 {
     $config = \Drupal::config('tpedu.settings');
     $off = $config->get('refresh_days');
-    $query = \Drupal::database()
-        ->query("select * from {tpedu_roles} where unit='$ou' and fetch_date > DATE_SUB(NOW(), INTERVAL $off DAY)");
+    if ($config->get('alle_project')) {
+        $query = \Drupal::database()
+            ->query("select * from {tpedu_roles} where unit='$ou'");
+    } else {
+        $query = \Drupal::database()
+            ->query("select * from {tpedu_roles} where unit='$ou' and fetch_date > DATE_SUB(NOW(), INTERVAL $off DAY)");
+    }
     $data = $query->fetchAll();
     if (!$data) {
         fetch_roles();
@@ -570,8 +844,13 @@ function get_role($ro)
 {
     $config = \Drupal::config('tpedu.settings');
     $off = $config->get('refresh_days');
-    $query = \Drupal::database()
-        ->query("select * from {tpedu_roles} where id='$ro' and fetch_date > DATE_SUB(NOW(), INTERVAL $off DAY)");
+    if ($config->get('alle_project')) {
+        $query = \Drupal::database()
+            ->query("select * from {tpedu_roles} where id='$ro'");
+    } else {
+        $query = \Drupal::database()
+            ->query("select * from {tpedu_roles} where id='$ro' and fetch_date > DATE_SUB(NOW(), INTERVAL $off DAY)");
+    }
     $data = $query->fetchObject();
     if (!$data) {
         fetch_roles();
@@ -583,6 +862,13 @@ function get_role($ro)
     }
 
     return false;
+}
+
+function get_role_name($ro)
+{
+    $role = get_role($ro);
+
+    return $role->name;
 }
 
 function get_teachers_of_role($ro)
