@@ -73,7 +73,7 @@ class HorizontalTabs extends RenderElement
     public static function preRenderHorizontalTabs(array $element)
     {
         // Do not render the horizontal tabs element if it is empty.
-        if (is_array($element['#parents'])) {
+        if (isset($element['#parents']) && is_array($element['#parents'])) {
             $group = implode('][', $element['#parents']);
             if (!Element::getVisibleChildren($element['group']['#groups'][$group])) {
                 $element['#printed'] = true;

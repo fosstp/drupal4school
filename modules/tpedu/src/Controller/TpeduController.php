@@ -95,7 +95,7 @@ class TpeduController extends ControllerBase
             $classes = all_classes();
             alle_sync_teachers();
             foreach ($classes as $cls) {
-                alle_sync_students($cls);
+                alle_sync_students($cls->id);
             }
         }
         $build = [

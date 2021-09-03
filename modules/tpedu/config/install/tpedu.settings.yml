@@ -36,7 +36,7 @@ alle:
   teacher_profile: 'https://eschool-restful.tp.edu.tw/dataapi_web/user/{sid}/profile/profile/{teaid}'
   teacher_subjects: 'https://eschool-restful.tp.edu.tw/dataapi_web/admin/{sid}/subjects/teacher/{teaid}'
   teachers_of_class: 'https://eschool-restful.tp.edu.tw/dataapi_web/user/{sid}/teachers/class/{cls}'
-  students_of_teacher: '"https://eschool-restful.tp.edu.tw/dataapi_web/user/{sid}/teachers/student/{teaid}'
+  students_of_teacher: 'https://eschool-restful.tp.edu.tw/dataapi_web/user/{sid}/teachers/student/{teaid}'
   students_of_class: 'https://eschool-restful.tp.edu.tw/dataapi_web/user/{sid}/students/class/{cls}'
   student_info: 'https://eschool-restful.tp.edu.tw/dataapi_web/user/{sid}/students/student/{stdno}'
   student_profile: 'https://eschool-restful.tp.edu.tw/dataapi_web/user/{sid}/profile/profile/{stdno}'

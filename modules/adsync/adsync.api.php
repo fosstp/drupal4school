@@ -7,7 +7,16 @@ function ad_test()
     global $ad_conn;
     $config = \Drupal::config('adsync.settings');
     $ad_host = $config->get('ad_server');
-    $ad_conn = @ldap_connect($ad_host, 389);
+    $ad_port = $config->get('ad_port');
+    ldap_set_option(null, LDAP_OPT_X_TLS_REQUIRE_CERT, LDAP_OPT_X_TLS_NEVER);
+    $ca = $config->get('ca_cert');
+    if ($wrapper = \Drupal::service('stream_wrapper_manager')->getViaUri($ca)) {
+        $ca_path = $wrapper->realpath();
+    }
+    if (isset($ca_path)) {
+        ldap_set_option(null, LDAP_OPT_X_TLS_CACERTFILE, $ca_path);
+    }
+    $ad_conn = @ldap_connect("ldaps://$ad_host:$ad_port");
     ldap_set_option($ad_conn, LDAP_OPT_PROTOCOL_VERSION, 3);
     ldap_set_option($ad_conn, LDAP_OPT_REFERRALS, 0);
     if ($ad_conn) {
@@ -15,25 +24,14 @@ function ad_test()
         $ad_pass = $config->get('ad_password');
         $ad_bind = @ldap_bind($ad_conn, $ad_user, $ad_pass);
         if ($ad_bind) {
-            @ldap_close($ad_conn);
-            $ad_conn = @ldap_connect('ldaps://'.$ad_host, 636);
-            ldap_set_option($ad_conn, LDAP_OPT_PROTOCOL_VERSION, 3);
-            ldap_set_option($ad_conn, LDAP_OPT_REFERRALS, 0);
-            $ad_bind = @ldap_bind($ad_conn, $ad_user, $ad_pass);
-            if ($ad_bind) {
-                return 0;
-            } else {
-                \Drupal::logger('adsync')->notice('無法使用 LDAPS 通訊協定連接 AD 伺服器，請在 AD 伺服器上安裝企業級憑證服務，以便提供 LDAPS 連線功能。'.ldap_error($ad_conn));
-
-                return 3;
-            }
+            return 0;
         } else {
             \Drupal::logger('adsync')->notice('已經連線到 AD 伺服器，但是無法成功登入。請檢查管理員帳號密碼是否正確！'.ldap_error($ad_conn));
 
             return 2;
         }
     } else {
-        \Drupal::logger('adsync')->notice('連線 AD 伺服器失敗。請檢查伺服器名稱或 IP 是否正確！'.ldap_error($ad_conn));
+        \Drupal::logger('adsync')->notice('無法使用 LDAPS 通訊協定連接 AD 伺服器，請在 AD 伺服器上安裝企業級憑證服務，以便提供 LDAPS 連線功能。'.ldap_error($ad_conn));
 
         return 1;
     }
@@ -44,7 +42,16 @@ function ad_admin()
     global $ad_conn;
     $config = \Drupal::config('adsync.settings');
     $ad_host = $config->get('ad_server');
-    $ad_conn = @ldap_connect('ldaps://'.$ad_host, 636);
+    $ad_port = $config->get('ad_port');
+    ldap_set_option(null, LDAP_OPT_X_TLS_REQUIRE_CERT, LDAP_OPT_X_TLS_NEVER);
+    $ca = $config->get('ca_cert');
+    if ($wrapper = \Drupal::service('stream_wrapper_manager')->getViaUri($ca)) {
+        $ca_path = $wrapper->realpath();
+    }
+    if (isset($ca_path)) {
+        ldap_set_option(null, LDAP_OPT_X_TLS_CACERTFILE, $ca_path);
+    }
+    $ad_conn = @ldap_connect("ldaps://$ad_host:$ad_port");
     @ldap_set_option($ad_conn, LDAP_OPT_PROTOCOL_VERSION, 3);
     @ldap_set_option($ad_conn, LDAP_OPT_REFERRALS, 0);
     if ($ad_conn) {

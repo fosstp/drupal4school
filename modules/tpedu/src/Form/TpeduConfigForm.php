@@ -144,7 +144,7 @@ class TpeduConfigForm extends ConfigFormBase
                 $config->set('enable', true);
                 $config->set('api.dc', $user->o);
                 $config->save();
-                $school = api('school');
+                $school = api('school', ['dc' => $user->o]);
                 if ($school->tpSims == 'alle') {
                     $config->set('alle.sid', $school->tpUniformNumbers);
                     $config->save();

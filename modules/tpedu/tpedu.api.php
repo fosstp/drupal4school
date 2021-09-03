@@ -102,21 +102,29 @@ function who()
     return false;
 }
 
-function api($which, array $replacement = null)
+function api($which, array $replacement = [])
 {
     $config = \Drupal::config('tpedu.settings');
     $dataapi = $config->get('api.'.$which);
     if ($which == 'find_users') {
         if (!empty($replacement)) {
+            if (array_key_exists('dc', $replacement)) {
+                $dc = $replacement['dc'];
+                unset($replacement['dc']);
+            } else {
+                $dc = $config->get('api.dc');
+            }
             $dataapi .= '?';
             foreach ($replacement as $key => $data) {
                 $dataapi .= $key.'='.$data.'&';
             }
             $dataapi = substr($dataapi, 0, -1);
         }
-        $dataapi = str_replace('{dc}', $config->get('api.dc'), $dataapi);
+        $dataapi = str_replace('{dc}', $dc, $dataapi);
     } else {
-        $replacement['dc'] = $config->get('api.dc');
+        if (!array_key_exists('dc', $replacement)) {
+            $replacement['dc'] = $config->get('api.dc');
+        }
         $search = [];
         $values = [];
         foreach ($replacement as $key => $data) {
@@ -152,7 +160,7 @@ function alle($which, array $replacement = null)
     }
     $dataapi = str_replace($search, $values, $dataapi);
     $response = \Drupal::httpClient()->get($dataapi, [
-        'headers' => ['Authorization' => 'Special ip '.$config->get('alle.sid')],
+        'headers' => ['Authorization' => 'Special ip '.$config->get('alle_project')],
         'http_errors' => false,
     ]);
     $json = json_decode($response->getBody());
@@ -348,9 +356,15 @@ function fetch_user($uuid)
 
 function alle_teacher_id($idno)
 {
-    $teachers = all_teachers();
-    foreach ($teachers as $teacher) {
-        alle_fetch_user($teacher);
+    $teachers = alle('all_teachers');
+    if ($teachers && is_array($teachers)) {
+        foreach ($teachers as $teacher) {
+            $teaid = $teacher->teaid;
+            $userdata = alle('teacher_profile', ['teaid' => $teaid]);
+            if ($userdata[0]->idno == $idno) {
+                return $teaid;
+            }
+        }
     }
 }
 
@@ -471,11 +485,11 @@ function alle_fetch_user($uuid)
             if (!empty($userdata[0]->classes)) {
                 foreach ($userdata[0]->classes as $cls_data) {
                     $cls = $cls_data->id;
-                    foreach ($cls_data->subjects as $subj_id => $num) {
+                    foreach ($cls_data->subjects as $subj) {
                         $database->insert('tpedu_assignment')->fields([
                             'uuid' => $uuid,
                             'class_id' => $cls,
-                            'subject_id' => $subj_id,
+                            'subject_id' => key((array) $subj),
                         ])->execute();
                     }
                 }

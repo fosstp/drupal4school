@@ -1,4 +1,5 @@
 ad_server: ''
+ad_port: ''
 ca_cert: ''
 ad_admin: ''
 ad_password: ''

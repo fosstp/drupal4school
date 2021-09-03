@@ -19,7 +19,6 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
     && docker-php-ext-enable ldap \
     && echo 'y' | pecl install apcu \
     && docker-php-ext-enable apcu \
-    && echo "TLS_REQCERT never\nTLS_CACERTDIR /var/www/html/sites/default/files/adsync\n" >> /etc/ldap/ldap.conf \
     && pecl install uploadprogress \
     && echo "date.timezone = Asia/Taipei" > /usr/local/etc/php/conf.d/timezone.ini \
     && echo "post_max_size = 100M\nupload_max_filesize = 100M\nextension = uploadprogress" > /usr/local/etc/php/conf.d/upload.ini \

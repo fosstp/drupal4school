@@ -208,7 +208,7 @@ class AdsyncOperationForm extends FormBase
                                     $detail_log .= "$job->dept_name 群組建立失敗！".ad_error().'<br>';
                                 }
                             }
-                            if (($k = array_search($group_dn, $groups)) !== false) {
+                            if (is_array($groups) && ($k = array_search($group_dn, $groups)) !== false) {
                                 unset($groups[$k]);
                             } else {
                                 if ($log) {
@@ -248,7 +248,7 @@ class AdsyncOperationForm extends FormBase
                                     $detail_log .= "$job->role_name 群組建立失敗！".ad_error().'<br>';
                                 }
                             }
-                            if (($k = array_search($group_dn, $groups)) !== false) {
+                            if (is_array($groups) && ($k = array_search($group_dn, $groups)) !== false) {
                                 unset($groups[$k]);
                             } else {
                                 if ($log) {
@@ -311,7 +311,7 @@ class AdsyncOperationForm extends FormBase
                                 $detail_log .= "$grade 年級群組建立失敗！".ad_error().'<br>';
                             }
                         }
-                        if (($k = array_search($group_dn, $groups)) !== false) {
+                        if (is_array($groups) && ($k = array_search($group_dn, $groups)) !== false) {
                             unset($groups[$k]);
                         } else {
                             if ($log) {

@@ -34,6 +34,12 @@ class AdsyncConfigForm extends ConfigFormBase
             '#default_value' => $config->get('ad_server'),
             '#description' => '請輸入微軟網域主控站的 DNS 名稱，不建議使用 IP。',
         ];
+        $form['ad_port'] = [
+            '#type' => 'textfield',
+            '#title' => '伺服器埠號',
+            '#default_value' => $config->get('ad_port') ?: '636',
+            '#description' => '請輸入微軟網域主控站的 LDAPS 連接埠號，預設為 636，若有防火牆阻擋，可以透過 NAT 將 443 轉向 636，以便突破教育局防火牆封鎖。',
+        ];
         $validators = [
             'file_validate_extensions' => ['cer'],
         ];
@@ -91,6 +97,11 @@ class AdsyncConfigForm extends ConfigFormBase
             }
         }
         $config->save();
+        $ca = $config->get('ca_cert');
+        if ($wrapper = \Drupal::service('stream_wrapper_manager')->getViaUri($ca)) {
+            $ca_path = $wrapper->realpath();
+            system("exports LDAPTLS_CACERT=$ca_path");
+        }
         $ok = false;
         if ($config->get('ca_cert') && $config->get('ad_admin') && $config->get('ad_password')) {
             $result = ad_test();

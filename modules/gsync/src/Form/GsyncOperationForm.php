@@ -398,7 +398,7 @@ class GsyncOperationForm extends FormBase
                                 if ($log) {
                                     $detail_log .= '無法在 G Suite 中找到匹配的群組，現在正在建立新的 Google 群組......';
                                 }
-                                $group = gs_createGroup($group_key, "$grade年級");
+                                $group = gs_createGroup($group_key, $grade.'年級');
                                 if ($group) {
                                     $all_groups[] = $group;
                                     if ($log) {
