@@ -219,31 +219,22 @@ function fetch_user($uuid)
         } else {
             if (isset($user->ou) && isset($user->title)) {
                 $sdept = $config->get('sub_dept');
+                $keywords = explode(',', $sdept);
                 if (is_array($user->ou)) {
                     foreach ($user->ou as $ou_pair) {
                         $a = explode(',', $ou_pair);
                         $o = $a[0];
-                        if ($a[1] != $sdept) {
-                            $m_dept_id = $a[1];
-                            $depts = $user->department->{$o};
-                            foreach ($depts as $d) {
-                                if ($d->key == $ou_pair) {
-                                    $m_dept_name = $d->name;
-                                }
-                            }
-                        } else {
-                            $s_dept_id = $a[1];
-                            $depts = $user->department->{$o};
-                            foreach ($depts as $d) {
-                                if ($d->key == $ou_pair) {
-                                    $s_dept_name = $d->name;
-                                }
+                        $dept_name = get_unit_name($a[1]);
+                        $ckf = 0;
+                        foreach ($keywords as $k) {
+                            if (!(strpos($dept_name, $k) === false)) {
+                                $ckf = 1;
                             }
                         }
-                    }
-                    if (empty($m_dept_id)) {
-                        $m_dept_id = $s_dept_id;
-                        $m_dept_name = $s_dept_name;
+                        if (!$ckf || ($m_dept_id == '' && $ckf)) {
+                            $m_dept_id = $a[1];
+                            $m_dept_name = $dept_name;
+                        }
                     }
                 } else {
                     $a = explode(',', $user->ou);
@@ -256,14 +247,16 @@ function fetch_user($uuid)
                     foreach ($user->title as $ro_pair) {
                         $a = explode(',', $ro_pair);
                         $o = $a[0];
-                        if ($a[1] == $m_dept_id) {
-                            $m_role_id = $a[2];
-                            $roles = $user->titleName->$o;
-                            foreach ($roles as $r) {
-                                if ($r->key == $ro_pair) {
-                                    $m_role_name = $r->name;
-                                }
+                        $role_name = get_role_name($a[2]);
+                        $ckf = 0;
+                        foreach ($keywords as $k) {
+                            if (!(strpos($role_name, $k) === false)) {
+                                $ckf = 1;
                             }
+                        }
+                        if (!$ckf || ($m_dept_id == '' && $ckf)) {
+                            $m_role_id = $a[2];
+                            $m_role_name = $role_name;
                         }
                         $database->insert('tpedu_jobs')->fields([
                             'uuid' => $uuid,
