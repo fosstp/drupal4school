@@ -385,6 +385,7 @@ function alle_fetch_user($uuid)
     $config = \Drupal::config('tpedu.settings');
     $user = api('one_user', ['uuid' => $uuid]);
     if ($user) {
+        $account = '';
         if (is_array($user->uid)) {
             foreach ($user->uid as $u) {
                 if (!strpos($u, '@') && !is_phone($u)) {
@@ -433,9 +434,16 @@ function alle_fetch_user($uuid)
             }
             if (!empty($userdata[0]->job_title)) {
                 $sdept = $config->get('sub_dept');
+                $keywords = explode(',', $sdept);
                 foreach ($userdata[0]->job_title as $role_name) {
                     $data = $database->query("select * from tpedu_roles where name='$role_name'")->fetchObject();
-                    if ($m_dept_id == '' && $sdept != $data->unit) {
+                    $ckf = 0;
+                    foreach ($keywords as $k) {
+                        if (!(strpos($role_name, $k) === false)) {
+                            $ckf = 1;
+                        }
+                    }
+                    if (!$ckf || ($m_dept_id == '' && $ckf)) {
                         $m_dept_id = $data->unit;
                         $m_dept_name = get_unit_name($data->unit);
                         $m_role_id = $data->id;

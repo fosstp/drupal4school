@@ -71,6 +71,12 @@ class TpeduConfigForm extends ConfigFormBase
             '#default_value' => $config->get('alle_project'),
             '#required' => false,
         ];
+        $form['sub_dept'] = [
+            '#type' => 'textfield',
+            '#title' => '次要部門關鍵字',
+            '#default_value' => $config->get('sub_dept'),
+            '#description' => '教師隸屬於複數部門時，將透過關鍵字判斷排除次要部門，以避免部門職稱誤植，例如：組長誤植為科任教師。',
+        ];
         $form['refresh_days'] = [
             '#type' => 'number',
             '#title' => '快取資料庫更新頻率',
