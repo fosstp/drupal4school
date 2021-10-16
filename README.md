@@ -22,6 +22,15 @@ drupal/console 尚未完全支援 drupal 9，因此改用 drush 10，兩者的�
 ## 私有雲運作環境
 *   在 NAS 上建立 NFS 共享資料夾，並掛載到所有的集群電腦上，掛載點為 /nas_storage
 *   在所有的集群電腦上安裝 [docker engine](https://docs.docker.com/engine/install/) 和 [docker compose](https://docs.docker.com/compose/install/)
+*   新增 /etc/docker/daemon.json 以便啟用 ipv6 ports 監聽
+
+        {
+          "ipv6": true,
+          "fixed-cidr-v6": "fd00::/80"
+        }
+*   重啟 Docker 以便更新 ipv6 組態
+
+        systemctl reload docker
 *   啟用 Docker Swarm：
 
         docker swarm init
