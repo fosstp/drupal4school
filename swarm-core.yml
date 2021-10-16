@@ -48,6 +48,8 @@ services:
       AGENT_CLUSTER_ADDR: tasks.agent
     volumes:
     - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+    - 9001:9001
     networks:
     - core-infra
     deploy:
@@ -56,7 +58,8 @@ services:
         constraints: [node.platform.os == linux]
 
   portainer:
-    image: portainer/portainer
+    image: portainer/portainer-ce
+    command: -H tcp://tasks.agent:9001 -tlsskipverify
     volumes:
     - /var/run/docker.sock:/var/run/docker.sock
     - /storage/portainer:/data
