@@ -910,6 +910,9 @@ function get_teachers_of_role($ro)
 
 function fetch_subjects()
 {
+    if (\Drupal::config('tpedu.settings')->get('alle_project')) {
+        return;
+    }
     \Drupal::database()->delete('tpedu_subjects')->execute();
     $subjects = api('all_subjects');
     if ($subjects) {
@@ -930,7 +933,7 @@ function all_subjects()
     $config = \Drupal::config('tpedu.settings');
     $off = $config->get('refresh_days');
     $query = \Drupal::database()
-        ->query("select * from {tpedu_subjects} where fetch_date > DATE_SUB(NOW(), INTERVAL $off DAY) order by id");
+        ->query('select * from {tpedu_subjects} order by id');
     $data = $query->fetchAll();
     if (!$data) {
         fetch_subjects();
@@ -949,7 +952,7 @@ function all_domains()
     $config = \Drupal::config('tpedu.settings');
     $off = $config->get('refresh_days');
     $query = \Drupal::database()
-        ->query("select distinct domain from {tpedu_subjects} where fetch_date > DATE_SUB(NOW(), INTERVAL $off DAY)");
+        ->query('select distinct domain from {tpedu_subjects}');
     $data = $query->fetchAll();
     if (!$data) {
         fetch_subjects();
@@ -968,7 +971,7 @@ function get_subjects_of_domain($domain)
     $config = \Drupal::config('tpedu.settings');
     $off = $config->get('refresh_days');
     $query = \Drupal::database()
-        ->query("select * from {tpedu_subjects} where domain='$domain' and fetch_date > DATE_SUB(NOW(), INTERVAL $off DAY)");
+        ->query("select * from {tpedu_subjects} where domain='$domain'");
     $data = $query->fetchAll();
     if (!$data) {
         fetch_roles();
@@ -1038,7 +1041,7 @@ function get_subject($sub)
     $config = \Drupal::config('tpedu.settings');
     $off = $config->get('refresh_days');
     $query = \Drupal::database()
-        ->query("select * from {tpedu_subjects} where id='$sub' and fetch_date > DATE_SUB(NOW(), INTERVAL $off DAY)");
+        ->query("select * from {tpedu_subjects} where id='$sub'");
     $data = $query->fetchObject();
     if (!$data) {
         fetch_subjects();
@@ -1433,7 +1436,7 @@ function get_assign_by_domain($cls, $dom)
     $config = \Drupal::config('tpedu.settings');
     $off = $config->get('refresh_days');
     $query = \Drupal::database()
-        ->query("select * from {tpedu_assignment} a join {tpedu_subjects} b on a.subject_id=b.id where a.class_id='$cls' and b.domain='$dom' and b.fetch_date > DATE_SUB(NOW(), INTERVAL $off DAY)");
+        ->query("select * from {tpedu_assignment} a join {tpedu_subjects} b on a.subject_id=b.id where a.class_id='$cls' and b.domain='$dom'");
     $data = $query->fetchAll();
     if (!$data) {
         all_teachers();
