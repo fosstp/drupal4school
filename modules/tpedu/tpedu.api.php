@@ -487,7 +487,8 @@ function alle_fetch_user($uuid)
                 foreach ($userdata[0]->classes as $cls_data) {
                     $cls = $cls_data->id;
                     foreach ($cls_data->subjects as $subj) {
-                        $subj_id = $database->query("select id from tpedu_subjects where name='$subj'")->fetchField();
+                        $subj_name = key((array) $subj);
+                        $subj_id = $database->query("select id from tpedu_subjects where name='$subj_name'")->fetchField();
                         if ($subj_id) {
                             $database->insert('tpedu_assignment')->fields([
                                 'uuid' => $uuid,
