@@ -344,7 +344,9 @@ function fetch_user($uuid)
             }
         }
         $database->insert('tpedu_people')->fields($fields)->execute();
+        return true;
     }
+    return false;
 }
 
 function alle_teacher_id($idno)
@@ -553,7 +555,9 @@ function alle_fetch_user($uuid)
             }
         }
         $database->insert('tpedu_people')->fields($fields)->execute();
+        return true;
     }
+    return false;
 }
 
 function alle_sync_teachers()
@@ -580,27 +584,19 @@ function get_user($uuid)
 {
     $config = \Drupal::config('tpedu.settings');
     $off = $config->get('refresh_days');
-    if (is_numeric($uuid)) {
-        $data = \Drupal::database()->query("select a.uuid from users a join users_field_data b on a.uid=b.uid where b.init='tpedu' and a.uid='$uuid'")->fetchObject();
-        if (!$data) {
-            return false;
-        }
-        $uuid = $data->uuid;
-        $query = \Drupal::database()
-            ->query("select * from {tpedu_people} where uuid='$uuid' and fetch_date > DATE_SUB(NOW(), INTERVAL $off DAY)");
-    } else {
-        $query = \Drupal::database()
-            ->query("select * from {tpedu_people} where uuid='$uuid' and fetch_date > DATE_SUB(NOW(), INTERVAL $off DAY)");
-    }
+    $query = \Drupal::database()
+        ->query("select * from {tpedu_people} where uuid='$uuid' and fetch_date > DATE_SUB(NOW(), INTERVAL $off DAY)");
     $data = $query->fetchObject();
     if (!$data) {
         if (empty($config->get('alle_project'))) {
-            fetch_user($uuid);
+            $succ = fetch_user($uuid);
         } else {
-            alle_fetch_user($uuid);
+            $succ = alle_fetch_user($uuid);
         }
-        $query = \Drupal::database()->query("select * from {tpedu_people} where uuid='$uuid'");
-        $data = $query->fetchObject();
+        if ($succ) {
+            $query = \Drupal::database()->query("select * from {tpedu_people} where uuid='$uuid'");
+            $data = $query->fetchObject();
+        }
     }
     if ($data) {
         return $data;

@@ -30,7 +30,12 @@ function tpedu_user_load(array $entities)
         if ($account->get('init')->value == 'tpedu') {
             $uuid = $account->get('uuid')->value;
             $user = get_user($uuid);
-            $account->tpedu = $user;
+            if ($user) {
+                $account->tpedu = $user;
+            } else {
+                $account->set('init', NULL);
+                $account->save();
+            }
         }
     }
 }
