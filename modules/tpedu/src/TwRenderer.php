@@ -87,12 +87,14 @@ class TwRenderer extends HtmlRenderer
                 if ($lnk->nodeValue) {
                     $lnk->setAttribute('title', trim($lnk->nodeValue));
                 } else {
-                    $lnk->nodeValue = '::';
+                    $lnk->nodeValue = ':::';
                     $lnk->setAttribute('title', $lnk->getAttribute('id'));
+                    $lnk->setAttribute('accesskey', 'C');
                 }
             } else {
                 if (empty($lnk->nodeValue) && !($lnk->hasChildNodes())) {
-                    $lnk->nodeValue = '::';
+                    $lnk->nodeValue = ':::';
+                    $lnk->setAttribute('accesskey', 'C');
                 }
             }
             $lnk->setAttribute('tabindex', $tab_index);
